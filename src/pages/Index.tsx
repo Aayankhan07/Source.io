@@ -18,8 +18,8 @@ export default function Index() {
       <header className="border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-md bg-gradient-primary flex items-center justify-center shadow-glow">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
+            <div className="h-7 w-7 rounded-md flex items-center justify-center overflow-hidden">
+              <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
             </div>
             <span className="font-semibold tracking-tight">Source.io</span>
           </Link>

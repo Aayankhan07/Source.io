@@ -68,8 +68,8 @@ export default function Auth() {
     <main className="min-h-screen flex items-center justify-center px-4 bg-background">
       <div className="w-full max-w-md">
         <div className="flex items-center gap-2 justify-center mb-8">
-          <div className="h-9 w-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow">
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
+          <div className="h-9 w-9 rounded-lg flex items-center justify-center overflow-hidden">
+            <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">Source.io</h1>
         </div>

@@ -19,8 +19,8 @@ export default function AppEmpty() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-        <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-4 shadow-glow">
-          <Sparkles className="h-6 w-6 text-primary-foreground" />
+        <div className="h-12 w-12 rounded-xl flex items-center justify-center mb-4 overflow-hidden">
+          <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
         </div>
         <h2 className="text-2xl font-semibold mb-2">Your workspace is ready</h2>
         <p className="text-muted-foreground mb-6 max-w-md">
