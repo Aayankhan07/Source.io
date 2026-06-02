@@ -26,5 +26,21 @@ dist-ssr
 # Environment secrets
 .env
 .env.*
+.env*.local
 !.env.example
+
+# Supabase local development
+supabase/.temp/
+supabase/functions/.env
+supabase/functions/*/.env
+
+# Vite/Vitest cache and coverage
+.vite/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# System files
+Thumbs.db
+desktop.ini
 
