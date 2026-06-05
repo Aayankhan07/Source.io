@@ -10,7 +10,8 @@ const corsHeaders = {
 
 const HOST_1_VOICE = "en-US-ChristopherNeural";
 const HOST_2_VOICE = "en-US-AriaNeural";
-const MAX_SOURCE_CHARS = 60_000;
+// Keep source under 30k chars to fit within Groq's 12k TPM limit
+const MAX_SOURCE_CHARS = 30_000;
 const SYSTEM_PROMPT = `You write concise, engaging study podcasts for a two-host learning app.
 
 Return ONLY a script with alternating dialogue lines in this exact format:
@@ -143,8 +144,38 @@ export async function handler(req: Request): Promise<Response> {
     });
 
     if (!aiResp.ok) {
-      if (aiResp.status === 429) return json({ error: "Rate limit reached on Groq's free tier — please wait a moment and try again." }, 429);
-      const message = await aiResp.text();
+      const status = aiResp.status;
+      const message = await aiResp.text().catch(() => "");
+      console.error("Groq error", status, message);
+
+      let isRateLimit = status === 429 || status === 413;
+      let isTokenLimit = status === 413;
+
+      if (message) {
+        try {
+          const parsed = JSON.parse(message);
+          const code = parsed?.error?.code;
+          const msg = parsed?.error?.message ?? "";
+          if (code === "rate_limit_exceeded" || msg.includes("rate_limit_exceeded") || msg.includes("TPM") || msg.includes("Limit 12000")) {
+            isRateLimit = true;
+            if (msg.includes("too large") || msg.includes("TPM") || status === 413) {
+              isTokenLimit = true;
+            }
+          }
+        } catch {
+          if (message.includes("rate_limit_exceeded") || message.includes("TPM")) {
+            isRateLimit = true;
+          }
+        }
+      }
+
+      if (isRateLimit) {
+        const errorMsg = isTokenLimit
+          ? "Document too large for Groq free-tier rate limits (12,000 TPM limit). Please try a shorter document or upgrade your Groq plan."
+          : "Rate limit reached on Groq's free tier — please wait a moment and try again.";
+        return json({ error: errorMsg }, 429);
+      }
+
       throw new Error(`AI_SCRIPT_FAILED:${message.slice(0, 200)}`);
     }
 

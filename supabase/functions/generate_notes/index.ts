@@ -115,8 +115,8 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Groq llama-3.3-70b-versatile context: ~32k tokens; keep source under ~80k chars to be safe
-  const MAX_CHARS = 80_000;
+  // Groq llama-3.3-70b-versatile free-tier rate limit: 12k TPM. Keep source under 35k chars (~8-9k tokens) to prevent TPM errors.
+  const MAX_CHARS = 35_000;
   const source = doc.raw_text.length > MAX_CHARS ? doc.raw_text.slice(0, MAX_CHARS) : doc.raw_text;
 
   const userPrompt =
@@ -159,18 +159,42 @@ Deno.serve(async (req) => {
   }
 
   if (!aiResp.ok || !aiResp.body) {
-    if (aiResp.status === 429) {
-      try { aiResp.body?.cancel(); } catch { /* noop */ }
+    const status = aiResp.status;
+    const t = await aiResp.text().catch(() => "");
+    console.error("Groq error", status, t);
+    try { aiResp.body?.cancel(); } catch { /* noop */ }
+
+    let isRateLimit = status === 429 || status === 413;
+    let isTokenLimit = status === 413;
+
+    if (t) {
+      try {
+        const parsed = JSON.parse(t);
+        const code = parsed?.error?.code;
+        const msg = parsed?.error?.message ?? "";
+        if (code === "rate_limit_exceeded" || msg.includes("rate_limit_exceeded") || msg.includes("TPM") || msg.includes("Limit 12000")) {
+          isRateLimit = true;
+          if (msg.includes("too large") || msg.includes("TPM") || status === 413) {
+            isTokenLimit = true;
+          }
+        }
+      } catch {
+        if (t.includes("rate_limit_exceeded") || t.includes("TPM")) {
+          isRateLimit = true;
+        }
+      }
+    }
+
+    if (isRateLimit) {
+      const errorMsg = isTokenLimit
+        ? "Document too large for Groq free-tier rate limits (12,000 TPM limit). Please try a shorter document or upgrade your Groq plan."
+        : "Groq free-tier rate limit reached. Please wait ~30 seconds and try again.";
       return new Response(
-        JSON.stringify({
-          error: "Groq free-tier rate limit reached. Please wait ~30 seconds and try again.",
-          retryable: true,
-        }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ error: errorMsg, retryable: !isTokenLimit }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    const t = await aiResp.text();
-    console.error("Groq error", aiResp.status, t);
+
     return new Response(JSON.stringify({ error: "Groq API error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

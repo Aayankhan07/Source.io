@@ -44,3 +44,6 @@ coverage/
 Thumbs.db
 desktop.ini
 
+# Standalone executables and zip packages
+*.exe
+*.zip

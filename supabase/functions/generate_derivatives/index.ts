@@ -104,7 +104,8 @@ Deno.serve(async (req) => {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-  const MAX = 70_000;
+  // Keep source under 35k chars to fit within Groq's 12k TPM limit
+  const MAX = 35_000;
   const trimmed = source.length > MAX ? source.slice(0, MAX) : source;
 
   const callGroq = () => fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -135,13 +136,40 @@ Deno.serve(async (req) => {
   }
 
   if (!aiResp.ok) {
-    if (aiResp.status === 429) {
-      return new Response(JSON.stringify({ error: "Rate limit reached on Groq's free tier — please wait a moment and try again." }), {
+    const status = aiResp.status;
+    const t = await aiResp.text().catch(() => "");
+    console.error("Groq error", status, t);
+
+    let isRateLimit = status === 429 || status === 413;
+    let isTokenLimit = status === 413;
+
+    if (t) {
+      try {
+        const parsed = JSON.parse(t);
+        const code = parsed?.error?.code;
+        const msg = parsed?.error?.message ?? "";
+        if (code === "rate_limit_exceeded" || msg.includes("rate_limit_exceeded") || msg.includes("TPM") || msg.includes("Limit 12000")) {
+          isRateLimit = true;
+          if (msg.includes("too large") || msg.includes("TPM") || status === 413) {
+            isTokenLimit = true;
+          }
+        }
+      } catch {
+        if (t.includes("rate_limit_exceeded") || t.includes("TPM")) {
+          isRateLimit = true;
+        }
+      }
+    }
+
+    if (isRateLimit) {
+      const errorMsg = isTokenLimit
+        ? "Document too large for Groq free-tier rate limits (12,000 TPM limit). Please try a shorter document or upgrade your Groq plan."
+        : "Rate limit reached on Groq's free tier — please wait a moment and try again.";
+      return new Response(JSON.stringify({ error: errorMsg }), {
         status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const t = await aiResp.text();
-    console.error("Groq error", aiResp.status, t);
+
     return new Response(JSON.stringify({ error: "Groq API error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
