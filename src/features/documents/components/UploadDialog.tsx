@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Upload, FileText, Youtube } from "lucide-react";
+import { Loader2, Upload, FileText, Youtube, CloudLightning, FileType } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { triggerIngest } from "@/lib/services/pipeline";
 import { extractFileText } from "@/lib/services/extract";
@@ -173,62 +173,142 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Add a document</DialogTitle>
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset(); }}>
+      <DialogContent className="sm:max-w-lg bg-[#0d0d11] border-white/10 text-white rounded-2xl">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-lg font-bold font-display text-white flex items-center gap-2">
+            <CloudLightning className="h-5 w-5 text-primary" /> Add Study Source
+          </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="file">
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="file"><Upload className="h-3.5 w-3.5 mr-1.5" /> File</TabsTrigger>
-            <TabsTrigger value="youtube"><Youtube className="h-3.5 w-3.5 mr-1.5" /> YouTube</TabsTrigger>
-            <TabsTrigger value="text"><FileText className="h-3.5 w-3.5 mr-1.5" /> Text</TabsTrigger>
+        <Tabs defaultValue="file" className="w-full">
+          <TabsList className="grid grid-cols-3 w-full bg-[#171721] p-1 rounded-xl border border-white/5">
+            <TabsTrigger value="file" className="rounded-lg text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Upload className="h-3.5 w-3.5 mr-1.5 shrink-0" /> File
+            </TabsTrigger>
+            <TabsTrigger value="youtube" className="rounded-lg text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Youtube className="h-3.5 w-3.5 mr-1.5 shrink-0" /> YouTube
+            </TabsTrigger>
+            <TabsTrigger value="text" className="rounded-lg text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <FileText className="h-3.5 w-3.5 mr-1.5 shrink-0" /> Text
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="file" className="space-y-4 pt-4">
+          {/* File Upload Content */}
+          <TabsContent value="file" className="space-y-4 pt-4 outline-none">
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+              className={`border border-dashed rounded-xl p-8 text-center cursor-pointer transition-all relative overflow-hidden ${
+                isDragActive 
+                  ? "border-primary bg-primary/5 shadow-glow" 
+                  : "border-white/10 hover:border-primary/40 bg-[#121217]"
               }`}
             >
               <input {...getInputProps()} />
-              <Upload className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
+              
               {file ? (
-                <p className="text-sm">{file.name}</p>
+                <div className="space-y-2 py-4">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto mb-2">
+                    <FileType className="h-5 w-5" />
+                  </div>
+                  <p className="text-xs font-semibold text-white truncate max-w-xs mx-auto">{file.name}</p>
+                  <p className="text-[10px] text-neutral-500">{(file.size / 1024 / 1024).toFixed(2)} MB · Tap to replace</p>
+                </div>
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  {isDragActive ? "Drop here…" : "Drag a PDF, DOCX, audio or video file, or click to browse"}
-                </p>
+                <div className="space-y-2 py-4">
+                  <Upload className="h-7 w-7 mx-auto text-neutral-500 mb-2" />
+                  <p className="text-xs text-neutral-300 font-semibold">
+                    {isDragActive ? "Drop the file here" : "Drag files or click to browse"}
+                  </p>
+                  <p className="text-[10px] text-neutral-500 max-w-xs mx-auto">
+                    Supports PDF, DOCX, mp3, wav, mp4 or mov (Max 50MB)
+                  </p>
+                </div>
               )}
             </div>
-            <Button onClick={createFileDoc} disabled={!file || submitting} className="w-full">
-              {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Upload
+            
+            <Button 
+              onClick={createFileDoc} 
+              disabled={!file || submitting} 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-colors"
+            >
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Ingesting file...
+                </span>
+              ) : (
+                <span>Upload and Process</span>
+              )}
             </Button>
           </TabsContent>
 
-          <TabsContent value="youtube" className="space-y-4 pt-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="yt">YouTube URL</Label>
-              <Input id="yt" value={ytUrl} onChange={(e) => setYtUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+          {/* YouTube Content */}
+          <TabsContent value="youtube" className="space-y-4 pt-4 outline-none">
+            <div className="space-y-2">
+              <Label htmlFor="yt" className="text-xs text-neutral-300">YouTube Video Link</Label>
+              <Input 
+                id="yt" 
+                value={ytUrl} 
+                onChange={(e) => setYtUrl(e.target.value)} 
+                placeholder="https://youtube.com/watch?v=..." 
+                className="bg-[#121217] border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-xs"
+              />
+              <p className="text-[10px] text-neutral-500 leading-normal">
+                We will automatically fetch the video transcription or dialogue recap to build notes.
+              </p>
             </div>
-            <Button onClick={createYoutubeDoc} disabled={!ytUrl.trim() || submitting} className="w-full">
-              {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Add link
+            <Button 
+              onClick={createYoutubeDoc} 
+              disabled={!ytUrl.trim() || submitting} 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-colors"
+            >
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Queuing link...
+                </span>
+              ) : (
+                <span>Add YouTube Source</span>
+              )}
             </Button>
           </TabsContent>
 
-          <TabsContent value="text" className="space-y-4 pt-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" value={textTitle} onChange={(e) => setTextTitle(e.target.value)} placeholder="Untitled note" />
+          {/* Pasted Text Content */}
+          <TabsContent value="text" className="space-y-4 pt-4 outline-none">
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="title" className="text-xs text-neutral-300">Workspace title</Label>
+                <Input 
+                  id="title" 
+                  value={textTitle} 
+                  onChange={(e) => setTextTitle(e.target.value)} 
+                  placeholder="E.g., History Lecture 5 Notes" 
+                  className="bg-[#121217] border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-xs"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="content" className="text-xs text-neutral-300">Paste material text</Label>
+                <Textarea 
+                  id="content" 
+                  value={textContent} 
+                  onChange={(e) => setTextContent(e.target.value)} 
+                  rows={6} 
+                  placeholder="Paste your readings, articles, transcripts here..." 
+                  className="bg-[#121217] border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-xs resize-none"
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="content">Content</Label>
-              <Textarea id="content" value={textContent} onChange={(e) => setTextContent(e.target.value)} rows={8} placeholder="Paste your text here…" />
-            </div>
-            <Button onClick={createTextDoc} disabled={!textContent.trim() || submitting} className="w-full">
-              {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Create
+            <Button 
+              onClick={createTextDoc} 
+              disabled={!textContent.trim() || submitting} 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-colors"
+            >
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Saving notes...
+                </span>
+              ) : (
+                <span>Compile Text Workspace</span>
+              )}
             </Button>
           </TabsContent>
         </Tabs>
