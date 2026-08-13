@@ -5,14 +5,36 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/features/auth/context/AuthContext";
 import RequireAuth from "@/features/auth/components/RequireAuth";
-import Index from "./pages/Index";
-import Auth from "@/features/auth/pages/Auth";
-import AppHome from "@/features/documents/pages/AppHome";
-import AppEmpty from "@/features/documents/pages/AppEmpty";
-import DocumentWorkspace from "@/features/documents/pages/DocumentWorkspace";
-import NotFound from "./pages/NotFound";
+import { Suspense, lazy } from "react";
+import { Loader2 } from "lucide-react";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
-const queryClient = new QueryClient();
+// Route-level splitting: the marketing page, the workspace, and the PDF/DOCX
+// extractors no longer all ship in the first-load bundle.
+const Index = lazy(() => import("./pages/Index"));
+const Auth = lazy(() => import("@/features/auth/pages/Auth"));
+const AppHome = lazy(() => import("@/features/documents/pages/AppHome"));
+const AppEmpty = lazy(() => import("@/features/documents/pages/AppEmpty"));
+const DocumentWorkspace = lazy(() => import("@/features/documents/pages/DocumentWorkspace"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+    </div>
+  );
+}
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -21,22 +43,26 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route
-              path="/app"
-              element={
-                <RequireAuth>
-                  <AppHome />
-                </RequireAuth>
-              }
-            >
-              <Route index element={<AppEmpty />} />
-              <Route path="doc/:docId" element={<DocumentWorkspace />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route
+                path="/app"
+                element={
+                  <RequireAuth>
+                    <AppHome />
+                  </RequireAuth>
+                }
+              >
+                <Route index element={<AppEmpty />} />
+                <Route path="doc/:docId" element={<DocumentWorkspace />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

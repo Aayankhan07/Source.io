@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Keyboard, CheckCircle } from "lucide-react";
-import type { FlashcardRow } from "@/features/documents/store/workspace";
+import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Keyboard, CheckCircle, Layers } from "lucide-react";
+import type { FlashcardRow } from "@/features/documents/types";
 import { useToast } from "@/hooks/use-toast";
 
 function shuffleArr<T>(arr: T[]): T[] {
@@ -27,6 +27,17 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
   const total = ordered.length;
   const card = ordered[idx];
 
+  // `order` is seeded once by useState, but `cards` is replaced in place when the
+  // deck is regenerated. Re-seed it so indices never point past the new array —
+  // otherwise `card` becomes undefined and the deck renders nothing.
+  const cardIds = cards.map((c) => c.id).join(",");
+  useEffect(() => {
+    setOrder(cards.map((_, i) => i));
+    setIdx(0);
+    setFlipped(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardIds]);
+
   const go = useCallback((delta: number) => {
     setFlipped(false);
     setIdx((i) => Math.max(0, Math.min(total - 1, i + delta)));
@@ -48,20 +59,28 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
     }
   }, [card, idx, total, go, toast]);
 
-  // Keyboard Shortcuts Listener
+  // Keyboard shortcuts, scoped to the deck.
+  //
+  // This used to listen on `window` and preventDefault() Space unconditionally,
+  // which stopped Space from activating any focused button or link anywhere on
+  // the page while a deck was mounted.
+  const deckRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore when typing in inputs/textareas
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
+      const active = document.activeElement;
+      if (active?.tagName === "INPUT" || active?.tagName === "TEXTAREA") return;
+
+      // Only claim keys while the user is actually working in the deck.
+      const deck = deckRef.current;
+      if (!deck || !active || !deck.contains(active)) return;
 
       if (e.code === "Space") {
+        // The card handles Space through its own onKeyDown when focused, and
+        // buttons activate on Space natively — don't double-fire either.
+        if (active === cardRef.current || active.tagName === "BUTTON") return;
         e.preventDefault();
-        setFlipped(f => !f);
+        setFlipped((f) => !f);
       } else if (e.code === "ArrowLeft") {
         e.preventDefault();
         go(-1);
@@ -80,18 +99,28 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [flipped, go, rate]);
 
-  if (!card) return null;
+  if (!card) {
+    return (
+      <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-3">
+        <div className="h-8 w-8 rounded-lg bg-neutral-900 border border-white/5 flex items-center justify-center text-neutral-500 mx-auto">
+          <Layers className="h-4 w-4" />
+        </div>
+        <h3 className="font-bold text-white font-display text-sm">No cards to show</h3>
+        <p className="text-sm text-neutral-400 leading-relaxed">Regenerate the deck to create a new set of cards.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 animate-fade-in text-left">
+    <div ref={deckRef} className="space-y-6 animate-fade-in text-left">
       {/* Action Header controls */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs border-white/10 text-white bg-white/5 font-mono">
             {idx + 1} / {total}
           </Badge>
-          <div className="hidden sm:flex items-center gap-1 text-[10px] text-neutral-500 font-mono">
-            <Keyboard className="h-3.5 w-3.5" /> Space to flip · Arrows to navigate
+          <div className="hidden sm:flex items-center gap-1 text-xs text-neutral-500 font-mono">
+            <Keyboard className="h-3.5 w-3.5" /> Focus the card · Space to flip · Arrows to navigate
           </div>
         </div>
         <div className="flex gap-2">
@@ -118,19 +147,28 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
       <div className="relative w-full h-80 sm:h-80 select-none pb-4">
         {/* Background stack card shadows to simulate deck */}
         {total - idx > 2 && (
-          <div className="absolute inset-x-4 bottom-0 h-72 rounded-xl border border-white/5 bg-[#0f0f13]/40 translate-y-4 scale-95 pointer-events-none transition-transform" />
+          <div className="absolute inset-x-4 bottom-0 h-72 rounded-xl border border-white/5 bg-card/40 translate-y-4 scale-95 pointer-events-none transition-transform" />
         )}
         {total - idx > 1 && (
-          <div className="absolute inset-x-2 bottom-1 h-72 rounded-xl border border-white/5 bg-[#121217]/70 translate-y-2 scale-[0.98] pointer-events-none transition-transform" />
+          <div className="absolute inset-x-2 bottom-1 h-72 rounded-xl border border-white/5 bg-surface-raised/70 translate-y-2 scale-[0.98] pointer-events-none transition-transform" />
         )}
 
         {/* Floating Flip Card */}
         <div
-          className="relative w-full h-72 cursor-pointer"
+          ref={cardRef}
+          className="relative w-full h-72 cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           style={{ perspective: "1200px" }}
           onClick={() => setFlipped((f) => !f)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setFlipped((f) => !f);
+            }
+          }}
           role="button"
-          aria-label="Flip card"
+          tabIndex={0}
+          aria-pressed={flipped}
+          aria-label={flipped ? "Show question" : "Reveal answer"}
         >
           <div
             className="absolute inset-0 transition-transform duration-500"
@@ -141,27 +179,27 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
           >
             {/* Front Question Face */}
             <div
-              className="absolute inset-0 rounded-xl border border-white/10 bg-[#121217] p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-2xl glass-panel relative interactive-card"
+              className="absolute inset-0 rounded-xl border border-white/10 bg-surface-raised p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-2xl glass-panel relative interactive-card"
               style={{ backfaceVisibility: "hidden" }}
             >
-              <Badge variant="secondary" className="mb-4 text-[10px] uppercase tracking-wider font-bold bg-primary/10 text-primary border-primary/20">Question</Badge>
+              <Badge variant="secondary" className="mb-4 text-xs uppercase tracking-wider font-bold bg-primary/10 text-primary border-primary/20">Question</Badge>
               <p className="text-base sm:text-lg font-bold text-white leading-relaxed max-w-lg font-display">{card.front}</p>
               
               {ratings[card.id] && (
-                <div className="absolute top-4 right-4 flex items-center gap-1 text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                <div className="absolute top-4 right-4 flex items-center gap-1 text-xs text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                   <CheckCircle className="h-3 w-3" /> Reviewed
                 </div>
               )}
-              <p className="absolute bottom-4 text-xs text-neutral-500">Tap card or press <code className="bg-[#21212c] px-1 rounded text-neutral-400">Space</code> to reveal answer</p>
+              <p className="absolute bottom-4 text-xs text-neutral-500">Tap card or press <code className="bg-surface-elevated px-1 rounded text-neutral-400">Space</code> to reveal answer</p>
             </div>
 
             {/* Back Answer Face */}
             <div
-              className="absolute inset-0 rounded-xl border border-primary/20 bg-[#121217] p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-2xl glass-panel interactive-card"
+              className="absolute inset-0 rounded-xl border border-primary/20 bg-surface-raised p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-2xl glass-panel interactive-card"
               style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
             >
-              <Badge className="mb-4 text-[10px] uppercase tracking-wider font-bold bg-purple-500/20 text-purple-400 border-purple-500/30">Answer explanation</Badge>
-              <p className="text-sm sm:text-base text-neutral-200 leading-relaxed max-w-lg">{card.back}</p>
+              <Badge className="mb-4 text-xs uppercase tracking-wider font-bold bg-purple-500/20 text-purple-400 border-purple-500/30">Answer explanation</Badge>
+              <p className="text-base sm:text-lg text-neutral-200 leading-relaxed max-w-lg">{card.back}</p>
               <p className="absolute bottom-4 text-xs text-neutral-500">Tap to flip back</p>
             </div>
           </div>
@@ -172,7 +210,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
       <div className="space-y-4">
         {flipped && (
           <div className="glass-panel p-4 rounded-xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in">
-            <span className="text-[11px] text-neutral-400 font-mono">How well did you recall this?</span>
+            <span className="text-xs text-neutral-400 font-mono">How well did you recall this?</span>
             <div className="flex gap-2 w-full sm:w-auto">
               <Button 
                 onClick={(e) => { e.stopPropagation(); rate("again"); }} 

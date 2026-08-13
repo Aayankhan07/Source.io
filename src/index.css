@@ -7,8 +7,11 @@
 /* Source.io — Modern dark (ChatGPT/Linear vibe) */
 
 @layer base {
+  /* The app is dark-only: index.html hard-codes <html class="dark"> and nothing
+     removes it, so the `.dark` block below is what actually renders. This :root
+     block is kept as the shadcn-expected default layer — primitives assume these
+     variables exist — and as the starting point if a light theme is ever added. */
   :root {
-    /* Light fallback (app defaults to dark) */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -29,6 +32,10 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.625rem;
+
+    --surface-sunken: 240 5% 96%;
+    --surface-raised: 0 0% 100%;
+    --surface-elevated: 0 0% 100%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -72,6 +79,13 @@
     --input: 240 5% 14%;
     --ring: 250 95% 76%;
 
+    /* Surface ramp. The app previously hand-rolled 19 near-black hex values across
+       nine files; these are the tiers those values actually clustered into.
+       sunken < background < card < raised < elevated. */
+    --surface-sunken: 240 12% 3%;
+    --surface-raised: 240 11% 8%;
+    --surface-elevated: 240 15% 12%;
+
     --sidebar-background: 240 10% 5.5%;
     --sidebar-foreground: 240 5% 82%;
     --sidebar-primary: 250 95% 76%;
@@ -111,19 +125,26 @@
 }
 
 @layer utilities {
+  /* Keyboard focus ring for hand-rolled interactive elements. The shadcn Button
+     ships its own; raw <button>/<div role="button"> elements need this so keyboard
+     users can see where they are. */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
   /* Premium Glassmorphism & Visual Polish utilities */
   .glass-panel {
-    background: rgba(15, 15, 18, 0.45);
+    background: hsl(var(--card) / 0.45);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid hsl(var(--border) / 0.6);
   }
   
   .glass-panel-hover {
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .glass-panel-hover:hover {
-    background: rgba(15, 15, 18, 0.6);
-    border-color: rgba(250, 180, 255, 0.15);
+    background: hsl(var(--card) / 0.6);
+    border-color: hsl(var(--primary) / 0.2);
     box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5);
   }
 
@@ -144,7 +165,14 @@
     opacity: 0.15;
   }
 
-  /* Custom Markdown Study Note Styling */
+  /* Custom Markdown Study Note Styling.
+     Generated study material is the one place users actually read at length, so it
+     gets Literata — a face built for screen reading — while the surrounding app
+     chrome stays on the UI sans. */
+  .prose-invert-tight {
+    font-family: 'Literata', Georgia, ui-serif, serif;
+    font-optical-sizing: auto;
+  }
   .prose-invert-tight h1 { @apply text-2xl font-bold mt-8 mb-4 text-foreground/95; }
   .prose-invert-tight h2 { @apply text-xl font-bold mt-7 mb-3 text-foreground/90 border-b border-border/40 pb-1.5; }
   .prose-invert-tight h3 { @apply text-lg font-semibold mt-5 mb-2 text-foreground/90; }
@@ -152,7 +180,7 @@
   .prose-invert-tight ul { @apply list-disc pl-6 my-3 space-y-1.5 text-foreground/80; }
   .prose-invert-tight ol { @apply list-decimal pl-6 my-3 space-y-1.5 text-foreground/80; }
   .prose-invert-tight code { @apply px-1.5 py-0.5 rounded font-mono bg-muted/65 border border-border/50 text-primary text-xs; }
-  .prose-invert-tight pre { @apply bg-card/60 border border-border/40 rounded-xl p-4 overflow-x-auto my-4 shadow-inner; }
+  .prose-invert-tight pre { @apply bg-card/60 border border-border/40 rounded-xl p-4 overflow-x-auto my-4 shadow-inner font-mono; }
   .prose-invert-tight pre code { @apply bg-transparent p-0 border-none text-foreground text-xs; }
   .prose-invert-tight table { @apply w-full my-5 border-collapse rounded-lg overflow-hidden border border-border/40; }
   .prose-invert-tight th, .prose-invert-tight td { @apply border-b border-border/40 px-4 py-2.5 text-left text-sm; }
@@ -160,7 +188,7 @@
   .prose-invert-tight td { @apply bg-transparent; }
   .prose-invert-tight strong { @apply text-foreground font-bold; }
   .prose-invert-tight a { @apply text-primary hover:text-primary-glow font-medium underline underline-offset-4 transition-colors; }
-  .prose-invert-tight blockquote { @apply border-l-4 border-primary/60 bg-primary/5 pl-4 py-2 rounded-r-lg italic text-muted-foreground my-4; }
+  .prose-invert-tight blockquote { @apply border-l border-primary/40 bg-primary/5 pl-4 py-2 rounded-r-lg italic text-muted-foreground my-4; }
 
   /* Retro cassette tape mock animation styles for Podcast component */
   .cassette-shell {

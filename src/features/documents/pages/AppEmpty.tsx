@@ -9,12 +9,12 @@ export default function AppEmpty() {
   }>();
 
   return (
-    <div className="h-full flex flex-col bg-[#09090b] relative overflow-hidden">
+    <div className="h-full flex flex-col bg-background relative overflow-hidden">
       {/* Background orbs */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-primary/5 blur-[80px] pointer-events-none" />
 
       {/* Mobile top bar */}
-      <div className="md:hidden flex items-center justify-between border-b border-white/5 bg-[#0b0b0e] px-4 py-3 shrink-0">
+      <div className="md:hidden flex items-center justify-between border-b border-white/5 bg-sidebar px-4 py-3 shrink-0">
         <Button variant="ghost" size="icon" onClick={openMobileNav} aria-label="Open navigation" className="text-neutral-400 hover:text-white">
           <Menu className="h-5 w-5" />
         </Button>
@@ -48,10 +48,11 @@ export default function AppEmpty() {
               desc: "Synthesize notes to compile a simulated audio dialogue summary."
             }
           ].map((item, idx) => (
-            <div 
+            <button
               key={idx}
+              type="button"
               onClick={openUpload}
-              className="glass-panel p-4 rounded-xl border border-white/5 hover:border-primary/30 cursor-pointer transition-all flex gap-3 group"
+              className="glass-panel p-4 rounded-xl border border-white/5 hover:border-primary/30 cursor-pointer transition-all flex gap-3 group text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <div className="h-8 w-8 rounded-lg bg-neutral-900 border border-white/5 flex items-center justify-center text-neutral-400 group-hover:text-primary group-hover:bg-primary/10 transition-colors shrink-0">
                 <item.icon className="h-4 w-4" />
@@ -60,9 +61,9 @@ export default function AppEmpty() {
                 <h4 className="text-xs font-semibold text-white font-display mb-1 flex items-center gap-1">
                   {item.title}
                 </h4>
-                <p className="text-[11px] text-neutral-500 leading-normal">{item.desc}</p>
+                <p className="text-xs text-neutral-500 leading-normal">{item.desc}</p>
               </div>
-            </div>
+            </button>
           ))}
         </div>
 

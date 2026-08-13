@@ -56,8 +56,11 @@ async function consumeSse(body: ReadableStream<Uint8Array>, { onData }: SseHandl
       buf = rest;
       try {
         if (handleLine(line) === "done") { done = true; break; }
-      } catch {
-        // Payload split mid-JSON: put it back and wait for the next read.
+      } catch (e: unknown) {
+        // Only a truncated JSON payload is recoverable — put it back and wait for
+        // the next read. Anything else is a real error thrown by `onData` and must
+        // propagate, or the stream stalls silently with no feedback to the user.
+        if (!(e instanceof SyntaxError)) throw e;
         buf = line + "\n" + rest;
         break;
       }
@@ -69,7 +72,11 @@ async function consumeSse(body: ReadableStream<Uint8Array>, { onData }: SseHandl
     for (const line of buf.split("\n")) {
       try {
         if (handleLine(line) === "done") break;
-      } catch { /* incomplete trailing payload — nothing more is coming */ }
+      } catch (e: unknown) {
+        // A trailing payload really can be incomplete — nothing more is coming,
+        // so drop it. Errors from `onData` still propagate.
+        if (!(e instanceof SyntaxError)) throw e;
+      }
     }
   }
 }

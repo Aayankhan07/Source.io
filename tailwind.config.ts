@@ -8,6 +8,19 @@ export default {
   theme: {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
     extend: {
+      fontFamily: {
+        // `sans` and `display` mirror the faces index.css already applies to body
+        // and headings; declaring them here makes `font-sans`/`font-display` real
+        // utilities instead of relying on bare CSS selectors.
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        // Fira Code is loaded in index.html but was never mapped, so every
+        // `font-mono` fell back to the browser default.
+        mono: ["Fira Code", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+        // Long-form reading face for generated study material. Literata carries an
+        // optical-size axis, so it holds up from body copy to headings.
+        reading: ["Literata", "Georgia", "ui-serif", "serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -27,6 +40,11 @@ export default {
         card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
+        surface: {
+          sunken: "hsl(var(--surface-sunken))",
+          raised: "hsl(var(--surface-raised))",
+          elevated: "hsl(var(--surface-elevated))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

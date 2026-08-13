@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import type { QuizRow } from "@/features/documents/store/workspace";
+import type { QuizRow } from "@/features/documents/types";
 
 type Answer = string;
 
@@ -41,11 +41,20 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
   }, [answers, quiz.questions]);
   
   const allAnswered = quiz.questions.every((q) => (answers[q.id] ?? "").trim().length > 0);
-  const percentage = Math.round((score / total) * 100);
+  const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
 
   const submit = async () => {
     setSubmitted(true);
-    if (!user) return;
+    if (!user) {
+      // Scored locally, but there is no session to attribute the attempt to.
+      // Say so rather than letting the completed UI imply it was saved.
+      toast({
+        title: "Attempt not saved",
+        description: "You're signed out, so this result wasn't recorded.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSaving(true);
     try {
       const payload = quiz.questions.map((q) => ({
@@ -87,18 +96,18 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
               <Award className="h-8 w-8" />
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-primary font-mono">Quiz Completed</span>
+              <span className="text-xs uppercase font-bold tracking-widest text-primary font-mono">Quiz Completed</span>
               <h3 className="text-xl font-bold text-white font-display">
                 {percentage === 100 ? "Perfect Score!" : percentage >= 70 ? "Excellent Work!" : "Keep practicing!"}
               </h3>
-              <p className="text-xs text-neutral-400">
+              <p className="text-sm text-neutral-400">
                 You correctly answered <span className="font-semibold text-white">{score}</span> out of <span className="font-semibold text-white">{total}</span> questions ({percentage}%).
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-end">
-            <div className="h-12 w-12 rounded-full border-2 border-white/5 bg-[#171720] flex items-center justify-center font-mono text-sm font-bold text-white">
+            <div className="h-12 w-12 rounded-full border-2 border-white/5 bg-surface-elevated flex items-center justify-center font-mono text-sm font-bold text-white">
               {percentage}%
             </div>
             <Button onClick={reset} className="bg-white hover:bg-neutral-200 text-black font-semibold text-xs py-2 px-4 rounded-lg flex items-center gap-1.5 shrink-0">
@@ -125,12 +134,12 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
             >
               {/* Question metadata header */}
               <div className="flex items-start gap-3 mb-4">
-                <Badge variant="outline" className="mt-0.5 text-[10px] font-mono border-white/10 text-white bg-white/5 shrink-0">
+                <Badge variant="outline" className="mt-0.5 text-xs font-mono border-white/10 text-white bg-white/5 shrink-0">
                   {String(i + 1).padStart(2, '0')}
                 </Badge>
                 <div className="flex-1">
                   <div className="font-bold text-white leading-relaxed text-sm font-display">{q.question}</div>
-                  <div className="text-[9px] uppercase tracking-wider text-neutral-500 font-mono mt-1">
+                  <div className="text-xs uppercase tracking-wider text-neutral-500 font-mono mt-1">
                     {q.type === "mcq" ? "Multiple choice question" : q.type === "true_false" ? "True / False" : "Short answer"}
                   </div>
                 </div>
@@ -154,7 +163,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         onClick={() => !submitted && setAnswers((a) => ({ ...a, [q.id]: c }))}
                         disabled={submitted}
                         className={cn(
-                          "w-full text-left p-3.5 rounded-xl border text-xs transition-all relative flex items-center justify-between font-medium",
+                          "w-full text-left p-3.5 rounded-xl border text-sm transition-all relative flex items-center justify-between font-medium focus-ring",
                           !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-white/5 text-neutral-300 hover:text-white",
                           selected && !submitted && "border-primary bg-primary/10 text-white",
                           submitted && isAnswer && "border-emerald-500/50 bg-emerald-500/10 text-emerald-300 font-semibold",
@@ -184,7 +193,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         onClick={() => !submitted && setAnswers((a) => ({ ...a, [q.id]: c }))}
                         disabled={submitted}
                         className={cn(
-                          "p-3 rounded-xl border text-xs font-semibold text-center transition-all flex items-center justify-center gap-1.5",
+                          "p-3 rounded-xl border text-sm font-semibold text-center transition-all flex items-center justify-center gap-1.5 focus-ring",
                           !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-white/5 text-neutral-300 hover:text-white",
                           selected && !submitted && "border-primary bg-primary/10 text-white",
                           submitted && isAnswer && "border-emerald-500/50 bg-emerald-500/10 text-emerald-300",
@@ -211,14 +220,14 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                     onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
                     disabled={submitted}
                     placeholder="Type your answer explanation here..."
-                    className="bg-[#121217] border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-xs"
+                    className="bg-surface-raised border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
                   />
                 </div>
               )}
 
               {/* Submitted Feedback details */}
               {submitted && (
-                <div className="mt-4 pt-3 border-t border-white/5 text-xs space-y-2 animate-fade-in">
+                <div className="mt-4 pt-3 border-t border-white/5 text-sm space-y-2 animate-fade-in">
                   {!correct && (
                     <div className="flex items-center gap-1.5 text-neutral-300 bg-white/5 p-2.5 rounded-lg border border-white/5">
                       <span className="text-neutral-500">Correct Answer:</span>
@@ -226,7 +235,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                     </div>
                   )}
                   {q.explanation && (
-                    <div className="text-neutral-400 bg-neutral-900/50 p-3 rounded-lg border border-white/5 leading-relaxed text-[11px]">
+                    <div className="text-neutral-400 bg-neutral-900/50 p-3 rounded-lg border border-white/5 leading-relaxed text-sm">
                       <span className="font-bold text-white block mb-1">Explanation:</span>
                       {q.explanation}
                     </div>
@@ -241,12 +250,12 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
       {/* Floating Action Submit footer bar */}
       {!submitted && (
         <div className="sticky bottom-0 bg-background/80 backdrop-blur py-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
-          <div className="text-[10px] text-neutral-500 font-mono">
+          <div className="text-xs text-neutral-500 font-mono">
             {Object.keys(answers).length} of {total} answered.
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             {!allAnswered && (
-              <span className="text-[10px] text-neutral-500">Answer all questions to submit</span>
+              <span className="text-xs text-neutral-500">Answer all questions to submit</span>
             )}
             <Button 
               onClick={submit} 
@@ -258,7 +267,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                   <Loader2 className="h-3.5 w-3.5 animate-spin" /> Recording...
                 </span>
               ) : (
-                <span>Submit Assessment</span>
+                <span>Submit answers</span>
               )}
             </Button>
           </div>

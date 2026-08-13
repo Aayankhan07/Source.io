@@ -1,5 +1,10 @@
-import { create } from "zustand";
-
+/**
+ * Row types for the workspace domain.
+ *
+ * Server state lives in the TanStack Query cache (see `src/lib/queryKeys.ts`),
+ * not in a store — keeping a second copy here is what previously let failed
+ * reads render as empty states.
+ */
 export type DocumentRow = {
   id: string;
   title: string;
@@ -24,63 +29,3 @@ export type QuizQuestionRow = {
 export type QuizRow = { id: string; document_id: string; title: string; questions: QuizQuestionRow[] };
 export type PodcastRow = { id: string; document_id: string; script: string | null; audio_url: string | null; status: string };
 
-type WorkspaceState = {
-  documents: DocumentRow[];
-  setDocuments: (d: DocumentRow[]) => void;
-  upsertDocument: (d: DocumentRow) => void;
-  removeDocument: (id: string) => void;
-
-  activeDocumentId: string | null;
-  setActiveDocumentId: (id: string | null) => void;
-
-  // Per-document cached assets
-  notes: Record<string, NoteRow | null>;
-  flashcards: Record<string, FlashcardRow[]>;
-  quiz: Record<string, QuizRow | null>;
-  podcast: Record<string, PodcastRow | null>;
-
-  setNote: (docId: string, n: NoteRow | null) => void;
-  setFlashcards: (docId: string, f: FlashcardRow[]) => void;
-  setQuiz: (docId: string, q: QuizRow | null) => void;
-  setPodcast: (docId: string, p: PodcastRow | null) => void;
-
-  reset: () => void;
-};
-
-export const useWorkspace = create<WorkspaceState>((set) => ({
-  documents: [],
-  setDocuments: (documents) => set({ documents }),
-  upsertDocument: (d) =>
-    set((s) => {
-      const idx = s.documents.findIndex((x) => x.id === d.id);
-      if (idx === -1) return { documents: [d, ...s.documents] };
-      const next = [...s.documents];
-      next[idx] = d;
-      return { documents: next };
-    }),
-  removeDocument: (id) =>
-    set((s) => ({ documents: s.documents.filter((d) => d.id !== id) })),
-
-  activeDocumentId: null,
-  setActiveDocumentId: (activeDocumentId) => set({ activeDocumentId }),
-
-  notes: {},
-  flashcards: {},
-  quiz: {},
-  podcast: {},
-
-  setNote: (docId, n) => set((s) => ({ notes: { ...s.notes, [docId]: n } })),
-  setFlashcards: (docId, f) => set((s) => ({ flashcards: { ...s.flashcards, [docId]: f } })),
-  setQuiz: (docId, q) => set((s) => ({ quiz: { ...s.quiz, [docId]: q } })),
-  setPodcast: (docId, p) => set((s) => ({ podcast: { ...s.podcast, [docId]: p } })),
-
-  reset: () =>
-    set({
-      documents: [],
-      activeDocumentId: null,
-      notes: {},
-      flashcards: {},
-      quiz: {},
-      podcast: {},
-    }),
-}));

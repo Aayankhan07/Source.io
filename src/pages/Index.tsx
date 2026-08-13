@@ -70,42 +70,44 @@ export default function Index() {
 
       setChatMessages(prev => [...prev, { role: "assistant", content: "" }]);
       
+      // Reveal a few characters per tick and replace the message object rather
+      // than mutating it in place — mutation defeated referential equality and
+      // re-rendered the list ~66x/sec.
       let charIdx = 0;
+      const STEP = 3;
       const typeInterval = setInterval(() => {
-        setChatMessages(prev => {
-          const next = [...prev];
-          const lastMsg = next[next.length - 1];
-          if (lastMsg && lastMsg.role === "assistant") {
-            lastMsg.content = fullResponse.slice(0, charIdx + 1);
-          }
-          return next;
-        });
-        charIdx++;
+        charIdx = Math.min(charIdx + STEP, fullResponse.length);
+        const slice = fullResponse.slice(0, charIdx);
+        setChatMessages((prev) =>
+          prev.map((m, i) =>
+            i === prev.length - 1 && m.role === "assistant" ? { ...m, content: slice } : m,
+          ),
+        );
         if (charIdx >= fullResponse.length) {
           clearInterval(typeInterval);
           setChatTyping(false);
         }
-      }, 15);
+      }, 30);
     }, 800);
   };
 
   return (
-    <main className="min-h-screen bg-[#09090b] relative overflow-hidden text-foreground selection:bg-primary/20 selection:text-primary">
+    <main className="min-h-screen bg-background relative overflow-hidden text-foreground selection:bg-primary/20 selection:text-primary">
       {/* Background Orbs */}
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#a855f7]/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary-glow/10 blur-[120px] pointer-events-none" />
 
       {/* Grid Pattern overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
       {/* Header */}
-      <header className="border-b border-white/5 sticky top-0 bg-[#09090b]/80 backdrop-blur-md z-50">
+      <header className="border-b border-white/5 sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 group-hover:border-primary/50 transition-colors bg-card">
               <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
             </div>
-            <span className="font-semibold tracking-tight text-lg font-display bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">Source.io</span>
+            <span className="font-semibold tracking-tight text-lg font-display text-foreground">Source.io</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm text-neutral-400">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
@@ -168,7 +170,7 @@ export default function Index() {
         {/* Live Workspace Mock Dashboard */}
         <div className="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col h-[520px] max-h-[520px]">
           {/* Mock Tab Header */}
-          <div className="border-b border-white/5 bg-[#0f0f12] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+          <div className="border-b border-white/5 bg-card px-4 py-3 flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-red-500/80" />
               <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
@@ -177,7 +179,7 @@ export default function Index() {
             </div>
             
             {/* Horizontal simulated tabs bar */}
-            <div className="flex items-center gap-1 bg-[#1a1a24] p-0.5 rounded-lg border border-white/5">
+            <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded-lg border border-white/5">
               {([
                 { id: "notes", label: "Study Notes", icon: FileText },
                 { id: "flashcards", label: "Flashcards", icon: Layers },
@@ -191,7 +193,7 @@ export default function Index() {
                   <button
                     key={t.id}
                     onClick={() => setActiveSimTab(t.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all focus-ring ${
                       active 
                         ? "bg-primary text-primary-foreground shadow-sm font-semibold" 
                         : "text-neutral-400 hover:text-white hover:bg-white/5"
@@ -206,7 +208,7 @@ export default function Index() {
           </div>
 
           {/* Active Content Area */}
-          <div className="flex-1 overflow-y-auto p-6 bg-[#09090b]/40">
+          <div className="flex-1 overflow-y-auto p-6 bg-background/40">
             {/* Notes Tab Content */}
             {activeSimTab === "notes" && (
               <div className="max-w-3xl mx-auto space-y-4 animate-fade-in text-left">
@@ -214,7 +216,7 @@ export default function Index() {
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <FileText className="h-4 w-4 text-primary" /> Introduction to Quantum Computing
                   </h3>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-widest">Source material notes</span>
+                  <span className="text-xs text-neutral-500 uppercase tracking-widest">Source material notes</span>
                 </div>
                 <div className="prose-invert-tight">
                   <MarkdownView>
@@ -230,7 +232,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
 ### 2. Quantum vs. Classical State Comparison
 | Concept | Classical Computers | Quantum Computers |
 | :--- | :--- | :--- |
-| Core Unit | Bits (0 or 1) | Qubits (|0⟩, |1⟩, or both) |
+| Core Unit | Bits (0 or 1) | Qubits (\\|0⟩, \\|1⟩, or both) |
 | Speed Scaling | Linear | Exponential (for select problems) |
 | Entanglement | Impossible | Supported natively |
 
@@ -248,7 +250,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                   <div className="flex gap-2">
                     <button 
                       onClick={() => { setCardIdx(0); setCardFlipped(false); }}
-                      className="px-2 py-1 rounded bg-white/5 border border-white/5 text-neutral-300 hover:text-white text-[11px]"
+                      className="px-2 py-1 rounded bg-white/5 border border-white/5 text-neutral-300 hover:text-white text-xs focus-ring"
                     >
                       Reset deck
                     </button>
@@ -256,10 +258,20 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                 </div>
 
                 {/* Flip Card Design */}
-                <div 
-                  className="relative w-full h-56 cursor-pointer select-none"
+                <div
+                  className="relative w-full h-56 cursor-pointer select-none rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   style={{ perspective: "1000px" }}
                   onClick={() => setCardFlipped(!cardFlipped)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setCardFlipped((f) => !f);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={cardFlipped}
+                  aria-label={cardFlipped ? "Show question" : "Reveal answer"}
                 >
                   <div
                     className="absolute inset-0 transition-transform duration-500"
@@ -273,7 +285,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                       className="absolute inset-0 rounded-xl border border-white/10 bg-card p-6 flex flex-col items-center justify-center text-center shadow-md"
                       style={{ backfaceVisibility: "hidden" }}
                     >
-                      <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] uppercase font-bold tracking-widest mb-4">Question</span>
+                      <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs uppercase font-bold tracking-widest mb-4">Question</span>
                       <p className="text-base sm:text-lg font-semibold text-white leading-relaxed">{simFlashcards[cardIdx].front}</p>
                       <p className="absolute bottom-4 text-xs text-neutral-500">Tap to flip & reveal answer</p>
                     </div>
@@ -283,7 +295,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                       className="absolute inset-0 rounded-xl border border-primary/20 bg-card p-6 flex flex-col items-center justify-center text-center shadow-md"
                       style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                     >
-                      <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 text-[10px] uppercase font-bold tracking-widest mb-4">Answer explanation</span>
+                      <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 text-xs uppercase font-bold tracking-widest mb-4">Answer explanation</span>
                       <p className="text-sm sm:text-base text-neutral-200 leading-relaxed">{simFlashcards[cardIdx].back}</p>
                       <p className="absolute bottom-4 text-xs text-neutral-500">Tap to flip back</p>
                     </div>
@@ -302,7 +314,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                   </Button>
                   <div className="flex gap-1.5">
                     {["Again", "Hard", "Good", "Easy"].map((label) => (
-                      <span key={label} className="text-[10px] px-2 py-1 rounded bg-[#1e1e24] border border-white/5 text-neutral-400 font-mono">
+                      <span key={label} className="text-xs px-2 py-1 rounded bg-surface-elevated border border-white/5 text-neutral-400 font-mono">
                         {label}
                       </span>
                     ))}
@@ -324,14 +336,14 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
               <div className="max-w-xl mx-auto space-y-6 animate-fade-in text-left">
                 <div className="border border-white/5 bg-card/40 rounded-xl p-5 space-y-4">
                   <div className="flex items-start gap-2">
-                    <span className="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-[10px] font-mono mt-0.5">Q1</span>
+                    <span className="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-xs font-mono mt-0.5">Q1</span>
                     <h4 className="text-sm font-semibold text-white">Which quantum state decay process is caused by interaction with environmental noise?</h4>
                   </div>
 
                   <div className="space-y-2">
                     {[
                       { idx: 0, text: "Quantum Entanglement" },
-                      { idx: 1, text: "Quantum Decoherence (Correct Option)" },
+                      { idx: 1, text: "Quantum Decoherence" },
                       { idx: 2, text: "Qubit Phase Transformation" },
                       { idx: 3, text: "Superposition Inversion" }
                     ].map((opt) => {
@@ -365,7 +377,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span className="text-[10px] text-neutral-500">Select one option to submit</span>
+                    <span className="text-xs text-neutral-500">Select one option to submit</span>
                     {quizSubmitted ? (
                       <Button 
                         onClick={() => { setSelectedChoice(null); setQuizSubmitted(false); }}
@@ -387,7 +399,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                   </div>
 
                   {quizSubmitted && (
-                    <div className="text-[11px] text-neutral-400 leading-relaxed bg-[#0f0f12] p-3 rounded border border-white/5">
+                    <div className="text-xs text-neutral-400 leading-relaxed bg-card p-3 rounded border border-white/5">
                       <strong className="text-white font-medium">Explanation:</strong> Decoherence represents the loss of quantum state in a qubit due to interaction with external interference like heat or electromagnetic waves.
                     </div>
                   )}
@@ -406,7 +418,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                       <div className={`cassette-spindle ${podcastPlaying ? "spindle-spinning-reverse" : ""}`} />
                     </div>
                   </div>
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] font-mono text-neutral-500 uppercase tracking-widest">
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs font-mono text-neutral-500 uppercase tracking-widest">
                     Quantum recap
                   </div>
                 </div>
@@ -419,9 +431,11 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                 {/* Podcast Progress controls */}
                 <div className="w-full space-y-4">
                   <div className="flex items-center justify-between gap-4">
-                    <button 
+                    <button
                       onClick={() => setPodcastPlaying(!podcastPlaying)}
-                      className="h-10 w-10 rounded-full bg-primary hover:bg-primary-glow text-primary-foreground flex items-center justify-center transition-all shadow-glow shrink-0"
+                      aria-label={podcastPlaying ? "Pause preview" : "Play preview"}
+                      aria-pressed={podcastPlaying}
+                      className="h-10 w-10 rounded-full bg-primary hover:bg-primary-glow text-primary-foreground flex items-center justify-center transition-all shadow-glow shrink-0 focus-ring"
                     >
                       {podcastPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
                     </button>
@@ -429,7 +443,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                       <div className="h-1.5 w-full bg-neutral-800 rounded-full overflow-hidden">
                         <div className="h-full bg-primary transition-all duration-300" style={{ width: `${audioProgress}%` }} />
                       </div>
-                      <div className="flex justify-between text-[10px] text-neutral-500 font-mono">
+                      <div className="flex justify-between text-xs text-neutral-500 font-mono">
                         <span>0:42</span>
                         <span>2:15</span>
                       </div>
@@ -437,7 +451,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                   </div>
 
                   {/* Simulated Script extract */}
-                  <div className="text-[11px] text-neutral-400 bg-[#0f0f12] border border-white/5 p-3 rounded text-left space-y-1 max-h-24 overflow-y-auto font-mono">
+                  <div className="text-xs text-neutral-400 bg-card border border-white/5 p-3 rounded text-left space-y-1 max-h-24 overflow-y-auto font-mono">
                     <div className="text-white font-semibold">Host A (AI):</div>
                     <div className="mb-2">So, superposition is basically a qubit spinning in place, representing multiple states at once?</div>
                     <div className="text-white font-semibold">Host B (AI):</div>
@@ -458,14 +472,14 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                       <div key={idx} className={`flex ${isAi ? "justify-start" : "justify-end"}`}>
                         <div className={`max-w-[85%] rounded-xl px-3.5 py-2 text-xs leading-relaxed ${
                           isAi 
-                            ? "bg-[#111116] border border-white/5 text-neutral-200" 
+                            ? "bg-surface-raised border border-white/5 text-neutral-200" 
                             : "bg-primary text-primary-foreground font-medium"
                         }`}>
                           {m.content === "" ? (
-                            <div className="flex items-center gap-1.5 text-neutral-500 font-mono text-[10px]">
-                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+                            <div className="flex items-center gap-1.5 text-neutral-500 font-mono text-xs">
+                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-500 animate-pulse-slow" style={{ animationDelay: "0ms" }} />
+                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-500 animate-pulse-slow" style={{ animationDelay: "200ms" }} />
+                              <span className="h-1.5 w-1.5 rounded-full bg-neutral-500 animate-pulse-slow" style={{ animationDelay: "400ms" }} />
                             </div>
                           ) : m.content}
                         </div>
@@ -474,7 +488,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                   })}
                   {chatTyping && chatMessages[chatMessages.length - 1]?.content === "" && (
                     <div className="flex justify-start">
-                      <div className="bg-[#111116] border border-white/5 rounded-xl px-3 py-2 text-neutral-500 text-[10px]">
+                      <div className="bg-surface-raised border border-white/5 rounded-xl px-3 py-2 text-neutral-500 text-xs">
                         Assistant is typing…
                       </div>
                     </div>
@@ -487,14 +501,14 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                     <button 
                       onClick={() => handleSendChat("What is quantum superposition?")}
                       disabled={chatTyping}
-                      className="text-[10px] px-2 py-1 rounded bg-white/5 border border-white/5 text-neutral-400 hover:text-white hover:border-white/20 transition-all font-mono"
+                      className="text-xs px-2 py-1 rounded bg-white/5 border border-white/5 text-neutral-400 hover:text-white hover:border-white/20 transition-all font-mono focus-ring"
                     >
                       What is superposition?
                     </button>
                     <button 
                       onClick={() => handleSendChat("Explain quantum entanglement in simple terms.")}
                       disabled={chatTyping}
-                      className="text-[10px] px-2 py-1 rounded bg-white/5 border border-white/5 text-neutral-400 hover:text-white hover:border-white/20 transition-all font-mono"
+                      className="text-xs px-2 py-1 rounded bg-white/5 border border-white/5 text-neutral-400 hover:text-white hover:border-white/20 transition-all font-mono focus-ring"
                     >
                       Explain entanglement
                     </button>
@@ -508,7 +522,8 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
                       onKeyDown={(e) => e.key === "Enter" && handleSendChat(chatInput)}
                       placeholder="Ask anything about the material..."
                       disabled={chatTyping}
-                      className="flex-1 bg-[#121217] border border-white/5 rounded-lg px-3 py-2 text-xs text-white placeholder-neutral-600 focus:outline-none focus:border-primary/50 transition-colors"
+                      aria-label="Ask a question about the material"
+                      className="flex-1 bg-surface-raised border border-white/5 rounded-lg px-3 py-2 text-xs text-white placeholder-neutral-600 focus:border-primary/50 transition-colors focus-ring"
                     />
                     <Button 
                       onClick={() => handleSendChat(chatInput)}
@@ -550,7 +565,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
             { 
               icon: ListChecks, 
               title: "Comprehensive Quizzes", 
-              desc: "Multi-type queries (MCQs, True/False, short answers) complete with instant validation and detailed explanations." 
+              desc: "Multiple choice, true/false and short-answer questions complete with instant validation and detailed explanations." 
             },
             { 
               icon: Headphones, 
@@ -617,18 +632,18 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-12 relative z-10 text-center text-xs text-neutral-500 bg-[#09090b]">
+      <footer className="border-t border-white/5 py-12 relative z-10 text-center text-xs text-neutral-500 bg-background">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src="/favicon.png" className="h-5 w-5 object-contain" alt="Logo" />
             <span className="font-semibold text-neutral-400 font-display">Source.io</span>
           </div>
           <div>
-            Built with React, Supabase & Gemini · Dark mode default
+            Built with React, Supabase & Groq
           </div>
           <div className="flex gap-4">
-            <a href="#" className="hover:underline hover:text-neutral-300">Privacy Policy</a>
-            <a href="#" className="hover:underline hover:text-neutral-300">Terms of Use</a>
+            <span className="text-neutral-600">Privacy Policy</span>
+            <span className="text-neutral-600">Terms of Use</span>
           </div>
         </div>
       </footer>

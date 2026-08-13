@@ -1,8 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useOutletContext } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useWorkspace, DocumentRow, FlashcardRow, NoteRow, PodcastRow, QuizQuestionRow, QuizRow } from "@/features/documents/store/workspace";
+import { DocumentRow, FlashcardRow, NoteRow, PodcastRow, QuizQuestionRow, QuizRow } from "@/features/documents/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +20,14 @@ import FlashcardsDeck from "@/features/flashcards/components/FlashcardsDeck";
 import QuizPlayer from "@/features/quiz/components/QuizPlayer";
 import ChatPanel from "@/features/chat/components/ChatPanel";
 import { cn, errorMessage } from "@/lib/utils";
+import { queryKeys } from "@/lib/queryKeys";
+
+type DocumentAssets = {
+  note: NoteRow | null;
+  cards: FlashcardRow[];
+  quiz: QuizRow | null;
+  podcast: PodcastRow | null;
+};
 
 export default function DocumentWorkspace() {
   const { docId } = useParams();
@@ -22,108 +35,150 @@ export default function DocumentWorkspace() {
   const { user } = useAuth();
   const { toast } = useToast();
   const outlet = useOutletContext<{ openMobileNav?: () => void }>();
-  const {
-    documents, upsertDocument, removeDocument,
-    notes, flashcards, quiz, podcast,
-    setNote, setFlashcards, setQuiz, setPodcast,
-  } = useWorkspace();
+  const queryClient = useQueryClient();
 
-  const doc = useMemo<DocumentRow | undefined>(
-    () => documents.find((d) => d.id === docId),
-    [documents, docId]
-  );
-  const [loading, setLoading] = useState(true);
   const [streaming, setStreaming] = useState(false);
   const autoStartedRef = useRef<string | null>(null);
 
+  // Notes arrive token-by-token. Holding the in-flight draft locally keeps the
+  // query cache authoritative for what is actually persisted.
+  const [draftMarkdown, setDraftMarkdown] = useState<string | null>(null);
+  const pendingNotesRef = useRef("");
+  const notesFlushRef = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (notesFlushRef.current !== null) cancelAnimationFrame(notesFlushRef.current);
+  }, []);
+
   // Custom audio cassette spinning state
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
-  useEffect(() => {
-    if (!docId || !user) return;
-    let mounted = true;
-    setLoading(true);
-
-    (async () => {
-      const { data: docRow } = await supabase
+  const docQuery = useQuery({
+    queryKey: queryKeys.document(docId ?? ""),
+    enabled: !!docId && !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from("documents")
         .select("id,title,source_type,status,error_code,created_at")
-        .eq("id", docId)
+        .eq("id", docId!)
         .maybeSingle();
-      if (docRow && mounted) upsertDocument(docRow as DocumentRow);
+      if (error) throw error;
+      return (data as DocumentRow) ?? null;
+    },
+  });
 
+  const assetsQuery = useQuery({
+    queryKey: queryKeys.assets(docId ?? ""),
+    enabled: !!docId && !!user,
+    queryFn: async (): Promise<DocumentAssets> => {
       const [n, f, q, p] = await Promise.all([
-        supabase.from("notes").select("id,document_id,markdown").eq("document_id", docId).maybeSingle(),
-        supabase.from("flashcards").select("id,document_id,front,back,order_index").eq("document_id", docId).order("order_index"),
-        supabase.from("quizzes").select("id,document_id,title").eq("document_id", docId).maybeSingle(),
-        supabase.from("podcasts").select("id,document_id,script,audio_url,status").eq("document_id", docId).maybeSingle(),
+        supabase.from("notes").select("id,document_id,markdown").eq("document_id", docId!).maybeSingle(),
+        supabase.from("flashcards").select("id,document_id,front,back,order_index").eq("document_id", docId!).order("order_index"),
+        supabase.from("quizzes").select("id,document_id,title").eq("document_id", docId!).maybeSingle(),
+        supabase.from("podcasts").select("id,document_id,script,audio_url,status").eq("document_id", docId!).maybeSingle(),
       ]);
+      // Supabase resolves rather than throws, so a dropped error here would render
+      // as "no content yet" and invite the user to overwrite work that exists.
+      for (const r of [n, f, q, p]) {
+        if (r.error) throw r.error;
+      }
 
-      if (!mounted) return;
-      setNote(docId, (n.data as NoteRow) ?? null);
-      setFlashcards(docId, (f.data as FlashcardRow[]) ?? []);
+      let quiz: QuizRow | null = null;
       if (q.data) {
-        const qq = await supabase
+        const { data: questions, error: qErr } = await supabase
           .from("quiz_questions")
           .select("id,quiz_id,question,type,choices,correct,explanation,order_index")
           .eq("quiz_id", q.data.id)
           .order("order_index");
-        setQuiz(docId, { ...(q.data as Omit<QuizRow, "questions">), questions: (qq.data ?? []) as QuizQuestionRow[] });
-      } else {
-        setQuiz(docId, null);
+        if (qErr) throw qErr;
+        quiz = { ...(q.data as Omit<QuizRow, "questions">), questions: (questions ?? []) as QuizQuestionRow[] };
       }
-      setPodcast(docId, (p.data as PodcastRow) ?? null);
-      setLoading(false);
-    })();
 
-    // Realtime: document status updates
+      return {
+        note: (n.data as NoteRow) ?? null,
+        cards: (f.data as FlashcardRow[]) ?? [],
+        quiz,
+        podcast: (p.data as PodcastRow) ?? null,
+      };
+    },
+  });
+
+  // Realtime: document status and podcast progress write into the same cache the
+  // queries above own, so there is never a second copy to fall out of sync.
+  useEffect(() => {
+    if (!docId || !user) return;
+
     const channel = supabase
       .channel(`doc-${docId}`)
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "documents", filter: `id=eq.${docId}` },
-        (payload) => upsertDocument(payload.new as DocumentRow),
+        (payload) => {
+          queryClient.setQueryData(queryKeys.document(docId), payload.new as DocumentRow);
+          queryClient.invalidateQueries({ queryKey: queryKeys.documents });
+        },
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "podcasts", filter: `document_id=eq.${docId}` },
-        (payload) => setPodcast(docId, (payload.new as PodcastRow) ?? null),
+        (payload) => {
+          queryClient.setQueryData<DocumentAssets>(queryKeys.assets(docId), (prev) =>
+            prev ? { ...prev, podcast: (payload.new as PodcastRow) ?? null } : prev,
+          );
+        },
       )
       .subscribe();
 
     return () => {
-      mounted = false;
       supabase.removeChannel(channel);
     };
-  }, [docId, user, upsertDocument, setNote, setFlashcards, setQuiz, setPodcast]);
+  }, [docId, user, queryClient]);
 
-  // Derived per-document assets. Declared before the handlers below so they are
-  // never read out of order, and before the `if (!doc)` early return.
-  const note = docId ? notes[docId] ?? null : null;
-  const cards = docId ? flashcards[docId] ?? [] : [];
-  const qz = docId ? quiz[docId] ?? null : null;
-  const pod = docId ? podcast[docId] ?? null : null;
-  const docStatus = docId ? documents.find((d) => d.id === docId)?.status : undefined;
+  const doc = docQuery.data ?? undefined;
+  const persistedNote = assetsQuery.data?.note ?? null;
+  const note: NoteRow | null =
+    draftMarkdown !== null
+      ? { id: "draft", document_id: docId ?? "", markdown: draftMarkdown }
+      : persistedNote;
+  const cards = assetsQuery.data?.cards ?? [];
+  const qz = assetsQuery.data?.quiz ?? null;
+  const pod = assetsQuery.data?.podcast ?? null;
+  const docStatus = doc?.status;
 
   const generate = async () => {
     if (!docId || streaming) return;
     setStreaming(true);
-    setNote(docId, { id: "draft", document_id: docId, markdown: "" } as NoteRow);
+    setDraftMarkdown("");
     try {
-      const final = await streamNotes({
+      await streamNotes({
         documentId: docId,
+        // Each state change re-parses the whole accumulated markdown through
+        // KaTeX + GFM, so flush on a frame rather than once per token.
         onDelta: (chunk) => {
-          const cur = (useWorkspace.getState().notes[docId]?.markdown ?? "") + chunk;
-          setNote(docId, { id: "draft", document_id: docId, markdown: cur } as NoteRow);
+          pendingNotesRef.current += chunk;
+          if (notesFlushRef.current !== null) return;
+          notesFlushRef.current = requestAnimationFrame(() => {
+            notesFlushRef.current = null;
+            const buffered = pendingNotesRef.current;
+            if (!buffered) return;
+            pendingNotesRef.current = "";
+            setDraftMarkdown((cur) => (cur ?? "") + buffered);
+          });
         },
       });
-      const { data: fresh } = await supabase
-        .from("notes")
-        .select("id,document_id,markdown")
-        .eq("document_id", docId)
-        .maybeSingle();
-      setNote(docId, (fresh as NoteRow) ?? { id: "draft", document_id: docId, markdown: final });
+
+      if (notesFlushRef.current !== null) {
+        cancelAnimationFrame(notesFlushRef.current);
+        notesFlushRef.current = null;
+      }
+      pendingNotesRef.current = "";
+      // The edge function persists the note; refetch so the cache holds the saved
+      // row rather than the locally accumulated draft.
+      await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
+      setDraftMarkdown(null);
     } catch (e: unknown) {
+      setDraftMarkdown(null);
       toast({ title: "Notes generation failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setStreaming(false);
@@ -146,21 +201,8 @@ export default function DocumentWorkspace() {
     setDerivLoading(true);
     try {
       await generateDerivatives(docId);
-      const [{ data: f }, { data: qq }] = await Promise.all([
-        supabase.from("flashcards").select("id,document_id,front,back,order_index").eq("document_id", docId).order("order_index"),
-        supabase.from("quizzes").select("id,document_id,title").eq("document_id", docId).maybeSingle(),
-      ]);
-      setFlashcards(docId, (f as FlashcardRow[]) ?? []);
-      if (qq) {
-        const { data: questions } = await supabase
-          .from("quiz_questions")
-          .select("id,quiz_id,question,type,choices,correct,explanation,order_index")
-          .eq("quiz_id", qq.id)
-          .order("order_index");
-        setQuiz(docId, { ...(qq as Omit<QuizRow, "questions">), questions: (questions ?? []) as QuizQuestionRow[] });
-      } else {
-        setQuiz(docId, null);
-      }
+      // Refetching is authoritative and avoids a second hand-rolled read path.
+      await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
       toast({ title: "Flashcards & quiz ready" });
     } catch (e: unknown) {
       toast({ title: "Generation failed", description: errorMessage(e), variant: "destructive" });
@@ -169,32 +211,30 @@ export default function DocumentWorkspace() {
     }
   };
 
-  const refreshPodcast = async () => {
-    if (!docId) return;
-    const { data } = await supabase
-      .from("podcasts")
-      .select("id,document_id,script,audio_url,status")
-      .eq("document_id", docId)
-      .maybeSingle();
-    setPodcast(docId, (data as PodcastRow) ?? null);
-  };
-
   const runPodcast = async () => {
     if (!docId || podcastLoading) return;
     setPodcastLoading(true);
-    setPodcast(docId, {
-      id: pod?.id ?? "draft",
-      document_id: docId,
-      script: pod?.script ?? null,
-      audio_url: null,
-      status: "generating",
-    });
+    // Optimistic: show the generating state immediately.
+    queryClient.setQueryData<DocumentAssets>(queryKeys.assets(docId), (prev) =>
+      prev
+        ? {
+            ...prev,
+            podcast: {
+              id: prev.podcast?.id ?? "draft",
+              document_id: docId,
+              script: prev.podcast?.script ?? null,
+              audio_url: null,
+              status: "generating",
+            },
+          }
+        : prev,
+    );
     try {
       await generatePodcast(docId);
-      await refreshPodcast();
+      await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
       toast({ title: "Podcast ready", description: "Your audio recap is ready to play." });
     } catch (e: unknown) {
-      await refreshPodcast();
+      await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
       toast({ title: "Podcast generation failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setPodcastLoading(false);
@@ -203,27 +243,61 @@ export default function DocumentWorkspace() {
 
   const handleDelete = async () => {
     if (!docId) return;
-    if (!confirm("Delete this document and all its assets?")) return;
+    setDeleteOpen(false);
     const { error } = await supabase.from("documents").delete().eq("id", docId);
     if (error) {
       toast({ title: "Delete failed", description: error.message, variant: "destructive" });
       return;
     }
-    removeDocument(docId);
+    queryClient.invalidateQueries({ queryKey: queryKeys.documents });
+    queryClient.removeQueries({ queryKey: queryKeys.document(docId) });
+    queryClient.removeQueries({ queryKey: queryKeys.assets(docId) });
     navigate("/app");
   };
 
-  if (!doc) {
+  if (docQuery.isLoading) {
     return (
-      <div className="h-full flex items-center justify-center bg-[#09090b]">
-        {loading ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> : (
-          <div className="text-center p-8 border border-dashed border-white/10 rounded-2xl max-w-sm glass-panel">
-            <p className="text-neutral-400 text-sm mb-4">Study document was not found.</p>
-            <Button variant="outline" onClick={() => navigate("/app")} className="border-white/10 text-white hover:bg-white/5">
-              <ChevronLeft className="h-4 w-4 mr-1 shrink-0" /> Go to library
+      <div className="h-full flex items-center justify-center bg-background">
+        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // A failed lookup is not the same as a missing document — saying "not found"
+  // here would tell the user their work is gone when the request merely failed.
+  if (docQuery.isError) {
+    return (
+      <div className="h-full flex items-center justify-center bg-background px-6">
+        <div className="text-center p-8 border border-dashed border-destructive/20 rounded-2xl max-w-sm glass-panel space-y-4">
+          <div className="h-10 w-10 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
+            <AlertCircle className="h-5 w-5" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-bold text-white font-display text-sm">Couldn't load this document</h3>
+            <p className="text-sm text-neutral-400 leading-relaxed">{errorMessage(docQuery.error)}</p>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Button onClick={() => docQuery.refetch()} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs">
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/app")} className="border-white/10 text-white hover:bg-white/5 text-xs">
+              Go to library
             </Button>
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  if (!doc) {
+    return (
+      <div className="h-full flex items-center justify-center bg-background">
+        <div className="text-center p-8 border border-dashed border-white/10 rounded-2xl max-w-sm glass-panel">
+          <p className="text-neutral-400 text-sm mb-4">Study document was not found.</p>
+          <Button variant="outline" onClick={() => navigate("/app")} className="border-white/10 text-white hover:bg-white/5">
+            <ChevronLeft className="h-4 w-4 mr-1 shrink-0" /> Go to library
+          </Button>
+        </div>
       </div>
     );
   }
@@ -231,9 +305,9 @@ export default function DocumentWorkspace() {
   const isProcessing = doc.status === "pending" || doc.status === "processing";
 
   return (
-    <div className="h-full flex flex-col bg-[#09090b]">
+    <div className="h-full flex flex-col bg-background">
       {/* Workspace Header Panel */}
-      <div className="border-b border-white/5 bg-[#0b0b0e] px-6 py-4 flex items-center justify-between gap-4 shrink-0">
+      <div className="border-b border-white/5 bg-sidebar px-6 py-4 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           {outlet?.openMobileNav && (
             <Button
@@ -248,19 +322,19 @@ export default function DocumentWorkspace() {
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <Badge variant="outline" className="text-[10px] uppercase font-mono tracking-wider border-white/10 text-neutral-400">{doc.source_type}</Badge>
+              <Badge variant="outline" className="text-xs uppercase font-mono tracking-wider border-white/10 text-neutral-400">{doc.source_type}</Badge>
               {doc.status === "ready" && (
-                <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
+                <span className="flex items-center gap-1 text-xs text-emerald-400 font-medium bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Ready
                 </span>
               )}
               {isProcessing && (
-                <span className="flex items-center gap-1 text-[10px] text-primary font-medium bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
+                <span className="flex items-center gap-1 text-xs text-primary font-medium bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
                   <Loader2 className="h-2.5 w-2.5 animate-spin" /> Ingesting...
                 </span>
               )}
               {doc.status === "failed" && (
-                <span className="flex items-center gap-1 text-[10px] text-destructive font-medium bg-destructive/5 px-2 py-0.5 rounded border border-destructive/10">
+                <span className="flex items-center gap-1 text-xs text-destructive font-medium bg-destructive/5 px-2 py-0.5 rounded border border-destructive/10">
                   {doc.error_code ?? "Failed"}
                 </span>
               )}
@@ -268,21 +342,45 @@ export default function DocumentWorkspace() {
             <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate font-display">{doc.title}</h1>
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleDelete} 
-          title="Delete document" 
-          className="h-8 w-8 text-neutral-500 hover:text-red-400 hover:bg-red-500/5 border border-transparent hover:border-red-500/10 shrink-0 transition-all"
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setDeleteOpen(true)}
+          title="Delete document"
+          aria-label="Delete document"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/20 shrink-0 transition-all"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
+
+        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <AlertDialogContent className="bg-card border-white/10 text-white rounded-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-display">Delete this document?</AlertDialogTitle>
+              <AlertDialogDescription className="text-neutral-400">
+                <span className="text-white font-medium">{doc.title}</span> and everything generated from
+                it — notes, flashcards, quiz and podcast — will be permanently removed. This can't be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+                Keep it
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete document
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       {/* Tabs Layout */}
       <Tabs defaultValue="notes" className="flex-1 flex flex-col overflow-hidden">
         {/* Editor-console tabs bar */}
-        <div className="border-b border-white/5 bg-[#0b0b0e] px-4 shrink-0 overflow-x-auto">
+        <div className="border-b border-white/5 bg-sidebar px-4 shrink-0 overflow-x-auto">
           <TabsList className="bg-transparent h-12 p-0 gap-1 flex justify-start items-stretch">
             {[
               { val: "notes", label: "Study Notes", icon: FileText },
@@ -307,7 +405,31 @@ export default function DocumentWorkspace() {
         </div>
 
         {/* Tab content screens */}
-        <div className="flex-1 overflow-y-auto bg-[#09090b]/30">
+        <div className="flex-1 overflow-y-auto bg-background/30">
+          {/* One gate for every tab: a failed asset read must never fall through to
+              the "generate" states, which would invite overwriting existing work. */}
+          {assetsQuery.isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            </div>
+          ) : assetsQuery.isError ? (
+            <div className="border border-dashed border-destructive/20 bg-destructive/5 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4">
+              <div className="h-10 w-10 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
+                <AlertCircle className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-bold text-white font-display text-sm">Couldn't load this document's content</h3>
+                <p className="text-sm text-neutral-400 leading-relaxed">
+                  Your notes, cards and quiz are safe — we just couldn't fetch them.
+                  <span className="block text-neutral-500 mt-1">{errorMessage(assetsQuery.error)}</span>
+                </p>
+              </div>
+              <Button onClick={() => assetsQuery.refetch()} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs">
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+              </Button>
+            </div>
+          ) : (
+          <>
           {/* Notes screen */}
           <TabsContent value="notes" className="m-0 p-6 max-w-3xl mx-auto focus-visible:outline-none">
             {note?.markdown ? (
@@ -327,9 +449,9 @@ export default function DocumentWorkspace() {
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-white font-display text-sm">Synthesize Study Notes</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    Source file text parsed. Click below to stream formatted AI learning notes.
+                  <h3 className="font-bold text-white font-display text-sm">Generate study notes</h3>
+                  <p className="text-sm text-neutral-400 leading-relaxed">
+                    We've read your source. Generate notes to get started.
                   </p>
                 </div>
                 <Button onClick={generate} disabled={streaming} className="bg-primary hover:bg-primary-glow text-primary-foreground font-semibold px-4 py-2 text-xs">
@@ -358,10 +480,10 @@ export default function DocumentWorkspace() {
             ) : (
               <div className="space-y-6 animate-fade-in">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">{cards.length} revision cards</h2>
+                  <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">{cards.length} cards</h2>
                   <Button variant="ghost" size="sm" onClick={runDerivatives} disabled={derivLoading} className="text-neutral-400 hover:text-white text-xs">
                     {derivLoading ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1.5" />}
-                    Recompile Deck
+                    Regenerate
                   </Button>
                 </div>
                 <FlashcardsDeck cards={cards} />
@@ -381,10 +503,10 @@ export default function DocumentWorkspace() {
             ) : (
               <div className="space-y-6 animate-fade-in">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">{qz.title} · {qz.questions.length} queries</h2>
+                  <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">{qz.title} · {qz.questions.length} questions</h2>
                   <Button variant="ghost" size="sm" onClick={runDerivatives} disabled={derivLoading} className="text-neutral-400 hover:text-white text-xs">
                     {derivLoading ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1.5" />}
-                    Regenerate Quiz
+                    Regenerate
                   </Button>
                 </div>
                 <QuizPlayer quiz={qz} />
@@ -427,7 +549,7 @@ export default function DocumentWorkspace() {
                     <audio 
                       controls 
                       src={pod.audio_url} 
-                      className="w-full focus:outline-none accent-primary rounded-lg" 
+                      className="w-full accent-primary rounded-lg" 
                       onPlay={() => setAudioPlaying(true)}
                       onPause={() => setAudioPlaying(false)}
                       onEnded={() => setAudioPlaying(false)}
@@ -443,7 +565,7 @@ export default function DocumentWorkspace() {
                 {pod.script ? (
                   <div className="border border-white/5 rounded-2xl p-6 bg-card/40 space-y-3 glass-panel">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">Conversational Script</h3>
-                    <pre className="whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-neutral-400 max-h-96 overflow-y-auto p-4 bg-[#0a0a0d] border border-white/5 rounded-xl">{pod.script}</pre>
+                    <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-neutral-400 max-h-96 overflow-y-auto p-4 bg-background border border-white/5 rounded-xl">{pod.script}</pre>
                   </div>
                 ) : null}
               </div>
@@ -452,7 +574,7 @@ export default function DocumentWorkspace() {
                 <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
                 <div className="space-y-1">
                   <h4 className="font-bold text-white text-sm">Generating Audio Podcast...</h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
+                  <p className="text-sm text-neutral-400 leading-relaxed">
                     We're compiling the conversation script and generating speech files. This can take a minute.
                   </p>
                 </div>
@@ -478,7 +600,7 @@ export default function DocumentWorkspace() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="font-bold text-white font-display text-sm">Generate recap audio podcast</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
+                  <p className="text-sm text-neutral-400 leading-relaxed">
                     Create a simulated two-host conversational review file based on your generated notes.
                   </p>
                 </div>
@@ -490,10 +612,16 @@ export default function DocumentWorkspace() {
             )}
           </TabsContent>
 
-          {/* Grounded QA Chat screen */}
-          <TabsContent value="chat" className="m-0 p-6 max-w-3xl mx-auto focus-visible:outline-none">
+          {/* Grounded QA Chat screen. `h-full` + flex lets ChatPanel size itself
+              from this container instead of guessing at the viewport. */}
+          <TabsContent
+            value="chat"
+            className="m-0 p-6 max-w-3xl mx-auto w-full h-full flex flex-col data-[state=inactive]:hidden focus-visible:outline-none"
+          >
             <ChatPanel documentId={doc.id} noteReady={!!note?.markdown} />
           </TabsContent>
+          </>
+          )}
         </div>
       </Tabs>
     </div>
@@ -511,7 +639,7 @@ function Placeholder({ title, desc, loading = false }: { title: string; desc: st
         </div>
       )}
       <h3 className="font-bold text-white font-display text-sm">{title}</h3>
-      <p className="text-xs text-neutral-400 leading-relaxed">{desc}</p>
+      <p className="text-sm text-neutral-400 leading-relaxed">{desc}</p>
     </div>
   );
 }
@@ -529,7 +657,7 @@ function DerivativesEmpty({
       </div>
       <div className="space-y-1">
         <h3 className="font-bold text-white font-display text-sm">Generate {kind} sets</h3>
-        <p className="text-xs text-neutral-400 leading-relaxed">
+        <p className="text-sm text-neutral-400 leading-relaxed">
           We will analyze your compiled study notes to create {kind === "flashcards" ? "revision card sets" : "assessment quiz modules"}.
         </p>
       </div>

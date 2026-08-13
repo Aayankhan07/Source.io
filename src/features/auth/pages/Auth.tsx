@@ -63,13 +63,13 @@ export default function Auth() {
   };
 
   return (
-    <main className="min-h-screen flex bg-[#09090b] text-foreground relative overflow-hidden">
+    <main className="min-h-screen flex bg-background text-foreground relative overflow-hidden">
       {/* Background radial highlights */}
       <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-500/5 blur-[120px] pointer-events-none" />
 
       {/* Left split pane: Branding / Features (Hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#0c0c0e] border-r border-white/5 p-12 flex-col justify-between relative z-10">
+      <div className="hidden lg:flex lg:w-1/2 bg-popover border-r border-white/5 p-12 flex-col justify-between relative z-10">
         {/* Top brand header */}
         <Link to="/" className="flex items-center gap-2 group self-start">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 bg-card group-hover:border-primary/50 transition-colors">
@@ -180,7 +180,7 @@ export default function Auth() {
                         value={displayName} 
                         onChange={(e) => setDisplayName(e.target.value)} 
                         placeholder="Your name" 
-                        className="bg-[#121216] border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                        className="bg-surface-raised border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
                       />
                     </div>
                   )}
@@ -193,7 +193,7 @@ export default function Auth() {
                       onChange={(e) => setEmail(e.target.value)} 
                       required 
                       placeholder="name@domain.com" 
-                      className="bg-[#121216] border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                      className="bg-surface-raised border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -208,7 +208,7 @@ export default function Auth() {
                       required 
                       minLength={6} 
                       placeholder="••••••••" 
-                      className="bg-[#121216] border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                      className="bg-surface-raised border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
                     />
                   </div>
 
@@ -230,7 +230,7 @@ export default function Auth() {
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5" /></div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2.5 text-[10px] text-neutral-500 font-mono">or continue with</span>
+                    <span className="bg-card px-2.5 text-xs text-neutral-500 font-mono">or continue with</span>
                   </div>
                 </div>
 
@@ -241,14 +241,22 @@ export default function Auth() {
                   disabled={submitting}
                   onClick={async () => {
                     setSubmitting(true);
-                    const { error } = await supabase.auth.signInWithOAuth({
-                      provider: "google",
-                      options: {
-                        redirectTo: `${window.location.origin}/app`,
-                      },
-                    });
-                    if (error) {
-                      toast({ title: "Google sign-in failed", description: error.message, variant: "destructive" });
+                    try {
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: "google",
+                        options: {
+                          redirectTo: `${window.location.origin}/app`,
+                        },
+                      });
+                      if (error) throw error;
+                      // On success the browser navigates away; leave `submitting` set
+                      // so the form stays disabled during the redirect.
+                    } catch (err: unknown) {
+                      toast({
+                        title: "Google sign-in failed",
+                        description: err instanceof Error ? err.message : "Something went wrong.",
+                        variant: "destructive",
+                      });
                       setSubmitting(false);
                     }
                   }}
@@ -263,12 +271,12 @@ export default function Auth() {
                   {mode === "signin" ? (
                     <>
                       Don't have an account?{" "}
-                      <button className="text-primary hover:text-primary-glow font-medium hover:underline transition-all" onClick={() => setMode("signup")}>Sign up free</button>
+                      <button className="text-primary hover:text-primary-glow font-medium hover:underline transition-all rounded focus-ring" onClick={() => setMode("signup")}>Sign up free</button>
                     </>
                   ) : (
                     <>
                       Already have an account?{" "}
-                      <button className="text-primary hover:text-primary-glow font-medium hover:underline transition-all" onClick={() => setMode("signin")}>Sign in here</button>
+                      <button className="text-primary hover:text-primary-glow font-medium hover:underline transition-all rounded focus-ring" onClick={() => setMode("signin")}>Sign in here</button>
                     </>
                   )}
                 </div>
@@ -278,7 +286,7 @@ export default function Auth() {
 
           <p className="text-center text-xs text-neutral-500 mt-8">
             <Link to="/" className="hover:text-white transition-colors flex items-center justify-center gap-1">
-              <ArrowLeft className="h-3 w-3" /> Back to marketing page
+              <ArrowLeft className="h-3 w-3" /> Back to home
             </Link>
           </p>
         </div>
