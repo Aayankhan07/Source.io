@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Keyboard, CheckCircle } from "lucide-react";
@@ -27,12 +27,12 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
   const total = ordered.length;
   const card = ordered[idx];
 
-  const go = (delta: number) => {
+  const go = useCallback((delta: number) => {
     setFlipped(false);
     setIdx((i) => Math.max(0, Math.min(total - 1, i + delta)));
-  };
+  }, [total]);
 
-  const rate = (quality: "again" | "hard" | "good" | "easy") => {
+  const rate = useCallback((quality: "again" | "hard" | "good" | "easy") => {
     if (!card) return;
     setRatings(prev => ({ ...prev, [card.id]: quality }));
     toast({
@@ -46,7 +46,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
         go(1);
       }, 300);
     }
-  };
+  }, [card, idx, total, go, toast]);
 
   // Keyboard Shortcuts Listener
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [idx, total, flipped, card]);
+  }, [flipped, go, rate]);
 
   if (!card) return null;
 
