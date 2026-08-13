@@ -13,6 +13,7 @@ import { Loader2, Upload, FileText, Youtube, CloudLightning, FileType } from "lu
 import { useDropzone } from "react-dropzone";
 import { triggerIngest } from "@/lib/services/pipeline";
 import { extractFileText } from "@/lib/services/extract";
+import { errorMessage } from "@/lib/utils";
 
 const MAX_FILE_BYTES = 50 * 1024 * 1024; // 50MB
 const AUDIO_EXTS = ["mp3", "wav", "m4a", "ogg", "flac", "webm"];
@@ -60,8 +61,8 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
       toast({ title: "Document created" });
       reset(); onOpenChange(false);
       navigate(`/app/doc/${data!.id}`);
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -87,10 +88,10 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
       reset(); onOpenChange(false);
       navigate(`/app/doc/${data!.id}`);
       triggerIngest(data!.id).catch((e) =>
-        toast({ title: "Transcript failed", description: e.message, variant: "destructive" }),
+        toast({ title: "Transcript failed", description: errorMessage(e), variant: "destructive" }),
       );
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -133,7 +134,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         reset(); onOpenChange(false);
         navigate(`/app/doc/${data!.id}`);
         triggerIngest(data!.id).catch((e) =>
-          toast({ title: "Ingest failed", description: e.message, variant: "destructive" }),
+          toast({ title: "Ingest failed", description: errorMessage(e), variant: "destructive" }),
         );
         return;
       }
@@ -163,10 +164,10 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
       reset(); onOpenChange(false);
       navigate(`/app/doc/${data!.id}`);
       triggerIngest(data!.id).catch((e) =>
-        toast({ title: "Ingest failed", description: e.message, variant: "destructive" }),
+        toast({ title: "Ingest failed", description: errorMessage(e), variant: "destructive" }),
       );
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
