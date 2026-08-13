@@ -47,9 +47,9 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
         { event: "*", schema: "public", table: "documents", filter: `user_id=eq.${user.id}` },
         (payload) => {
           if (payload.eventType === "DELETE") {
-            removeDocument((payload.old as any).id);
+            removeDocument((payload.old as { id: string }).id);
           } else {
-            const row = payload.new as any;
+            const row = payload.new as DocumentRow;
             upsertDocument({
               id: row.id,
               title: row.title,
