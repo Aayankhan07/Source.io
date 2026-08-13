@@ -181,8 +181,8 @@ export default function Index() {
               <span className="text-xs text-muted-foreground truncate font-mono">Introduction to Quantum Computing</span>
             </div>
             
-            {/* Horizontal simulated tabs bar */}
-            <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded-sm border border-border/60">
+            {/* Horizontal simulated tabs bar — ruled baseline plate index */}
+            <div className="flex items-center gap-1 border-b border-border/40 overflow-x-auto">
               {([
                 { id: "notes", label: "Study Notes", icon: FileText },
                 { id: "flashcards", label: "Flashcards", icon: Layers },
@@ -196,10 +196,10 @@ export default function Index() {
                   <button
                     key={t.id}
                     onClick={() => setActiveSimTab(t.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all focus-ring ${
+                    className={`flex items-center gap-1.5 px-3 py-2 border-b-2 text-xs font-medium transition-all focus-ring ${
                       active 
-                        ? "bg-primary text-primary-foreground shadow-sm font-semibold" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-surface-raised"
+                        ? "border-primary text-primary font-semibold bg-primary/5" 
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" />
