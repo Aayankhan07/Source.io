@@ -17,6 +17,8 @@ const AppHome = lazy(() => import("@/features/documents/pages/AppHome"));
 const AppEmpty = lazy(() => import("@/features/documents/pages/AppEmpty"));
 const DocumentWorkspace = lazy(() => import("@/features/documents/pages/DocumentWorkspace"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+// TEMPORARY design-review route. Remove before merge.
+const PreviewWorkspace = lazy(() => import("./pages/__PreviewWorkspace"));
 
 function RouteFallback() {
   return (
@@ -59,6 +61,9 @@ const App = () => (
                 <Route index element={<AppEmpty />} />
                 <Route path="doc/:docId" element={<DocumentWorkspace />} />
               </Route>
+              {import.meta.env.DEV && (
+                <Route path="/__preview" element={<PreviewWorkspace />} />
+              )}
               <Route path="*" element={<NotFound />} />
             </Routes>
             </Suspense>
