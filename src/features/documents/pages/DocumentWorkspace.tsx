@@ -19,6 +19,7 @@ import { generatePodcast } from "@/lib/services/podcast";
 import FlashcardsDeck from "@/features/flashcards/components/FlashcardsDeck";
 import QuizPlayer from "@/features/quiz/components/QuizPlayer";
 import ChatPanel from "@/features/chat/components/ChatPanel";
+import CustomAudioPlayer from "@/features/documents/components/CustomAudioPlayer";
 import { cn, errorMessage } from "@/lib/utils";
 import { queryKeys } from "@/lib/queryKeys";
 
@@ -518,56 +519,19 @@ export default function DocumentWorkspace() {
           <TabsContent value="podcast" className="m-0 p-6 max-w-3xl mx-auto focus-visible:outline-none">
             {!note?.markdown ? (
               <Placeholder title="Podcast unavailable" desc="Generate study notes first, then compile the conversational recap dialogue." />
-            ) : pod?.audio_url ? (
+            ) : pod?.audio_url || pod?.script ? (
               <div className="space-y-6 animate-fade-in">
-                {/* Cassette layout box */}
-                <div className="plate p-8 rounded-sm border border-border/60 flex flex-col items-center justify-center space-y-6 relative overflow-hidden shadow-plate">
-                  {/* Decorative background grid */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#ffffff03_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-
-                  {/* Retro Cassette Graphic */}
-                  <div className="cassette-shell z-10">
-                    <div className="cassette-label">
-                      <div className="cassette-window">
-                        <div className={cn("cassette-spindle", audioPlaying && "spindle-spinning")} />
-                        <div className={cn("cassette-spindle", audioPlaying && "spindle-spinning-reverse")} />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[8px] font-mono text-muted-foreground uppercase tracking-widest">
-                      AUDIO RECAP
-                    </div>
-                  </div>
-
-                  <div className="text-center z-10 space-y-1">
-                    <h3 className="font-bold text-foreground font-display text-sm flex items-center gap-1 justify-center">
-                      <HeadphonesIcon className="h-4 w-4 text-primary" /> Audio recap summary
-                    </h3>
-                    <p className="text-xs text-muted-foreground">Play below to listen to the dialogue recap between the two AI hosts.</p>
-                  </div>
-
-                  <div className="w-full max-w-md z-10">
-                    <audio 
-                      controls 
-                      src={pod.audio_url} 
-                      className="w-full accent-primary rounded-sm" 
-                      onPlay={() => setAudioPlaying(true)}
-                      onPause={() => setAudioPlaying(false)}
-                      onEnded={() => setAudioPlaying(false)}
-                    />
-                  </div>
-                  
-                  <Button variant="ghost" size="sm" onClick={runPodcast} disabled={podcastLoading} className="text-muted-foreground hover:text-foreground border border-border/60 hover:bg-surface-raised text-xs">
+                <CustomAudioPlayer 
+                  audioUrl={pod?.audio_url} 
+                  script={pod?.script} 
+                  title={`${doc?.title || "Document"} — Audio Recap`} 
+                />
+                <div className="flex justify-center">
+                  <Button variant="ghost" size="sm" onClick={runPodcast} disabled={podcastLoading} className="text-muted-foreground hover:text-foreground border border-border/60 hover:bg-surface-raised text-xs font-mono">
                     {podcastLoading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 mr-1.5" />}
-                    Regenerate Podcast
+                    Regenerate Audio Recap
                   </Button>
                 </div>
-
-                {pod.script ? (
-                  <div className="border border-border/60 rounded-sm p-6 bg-card/40 space-y-3 plate">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Conversational Script</h3>
-                    <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-muted-foreground max-h-96 overflow-y-auto p-4 bg-background border border-border/60 rounded-sm">{pod.script}</pre>
-                  </div>
-                ) : null}
               </div>
             ) : pod?.status === "generating" || podcastLoading ? (
               <div className="border border-dashed border-border bg-card/40 plate rounded-sm p-12 text-center space-y-4 max-w-md mx-auto mt-12 animate-pulse-slow">
