@@ -11,6 +11,7 @@
 import { useState } from "react";
 import FlashcardsDeck from "@/features/flashcards/components/FlashcardsDeck";
 import QuizPlayer from "@/features/quiz/components/QuizPlayer";
+import CustomAudioPlayer from "@/features/documents/components/CustomAudioPlayer";
 import MarkdownView from "@/components/common/MarkdownView";
 import Magnitude from "@/components/common/Magnitude";
 import { Button } from "@/components/ui/button";
@@ -187,21 +188,7 @@ export default function PreviewWorkspace() {
               </TabsContent>
 
               <TabsContent value="podcast" className="m-0 p-6 max-w-3xl mx-auto">
-                <div className="plate plate-registered p-8 rounded-sm flex flex-col items-center justify-center space-y-6">
-                  <div className="cassette-shell">
-                    <div className="cassette-label">
-                      <div className="cassette-window">
-                        <div className="cassette-spindle" />
-                        <div className="cassette-spindle" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <h3 className="font-bold text-foreground font-display text-sm">Audio recap</h3>
-                    <p className="text-sm text-muted-foreground">Two hosts, generated from your notes.</p>
-                  </div>
-                  <audio controls className="w-full max-w-md accent-primary rounded-sm" />
-                </div>
+                <CustomAudioPlayer title="Introduction to Quantum Computing — Audio Recap" />
               </TabsContent>
 
               <TabsContent value="chat" className="m-0 p-6 max-w-3xl mx-auto w-full h-full flex flex-col">
