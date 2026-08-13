@@ -29,7 +29,7 @@ export default function Index() {
   // Simulated Podcast State
   const [podcastPlaying, setPodcastPlaying] = useState(false);
   const [audioProgress, setAudioProgress] = useState(35);
-  const progressInterval = useRef<NodeJS.Timeout | null>(null);
+  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (podcastPlaying) {
@@ -178,19 +178,19 @@ export default function Index() {
             
             {/* Horizontal simulated tabs bar */}
             <div className="flex items-center gap-1 bg-[#1a1a24] p-0.5 rounded-lg border border-white/5">
-              {[
+              {([
                 { id: "notes", label: "Study Notes", icon: FileText },
                 { id: "flashcards", label: "Flashcards", icon: Layers },
                 { id: "quiz", label: "Quiz Practice", icon: ListChecks },
                 { id: "podcast", label: "Podcast recap", icon: Headphones },
                 { id: "chat", label: "AI Grounded Chat", icon: MessagesSquare }
-              ].map((t) => {
+              ] as const).map((t) => {
                 const Icon = t.icon;
                 const active = activeSimTab === t.id;
                 return (
                   <button
                     key={t.id}
-                    onClick={() => setActiveSimTab(t.id as any)}
+                    onClick={() => setActiveSimTab(t.id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                       active 
                         ? "bg-primary text-primary-foreground shadow-sm font-semibold" 
