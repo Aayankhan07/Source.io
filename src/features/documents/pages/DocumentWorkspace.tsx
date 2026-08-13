@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import MarkdownView from "@/components/common/MarkdownView";
-import { FileText, Layers, ListChecks, Headphones, MessagesSquare, Loader2, Trash2, ChevronLeft, Sparkles, RefreshCw, Menu, ArrowLeft, HeadphonesIcon } from "lucide-react";
+import { AlertCircle, FileText, Layers, ListChecks, Headphones, MessagesSquare, Loader2, Trash2, ChevronLeft, Sparkles, RefreshCw, Menu, HeadphonesIcon } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { streamNotes, generateDerivatives } from "@/lib/services/pipeline";
 import { generatePodcast } from "@/lib/services/podcast";
 import FlashcardsDeck from "@/features/flashcards/components/FlashcardsDeck";
 import QuizPlayer from "@/features/quiz/components/QuizPlayer";
 import ChatPanel from "@/features/chat/components/ChatPanel";
-import { cn } from "@/lib/utils";
+import { cn, errorMessage } from "@/lib/utils";
 
 export default function DocumentWorkspace() {
   const { docId } = useParams();
@@ -68,7 +68,7 @@ export default function DocumentWorkspace() {
           .select("id,quiz_id,question,type,choices,correct,explanation,order_index")
           .eq("quiz_id", q.data.id)
           .order("order_index");
-        setQuiz(docId, { ...(q.data as any), questions: (qq.data ?? []) as QuizQuestionRow[] } as QuizRow);
+        setQuiz(docId, { ...(q.data as Omit<QuizRow, "questions">), questions: (qq.data ?? []) as QuizQuestionRow[] });
       } else {
         setQuiz(docId, null);
       }
@@ -97,7 +97,12 @@ export default function DocumentWorkspace() {
     };
   }, [docId, user, upsertDocument, setNote, setFlashcards, setQuiz, setPodcast]);
 
-  const noteForDoc = docId ? notes[docId] ?? null : null;
+  // Derived per-document assets. Declared before the handlers below so they are
+  // never read out of order, and before the `if (!doc)` early return.
+  const note = docId ? notes[docId] ?? null : null;
+  const cards = docId ? flashcards[docId] ?? [] : [];
+  const qz = docId ? quiz[docId] ?? null : null;
+  const pod = docId ? podcast[docId] ?? null : null;
   const docStatus = docId ? documents.find((d) => d.id === docId)?.status : undefined;
 
   const generate = async () => {
@@ -118,8 +123,8 @@ export default function DocumentWorkspace() {
         .eq("document_id", docId)
         .maybeSingle();
       setNote(docId, (fresh as NoteRow) ?? { id: "draft", document_id: docId, markdown: final });
-    } catch (e: any) {
-      toast({ title: "Notes generation failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Notes generation failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setStreaming(false);
     }
@@ -127,12 +132,12 @@ export default function DocumentWorkspace() {
 
   useEffect(() => {
     if (!docId) return;
-    if (docStatus === "ready" && !noteForDoc?.markdown && autoStartedRef.current !== docId && !streaming) {
+    if (docStatus === "ready" && !note?.markdown && autoStartedRef.current !== docId && !streaming) {
       autoStartedRef.current = docId;
       generate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docId, docStatus, noteForDoc?.markdown]);
+  }, [docId, docStatus, note?.markdown]);
 
   const [derivLoading, setDerivLoading] = useState(false);
   const [podcastLoading, setPodcastLoading] = useState(false);
@@ -152,13 +157,13 @@ export default function DocumentWorkspace() {
           .select("id,quiz_id,question,type,choices,correct,explanation,order_index")
           .eq("quiz_id", qq.id)
           .order("order_index");
-        setQuiz(docId, { ...(qq as any), questions: (questions ?? []) as QuizQuestionRow[] } as QuizRow);
+        setQuiz(docId, { ...(qq as Omit<QuizRow, "questions">), questions: (questions ?? []) as QuizQuestionRow[] });
       } else {
         setQuiz(docId, null);
       }
       toast({ title: "Flashcards & quiz ready" });
-    } catch (e: any) {
-      toast({ title: "Generation failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Generation failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setDerivLoading(false);
     }
@@ -188,9 +193,9 @@ export default function DocumentWorkspace() {
       await generatePodcast(docId);
       await refreshPodcast();
       toast({ title: "Podcast ready", description: "Your audio recap is ready to play." });
-    } catch (e: any) {
+    } catch (e: unknown) {
       await refreshPodcast();
-      toast({ title: "Podcast generation failed", description: e.message, variant: "destructive" });
+      toast({ title: "Podcast generation failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setPodcastLoading(false);
     }
@@ -223,10 +228,6 @@ export default function DocumentWorkspace() {
     );
   }
 
-  const note = notes[doc.id] ?? null;
-  const cards = flashcards[doc.id] ?? [];
-  const qz = quiz[doc.id] ?? null;
-  const pod = podcast[doc.id] ?? null;
   const isProcessing = doc.status === "pending" || doc.status === "processing";
 
   return (
@@ -281,7 +282,7 @@ export default function DocumentWorkspace() {
       {/* Tabs Layout */}
       <Tabs defaultValue="notes" className="flex-1 flex flex-col overflow-hidden">
         {/* Editor-console tabs bar */}
-        <div className="border-b border-white/5 bg-[#0b0b0e] px-4 shrink-0 overflow-x-auto scrollbar-none">
+        <div className="border-b border-white/5 bg-[#0b0b0e] px-4 shrink-0 overflow-x-auto">
           <TabsList className="bg-transparent h-12 p-0 gap-1 flex justify-start items-stretch">
             {[
               { val: "notes", label: "Study Notes", icon: FileText },
@@ -411,7 +412,7 @@ export default function DocumentWorkspace() {
                       </div>
                     </div>
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[8px] font-mono text-neutral-500 uppercase tracking-widest">
-                      AUDIO RECUP
+                      AUDIO RECAP
                     </div>
                   </div>
 
