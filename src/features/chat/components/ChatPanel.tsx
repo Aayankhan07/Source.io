@@ -287,17 +287,18 @@ export default function ChatPanel({
         {messages.length === 0 && (
           <div className="flex gap-2 flex-wrap mb-4 animate-fade-in">
             {[
-              "Summarize the key takeaways.",
-              "List 3 potential practice questions.",
-              "Explain the core terms used."
+              "Summarize key takeaways",
+              "List 3 practice questions",
+              "Explain core terms & formulas",
+              "What are the main arguments?"
             ].map((suggest, sIdx) => (
               <button
                 key={sIdx}
                 onClick={() => handleQuickAction(suggest)}
                 disabled={sending}
-                className="text-xs px-3 py-1.5 rounded-full bg-surface-raised border border-border/60 hover:border-primary/30 text-muted-foreground hover:text-foreground transition-all font-mono focus-ring"
+                className="text-xs px-3 py-1.5 rounded-full bg-surface-raised border border-border/60 hover:border-primary/40 hover:bg-primary/5 text-muted-foreground hover:text-foreground transition-all font-mono focus-ring flex items-center gap-1"
               >
-                {suggest}
+                <Sparkles className="h-3 w-3 text-primary" /> {suggest}
               </button>
             ))}
           </div>
