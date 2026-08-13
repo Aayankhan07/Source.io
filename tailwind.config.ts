@@ -9,17 +9,17 @@ export default {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
     extend: {
       fontFamily: {
-        // `sans` and `display` mirror the faces index.css already applies to body
-        // and headings; declaring them here makes `font-sans`/`font-display` real
-        // utilities instead of relying on bare CSS selectors.
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
-        // Fira Code is loaded in index.html but was never mapped, so every
-        // `font-mono` fell back to the browser default.
+        // Plate lettering: engraved chart titles.
+        display: ["Spectral", "Literata", "ui-serif", "Georgia", "serif"],
+        // Measurement and coordinates — used for data, never as a "technical" costume.
         mono: ["Fira Code", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
-        // Long-form reading face for generated study material. Literata carries an
-        // optical-size axis, so it holds up from body copy to headings.
+        // Long-form reading face for generated study material.
         reading: ["Literata", "Georgia", "ui-serif", "serif"],
+      },
+      maxWidth: {
+        // Reading measure for generated study material.
+        measure: "68ch",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -61,6 +61,7 @@ export default {
       },
       boxShadow: {
         glow: "var(--shadow-glow)",
+        plate: "var(--shadow-plate)",
       },
       borderRadius: {
         lg: "var(--radius)",

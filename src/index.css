@@ -31,7 +31,8 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
-    --radius: 0.625rem;
+    /* A plate is ruled, not rounded. Corners are cut, not cushioned. */
+    --radius: 0.25rem;
 
     --surface-sunken: 240 5% 96%;
     --surface-raised: 0 0% 100%;
@@ -47,56 +48,81 @@
     --sidebar-ring: 240 5.9% 10%;
   }
 
+  /* THE PLATE — an engraved chart, not a dark app.
+     Ground is plate navy, structure is chart blue, and a single annotation amber
+     marks only what is currently under the eye, the way a red flashlight marks a
+     paper chart without destroying night vision. Hierarchy is carried by the
+     magnitude ramp below, not by giving every element its own colour. */
   .dark {
-    /* Premium tech brand theme (Deep space purple & slate neutral colors) */
-    --background: 240 10% 3.9%;        /* #09090b */
-    --foreground: 0 0% 98%;
-    --card: 240 10% 6%;                /* #0f0f12 */
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 5%;
-    --popover-foreground: 0 0% 98%;
+    --background: 222 52% 8%;          /* plate navy — the chart ground */
+    --foreground: 40 30% 94%;          /* stardust — warm chalk, never pure white */
+    --card: 218 40% 13%;               /* chart blue — a plate laid on the ground */
+    --card-foreground: 40 30% 94%;
+    --popover: 220 44% 11%;
+    --popover-foreground: 40 30% 94%;
 
-    --primary: 250 95% 76%;           /* Bright Indigo accent */
-    --primary-foreground: 240 10% 3.9%;
-    --primary-glow: 260 90% 65%;
+    /* Annotation amber. Reserved for the object under the eye: the primary action,
+       the active plate, the live citation. Never decorative. */
+    --primary: 14 90% 58%;
+    --primary-foreground: 222 52% 8%;
+    --primary-glow: 30 95% 66%;
 
-    --secondary: 240 6% 12%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 218 34% 18%;
+    --secondary-foreground: 40 30% 94%;
 
-    --muted: 240 5% 10%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 220 36% 15%;
+    --muted-foreground: 215 18% 66%;   /* fog veil — tinted from the ground, not gray */
 
-    --accent: 240 5% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 218 34% 20%;
+    --accent-foreground: 40 30% 94%;
 
-    --destructive: 346 87% 55%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 358 70% 56%;
+    --destructive-foreground: 40 30% 94%;
 
-    --success: 142 76% 45%;
-    --warning: 38 92% 50%;
+    --success: 158 52% 46%;
+    --warning: 38 92% 58%;
 
-    --border: 240 5% 14%;
-    --input: 240 5% 14%;
-    --ring: 250 95% 76%;
+    /* Hairline rules. A chart is ruled, not boxed: borders stay thin and low. */
+    --border: 216 28% 22%;
+    --input: 216 28% 22%;
+    --ring: 14 90% 58%;
 
-    /* Surface ramp. The app previously hand-rolled 19 near-black hex values across
-       nine files; these are the tiers those values actually clustered into.
-       sunken < background < card < raised < elevated. */
-    --surface-sunken: 240 12% 3%;
-    --surface-raised: 240 11% 8%;
-    --surface-elevated: 240 15% 12%;
+    /* Surface ramp: sunken < background < card < raised < elevated. */
+    --surface-sunken: 224 56% 6%;
+    --surface-raised: 218 38% 16%;
+    --surface-elevated: 216 34% 21%;
 
-    --sidebar-background: 240 10% 5.5%;
-    --sidebar-foreground: 240 5% 82%;
-    --sidebar-primary: 250 95% 76%;
-    --sidebar-primary-foreground: 240 10% 3.9%;
-    --sidebar-accent: 240 5% 11%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 10.5%;
-    --sidebar-ring: 250 95% 76%;
+    --sidebar-background: 224 50% 7%;  /* the index sits deeper than the plate */
+    --sidebar-foreground: 215 20% 74%;
+    --sidebar-primary: 14 90% 58%;
+    --sidebar-primary-foreground: 222 52% 8%;
+    --sidebar-accent: 218 36% 14%;
+    --sidebar-accent-foreground: 40 30% 94%;
+    --sidebar-border: 218 30% 15%;
+    --sidebar-ring: 14 90% 58%;
 
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --shadow-glow: 0 0 50px -12px hsl(var(--primary) / 0.45);
+    /* Depth carries an offset and a soft blur; a zero-offset halo is decoration. */
+    --shadow-plate: 0 12px 32px -16px hsl(224 60% 3% / 0.8);
+    --shadow-glow: 0 8px 28px -12px hsl(var(--primary) / 0.35);
+  }
+}
+
+/* MAGNITUDE RAMP
+   On a star chart importance is diameter on a fixed scale, never a louder colour.
+   Every sized indicator in the app reads off this one ramp, so hierarchy stops
+   being improvised per component. m1 is brightest/most important. */
+@layer base {
+  :root {
+    --mag-1: 0.75rem;
+    --mag-2: 0.625rem;
+    --mag-3: 0.5rem;
+    --mag-4: 0.375rem;
+    --mag-5: 0.25rem;
+
+    /* Plate rhythm. More space above a heading than below it. */
+    --plate-gutter: 1.5rem;
+    --plate-rule: 1px;
   }
 }
 
@@ -108,20 +134,41 @@
     @apply h-full;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
-    font-feature-settings: "cv11", "ss01", "ss02";
+    @apply bg-background text-foreground antialiased;
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  }
-  h1, h2, h3, h4, h5, h6, .font-display {
-    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: -0.025em;
+    /* Figures are data on a chart: they align in columns everywhere. */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "cv11" 1, "ss01" 1;
   }
 
-  /* Custom Premium Scrollbar */
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  /* Plate titles. Engraved chart lettering, set tight. */
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Spectral', 'Literata', ui-serif, Georgia, serif;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
+
+  /* Browser surfaces belong to the design too. */
+  ::selection {
+    background: hsl(var(--primary) / 0.28);
+    color: hsl(var(--foreground));
+  }
+  :root {
+    caret-color: hsl(var(--primary));
+    accent-color: hsl(var(--primary));
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: hsl(var(--border) / 0.8); border-radius: 9999px; border: 2px solid transparent; background-clip: padding-box; }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.3); border-radius: 9999px; border: 2px solid transparent; background-clip: padding-box; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 2px;               /* a ruled edge, not a pill */
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--surface-elevated)); background-clip: padding-box; }
+
+  a { text-underline-offset: 0.2em; }
 }
 
 @layer utilities {
@@ -132,37 +179,108 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 
-  /* Premium Glassmorphism & Visual Polish utilities */
-  .glass-panel {
-    background: hsl(var(--card) / 0.45);
-    backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border) / 0.6);
-  }
-  
-  .glass-panel-hover {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .glass-panel-hover:hover {
-    background: hsl(var(--card) / 0.6);
-    border-color: hsl(var(--primary) / 0.2);
-    box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5);
+  /* PLATE — the primary surface. An engraved plate laid on the chart ground:
+     opaque, hairline-ruled, no blur. `.glass-panel` is kept as the name because
+     the whole app calls it, but the material is no longer glass. */
+  .glass-panel,
+  .plate {
+    background: hsl(var(--card));
+    border: var(--plate-rule) solid hsl(var(--border));
+    box-shadow: var(--shadow-plate);
   }
 
-  .glow-border {
+  /* Registration marks: the corner ticks an engraved plate carries. */
+  .plate-registered {
     position: relative;
   }
-  .glow-border::after {
+  .plate-registered::before,
+  .plate-registered::after {
     content: '';
     position: absolute;
-    inset: -1px;
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    border-radius: inherit;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-color: hsl(var(--primary) / 0.5);
+    pointer-events: none;
   }
-  .glow-border:hover::after {
-    opacity: 0.15;
+  .plate-registered::before {
+    top: -1px; left: -1px;
+    border-top: var(--plate-rule) solid;
+    border-left: var(--plate-rule) solid;
+  }
+  .plate-registered::after {
+    bottom: -1px; right: -1px;
+    border-bottom: var(--plate-rule) solid;
+    border-right: var(--plate-rule) solid;
+  }
+
+  .glass-panel-hover {
+    transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-panel-hover:hover {
+    background: hsl(var(--surface-raised));
+    border-color: hsl(var(--primary) / 0.35);
+  }
+
+  /* Coordinate rules — the faint gridlines that field a chart. */
+  .plate-field {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.35) var(--plate-rule), transparent var(--plate-rule)),
+      linear-gradient(to bottom, hsl(var(--border) / 0.35) var(--plate-rule), transparent var(--plate-rule));
+    background-size: 4rem 4rem;
+  }
+
+  /* Magnitude dot: importance as diameter, read off the fixed ramp. */
+  .magnitude {
+    display: inline-block;
+    border-radius: 9999px;
+    background: currentColor;
+    flex: none;
+  }
+
+  /* MOTION — a plate is drawn, not flown in.
+     The one authored moment: content settles from a hair below with its rule
+     resolving, on an exponential ease-out. Everything starts visible, so a
+     failed animation never hides content. */
+  @keyframes plate-settle {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .plate-settle {
+    animation: plate-settle 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Ingestion: a rule sweeping across the plate as the source is surveyed. */
+  @keyframes plate-survey {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .plate-surveying {
+    position: relative;
+    overflow: hidden;
+  }
+  .plate-surveying::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.14),
+      transparent
+    );
+    animation: plate-survey 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plate-settle,
+    .plate-surveying::after,
+    .animate-fade-in,
+    .animate-pulse-slow {
+      animation: none !important;
+    }
+    .plate-settle { opacity: 1; transform: none; }
   }
 
   /* Custom Markdown Study Note Styling.
@@ -173,10 +291,11 @@
     font-family: 'Literata', Georgia, ui-serif, serif;
     font-optical-sizing: auto;
   }
-  .prose-invert-tight h1 { @apply text-2xl font-bold mt-8 mb-4 text-foreground/95; }
-  .prose-invert-tight h2 { @apply text-xl font-bold mt-7 mb-3 text-foreground/90 border-b border-border/40 pb-1.5; }
-  .prose-invert-tight h3 { @apply text-lg font-semibold mt-5 mb-2 text-foreground/90; }
-  .prose-invert-tight p  { @apply leading-relaxed my-3 text-foreground/80 text-[15px]; }
+  /* Rhythm: more space above a heading than below it, so sections group. */
+  .prose-invert-tight h1 { @apply text-2xl font-display mt-10 mb-3 text-foreground; }
+  .prose-invert-tight h2 { @apply text-xl font-display mt-9 mb-3 text-foreground border-b border-border pb-2; }
+  .prose-invert-tight h3 { @apply text-lg font-display mt-7 mb-2 text-foreground; }
+  .prose-invert-tight p  { @apply my-4 text-foreground/85 text-[15px] leading-[1.75]; }
   .prose-invert-tight ul { @apply list-disc pl-6 my-3 space-y-1.5 text-foreground/80; }
   .prose-invert-tight ol { @apply list-decimal pl-6 my-3 space-y-1.5 text-foreground/80; }
   .prose-invert-tight code { @apply px-1.5 py-0.5 rounded font-mono bg-muted/65 border border-border/50 text-primary text-xs; }
@@ -254,20 +373,18 @@
     text-shadow: 0 0 15px hsl(var(--primary) / 0.3);
   }
 
+  /* A plate does not levitate on hover; its rule brightens as it comes under
+     the eye. */
   .interactive-card {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .interactive-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 30px -10px hsl(var(--primary) / 0.15);
-    border-color: hsl(var(--primary) / 0.3);
+    border-color: hsl(var(--primary) / 0.4);
+    background: hsl(var(--surface-raised));
   }
 
   .interactive-button-glow {
-    transition: all 0.2s ease-in-out;
-  }
-  .interactive-button-glow:hover {
-    box-shadow: 0 0 20px 0px hsl(var(--primary) / 0.5);
-    transform: scale(1.02);
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }

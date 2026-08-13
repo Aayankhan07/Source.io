@@ -88,29 +88,29 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
     <div className="space-y-6 text-left animate-fade-in">
       {/* Gamified Celebration Score card */}
       {submitted && (
-        <div className="glass-panel rounded-2xl border border-white/10 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-2xl">
+        <div className="plate rounded-sm border border-border p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-plate">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
           
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-glow shrink-0">
+            <div className="h-16 w-16 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
               <Award className="h-8 w-8" />
             </div>
             <div className="space-y-1">
               <span className="text-xs uppercase font-bold tracking-widest text-primary font-mono">Quiz Completed</span>
-              <h3 className="text-xl font-bold text-white font-display">
+              <h3 className="text-xl font-bold text-foreground font-display">
                 {percentage === 100 ? "Perfect Score!" : percentage >= 70 ? "Excellent Work!" : "Keep practicing!"}
               </h3>
-              <p className="text-sm text-neutral-400">
-                You correctly answered <span className="font-semibold text-white">{score}</span> out of <span className="font-semibold text-white">{total}</span> questions ({percentage}%).
+              <p className="text-sm text-muted-foreground">
+                You correctly answered <span className="font-semibold text-foreground">{score}</span> out of <span className="font-semibold text-foreground">{total}</span> questions ({percentage}%).
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-end">
-            <div className="h-12 w-12 rounded-full border-2 border-white/5 bg-surface-elevated flex items-center justify-center font-mono text-sm font-bold text-white">
+            <div className="h-12 w-12 rounded-full border-2 border-border/60 bg-surface-elevated flex items-center justify-center font-mono text-sm font-bold text-foreground">
               {percentage}%
             </div>
-            <Button onClick={reset} className="bg-white hover:bg-neutral-200 text-black font-semibold text-xs py-2 px-4 rounded-lg flex items-center gap-1.5 shrink-0">
+            <Button onClick={reset} className="font-semibold text-xs py-2 px-4 rounded-sm flex items-center gap-1.5 shrink-0">
               <RotateCcw className="h-3.5 w-3.5" /> Try again
             </Button>
           </div>
@@ -126,20 +126,20 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
             <div
               key={q.id}
               className={cn(
-                "p-5 rounded-2xl border transition-all glass-panel",
+                "p-5 rounded-sm border transition-all plate",
                 submitted 
                   ? (correct ? "border-emerald-500/20 bg-emerald-500/[0.02]" : "border-destructive/20 bg-destructive/[0.02]") 
-                  : "border-white/5 bg-card/40"
+                  : "border-border/60 bg-card/40"
               )}
             >
               {/* Question metadata header */}
               <div className="flex items-start gap-3 mb-4">
-                <Badge variant="outline" className="mt-0.5 text-xs font-mono border-white/10 text-white bg-white/5 shrink-0">
+                <Badge variant="outline" className="mt-0.5 text-xs font-mono border-border text-foreground bg-surface-raised shrink-0">
                   {String(i + 1).padStart(2, '0')}
                 </Badge>
                 <div className="flex-1">
-                  <div className="font-bold text-white leading-relaxed text-sm font-display">{q.question}</div>
-                  <div className="text-xs uppercase tracking-wider text-neutral-500 font-mono mt-1">
+                  <div className="font-bold text-foreground leading-relaxed text-sm font-display">{q.question}</div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-mono mt-1">
                     {q.type === "mcq" ? "Multiple choice question" : q.type === "true_false" ? "True / False" : "Short answer"}
                   </div>
                 </div>
@@ -163,12 +163,12 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         onClick={() => !submitted && setAnswers((a) => ({ ...a, [q.id]: c }))}
                         disabled={submitted}
                         className={cn(
-                          "w-full text-left p-3.5 rounded-xl border text-sm transition-all relative flex items-center justify-between font-medium focus-ring",
-                          !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-white/5 text-neutral-300 hover:text-white",
-                          selected && !submitted && "border-primary bg-primary/10 text-white",
+                          "w-full text-left p-3.5 rounded-sm border text-sm transition-all relative flex items-center justify-between font-medium focus-ring",
+                          !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-border/60 text-foreground/90 hover:text-foreground",
+                          selected && !submitted && "border-primary bg-primary/10 text-foreground",
                           submitted && isAnswer && "border-emerald-500/50 bg-emerald-500/10 text-emerald-300 font-semibold",
                           submitted && selected && !isAnswer && "border-destructive/50 bg-destructive/10 text-destructive-foreground font-semibold",
-                          submitted && !selected && !isAnswer && "border-white/5 opacity-55 text-neutral-500"
+                          submitted && !selected && !isAnswer && "border-border/60 opacity-55 text-muted-foreground"
                         )}
                       >
                         <span>{c}</span>
@@ -193,12 +193,12 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         onClick={() => !submitted && setAnswers((a) => ({ ...a, [q.id]: c }))}
                         disabled={submitted}
                         className={cn(
-                          "p-3 rounded-xl border text-sm font-semibold text-center transition-all flex items-center justify-center gap-1.5 focus-ring",
-                          !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-white/5 text-neutral-300 hover:text-white",
-                          selected && !submitted && "border-primary bg-primary/10 text-white",
+                          "p-3 rounded-sm border text-sm font-semibold text-center transition-all flex items-center justify-center gap-1.5 focus-ring",
+                          !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-border/60 text-foreground/90 hover:text-foreground",
+                          selected && !submitted && "border-primary bg-primary/10 text-foreground",
                           submitted && isAnswer && "border-emerald-500/50 bg-emerald-500/10 text-emerald-300",
                           submitted && selected && !isAnswer && "border-destructive/50 bg-destructive/10 text-destructive-foreground",
-                          submitted && !selected && !isAnswer && "border-white/5 opacity-55 text-neutral-500"
+                          submitted && !selected && !isAnswer && "border-border/60 opacity-55 text-muted-foreground"
                         )}
                       >
                         <span>{c}</span>
@@ -220,23 +220,23 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                     onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
                     disabled={submitted}
                     placeholder="Type your answer explanation here..."
-                    className="bg-surface-raised border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                    className="bg-surface-raised border-border focus:border-primary/50 text-foreground placeholder:text-muted-foreground/70 rounded-sm text-sm"
                   />
                 </div>
               )}
 
               {/* Submitted Feedback details */}
               {submitted && (
-                <div className="mt-4 pt-3 border-t border-white/5 text-sm space-y-2 animate-fade-in">
+                <div className="mt-4 pt-3 border-t border-border/60 text-sm space-y-2 animate-fade-in">
                   {!correct && (
-                    <div className="flex items-center gap-1.5 text-neutral-300 bg-white/5 p-2.5 rounded-lg border border-white/5">
-                      <span className="text-neutral-500">Correct Answer:</span>
+                    <div className="flex items-center gap-1.5 text-foreground/90 bg-surface-raised p-2.5 rounded-sm border border-border/60">
+                      <span className="text-muted-foreground">Correct Answer:</span>
                       <span className="font-semibold text-emerald-400">{q.correct}</span>
                     </div>
                   )}
                   {q.explanation && (
-                    <div className="text-neutral-400 bg-neutral-900/50 p-3 rounded-lg border border-white/5 leading-relaxed text-sm">
-                      <span className="font-bold text-white block mb-1">Explanation:</span>
+                    <div className="text-muted-foreground bg-surface-sunken/50 p-3 rounded-sm border border-border/60 leading-relaxed text-sm">
+                      <span className="font-bold text-foreground block mb-1">Explanation:</span>
                       {q.explanation}
                     </div>
                   )}
@@ -249,13 +249,13 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
 
       {/* Floating Action Submit footer bar */}
       {!submitted && (
-        <div className="sticky bottom-0 bg-background/80 backdrop-blur py-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
-          <div className="text-xs text-neutral-500 font-mono">
+        <div className="sticky bottom-0 bg-background/80 backdrop-blur py-4 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
+          <div className="text-xs text-muted-foreground font-mono">
             {Object.keys(answers).length} of {total} answered.
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             {!allAnswered && (
-              <span className="text-xs text-neutral-500">Answer all questions to submit</span>
+              <span className="text-xs text-muted-foreground">Answer all questions to submit</span>
             )}
             <Button 
               onClick={submit} 

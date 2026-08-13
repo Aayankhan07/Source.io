@@ -8,6 +8,7 @@ import { queryKeys } from "@/lib/queryKeys";
 import { errorMessage } from "@/lib/utils";
 import { Loader2, Send, Sparkles, BookOpen, AlertCircle, Cpu, User, RefreshCw } from "lucide-react";
 import MarkdownView from "@/components/common/MarkdownView";
+import Magnitude from "@/components/common/Magnitude";
 import { embedChunks, streamChat, type Citation } from "@/lib/services/pipeline";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -192,13 +193,13 @@ export default function ChatPanel({
 
   if (!noteReady) {
     return (
-      <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4 animate-fade-in">
-        <div className="h-10 w-10 rounded-lg bg-neutral-900 border border-white/5 flex items-center justify-center text-neutral-500 mx-auto">
+      <div className="border border-dashed border-border bg-card/40 plate rounded-sm p-10 text-center max-w-md mx-auto mt-12 space-y-4 animate-fade-in">
+        <div className="h-10 w-10 rounded-sm bg-surface-sunken border border-border/60 flex items-center justify-center text-muted-foreground mx-auto">
           <AlertCircle className="h-5 w-5" />
         </div>
         <div className="space-y-1">
-          <h3 className="font-bold text-white font-display text-sm">Grounded chat unavailable</h3>
-          <p className="text-sm text-neutral-400 leading-relaxed">
+          <h3 className="font-bold text-foreground font-display text-sm">Grounded chat unavailable</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
             Please generate notes for the document first before opening the chatbot helper.
           </p>
         </div>
@@ -218,15 +219,15 @@ export default function ChatPanel({
   // if the conversation had never happened.
   if (historyQuery.isError) {
     return (
-      <div className="border border-dashed border-destructive/20 bg-destructive/5 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4">
-        <div className="h-10 w-10 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
+      <div className="border border-dashed border-destructive/20 bg-destructive/5 plate rounded-sm p-10 text-center max-w-md mx-auto mt-12 space-y-4">
+        <div className="h-10 w-10 rounded-sm bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
           <AlertCircle className="h-5 w-5" />
         </div>
         <div className="space-y-1">
-          <h3 className="font-bold text-white font-display text-sm">Couldn't load this conversation</h3>
-          <p className="text-sm text-neutral-400 leading-relaxed">
+          <h3 className="font-bold text-foreground font-display text-sm">Couldn't load this conversation</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
             Your chat history is still saved.
-            <span className="block text-neutral-500 mt-1">{errorMessage(historyQuery.error)}</span>
+            <span className="block text-muted-foreground mt-1">{errorMessage(historyQuery.error)}</span>
           </p>
         </div>
         <Button onClick={() => historyQuery.refetch()} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs">
@@ -238,13 +239,13 @@ export default function ChatPanel({
 
   if (chunkCount === 0) {
     return (
-      <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4 animate-fade-in">
-        <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+      <div className="border border-dashed border-border bg-card/40 plate rounded-sm p-10 text-center max-w-md mx-auto mt-12 space-y-4 animate-fade-in">
+        <div className="h-10 w-10 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
           <Sparkles className="h-5 w-5" />
         </div>
         <div className="space-y-1">
-          <h3 className="font-bold text-white font-display text-sm">Prepare this document for chat</h3>
-          <p className="text-sm text-neutral-400 leading-relaxed">
+          <h3 className="font-bold text-foreground font-display text-sm">Prepare this document for chat</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
             We'll index your notes so answers can cite the exact passages they came from.
           </p>
         </div>
@@ -265,11 +266,11 @@ export default function ChatPanel({
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-5 pr-2 pb-4">
         {messages.length === 0 && (
           <div className="text-center py-20 space-y-3 max-w-sm mx-auto animate-fade-in">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+            <div className="h-10 w-10 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
               <Sparkles className="h-5 w-5" />
             </div>
-            <h4 className="font-bold text-white font-display text-sm">Ask your Study Buddy</h4>
-            <p className="text-sm text-neutral-400 leading-relaxed">
+            <h4 className="font-bold text-foreground font-display text-sm">Ask your Study Buddy</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Query the uploaded document and receive responses grounded in verified passage excerpts.
             </p>
           </div>
@@ -281,7 +282,7 @@ export default function ChatPanel({
       </div>
 
       {/* Inputs panel */}
-      <div className="border-t border-white/5 pt-4 bg-background shrink-0">
+      <div className="border-t border-border/60 pt-4 bg-background shrink-0">
         {/* Quick Suggestion Action Chips */}
         {messages.length === 0 && (
           <div className="flex gap-2 flex-wrap mb-4 animate-fade-in">
@@ -294,7 +295,7 @@ export default function ChatPanel({
                 key={sIdx}
                 onClick={() => handleQuickAction(suggest)}
                 disabled={sending}
-                className="text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/5 hover:border-primary/30 text-neutral-400 hover:text-white transition-all font-mono focus-ring"
+                className="text-xs px-3 py-1.5 rounded-full bg-surface-raised border border-border/60 hover:border-primary/30 text-muted-foreground hover:text-foreground transition-all font-mono focus-ring"
               >
                 {suggest}
               </button>
@@ -305,7 +306,7 @@ export default function ChatPanel({
         {/* Input Bar */}
         {/* The textarea intentionally has no ring of its own; the wrapper carries a
             focus-within ring so the whole composer reads as one focused control. */}
-        <div className="glass-panel p-2.5 rounded-xl border border-white/10 bg-card/80 shadow-2xl flex items-end gap-2 transition-colors focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background">
+        <div className="plate p-2.5 rounded-sm border border-border bg-card/80 shadow-plate flex items-end gap-2 transition-colors focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -318,7 +319,7 @@ export default function ChatPanel({
             placeholder="Ask a question grounded in this document..."
             aria-label="Ask a question about this document"
             rows={2}
-            className="flex-1 bg-transparent border-none focus-visible:ring-0 text-white placeholder-neutral-600 text-xs resize-none p-1 shadow-none focus-visible:outline-none min-h-[40px] max-h-[120px] focus:ring-0 focus:outline-none"
+            className="flex-1 bg-transparent border-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/70 text-xs resize-none p-1 shadow-none focus-visible:outline-none min-h-[40px] max-h-[120px] focus:ring-0 focus:outline-none"
             disabled={sending}
           />
           <Button
@@ -326,14 +327,14 @@ export default function ChatPanel({
             disabled={sending || !input.trim()}
             size="icon"
             aria-label={sending ? "Sending message" : "Send message"}
-            className="h-9 w-9 bg-primary hover:bg-primary-glow text-primary-foreground rounded-lg shadow-glow shrink-0"
+            className="h-9 w-9 bg-primary hover:bg-primary-glow text-primary-foreground rounded-sm shrink-0"
           >
             {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
 
         {/* Grounded Indicator bar */}
-        <div className="flex items-center justify-between text-xs text-neutral-500 font-mono mt-2 px-1">
+        <div className="flex items-center justify-between text-xs text-muted-foreground font-mono mt-2 px-1">
           <span className="flex items-center gap-1"><BookOpen className="h-3 w-3 text-primary" /> Answers cite {chunkCount} passages</span>
           <span>Press Enter to send</span>
         </div>
@@ -350,21 +351,21 @@ const MessageBubble = memo(function MessageBubble({ message }: { message: ChatMe
     <div className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}>
       {/* Icon Avatar */}
       {!isUser && (
-        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 shadow-inner">
+        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 shadow-inner">
           <Cpu className="h-4 w-4" />
         </div>
       )}
 
       <div
         className={cn(
-          "max-w-[92%] sm:max-w-[85%] rounded-2xl px-3.5 sm:px-4 py-3 relative border",
+          "max-w-[92%] sm:max-w-[85%] rounded-sm px-3.5 sm:px-4 py-3 relative border",
           isUser
             ? "bg-primary border-primary/10 text-primary-foreground font-medium rounded-tr-none shadow-md"
-            : "bg-card border-white/5 text-neutral-200 rounded-tl-none shadow-sm glass-panel"
+            : "bg-card border-border/60 text-foreground rounded-tl-none shadow-sm plate"
         )}
       >
         {message.pending && !message.content ? (
-          <div className="flex items-center gap-2 text-xs text-neutral-500 font-mono">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
             <Loader2 className="h-3 w-3 animate-spin text-primary" /> Synthesizing grounded response…
           </div>
         ) : isUser ? (
@@ -376,7 +377,7 @@ const MessageBubble = memo(function MessageBubble({ message }: { message: ChatMe
         )}
         
         {!isUser && message.citations && message.citations.length > 0 && (
-          <div className="mt-3 pt-2.5 border-t border-white/5 flex flex-wrap gap-1.5">
+          <div className="mt-3 pt-2.5 border-t border-border/60 flex flex-wrap gap-1.5">
             {message.citations.map((c) => (
               <CitationChip key={c.n} citation={c} />
             ))}
@@ -385,7 +386,7 @@ const MessageBubble = memo(function MessageBubble({ message }: { message: ChatMe
       </div>
 
       {isUser && (
-        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 shrink-0">
+        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-sm bg-surface-raised border border-border flex items-center justify-center text-foreground/90 shrink-0">
           <User className="h-4 w-4" />
         </div>
       )}
@@ -415,22 +416,27 @@ function RenderWithCitations({ text, citations }: { text: string; citations: Cit
 }
 
 function CitationChip({ citation }: { citation: Citation }) {
+  const pct = (citation.similarity * 100).toFixed(0);
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-1 text-xs font-mono px-2 py-0.5 rounded bg-neutral-900 border border-white/5 hover:border-primary/40 hover:text-white transition-colors focus-ring"
+          // Strength reads as diameter first and a figure second, so a glance
+          // across the citations shows which passages carry the answer.
+          className="inline-flex items-center gap-1.5 text-xs font-mono px-2 py-0.5 rounded-sm bg-surface-sunken border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors focus-ring"
+          aria-label={`Source ${citation.n}, ${pct} percent match`}
         >
-          <AlertCircle className="h-2.5 w-2.5 text-primary" />
-          [{citation.n}] · {(citation.similarity * 100).toFixed(0)}% Match
+          <Magnitude value={citation.similarity} className="text-primary" />
+          [{citation.n}]
+          <span className="text-muted-foreground/70">{pct}%</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 text-xs bg-popover border-white/10 text-white rounded-xl shadow-2xl p-4 max-h-60 overflow-y-auto">
-        <div className="font-bold mb-1.5 text-neutral-400 font-mono text-xs uppercase tracking-wider">
+      <PopoverContent className="w-80 text-xs bg-popover border-border text-foreground rounded-sm shadow-plate p-4 max-h-60 overflow-y-auto">
+        <div className="font-bold mb-1.5 text-muted-foreground font-mono text-xs uppercase tracking-wider">
           Passage fragment #{citation.order_index + 1}
         </div>
-        <p className="whitespace-pre-wrap leading-relaxed text-neutral-300 font-sans text-xs">{citation.text}</p>
+        <p className="whitespace-pre-wrap leading-relaxed text-foreground/90 font-sans text-xs">{citation.text}</p>
       </PopoverContent>
     </Popover>
   );
