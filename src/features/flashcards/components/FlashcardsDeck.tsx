@@ -19,6 +19,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
   const [order, setOrder] = useState<number[]>(() => cards.map((_, i) => i));
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [viewMode, setViewMode] = useState<"study" | "grid">("study");
   
   // Track ratings for stats
   const [ratings, setRatings] = useState<Record<string, string>>({});
@@ -60,24 +61,18 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
   }, [card, idx, total, go, toast]);
 
   // Keyboard shortcuts, scoped to the deck.
-  //
-  // This used to listen on `window` and preventDefault() Space unconditionally,
-  // which stopped Space from activating any focused button or link anywhere on
-  // the page while a deck was mounted.
   const deckRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (viewMode !== "study") return;
       const active = document.activeElement;
       if (active?.tagName === "INPUT" || active?.tagName === "TEXTAREA") return;
 
-      // Only claim keys while the user is actually working in the deck.
       const deck = deckRef.current;
       if (!deck || !active || !deck.contains(active)) return;
 
       if (e.code === "Space") {
-        // The card handles Space through its own onKeyDown when focused, and
-        // buttons activate on Space natively — don't double-fire either.
         if (active === cardRef.current || active.tagName === "BUTTON") return;
         e.preventDefault();
         setFlipped((f) => !f);
@@ -97,7 +92,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [flipped, go, rate]);
+  }, [flipped, go, rate, viewMode]);
 
   if (!card) {
     return (
@@ -111,19 +106,31 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
     );
   }
 
+  const reviewedCount = Object.keys(ratings).length;
+
   return (
     <div ref={deckRef} className="space-y-6 animate-fade-in text-left">
       {/* Action Header controls */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs border-border text-foreground bg-surface-raised font-mono">
-            {idx + 1} / {total}
+            {viewMode === "study" ? `${idx + 1} / ${total}` : `${total} Cards`}
           </Badge>
-          <div className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground font-mono">
-            <Keyboard className="h-3.5 w-3.5" /> Focus the card · Space to flip · Arrows to navigate
-          </div>
+          {reviewedCount > 0 && (
+            <span className="text-xs text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              {reviewedCount}/{total} Reviewed
+            </span>
+          )}
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="xs"
+            className="border-border text-foreground/90 hover:text-foreground bg-surface-raised text-xs py-1"
+            onClick={() => setViewMode((m) => (m === "study" ? "grid" : "study"))}
+          >
+            <Layers className="h-3.5 w-3.5 mr-1" /> {viewMode === "study" ? "Grid View" : "Study Deck"}
+          </Button>
           <Button
             variant="outline"
             size="xs"
@@ -143,124 +150,151 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
         </div>
       </div>
 
-      {/* Card stack layout wrapper */}
-      <div className="relative w-full h-80 sm:h-80 select-none pb-4">
-        {/* Background stack card shadows to simulate deck */}
-        {total - idx > 2 && (
-          <div className="absolute inset-x-4 bottom-0 h-72 rounded-sm border border-border/60 bg-card/40 translate-y-4 scale-95 pointer-events-none transition-transform" />
-        )}
-        {total - idx > 1 && (
-          <div className="absolute inset-x-2 bottom-1 h-72 rounded-sm border border-border/60 bg-surface-raised/70 translate-y-2 scale-[0.98] pointer-events-none transition-transform" />
-        )}
-
-        {/* Floating Flip Card */}
-        <div
-          ref={cardRef}
-          className="relative w-full h-72 cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          style={{ perspective: "1200px" }}
-          onClick={() => setFlipped((f) => !f)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setFlipped((f) => !f);
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          aria-pressed={flipped}
-          aria-label={flipped ? "Show question" : "Reveal answer"}
-        >
-          <div
-            className="absolute inset-0 transition-transform duration-500"
-            style={{
-              transformStyle: "preserve-3d",
-              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            }}
-          >
-            {/* Front Question Face */}
-            <div
-              className="absolute inset-0 rounded-sm border border-border bg-surface-raised p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-plate plate relative interactive-card"
-              style={{ backfaceVisibility: "hidden" }}
-            >
-              <Badge variant="secondary" className="mb-4 text-xs uppercase tracking-wider font-bold bg-primary/10 text-primary border-primary/20">Question</Badge>
-              <p className="text-base sm:text-lg font-bold text-foreground leading-relaxed max-w-lg font-display">{card.front}</p>
-              
-              {ratings[card.id] && (
-                <div className="absolute top-4 right-4 flex items-center gap-1 text-xs text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                  <CheckCircle className="h-3 w-3" /> Reviewed
-                </div>
-              )}
-              <p className="absolute bottom-4 text-xs text-muted-foreground">Tap card or press <code className="bg-surface-elevated px-1 rounded text-muted-foreground">Space</code> to reveal answer</p>
+      {viewMode === "grid" ? (
+        <div className="grid sm:grid-cols-2 gap-4">
+          {cards.map((c, i) => (
+            <div key={c.id || i} className="plate p-5 rounded-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                <span className="text-xs font-mono text-muted-foreground">Card #{i + 1}</span>
+                {ratings[c.id] && (
+                  <Badge variant="outline" className="text-[10px] font-mono uppercase bg-primary/10 text-primary border-primary/20">
+                    {ratings[c.id]}
+                  </Badge>
+                )}
+              </div>
+              <div>
+                <h4 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-1">Question</h4>
+                <p className="text-sm font-semibold text-foreground font-display">{c.front}</p>
+              </div>
+              <div className="pt-2 border-t border-border/40">
+                <h4 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-1">Answer</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{c.back}</p>
+              </div>
             </div>
-
-            {/* Back Answer Face */}
-            <div
-              className="absolute inset-0 rounded-sm border border-primary/20 bg-surface-raised p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-plate plate interactive-card"
-              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-            >
-              <Badge className="mb-4 text-xs uppercase tracking-wider font-bold bg-purple-500/20 text-purple-400 border-purple-500/30">Answer explanation</Badge>
-              <p className="text-base sm:text-lg text-foreground leading-relaxed max-w-lg">{card.back}</p>
-              <p className="absolute bottom-4 text-xs text-muted-foreground">Tap to flip back</p>
-            </div>
-          </div>
+          ))}
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Card stack layout wrapper */}
+          <div className="relative w-full h-80 sm:h-80 select-none pb-4">
+            {/* Background stack card shadows to simulate deck */}
+            {total - idx > 2 && (
+              <div className="absolute inset-x-4 bottom-0 h-72 rounded-sm border border-border/60 bg-card/40 translate-y-4 scale-95 pointer-events-none transition-transform" />
+            )}
+            {total - idx > 1 && (
+              <div className="absolute inset-x-2 bottom-1 h-72 rounded-sm border border-border/60 bg-surface-raised/70 translate-y-2 scale-[0.98] pointer-events-none transition-transform" />
+            )}
 
-      {/* Progress navigation & Spaced Repetition Feedback Controls */}
-      <div className="space-y-4">
-        {flipped && (
-          <div className="plate p-4 rounded-sm border border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in">
-            <span className="text-xs text-muted-foreground font-mono">How well did you recall this?</span>
-            <div className="flex gap-2 w-full sm:w-auto">
-              <Button 
-                onClick={(e) => { e.stopPropagation(); rate("again"); }} 
-                className="flex-1 sm:flex-none text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 py-1"
-                size="sm"
-              >
-                Again (1)
-              </Button>
-              <Button 
-                onClick={(e) => { e.stopPropagation(); rate("hard"); }} 
-                className="flex-1 sm:flex-none text-xs bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 py-1"
-                size="sm"
-              >
-                Hard (2)
-              </Button>
-              <Button 
-                onClick={(e) => { e.stopPropagation(); rate("good"); }} 
-                className="flex-1 sm:flex-none text-xs bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 py-1"
-                size="sm"
-              >
-                Good (3)
-              </Button>
-              <Button 
-                onClick={(e) => { e.stopPropagation(); rate("easy"); }} 
-                className="flex-1 sm:flex-none text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 py-1"
-                size="sm"
-              >
-                Easy (4)
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <div className="flex items-center justify-between gap-4">
-          <Button variant="outline" onClick={() => go(-1)} disabled={idx === 0} className="border-border text-foreground hover:bg-surface-raised">
-            <ChevronLeft className="h-4 w-4 mr-1 shrink-0" /> Prev
-          </Button>
-          <div className="flex-1">
-            <div className="h-1.5 rounded-full bg-neutral-800 overflow-hidden shadow-inner">
+            {/* Floating Flip Card */}
+            <div
+              ref={cardRef}
+              className="relative w-full h-72 cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              style={{ perspective: "1200px" }}
+              onClick={() => setFlipped((f) => !f)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setFlipped((f) => !f);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-pressed={flipped}
+              aria-label={flipped ? "Show question" : "Reveal answer"}
+            >
               <div
-                className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${((idx + 1) / total) * 100}%` }}
-              />
+                className="absolute inset-0 transition-transform duration-500"
+                style={{
+                  transformStyle: "preserve-3d",
+                  transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+                }}
+              >
+                {/* Front Question Face */}
+                <div
+                  className="absolute inset-0 rounded-sm border border-border bg-surface-raised p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-plate plate relative interactive-card"
+                  style={{ backfaceVisibility: "hidden" }}
+                >
+                  <Badge variant="secondary" className="mb-4 text-xs uppercase tracking-wider font-bold bg-primary/10 text-primary border-primary/20">Question</Badge>
+                  <p className="text-base sm:text-lg font-bold text-foreground leading-relaxed max-w-lg font-display">{card.front}</p>
+                  
+                  {ratings[card.id] && (
+                    <div className="absolute top-4 right-4 flex items-center gap-1 text-xs text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      <CheckCircle className="h-3 w-3" /> Reviewed
+                    </div>
+                  )}
+                  <p className="absolute bottom-4 text-xs text-muted-foreground">Tap card or press <code className="bg-surface-elevated px-1 rounded text-muted-foreground">Space</code> to reveal answer</p>
+                </div>
+
+                {/* Back Answer Face */}
+                <div
+                  className="absolute inset-0 rounded-sm border border-primary/20 bg-surface-raised p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-plate plate interactive-card"
+                  style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                >
+                  <Badge className="mb-4 text-xs uppercase tracking-wider font-bold bg-purple-500/20 text-purple-400 border-purple-500/30">Answer explanation</Badge>
+                  <p className="text-base sm:text-lg text-foreground leading-relaxed max-w-lg">{card.back}</p>
+                  <p className="absolute bottom-4 text-xs text-muted-foreground">Tap to flip back</p>
+                </div>
+              </div>
             </div>
           </div>
-          <Button variant="outline" onClick={() => go(1)} disabled={idx === total - 1} className="border-border text-foreground hover:bg-surface-raised">
-            Next <ChevronRight className="h-4 w-4 ml-1 shrink-0" />
-          </Button>
-        </div>
-      </div>
+
+          {/* Progress navigation & Spaced Repetition Feedback Controls */}
+          <div className="space-y-4">
+            {flipped && (
+              <div className="plate p-4 rounded-sm border border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in">
+                <span className="text-xs text-muted-foreground font-mono">How well did you recall this?</span>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Button 
+                    onClick={(e) => { e.stopPropagation(); rate("again"); }} 
+                    className="flex-1 sm:flex-none text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 py-1"
+                    size="sm"
+                  >
+                    Again (1)
+                  </Button>
+                  <Button 
+                    onClick={(e) => { e.stopPropagation(); rate("hard"); }} 
+                    className="flex-1 sm:flex-none text-xs bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 py-1"
+                    size="sm"
+                  >
+                    Hard (2)
+                  </Button>
+                  <Button 
+                    onClick={(e) => { e.stopPropagation(); rate("good"); }} 
+                    className="flex-1 sm:flex-none text-xs bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 py-1"
+                    size="sm"
+                  >
+                    Good (3)
+                  </Button>
+                  <Button 
+                    onClick={(e) => { e.stopPropagation(); rate("easy"); }} 
+                    className="flex-1 sm:flex-none text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 py-1"
+                    size="sm"
+                  >
+                    Easy (4)
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-4">
+              <Button variant="outline" onClick={() => go(-1)} disabled={idx === 0} className="border-border text-foreground hover:bg-surface-raised">
+                <ChevronLeft className="h-4 w-4 mr-1 shrink-0" /> Prev
+              </Button>
+              <div className="flex-1">
+                <div className="h-1.5 rounded-full bg-neutral-800 overflow-hidden shadow-inner">
+                  <div
+                    className="h-full bg-primary transition-all duration-300"
+                    style={{ width: `${((idx + 1) / total) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <Button variant="outline" onClick={() => go(1)} disabled={idx === total - 1} className="border-border text-foreground hover:bg-surface-raised">
+                Next <ChevronRight className="h-4 w-4 ml-1 shrink-0" />
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
