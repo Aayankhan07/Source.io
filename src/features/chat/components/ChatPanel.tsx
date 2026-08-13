@@ -186,7 +186,7 @@ export default function ChatPanel({
   return (
     <div className="flex flex-col h-[calc(100vh-210px)] min-h-[400px] bg-[#09090b] text-left">
       {/* Scrollable Chat messages box */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-5 pr-2 scrollbar-thin pb-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-5 pr-2 pb-4">
         {messages.length === 0 && (
           <div className="text-center py-20 space-y-3 max-w-sm mx-auto animate-fade-in">
             <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
@@ -315,7 +315,7 @@ function RenderWithCitations({ text, citations }: { text: string; citations: Cit
   const map = new Map(citations.map((c) => [c.n, c]));
   const parts = text.split(/(\[\d+\])/g);
   return (
-    <div className="prose prose-sm prose-invert max-w-none">
+    <div className="max-w-none">
       <MarkdownView>
         {parts
           .map((p) => {
