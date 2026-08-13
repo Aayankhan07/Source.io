@@ -113,10 +113,11 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
       <div className="p-4">
         <Button 
           onClick={onNew} 
-          className="w-full bg-primary hover:bg-primary-glow text-primary-foreground font-semibold py-2.5 rounded-sm flex items-center justify-start gap-2 transition-all" 
+          variant="outline"
+          className="w-full border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary text-primary font-semibold py-2.5 rounded-sm flex items-center justify-start gap-2 transition-all focus-ring" 
           size="sm"
         >
-          <Plus className="h-4 w-4 shrink-0" />
+          <Plus className="h-4 w-4 shrink-0 text-primary" />
           <span>New Document</span>
         </Button>
       </div>
