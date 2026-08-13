@@ -2,8 +2,20 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://placeholder-project.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE1OTg4NzQ5OTIsImV4cCI6MTkxNDQzNDk5Mn0.placeholder";
+const CONFIGURED_URL = import.meta.env.VITE_SUPABASE_URL;
+const CONFIGURED_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+// Placeholders keep the module importable in test/build environments that have
+// no credentials. Any real request against them will fail, so make the cause loud.
+if (!CONFIGURED_URL || !CONFIGURED_KEY) {
+  console.error(
+    "[supabase] VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY are not set. " +
+      "Copy .env.example to .env and fill them in — every request will fail until you do.",
+  );
+}
+
+export const SUPABASE_URL = CONFIGURED_URL || "https://placeholder-project.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = CONFIGURED_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE1OTg4NzQ5OTIsImV4cCI6MTkxNDQzNDk5Mn0.placeholder";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
