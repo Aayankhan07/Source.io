@@ -62,8 +62,9 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
       });
       if (error) throw error;
       toast({ title: "Attempt recorded", description: `Scored ${score} / ${total}` });
-    } catch (e: any) {
-      toast({ title: "Could not save attempt", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast({ title: "Could not save attempt", description: msg, variant: "destructive" });
     } finally {
       setSaving(false);
     }
