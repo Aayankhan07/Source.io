@@ -7,8 +7,23 @@ Source.io is an elegant, modern, AI-powered learning companion that transforms a
 ## 🛠️ Tech Stack
 
 - **Frontend:** React 18, Vite, TypeScript, Tailwind CSS, shadcn/ui, Zustand
-- **Backend:** Supabase (PostgreSQL, Auth, Storage, Edge Functions)
-- **AI Integrations:** Gemini Pro (Edge functions), Groq API (Whisper transcription & Llama models), Groq Audio TTS (Podcast recap generation)
+- **Backend:** Supabase (PostgreSQL + pgvector, Auth, Storage, Edge Functions on Deno)
+- **AI Integrations:** Groq API — `llama-3.3-70b-versatile` for notes and derivatives, `llama-3.1-8b-instant` for chat, `whisper-large-v3` for transcription; Microsoft Edge TTS for podcast speech synthesis
+
+---
+
+## 📚 Documentation
+
+Detailed docs live in [`docs/`](./docs/README.md):
+
+| Page | Covers |
+| :--- | :--- |
+| [Architecture](./docs/architecture.md) | System shape, document lifecycle, state, streaming, RAG |
+| [Data model](./docs/data-model.md) | Tables, enums, RLS policies, storage buckets, migrations |
+| [Edge functions](./docs/edge-functions.md) | Request/response contract for all six functions |
+| [Development](./docs/development.md) | Setup, scripts, conventions, testing |
+| [Deployment](./docs/deployment.md) | Shipping frontend, migrations, and functions |
+| [Troubleshooting](./docs/troubleshooting.md) | Symptom-to-cause reference |
 
 ---
 
@@ -38,6 +53,7 @@ The project follows a clean, professional-grade, domain-driven (feature-based) m
 │   ├── App.tsx                # Application routing configuration shell
 │   └── main.tsx               # ReactDOM mounting setup
 │
+├── docs/                      # Project documentation (architecture, data model, deployment)
 ├── supabase/                  # Supabase database schemas & Deno code
 │   ├── functions/             # Server-side Edge Functions
 │   │   ├── chat/              # Citation-backed chat responder
@@ -65,11 +81,16 @@ The project follows a clean, professional-grade, domain-driven (feature-based) m
    ```
 
 2. **Configure Environment Variables:**
-   Create a `.env` file at the project root and add your Supabase credentials:
+   Copy the template and fill in your Supabase credentials:
+   ```bash
+   cp .env.example .env
+   ```
    ```env
    VITE_SUPABASE_URL=your-supabase-project-url
    VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
    ```
+   Both values are public and browser-safe. Never put a service-role key in a `VITE_`-prefixed
+   variable — Vite inlines those into the shipped bundle.
 
 3. **Start the Development Server:**
    ```bash
@@ -86,12 +107,24 @@ The project follows a clean, professional-grade, domain-driven (feature-based) m
 | `npm run dev` | Boots local Vite HMR dev server |
 | `npm run build` | Assembles production bundle to `dist/` |
 | `npm run preview` | Previews the compiled production build locally |
+| `npm run typecheck` | Type-checks the project (`tsc -b --noEmit`) |
 | `npm run lint` | Analyzes code for syntax and style standard violations |
 | `npm run test` | Executes automated unit test suite via Vitest |
+
+> `npm run build` uses SWC, which strips types **without checking them**. Run `npm run typecheck`
+> before committing — the build is not a type gate.
 
 ---
 
 ## 🔒 Environment Secrets
 
-Edge functions access these server-side environment secrets configured in your Supabase project:
-*   `GROQ_API_KEY`: Required for Whisper speech-to-text transcriptions and host speech synthesis.
+Edge functions read these server-side secrets from your Supabase project. They are never exposed to the browser:
+
+| Secret | Purpose |
+| :--- | :--- |
+| `GROQ_API_KEY` | Whisper transcription and llama chat completions |
+| `ALLOWED_ORIGIN` | Optional CORS lock-down; defaults to `*` |
+
+`SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically by the platform.
+
+See [`docs/edge-functions.md`](./docs/edge-functions.md) for the full contract.
