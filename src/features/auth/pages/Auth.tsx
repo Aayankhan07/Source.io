@@ -51,10 +51,10 @@ export default function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast({
         title: "Authentication failed",
-        description: err.message ?? "Something went wrong.",
+        description: err instanceof Error ? err.message : "Something went wrong.",
         variant: "destructive",
       });
     } finally {
