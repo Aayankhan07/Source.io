@@ -31,8 +31,13 @@ dist-ssr
 
 # Supabase local development
 supabase/.temp/
+supabase/.branches/
 supabase/functions/.env
 supabase/functions/*/.env
+
+# Deployment platform metadata
+.vercel/
+.netlify/
 
 # Vite/Vitest cache and coverage
 .vite/
