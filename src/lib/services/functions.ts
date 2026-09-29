@@ -1,11 +1,11 @@
 // Shared helpers for calling Supabase Edge Functions.
-import { supabase, SUPABASE_URL } from "@/integrations/supabase/client";
+import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
 
 /** Absolute URL of an edge function. Uses the same base URL as the Supabase client. */
 export const functionUrl = (name: string) => `${SUPABASE_URL}/functions/v1/${name}`;
 
 /**
- * POST a JSON body to an edge function with the current user's access token.
+ * POST a JSON body to an edge function with the current user's access token and project apikey.
  * Throws "Not authenticated" when there is no session; does not inspect the response.
  */
 export async function callFunction(
@@ -22,6 +22,7 @@ export async function callFunction(
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+      apikey: SUPABASE_PUBLISHABLE_KEY,
     },
     body: JSON.stringify(body),
     signal: init.signal,

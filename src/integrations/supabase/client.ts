@@ -15,7 +15,7 @@ if (!CONFIGURED_URL || !CONFIGURED_KEY) {
 }
 
 export const SUPABASE_URL = CONFIGURED_URL || "https://placeholder-project.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = CONFIGURED_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE1OTg4NzQ5OTIsImV4cCI6MTkxNDQzNDk5Mn0.placeholder";
+export const SUPABASE_PUBLISHABLE_KEY = CONFIGURED_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE1OTg4NzQ5OTIsImV4cCI6MTkxNDQzNDk5Mn0.placeholder";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
