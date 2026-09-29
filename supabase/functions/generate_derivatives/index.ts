@@ -170,14 +170,14 @@ Deno.serve(async (req) => {
   const MAX = 35_000;
   const trimmed = source.length > MAX ? source.slice(0, MAX) : source;
 
-  const callGroq = () => fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const callGroq = (model = "llama-3.3-70b-versatile") => fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${GROQ_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model,
       temperature: 0.3,
       response_format: { type: "json_object" },
       messages: [
@@ -187,14 +187,10 @@ Deno.serve(async (req) => {
     }),
   });
 
-  let aiResp = await callGroq();
-  let attempt = 0;
-  while (aiResp.status === 429 && attempt < 3) {
-    const retryAfter = Number(aiResp.headers.get("retry-after")) || 0;
-    const waitMs = Math.min(15_000, retryAfter > 0 ? retryAfter * 1000 : 1500 * Math.pow(2, attempt));
-    await new Promise((r) => setTimeout(r, waitMs));
-    aiResp = await callGroq();
-    attempt++;
+  let aiResp = await callGroq("llama-3.3-70b-versatile");
+  if (aiResp.status === 429) {
+    console.warn("Groq 70B rate limited (429), immediately falling back to llama-3.1-8b-instant...");
+    aiResp = await callGroq("llama-3.1-8b-instant");
   }
 
   if (!aiResp.ok) {
@@ -202,39 +198,29 @@ Deno.serve(async (req) => {
     const t = await aiResp.text().catch(() => "");
     console.error("Groq error", status, t);
 
-    let isRateLimit = status === 429 || status === 413;
-    let isTokenLimit = status === 413;
-
-    if (t) {
-      try {
-        const parsed = JSON.parse(t);
-        const code = parsed?.error?.code;
-        const msg = parsed?.error?.message ?? "";
-        if (code === "rate_limit_exceeded" || msg.includes("rate_limit_exceeded") || msg.includes("TPM") || msg.includes("Limit 12000")) {
-          isRateLimit = true;
-          if (msg.includes("too large") || msg.includes("TPM") || status === 413) {
-            isTokenLimit = true;
-          }
-        }
-      } catch {
-        if (t.includes("rate_limit_exceeded") || t.includes("TPM")) {
-          isRateLimit = true;
-        }
+    let errorDetail = `Groq API error (${status})`;
+    try {
+      const parsed = JSON.parse(t);
+      if (parsed?.error?.message) {
+        errorDetail = parsed.error.message;
       }
+    } catch {
+      if (t) errorDetail = t.slice(0, 200);
     }
 
-    if (isRateLimit) {
-      const errorMsg = isTokenLimit
-        ? "Document too large for Groq free-tier rate limits (12,000 TPM limit). Please try a shorter document or upgrade your Groq plan."
-        : "Rate limit reached on Groq's free tier — please wait a moment and try again.";
-      return new Response(JSON.stringify({ error: errorMsg }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response(JSON.stringify({ error: "Groq API error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const isRateLimit = status === 429 || errorDetail.includes("TPM") || errorDetail.includes("rate limit");
+    return new Response(
+      JSON.stringify({
+        error: isRateLimit
+          ? "Groq rate limit reached (12k/30k TPM free tier limit). Please wait ~30 seconds and try again."
+          : `Groq error: ${errorDetail}`,
+        status,
+      }),
+      {
+        status: status >= 400 && status < 600 ? status : 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   const aiJson = await aiResp.json();
