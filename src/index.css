@@ -420,7 +420,21 @@
   .prose-invert-tight td { @apply bg-transparent; }
   .prose-invert-tight strong { @apply text-foreground font-bold; }
   .prose-invert-tight a { @apply text-primary hover:text-primary-glow font-medium underline underline-offset-4 transition-colors; }
-  .prose-invert-tight blockquote { @apply border-l border-primary/40 bg-primary/5 pl-4 py-2 rounded-r-lg italic text-muted-foreground my-4; }
+  .prose-invert-tight blockquote {
+    @apply border-l-[3px] border-primary/70 bg-primary/5 pl-4 pr-3 py-2.5 rounded-r-xl not-italic text-foreground/90 my-4 shadow-sm;
+  }
+  .prose-invert-tight blockquote p {
+    @apply my-1 text-foreground/90 text-[14.5px] leading-relaxed;
+  }
+  .prose-invert-tight blockquote strong {
+    @apply text-foreground font-semibold;
+  }
+  .prose-invert-tight .katex-display {
+    @apply my-5 overflow-x-auto overflow-y-hidden py-2 text-center text-foreground;
+  }
+  .prose-invert-tight .katex {
+    font-size: 1.05em;
+  }
 
   /* Retro cassette tape mock animation styles for Podcast component */
   .cassette-shell {
