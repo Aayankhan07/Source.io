@@ -49,9 +49,9 @@ export default function AppEmpty() {
           <button
             type="button"
             onClick={() => navigate("/app/doc/demo-quantum")}
-            className="p-4 rounded-2xl bg-card border border-border/80 hover:border-sky-500/40 hover:shadow-xs cursor-pointer transition-all flex gap-3 text-left w-full group focus-ring"
+            className="p-4 rounded-2xl bg-card border border-border/80 hover:border-sky-500/40 hover:shadow-xs cursor-pointer transition-[color,background-color,border-color,box-shadow] duration-200 flex gap-3 text-left w-full group focus-ring"
           >
-            <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0 group-hover:scale-105 transition-transform">
+            <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0 group-active:scale-95 transition-transform">
               <Cpu className="h-4 w-4" />
             </div>
             <div className="flex-1 min-w-0">
@@ -59,7 +59,7 @@ export default function AppEmpty() {
                 <h4 className="text-xs font-semibold text-foreground truncate">
                   Quantum Computing
                 </h4>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
               </div>
               <p className="text-[11px] text-muted-foreground leading-normal">
                 Notes, 4 flashcards, 3-question quiz & audio recap ready.
@@ -70,9 +70,9 @@ export default function AppEmpty() {
           <button
             type="button"
             onClick={() => navigate("/app/doc/demo-linalg")}
-            className="p-4 rounded-2xl bg-card border border-border/80 hover:border-sky-500/40 hover:shadow-xs cursor-pointer transition-all flex gap-3 text-left w-full group focus-ring"
+            className="p-4 rounded-2xl bg-card border border-border/80 hover:border-sky-500/40 hover:shadow-xs cursor-pointer transition-[color,background-color,border-color,box-shadow] duration-200 flex gap-3 text-left w-full group focus-ring"
           >
-            <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0 group-hover:scale-105 transition-transform">
+            <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0 group-active:scale-95 transition-transform">
               <FileText className="h-4 w-4" />
             </div>
             <div className="flex-1 min-w-0">
@@ -80,7 +80,7 @@ export default function AppEmpty() {
                 <h4 className="text-xs font-semibold text-foreground truncate">
                   Linear Algebra Lecture
                 </h4>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
               </div>
               <p className="text-[11px] text-muted-foreground leading-normal">
                 Eigenvalues, spectral decomposition & flashcards.

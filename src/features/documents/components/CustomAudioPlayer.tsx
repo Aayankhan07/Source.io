@@ -274,7 +274,7 @@ export default function CustomAudioPlayer({
             <Button
               onClick={togglePlay}
               size="icon"
-              className="h-11 w-11 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white shadow-md transition-transform hover:scale-105"
+              className="h-11 w-11 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white shadow-md transition-transform active:scale-95"
               aria-label={isPlaying ? "Pause audio" : "Play audio"}
             >
               {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
@@ -315,7 +315,7 @@ export default function CustomAudioPlayer({
                 key={idx}
                 onClick={() => handleSeek([line.timeSec])}
                 className={cn(
-                  "w-full text-left p-3.5 rounded-xl border transition-all text-xs flex gap-3 group focus:outline-none focus:ring-2 focus:ring-sky-500/20",
+                  "w-full text-left p-3.5 rounded-xl border transition-all text-xs flex gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/20",
                   isActive
                     ? "bg-sky-50/80 dark:bg-sky-500/10 border-sky-200 dark:border-sky-500/30 text-foreground shadow-2xs"
                     : "bg-muted/40 border-border/60 hover:bg-muted/80 text-muted-foreground hover:text-foreground"

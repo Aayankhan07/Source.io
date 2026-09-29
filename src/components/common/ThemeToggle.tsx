@@ -17,7 +17,7 @@ export default function ThemeToggle({ className, variant = "icon" }: ThemeToggle
       <button
         onClick={toggleTheme}
         className={cn(
-          "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all border",
+          "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border",
           isDark
             ? "bg-slate-800/80 border-slate-700/80 text-slate-200 hover:bg-slate-750 hover:text-white"
             : "bg-slate-100 border-slate-200/90 text-slate-700 hover:bg-slate-200 hover:text-slate-900",

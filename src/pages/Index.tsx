@@ -110,7 +110,7 @@ export default function Index() {
 
       {/* Floating Pill Navigation Bar */}
       <header className="sticky top-5 z-50 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md border border-slate-200/90 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] flex items-center justify-between transition-all">
+        <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md border border-slate-200/90 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] flex items-center justify-between transition-[background-color,border-color,box-shadow]">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="h-7 w-7 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-sm">
               <Sparkles className="h-3.5 w-3.5 text-sky-300" />
@@ -132,7 +132,7 @@ export default function Index() {
             {user ? (
               <Link 
                 to="/app" 
-                className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-all"
+                className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-[background-color,box-shadow]"
               >
                 Open Workspace <ArrowRight className="h-3 w-3" />
               </Link>
@@ -146,7 +146,7 @@ export default function Index() {
                 </Link>
                 <Link 
                   to="/auth" 
-                  className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1 transition-all hover:shadow"
+                  className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1 transition-[background-color,box-shadow] hover:shadow"
                 >
                   Get started
                 </Link>
@@ -181,14 +181,14 @@ export default function Index() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-14">
           <Link
             to={user ? "/app" : "/auth"}
-            className="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white font-semibold text-sm px-7 py-3 rounded-full shadow-[0_4px_14px_0_rgba(15,23,42,0.25)] hover:shadow-lg transition-all inline-flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white font-semibold text-sm px-7 py-3 rounded-full shadow-[0_4px_14px_0_rgba(15,23,42,0.25)] hover:shadow-lg transition-[background-color,box-shadow,transform] inline-flex items-center justify-center gap-2"
           >
             {user ? "Go to workspace" : "Start free trial"}
             <ArrowRight className="h-4 w-4" />
           </Link>
           <a
             href="#simulator"
-            className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-semibold text-sm px-6 py-3 rounded-full border border-slate-200/90 shadow-sm transition-all inline-flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-semibold text-sm px-6 py-3 rounded-full border border-slate-200/90 shadow-sm transition-[background-color,color,border-color,box-shadow] inline-flex items-center justify-center gap-2"
           >
             Explore live demo
             <ChevronRight className="h-4 w-4 text-slate-400" />
@@ -225,7 +225,7 @@ export default function Index() {
                 <button
                   key={t.id}
                   onClick={() => setActiveSimTab(t.id)}
-                  className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all ${
+                  className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-[background-color,color,border-color,box-shadow] ${
                     active 
                       ? "bg-white text-slate-900 shadow-md border border-slate-200/90 ring-2 ring-sky-500/20" 
                       : "bg-white/60 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/60"
@@ -240,7 +240,7 @@ export default function Index() {
         </div>
 
         {/* Live Workspace Mock Dashboard (Window Container) */}
-        <div id="simulator" className="mt-2 text-left bg-white rounded-2xl border border-slate-200/90 shadow-[0_24px_68px_-12px_rgba(15,23,42,0.08)] overflow-hidden transition-all scroll-mt-28">
+        <div id="simulator" className="mt-2 text-left bg-white rounded-2xl border border-slate-200/90 shadow-[0_24px_68px_-12px_rgba(15,23,42,0.08)] overflow-hidden transition-[border-color,box-shadow] scroll-mt-28">
           {/* Window Chrome Header */}
           <div className="bg-slate-50/80 border-b border-slate-200/80 px-4 py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export default function Index() {
 
           {/* 4 Feature Metric Cards with Pastel Headers (Matching Reference Mockup) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-4 sm:p-5 bg-slate-50/40 border-b border-slate-100">
-            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-all">
+            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-colors">
               <div className="h-1.5 w-8 rounded-full bg-violet-400 mb-2.5" />
               <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
                 <span>Passages</span>
@@ -273,7 +273,7 @@ export default function Index() {
               <div className="text-base font-bold text-slate-900">48 Citations</div>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-all">
+            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-colors">
               <div className="h-1.5 w-8 rounded-full bg-rose-400 mb-2.5" />
               <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
                 <span>Flashcards</span>
@@ -282,7 +282,7 @@ export default function Index() {
               <div className="text-base font-bold text-slate-900">Spaced Deck</div>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-all">
+            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-colors">
               <div className="h-1.5 w-8 rounded-full bg-sky-400 mb-2.5" />
               <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
                 <span>Quiz Practice</span>
@@ -291,7 +291,7 @@ export default function Index() {
               <div className="text-base font-bold text-slate-900">Adaptive Qs</div>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-all">
+            <div className="bg-white rounded-xl border border-slate-200/70 p-3.5 shadow-2xs hover:border-slate-300 transition-colors">
               <div className="h-1.5 w-8 rounded-full bg-amber-400 mb-2.5" />
               <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
                 <span>Podcast Recap</span>
@@ -470,7 +470,7 @@ export default function Index() {
                           key={opt.idx}
                           disabled={quizSubmitted}
                           onClick={() => setSelectedChoice(opt.idx)}
-                          className={`w-full text-left p-3 rounded-xl border transition-all text-xs sm:text-sm font-medium flex items-center justify-between ${btnStyle}`}
+                          className={`w-full text-left p-3 rounded-xl border transition-[background-color,border-color,color] text-xs sm:text-sm font-medium flex items-center justify-between ${btnStyle}`}
                         >
                           <span>{opt.text}</span>
                           {quizSubmitted && isCorrect && <Check className="h-4 w-4 text-emerald-600" />}
@@ -530,13 +530,13 @@ export default function Index() {
                       <button
                         onClick={() => setPodcastPlaying(!podcastPlaying)}
                         aria-label={podcastPlaying ? "Pause audio preview" : "Play audio preview"}
-                        className="h-11 w-11 rounded-full bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center transition-all shadow-lg shrink-0 font-bold"
+                        className="h-11 w-11 rounded-full bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center transition-[background-color,box-shadow,transform] shadow-lg shrink-0 font-bold"
                       >
                         {podcastPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
                       </button>
                       <div className="flex-1 space-y-1">
                         <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-sky-400 transition-all duration-300" style={{ width: `${audioProgress}%` }} />
+                          <div className="h-full bg-sky-400 transition-[width] duration-300" style={{ width: `${audioProgress}%` }} />
                         </div>
                         <div className="flex justify-between text-[11px] text-slate-400 font-mono">
                           <span>0:48</span>
@@ -630,12 +630,12 @@ export default function Index() {
                       placeholder="Ask any question about your document..."
                       disabled={chatTyping}
                       aria-label="Ask a question about the document"
-                      className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+                      className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/20 focus-visible:border-sky-500 transition-[border-color,box-shadow]"
                     />
                     <button 
                       onClick={() => handleSendChat(chatInput)}
                       disabled={chatTyping || !chatInput.trim()}
-                      className="h-9 w-9 rounded-full bg-slate-950 hover:bg-slate-800 text-white flex items-center justify-center disabled:opacity-40 transition-all shrink-0"
+                      className="h-9 w-9 rounded-full bg-slate-950 hover:bg-slate-800 text-white flex items-center justify-center disabled:opacity-40 transition-[background-color,opacity] shrink-0"
                     >
                       <Send className="h-3.5 w-3.5" />
                     </button>
@@ -668,7 +668,7 @@ export default function Index() {
           ].map((item) => (
             <div
               key={item.label}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200/90 shadow-2xs text-xs font-medium text-slate-700 hover:text-slate-900 hover:border-slate-300 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200/90 shadow-2xs text-xs font-medium text-slate-700 hover:text-slate-900 hover:border-slate-300 transition-[color,border-color,background-color]"
             >
               <item.icon className="h-3.5 w-3.5 text-slate-500" />
               <span>{item.label}</span>
@@ -808,7 +808,7 @@ export default function Index() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-[border-color,box-shadow] flex flex-col justify-between">
             <div>
               <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center mb-5 shadow-sm">
                 <Layers className="h-5 w-5 text-sky-300" />
@@ -824,7 +824,7 @@ export default function Index() {
             </div>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-[border-color,box-shadow] flex flex-col justify-between">
             <div>
               <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center mb-5 shadow-sm">
                 <Headphones className="h-5 w-5 text-sky-300" />
@@ -840,7 +840,7 @@ export default function Index() {
             </div>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-[border-color,box-shadow] flex flex-col justify-between">
             <div>
               <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center mb-5 shadow-sm">
                 <ListChecks className="h-5 w-5 text-sky-300" />
@@ -1001,7 +1001,7 @@ export default function Index() {
 
             <Link
               to="/auth"
-              className="w-full text-center py-3 rounded-full border border-slate-200/90 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-900 font-semibold text-xs transition-all shadow-2xs"
+              className="w-full text-center py-3 rounded-full border border-slate-200/90 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-900 font-semibold text-xs transition-[color,background-color,border-color,box-shadow] shadow-2xs"
             >
               Get started free
             </Link>
@@ -1045,7 +1045,7 @@ export default function Index() {
 
             <Link
               to="/auth"
-              className="relative z-10 w-full text-center py-3 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs transition-all shadow-md"
+              className="relative z-10 w-full text-center py-3 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs transition-[background-color,box-shadow] shadow-md"
             >
               Start 14-day free trial
             </Link>
@@ -1068,7 +1068,7 @@ export default function Index() {
         <div className="flex items-center justify-center">
           <Link
             to={user ? "/app" : "/auth"}
-            className="bg-slate-950 hover:bg-slate-800 text-white font-semibold text-sm px-8 py-3.5 rounded-full shadow-lg transition-all inline-flex items-center gap-2"
+            className="bg-slate-950 hover:bg-slate-800 text-white font-semibold text-sm px-8 py-3.5 rounded-full shadow-lg transition-[background-color,box-shadow,transform] inline-flex items-center gap-2"
           >
             {user ? "Go to workspace" : "Get started free"}
             <ArrowRight className="h-4 w-4" />
