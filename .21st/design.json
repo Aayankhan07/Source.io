@@ -257,5 +257,13 @@
       "source": "package.json"
     }
   ],
+  "decisions": [
+    {
+      "key": "workspace-architecture",
+      "direction": "Direction 1: The Linear Research Lab (Collapsible Multi-Pane Studio)",
+      "rationale": "High-density multi-pane research workbench uniting teaching notes with a persistent collapsible companion dock for simultaneous chat, audio recap, and flashcards, alongside section outlines and global command omnibar.",
+      "selectedAt": "2026-09-30T03:36:00.000Z"
+    }
+  ],
   "generatedAt": "2026-09-29T22:31:34.800Z"
 }
