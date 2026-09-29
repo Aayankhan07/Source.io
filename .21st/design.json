@@ -263,6 +263,12 @@
       "direction": "Direction 1: The Linear Research Lab (Collapsible Multi-Pane Studio)",
       "rationale": "High-density multi-pane research workbench uniting teaching notes with a persistent collapsible companion dock for simultaneous chat, audio recap, and flashcards, alongside section outlines and global command omnibar.",
       "selectedAt": "2026-09-30T03:36:00.000Z"
+    },
+    {
+      "key": "dashboard-architecture",
+      "direction": "Direction A: The Bento Command Center (Modular Bento Grid & Live Telemetry)",
+      "rationale": "Modular bento command center uniting real-time study velocity telemetry, an inline drag-and-drop ingestion target, resume-last session card, and a rich document card grid with direct 1-click companion jump pills.",
+      "selectedAt": "2026-09-30T03:59:00.000Z"
     }
   ],
   "generatedAt": "2026-09-29T22:31:34.800Z"
