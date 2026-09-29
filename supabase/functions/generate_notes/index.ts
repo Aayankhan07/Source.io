@@ -14,6 +14,8 @@ function getCorsHeaders(req: Request) {
     "Access-Control-Allow-Headers":
       "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
   };
+}
+
 const SYSTEM_PROMPT = `You are an elite study-notes generator for the "Source.io" learning platform.
 
 Produce comprehensive, exam-ready notes in **GitHub-flavored Markdown** with this exact structure:
