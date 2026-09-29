@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
   const MAX = 35_000;
   const trimmed = source.length > MAX ? source.slice(0, MAX) : source;
 
-  const callGroq = (model = "llama-3.3-70b-versatile") => fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const callGroq = (model = "openai/gpt-oss-20b") => fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${GROQ_API_KEY}`,
@@ -187,10 +187,10 @@ Deno.serve(async (req) => {
     }),
   });
 
-  let aiResp = await callGroq("llama-3.3-70b-versatile");
+  let aiResp = await callGroq("openai/gpt-oss-20b");
   if (aiResp.status === 429) {
-    console.warn("Groq 70B rate limited (429), immediately falling back to llama-3.1-8b-instant...");
-    aiResp = await callGroq("llama-3.1-8b-instant");
+    console.warn("Groq 20B rate limited (429), immediately falling back to openai/gpt-oss-120b...");
+    aiResp = await callGroq("openai/gpt-oss-120b");
   }
 
   if (!aiResp.ok) {

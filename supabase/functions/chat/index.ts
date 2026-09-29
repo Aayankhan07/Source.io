@@ -13,7 +13,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const CHAT_MODEL = "llama-3.1-8b-instant";
+const CHAT_MODEL = "openai/gpt-oss-20b";
 const TOP_K = 6;
 const HISTORY_LIMIT = 10;
 const EMBED_DIMS = 1536;

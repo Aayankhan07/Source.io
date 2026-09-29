@@ -221,7 +221,7 @@ Deno.serve(async (req) => {
     `Source title: ${doc.title}\n\n--- SOURCE START ---\n${source}\n--- SOURCE END ---\n\n` +
     `Generate the study notes now, following the required structure exactly.`;
 
-  async function callGroq(model = "llama-3.3-70b-versatile"): Promise<Response> {
+  async function callGroq(model = "openai/gpt-oss-120b"): Promise<Response> {
     return await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -240,15 +240,14 @@ Deno.serve(async (req) => {
     });
   }
 
-  // 1) Try high-accuracy 70B model first
-  let aiResp = await callGroq("llama-3.3-70b-versatile");
+  // 1) Try high-accuracy 120B model first
+  let aiResp = await callGroq("openai/gpt-oss-120b");
 
-  // 2) If 70B model hits 429 (12k TPM ceiling), instantly fall back to llama-3.1-8b-instant (30k TPM pool)
-  // This avoids 45-second sleep loops that cause Supabase Gateway 503 timeouts!
+  // 2) If 120B model hits 429 rate limit, instantly fall back to openai/gpt-oss-20b
   if (aiResp.status === 429) {
-    console.warn("Groq 70B rate limited (429), immediately falling back to llama-3.1-8b-instant...");
+    console.warn("Groq 120B rate limited (429), immediately falling back to openai/gpt-oss-20b...");
     try { aiResp.body?.cancel(); } catch { /* noop */ }
-    aiResp = await callGroq("llama-3.1-8b-instant");
+    aiResp = await callGroq("openai/gpt-oss-20b");
   }
 
   // 3) Handle upstream error with immediate CORS response
