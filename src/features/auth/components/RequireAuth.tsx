@@ -13,7 +13,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   if (loading) {
     return (
       <div className={cn("luminous-app min-h-screen flex items-center justify-center bg-background", theme === "dark" && "dark")}>
-        <Loader2 className="h-5 w-5 animate-spin text-sky-500" />
+        <Loader2 className="h-5 w-5 animate-spin text-foreground" />
       </div>
     );
   }
@@ -22,7 +22,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
     return (
       <div className={cn("luminous-app min-h-screen flex items-center justify-center bg-background px-6 font-sans antialiased", theme === "dark" && "dark")}>
         <div className="bg-card border border-border rounded-3xl p-8 text-center max-w-sm space-y-4 shadow-xl">
-          <div className="h-12 w-12 rounded-full bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-600 dark:text-sky-400 mx-auto">
+          <div className="h-12 w-12 rounded-full bg-muted dark:bg-zinc-800 border border-border flex items-center justify-center text-foreground mx-auto">
             <Sparkles className="h-6 w-6" />
           </div>
           <div className="space-y-1.5">

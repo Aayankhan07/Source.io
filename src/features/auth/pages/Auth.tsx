@@ -113,7 +113,7 @@ export default function Auth() {
           {/* Stepper demonstration */}
           <div className="space-y-3.5">
             <div className="flex gap-3.5 items-start p-3.5 rounded-2xl bg-card border border-border/80 shadow-2xs">
-              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-zinc-800 border border-sky-200 dark:border-zinc-700 flex items-center justify-center text-sky-700 dark:text-zinc-200 shrink-0">
                 <Upload className="h-4 w-4" />
               </div>
               <div>
@@ -123,7 +123,7 @@ export default function Auth() {
             </div>
 
             <div className="flex gap-3.5 items-start p-3.5 rounded-2xl bg-card border border-border/80 shadow-2xs">
-              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-zinc-800 border border-sky-200 dark:border-zinc-700 flex items-center justify-center text-sky-700 dark:text-zinc-200 shrink-0">
                 <Headphones className="h-4 w-4" />
               </div>
               <div>
@@ -133,7 +133,7 @@ export default function Auth() {
             </div>
 
             <div className="flex gap-3.5 items-start p-3.5 rounded-2xl bg-card border border-border/80 shadow-2xs">
-              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-zinc-800 border border-sky-200 dark:border-zinc-700 flex items-center justify-center text-sky-700 dark:text-zinc-200 shrink-0">
                 <ListChecks className="h-4 w-4" />
               </div>
               <div>
@@ -168,7 +168,7 @@ export default function Auth() {
           <div className="bg-card border border-border p-7 sm:p-8 rounded-3xl shadow-xl relative">
             {signupSuccess ? (
               <div className="text-center py-4 space-y-6 animate-in fade-in zoom-in duration-300">
-                <div className="h-16 w-16 mx-auto rounded-full bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-600 dark:text-sky-400 shadow-sm">
+                <div className="h-16 w-16 mx-auto rounded-full bg-sky-50 dark:bg-zinc-800 border border-sky-200 dark:border-zinc-700 flex items-center justify-center text-sky-600 dark:text-zinc-200 shadow-sm">
                   <Mail className="h-8 w-8" />
                 </div>
                 <div className="space-y-2">
@@ -183,7 +183,7 @@ export default function Auth() {
                     setSignupSuccess(false);
                     setMode("signin");
                   }} 
-                  className="w-full mt-4 font-semibold rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white"
+                  className="w-full mt-4 font-semibold rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white"
                 >
                   Back to Sign In
                 </Button>
@@ -204,11 +204,11 @@ export default function Auth() {
                   <Button
                     type="button"
                     onClick={handleGuestDemo}
-                    className="w-full bg-sky-50 hover:bg-sky-100 dark:bg-sky-500/15 dark:hover:bg-sky-500/25 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-500/30 font-semibold py-2.5 rounded-full flex items-center justify-center gap-2 text-xs shadow-2xs transition-all"
+                    className="w-full bg-muted/60 hover:bg-muted dark:bg-zinc-800/80 dark:hover:bg-zinc-800 text-foreground border border-border/80 font-semibold py-2.5 rounded-full flex items-center justify-center gap-2 text-xs shadow-2xs transition-all"
                   >
-                    <Sparkles className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400 shrink-0" />
+                    <Sparkles className="h-3.5 w-3.5 text-foreground shrink-0" />
                     <span>Instant Demo Mode (No sign-up needed)</span>
-                    <ArrowRight className="h-3.5 w-3.5 ml-auto text-sky-500" />
+                    <ArrowRight className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
                   </Button>
                 </div>
 
@@ -228,7 +228,7 @@ export default function Auth() {
                         value={displayName} 
                         onChange={(e) => setDisplayName(e.target.value)} 
                         placeholder="Your name" 
-                        className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
+                        className="bg-muted/40 border-border focus:border-foreground text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
                       />
                     </div>
                   )}
@@ -241,7 +241,7 @@ export default function Auth() {
                       onChange={(e) => setEmail(e.target.value)} 
                       required 
                       placeholder="name@university.edu" 
-                      className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
+                      className="bg-muted/40 border-border focus:border-foreground text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -254,18 +254,18 @@ export default function Auth() {
                       required 
                       minLength={6} 
                       placeholder="••••••••" 
-                      className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
+                      className="bg-muted/40 border-border focus:border-foreground text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
                     />
                   </div>
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold py-2.5 rounded-full transition-colors text-xs shadow-sm mt-1" 
+                    className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white font-semibold py-2.5 rounded-full transition-colors text-xs shadow-sm mt-1" 
                     disabled={submitting}
                   >
                     {submitting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin text-white" /> Connecting…
+                        <Loader2 className="h-4 w-4 animate-spin text-white dark:text-zinc-950" /> Connecting…
                       </span>
                     ) : (
                       <span>{mode === "signin" ? "Sign in to Workspace" : "Create Account"}</span>

@@ -136,7 +136,7 @@ export default function AppEmpty() {
         <Button
           size="sm"
           onClick={openUpload}
-          className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white rounded-full text-xs h-8 px-3"
+          className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white rounded-full text-xs h-8 px-3"
         >
           <Plus className="h-3.5 w-3.5 mr-1" />
           <span>New</span>
@@ -164,9 +164,9 @@ export default function AppEmpty() {
             <Button
               onClick={openUpload}
               size="lg"
-              className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold rounded-full shadow-sm text-xs sm:text-sm px-6 h-11"
+              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white font-semibold rounded-full shadow-sm text-xs sm:text-sm px-6 h-11"
             >
-              <Plus className="h-4 w-4 mr-2 shrink-0 text-white" />
+              <Plus className="h-4 w-4 mr-2 shrink-0" />
               <span>Import Material</span>
             </Button>
           </div>
@@ -238,7 +238,7 @@ export default function AppEmpty() {
                     onClick={() => setActiveFilter(tab.id)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors shrink-0 ${
                       activeFilter === tab.id
-                        ? "bg-slate-900 dark:bg-primary text-white font-semibold shadow-2xs"
+                        ? "bg-slate-900 dark:bg-white text-white dark:text-zinc-950 font-semibold shadow-2xs"
                         : "bg-card text-muted-foreground hover:text-foreground border border-border/70 hover:bg-muted/40"
                     }`}
                   >
@@ -286,7 +286,7 @@ export default function AppEmpty() {
                 <Button
                   size="sm"
                   onClick={openUpload}
-                  className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white rounded-full text-xs"
+                  className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white rounded-full text-xs"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />
                   Upload Material

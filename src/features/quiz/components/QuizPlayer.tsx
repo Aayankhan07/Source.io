@@ -90,11 +90,11 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
       {submitted && (
         <div className="glass-card glass-highlight rounded-2xl border border-border/80 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-md">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+            <div className="h-14 w-14 rounded-2xl bg-sky-50 dark:bg-zinc-800/80 border border-sky-100 dark:border-zinc-700 flex items-center justify-center text-sky-700 dark:text-zinc-200 shrink-0">
               <Award className="h-7 w-7" />
             </div>
             <div className="space-y-1">
-              <span className="text-xs uppercase font-semibold tracking-wider text-sky-700 dark:text-sky-400 font-mono">Quiz Completed</span>
+              <span className="text-xs uppercase font-semibold tracking-wider text-sky-700 dark:text-zinc-400 font-mono">Quiz Completed</span>
               <h3 className="text-xl font-semibold text-foreground font-display">
                 {percentage === 100 ? "Perfect Score!" : percentage >= 70 ? "Excellent Work!" : "Keep practicing!"}
               </h3>
@@ -108,7 +108,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
             <div className="h-12 w-12 rounded-full border border-border bg-muted flex items-center justify-center font-mono text-sm font-bold text-foreground shadow-2xs">
               {percentage}%
             </div>
-            <Button onClick={reset} className="font-semibold text-xs py-2 px-5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white flex items-center gap-1.5 shrink-0 shadow-sm">
+            <Button onClick={reset} className="font-semibold text-xs py-2 px-5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white flex items-center gap-1.5 shrink-0 shadow-sm">
               <RotateCcw className="h-3.5 w-3.5" /> Try again
             </Button>
           </div>
@@ -163,7 +163,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         className={cn(
                           "w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition-all relative flex items-center justify-between font-medium focus-ring",
                           !submitted && "hover:border-slate-400 dark:hover:border-slate-600 hover:bg-muted/60 border-border text-foreground",
-                          selected && !submitted && "border-sky-500 bg-sky-50/60 dark:bg-sky-500/10 text-foreground ring-2 ring-sky-500/20",
+                          selected && !submitted && "border-slate-900 bg-slate-100 dark:border-white dark:bg-zinc-800 text-foreground ring-2 ring-primary/20",
                           submitted && isAnswer && "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-semibold",
                           submitted && selected && !isAnswer && "border-rose-500 bg-rose-50/70 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 font-semibold",
                           submitted && !selected && !isAnswer && "border-border opacity-50 text-muted-foreground"
@@ -193,7 +193,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         className={cn(
                           "p-3 rounded-xl border text-xs sm:text-sm font-semibold text-center transition-all flex items-center justify-center gap-1.5 focus-ring",
                           !submitted && "hover:border-slate-400 dark:hover:border-slate-600 hover:bg-muted/60 border-border text-foreground",
-                          selected && !submitted && "border-sky-500 bg-sky-50/60 dark:bg-sky-500/10 text-foreground ring-2 ring-sky-500/20",
+                          selected && !submitted && "border-slate-900 bg-slate-100 dark:border-white dark:bg-zinc-800 text-foreground ring-2 ring-primary/20",
                           submitted && isAnswer && "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300",
                           submitted && selected && !isAnswer && "border-rose-500 bg-rose-50/70 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300",
                           submitted && !selected && !isAnswer && "border-border opacity-50 text-muted-foreground"
@@ -258,7 +258,7 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
             <Button 
               onClick={submit} 
               disabled={!allAnswered || saving} 
-              className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-6 py-2 text-xs rounded-full shadow-sm"
+              className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white font-semibold px-6 py-2 text-xs rounded-full shadow-sm"
             >
               {saving ? (
                 <span className="flex items-center gap-1">

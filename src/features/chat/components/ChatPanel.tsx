@@ -288,7 +288,7 @@ export default function ChatPanel({
   if (chunkCount === 0) {
     return (
       <div className="border border-border bg-card rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4 shadow-sm animate-fade-in">
-        <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 mx-auto">
+        <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-zinc-800/80 border border-sky-100 dark:border-zinc-700 flex items-center justify-center text-sky-700 dark:text-zinc-200 mx-auto">
           <Sparkles className="h-5 w-5" />
         </div>
         <div className="space-y-1">
@@ -297,8 +297,8 @@ export default function ChatPanel({
             We'll index your notes so answers can cite the exact passages they came from.
           </p>
         </div>
-        <Button onClick={runIndex} disabled={indexing} className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-5 py-2 text-xs rounded-full shadow-sm">
-          {indexing ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin text-white" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5 text-white" />}
+        <Button onClick={runIndex} disabled={indexing} className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white font-semibold px-5 py-2 text-xs rounded-full shadow-sm">
+          {indexing ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin text-white dark:text-zinc-950" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5 text-white dark:text-zinc-950" />}
           Prepare for chat
         </Button>
       </div>
@@ -312,7 +312,7 @@ export default function ChatPanel({
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 pr-2 pb-4">
         {messages.length === 0 && (
           <div className="text-center py-16 space-y-3 max-w-sm mx-auto animate-fade-in">
-            <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 mx-auto">
+            <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-zinc-800/80 border border-sky-100 dark:border-zinc-700 flex items-center justify-center text-sky-700 dark:text-zinc-200 mx-auto">
               <Sparkles className="h-5 w-5" />
             </div>
             <h4 className="font-semibold text-foreground font-display text-sm">Ask your Research Assistant</h4>
@@ -344,14 +344,14 @@ export default function ChatPanel({
                 disabled={sending}
                 className="text-xs px-3 py-1.5 rounded-full bg-card border border-border hover:bg-muted text-foreground transition-all font-medium flex items-center gap-1 shadow-2xs"
               >
-                <Sparkles className="h-3 w-3 text-sky-600 dark:text-sky-400" /> {suggest}
+                <Sparkles className="h-3 w-3 text-sky-600 dark:text-zinc-400" /> {suggest}
               </button>
             ))}
           </div>
         )}
 
         {/* Input Bar */}
-        <div className="p-2.5 rounded-2xl border border-border/80 glass-dock shadow-md flex items-end gap-2 transition-colors focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-500/20">
+        <div className="p-2.5 rounded-2xl border border-border/80 glass-dock shadow-md flex items-end gap-2 transition-colors focus-within:border-foreground focus-within:ring-2 focus-within:ring-primary/20">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -372,15 +372,15 @@ export default function ChatPanel({
             disabled={sending || !input.trim()}
             size="icon"
             aria-label={sending ? "Sending message" : "Send message"}
-            className="h-9 w-9 bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white rounded-full shrink-0 shadow-2xs"
+            className="h-9 w-9 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white rounded-full shrink-0 shadow-2xs"
           >
-            {sending ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : <Send className="h-3.5 w-3.5" />}
+            {sending ? <Loader2 className="h-4 w-4 animate-spin text-white dark:text-zinc-950" /> : <Send className="h-3.5 w-3.5" />}
           </Button>
         </div>
 
         {/* Grounded Indicator bar */}
         <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono mt-2 px-1">
-          <span className="flex items-center gap-1"><BookOpen className="h-3 w-3 text-sky-600 dark:text-sky-400" /> Answers cite {chunkCount} passages</span>
+          <span className="flex items-center gap-1"><BookOpen className="h-3 w-3 text-sky-600 dark:text-zinc-400" /> Answers cite {chunkCount} passages</span>
           <span>Press Enter to send</span>
         </div>
       </div>
@@ -395,7 +395,7 @@ const MessageBubble = memo(function MessageBubble({ message }: { message: ChatMe
     <div className={cn("flex gap-2.5", isUser ? "justify-end" : "justify-start")}>
       {!isUser && (
         <div className="h-7 w-7 rounded-full bg-slate-900 dark:bg-card border border-transparent dark:border-border text-white flex items-center justify-center shrink-0 shadow-2xs mt-1">
-          <Cpu className="h-3.5 w-3.5 text-sky-300 dark:text-sky-400" />
+          <Cpu className="h-3.5 w-3.5 text-sky-300 dark:text-zinc-300" />
         </div>
       )}
 
@@ -403,7 +403,7 @@ const MessageBubble = memo(function MessageBubble({ message }: { message: ChatMe
         className={cn(
           "max-w-[90%] sm:max-w-[85%] rounded-2xl px-4 py-3 relative border",
           isUser
-            ? "bg-slate-900 dark:bg-sky-600 border-transparent text-white font-medium shadow-sm"
+            ? "bg-slate-900 dark:bg-zinc-800 dark:border-zinc-700 border-transparent text-white font-medium shadow-sm"
             : "glass-card border-border text-foreground shadow-xs"
         )}
       >

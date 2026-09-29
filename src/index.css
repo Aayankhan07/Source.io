@@ -63,28 +63,28 @@
     --shadow-glow: 0 4px 16px -4px rgba(14, 165, 233, 0.25);
   }
 
-  /* OBSIDIAN STUDIO — high-craft dark workspace */
+  /* NOIR / OBSIDIAN BLACK THEME — Pure, high-contrast black workspace */
   .dark {
-    --background: 222 47% 6%;           /* #080d1a deep obsidian canvas */
-    --foreground: 210 40% 98%;          /* #f8fafc crisp white text */
-    --card: 222 44% 9%;                 /* #0d1527 midnight slate card surface */
-    --card-foreground: 210 40% 98%;
-    --popover: 222 44% 9%;
-    --popover-foreground: 210 40% 98%;
+    --background: 0 0% 2%;              /* #050505 pure pitch black canvas */
+    --foreground: 0 0% 98%;             /* #fafafa crisp white text */
+    --card: 0 0% 5%;                    /* #0d0d0d jet black card surface */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Electric Cyan / Sky Accent */
-    --primary: 199 89% 52%;             /* #38bdf8 electric cyan / sky highlight */
-    --primary-foreground: 222 47% 11%;
-    --primary-glow: 199 89% 62%;
+    /* Crisp High-Contrast Monochrome Accent */
+    --primary: 0 0% 98%;                /* #fafafa white highlight */
+    --primary-foreground: 0 0% 5%;      /* #0d0d0d */
+    --primary-glow: 0 0% 85%;
 
-    --secondary: 222 40% 14%;           /* #162035 */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 11%;              /* #1c1c1c */
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 222 36% 13%;
-    --muted-foreground: 215 20% 65%;    /* #94a3b8 soft muted slate */
+    --muted: 0 0% 11%;
+    --muted-foreground: 240 5% 65%;     /* #a1a1aa neutral zinc text */
 
-    --accent: 222 40% 16%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 13%;                 /* #222222 */
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
@@ -92,28 +92,28 @@
     --success: 158 64% 45%;
     --warning: 38 92% 54%;
 
-    --border: 217 33% 16%;              /* #17223b subtle hairline */
-    --input: 217 33% 16%;
-    --ring: 199 89% 52%;
+    --border: 0 0% 14%;                 /* #242424 subtle hairline */
+    --input: 0 0% 14%;
+    --ring: 0 0% 80%;
 
     --radius: 0.75rem;
 
-    --surface-sunken: 224 50% 5%;       /* #050811 */
-    --surface-raised: 222 44% 11%;      /* #111a30 */
-    --surface-elevated: 220 38% 15%;    /* #172442 */
+    --surface-sunken: 0 0% 1%;          /* #030303 */
+    --surface-raised: 0 0% 8%;          /* #141414 clean charcoal */
+    --surface-elevated: 0 0% 12%;       /* #1f1f1f elevated modal/card */
 
-    --sidebar-background: 224 50% 5%;
-    --sidebar-foreground: 215 20% 74%;
-    --sidebar-primary: 199 89% 52%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 222 40% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 14%;
-    --sidebar-ring: 199 89% 52%;
+    --sidebar-background: 0 0% 2%;      /* #050505 matte black sidebar */
+    --sidebar-foreground: 240 5% 72%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 0% 80%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --shadow-plate: 0 12px 36px 0 rgba(0, 0, 0, 0.45);
-    --shadow-glow: 0 4px 20px -2px rgba(56, 189, 248, 0.35);
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 98%), hsl(0 0% 82%));
+    --shadow-plate: 0 16px 40px -12px rgba(0, 0, 0, 0.9);
+    --shadow-glow: 0 4px 20px -2px rgba(255, 255, 255, 0.08);
   }
 
   /* THE LUMINOUS STUDIO — high-craft light workspace matching the landing page */
@@ -167,29 +167,29 @@
     --shadow-glow: 0 4px 16px -4px rgba(14, 165, 233, 0.25);
   }
 
-  /* OBSIDIAN STUDIO — high-craft dark workspace matching the midnight aesthetic */
+  /* NOIR / OBSIDIAN BLACK THEME — high-craft pure black workspace */
   .luminous-app.dark,
   .dark .luminous-app,
   .dark.luminous-app {
-    --background: 222 47% 6%;           /* #080d1a deep obsidian canvas */
-    --foreground: 210 40% 98%;          /* #f8fafc crisp white text */
-    --card: 222 44% 9%;                 /* #0d1527 midnight slate card surface */
-    --card-foreground: 210 40% 98%;
-    --popover: 222 44% 9%;
-    --popover-foreground: 210 40% 98%;
+    --background: 0 0% 2%;              /* #050505 pure pitch black canvas */
+    --foreground: 0 0% 98%;             /* #fafafa crisp white text */
+    --card: 0 0% 5%;                    /* #0d0d0d jet black card surface */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 199 89% 52%;             /* #38bdf8 electric cyan / sky highlight */
-    --primary-foreground: 222 47% 11%;
-    --primary-glow: 199 89% 52%;
+    --primary: 0 0% 98%;                /* #fafafa crisp white highlight */
+    --primary-foreground: 0 0% 5%;      /* #0d0d0d */
+    --primary-glow: 0 0% 85%;
 
-    --secondary: 222 40% 14%;           /* #162035 */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 11%;              /* #1c1c1c */
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 222 36% 13%;
-    --muted-foreground: 215 20% 65%;    /* #94a3b8 soft muted slate */
+    --muted: 0 0% 11%;
+    --muted-foreground: 240 5% 65%;     /* #a1a1aa neutral zinc text */
 
-    --accent: 222 40% 16%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 13%;                 /* #222222 */
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
@@ -197,27 +197,27 @@
     --success: 158 64% 45%;
     --warning: 38 92% 54%;
 
-    --border: 217 33% 16%;              /* #17223b subtle hairline */
-    --input: 217 33% 16%;
-    --ring: 199 89% 52%;
+    --border: 0 0% 14%;                 /* #242424 subtle hairline */
+    --input: 0 0% 14%;
+    --ring: 0 0% 80%;
 
     --radius: 0.5rem;
 
-    --surface-sunken: 224 50% 5%;       /* #050811 */
-    --surface-raised: 222 44% 11%;      /* #111a30 */
-    --surface-elevated: 220 38% 15%;    /* #172442 */
+    --surface-sunken: 0 0% 1%;          /* #030303 */
+    --surface-raised: 0 0% 8%;          /* #141414 clean charcoal */
+    --surface-elevated: 0 0% 12%;       /* #1f1f1f elevated modal/card */
 
-    --sidebar-background: 224 50% 5%;   /* #050811 deeper sidebar foundation */
-    --sidebar-foreground: 215 20% 75%;
-    --sidebar-primary: 199 89% 52%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 222 40% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 13%;
-    --sidebar-ring: 199 89% 52%;
+    --sidebar-background: 0 0% 2%;      /* #050505 deeper black sidebar foundation */
+    --sidebar-foreground: 240 5% 72%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 0% 80%;
 
-    --shadow-plate: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
-    --shadow-glow: 0 4px 20px -4px rgba(56, 189, 248, 0.35);
+    --shadow-plate: 0 16px 40px -12px rgba(0, 0, 0, 0.9);
+    --shadow-glow: 0 4px 20px -2px rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -541,11 +541,11 @@
 
   .dark .glass-card,
   .dark.glass-card {
-    background: rgba(13, 21, 39, 0.75);
+    background: rgba(13, 13, 13, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.45);
+    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.7);
   }
 
   .glass-dock {
@@ -558,11 +558,11 @@
 
   .dark .glass-dock,
   .dark.glass-dock {
-    background: rgba(10, 16, 31, 0.8);
+    background: rgba(10, 10, 10, 0.88);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.8);
   }
 
   .glass-pill {
@@ -574,7 +574,7 @@
 
   .dark .glass-pill,
   .dark.glass-pill {
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(20, 20, 20, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -599,7 +599,7 @@
     pointer-events: none;
   }
   .dark .glass-highlight::before {
-    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
   }
 }
 

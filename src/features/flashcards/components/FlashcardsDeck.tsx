@@ -214,7 +214,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
                   className="absolute inset-0 rounded-3xl border border-border/90 glass-card glass-highlight p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-lg relative"
                   style={{ backfaceVisibility: "hidden" }}
                 >
-                  <span className="mb-4 text-xs uppercase tracking-wider font-bold bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/30 px-3 py-1 rounded-full">
+                  <span className="mb-4 text-xs uppercase tracking-wider font-bold bg-sky-50 dark:bg-zinc-800 text-sky-700 dark:text-zinc-200 border border-sky-200 dark:border-zinc-700 px-3 py-1 rounded-full">
                     Question
                   </span>
                   <p className="text-base sm:text-lg font-bold text-foreground leading-relaxed max-w-lg font-display">
@@ -233,7 +233,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
 
                 {/* Back Answer Face */}
                 <div
-                  className="absolute inset-0 rounded-3xl border border-sky-300/60 dark:border-sky-500/40 glass-card glass-highlight p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-xl"
+                  className="absolute inset-0 rounded-3xl border border-slate-300 dark:border-zinc-700 glass-card glass-highlight p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-xl"
                   style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                 >
                   <span className="mb-4 text-xs uppercase tracking-wider font-bold bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 px-3 py-1 rounded-full">
@@ -270,7 +270,7 @@ export default function FlashcardsDeck({ cards }: { cards: FlashcardRow[] }) {
                   </Button>
                   <Button 
                     onClick={(e) => { e.stopPropagation(); rate("good"); }} 
-                    className="flex-1 sm:flex-none text-xs bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/40 py-1 rounded-xl font-medium"
+                    className="flex-1 sm:flex-none text-xs bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 py-1 rounded-xl font-medium"
                     size="sm"
                   >
                     Good (3)

@@ -98,8 +98,8 @@ export default function DocumentCardBento({
               </span>
             )}
             {doc.status === "processing" || doc.status === "pending" ? (
-              <span className="flex items-center gap-1 text-[10px] text-sky-600 dark:text-sky-400 font-mono font-medium bg-sky-50 dark:bg-sky-950/40 px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800/40">
-                <Loader2 className="h-2.5 w-2.5 animate-spin text-sky-600" />
+              <span className="flex items-center gap-1 text-[10px] text-zinc-700 dark:text-zinc-300 font-mono font-medium bg-zinc-100 dark:bg-zinc-800/80 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700">
+                <Loader2 className="h-2.5 w-2.5 animate-spin text-zinc-600 dark:text-zinc-400" />
                 Ingesting
               </span>
             ) : null}
@@ -165,7 +165,7 @@ export default function DocumentCardBento({
           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors"
           title="Open Notes"
         >
-          <FileText className="h-3 w-3 text-sky-500" />
+          <FileText className="h-3 w-3 text-sky-600 dark:text-zinc-300" />
           <span>Notes</span>
         </button>
 

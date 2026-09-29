@@ -192,7 +192,7 @@ export default function CustomAudioPlayer({
       <div className="glass-card glass-highlight border border-border/80 rounded-3xl shadow-lg p-6 sm:p-8 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-200/80 dark:border-sky-500/30 flex items-center justify-center text-sky-600 dark:text-sky-400 shadow-2xs">
+            <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-zinc-800 border border-sky-200/80 dark:border-zinc-700 flex items-center justify-center text-sky-600 dark:text-zinc-200 shadow-2xs">
               <Headphones className="h-5 w-5" />
             </div>
             <div>
@@ -201,7 +201,7 @@ export default function CustomAudioPlayer({
             </div>
           </div>
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-muted border border-border/80 text-muted-foreground flex items-center gap-1.5 shadow-2xs">
-            <span className={cn("h-2 w-2 rounded-full", isPlaying ? "bg-sky-500 animate-pulse" : "bg-muted-foreground/40")} />
+            <span className={cn("h-2 w-2 rounded-full", isPlaying ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground/40")} />
             {isPlaying ? "Playing" : "Paused"}
           </span>
         </div>
@@ -219,8 +219,8 @@ export default function CustomAudioPlayer({
                 className={cn(
                   "w-1.5 rounded-full transition-all duration-150",
                   (currentTime / effectiveDuration) * 32 >= i
-                    ? "bg-sky-500"
-                    : "bg-muted-foreground/30 dark:bg-slate-700/60"
+                    ? "bg-foreground"
+                    : "bg-muted-foreground/30 dark:bg-zinc-800"
                 )}
                 style={{ height: `${height}%` }}
               />
@@ -274,7 +274,7 @@ export default function CustomAudioPlayer({
             <Button
               onClick={togglePlay}
               size="icon"
-              className="h-11 w-11 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white shadow-md transition-transform active:scale-95"
+              className="h-11 w-11 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white shadow-md transition-transform active:scale-95"
               aria-label={isPlaying ? "Pause audio" : "Play audio"}
             >
               {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
@@ -317,7 +317,7 @@ export default function CustomAudioPlayer({
                 className={cn(
                   "w-full text-left p-3.5 rounded-xl border transition-all text-xs flex gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/20",
                   isActive
-                    ? "bg-sky-50/80 dark:bg-sky-500/10 border-sky-200 dark:border-sky-500/30 text-foreground shadow-2xs"
+                    ? "bg-sky-50/80 dark:bg-zinc-800/80 border-sky-200 dark:border-zinc-700 text-foreground shadow-2xs"
                     : "bg-muted/40 border-border/60 hover:bg-muted/80 text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -326,7 +326,7 @@ export default function CustomAudioPlayer({
                     className={cn(
                       "px-2 py-0.5 rounded-md font-mono text-[10px] uppercase font-bold",
                       isAlex
-                        ? "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/30"
+                        ? "bg-sky-100 dark:bg-zinc-700 text-sky-700 dark:text-zinc-200 border border-sky-200 dark:border-zinc-600"
                         : "bg-muted text-muted-foreground border border-border"
                     )}
                   >

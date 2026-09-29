@@ -48,7 +48,7 @@ export default function WorkspaceCompanion({
       shortLabel: "Chat",
       icon: MessagesSquare,
       color: "text-sky-500",
-      activeBg: "data-[state=active]:text-sky-600 dark:data-[state=active]:text-sky-400",
+      activeBg: "data-[state=active]:text-sky-600 dark:data-[state=active]:text-white",
     },
     {
       id: "podcast" as const,

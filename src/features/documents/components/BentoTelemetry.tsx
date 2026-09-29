@@ -44,14 +44,14 @@ export default function BentoTelemetry({
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 mb-6 sm:mb-8">
       {/* 1. Knowledge Base & Study Velocity */}
       <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-card border border-border/80 shadow-xs flex flex-col justify-between relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 dark:bg-sky-500/5 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 dark:bg-white/[0.03] rounded-full blur-2xl pointer-events-none" />
         
         <div>
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
               Study Velocity
             </span>
-            <span className="flex items-center gap-1 text-[11px] font-mono text-sky-600 dark:text-sky-400 font-bold bg-sky-50 dark:bg-sky-500/10 border border-sky-200/80 dark:border-sky-500/20 px-2 py-0.5 rounded-full">
+            <span className="flex items-center gap-1 text-[11px] font-mono text-sky-700 dark:text-zinc-200 font-bold bg-sky-50 dark:bg-zinc-800/80 border border-sky-200/80 dark:border-zinc-700 px-2 py-0.5 rounded-full">
               <Zap className="h-3 w-3" /> Groq Llama 3
             </span>
           </div>
@@ -84,8 +84,8 @@ export default function BentoTelemetry({
         className={cn(
           "p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-dashed transition-[border-color,background-color] flex flex-col items-center justify-center text-center cursor-pointer relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
           isDragActive
-            ? "border-sky-500 bg-sky-500/10 shadow-glow"
-            : "border-border/90 hover:border-sky-500/50 bg-card hover:bg-muted/30 shadow-xs"
+            ? "border-sky-500 bg-sky-500/10 dark:border-zinc-400 dark:bg-zinc-800/40 shadow-glow"
+            : "border-border/90 hover:border-sky-500/50 dark:hover:border-zinc-500 bg-card hover:bg-muted/30 shadow-xs"
         )}
       >
         <input {...getInputProps()} />
@@ -117,7 +117,7 @@ export default function BentoTelemetry({
 
           {recentDoc ? (
             <div className="space-y-2 mb-4">
-              <span className="text-[10px] uppercase font-mono font-bold text-sky-600 dark:text-sky-400">
+              <span className="text-[10px] uppercase font-mono font-bold text-sky-600 dark:text-zinc-400">
                 {recentDoc.source_type} material
               </span>
               <h4 className="text-sm sm:text-base font-semibold text-foreground truncate font-display">
@@ -139,7 +139,7 @@ export default function BentoTelemetry({
           {recentDoc ? (
             <Button
               onClick={() => navigate(`/app/doc/${recentDoc.id}`)}
-              className="w-full rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white shadow-2xs group justify-between"
+              className="w-full rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white shadow-2xs group justify-between"
             >
               <span>Resume Study Session</span>
               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -147,7 +147,7 @@ export default function BentoTelemetry({
           ) : (
             <Button
               onClick={onOpenUpload}
-              className="w-full rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white"
+              className="w-full rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white"
             >
               <span>Import Your First Material</span>
             </Button>

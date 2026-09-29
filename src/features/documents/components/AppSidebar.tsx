@@ -105,7 +105,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
           </div>
           <div className="flex flex-col">
             <span className="font-semibold tracking-tight text-foreground font-display text-sm">
-              Source<span className="text-sky-600 dark:text-sky-400">.io</span>
+              Source<span className="text-sky-600 dark:text-zinc-400">.io</span>
             </span>
             <span className="text-[10px] text-muted-foreground font-mono">Research Studio</span>
           </div>
@@ -116,10 +116,10 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
       <div className="p-4">
         <Button 
           onClick={onNew} 
-          className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold py-2.5 rounded-full flex items-center justify-center gap-2 shadow-sm transition-all focus-ring text-xs" 
+          className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white font-semibold py-2.5 rounded-full flex items-center justify-center gap-2 shadow-sm transition-colors focus-ring text-xs" 
           size="sm"
         >
-          <Plus className="h-4 w-4 shrink-0 text-sky-400 dark:text-white" />
+          <Plus className="h-4 w-4 shrink-0 text-white dark:text-zinc-950" />
           <span>New Document</span>
         </Button>
       </div>
@@ -179,7 +179,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
                     onNavigate?.();
                   }}
                   className={cn(
-                    "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-left transition-all relative group focus-ring",
+                    "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-left transition-colors relative group focus-ring",
                     active
                       ? "bg-card text-foreground border border-border shadow-xs font-medium"
                       : "hover:bg-accent/60 text-muted-foreground hover:text-foreground border border-transparent"
@@ -188,7 +188,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
                   <div className={cn(
                     "h-6 w-6 rounded-lg flex items-center justify-center shrink-0 border transition-colors",
                     active 
-                      ? "bg-sky-50 dark:bg-sky-500/10 border-sky-200 dark:border-sky-500/30 text-sky-700 dark:text-sky-400" 
+                      ? "bg-sky-50 dark:bg-zinc-800 border-sky-200 dark:border-zinc-700 text-sky-700 dark:text-white" 
                       : "bg-card border-border text-muted-foreground group-hover:text-foreground"
                   )}>
                     <Icon className="h-3.5 w-3.5" />
@@ -197,7 +197,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
                   <span className="truncate flex-1 font-medium">{d.title}</span>
 
                   {d.status !== "ready" && d.status !== "failed" && (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-600 dark:text-sky-400 shrink-0" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-500 dark:text-zinc-400 shrink-0" />
                   )}
                   {d.status === "failed" && (
                     <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
@@ -212,7 +212,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
       {/* Account Info & Theme Footer */}
       <div className="p-3 border-t border-sidebar-border/60 bg-sidebar">
         <div className="flex items-center gap-2 px-2.5 py-2 rounded-xl glass-card shadow-2xs">
-          <div className="h-7 w-7 rounded-full bg-slate-900 dark:bg-sky-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 shadow-2xs">
+          <div className="h-7 w-7 rounded-full bg-slate-900 dark:bg-white dark:text-zinc-950 text-white flex items-center justify-center text-xs font-semibold shrink-0 shadow-2xs">
             {(user?.user_metadata?.display_name || user?.email || "S").slice(0, 1).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
