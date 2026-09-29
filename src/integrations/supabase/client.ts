@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 const CONFIGURED_URL = import.meta.env.VITE_SUPABASE_URL;
-const CONFIGURED_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const CONFIGURED_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Placeholders keep the module importable in test/build environments that have
 // no credentials. Any real request against them will fail, so make the cause loud.
