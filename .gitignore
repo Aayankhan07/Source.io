@@ -61,12 +61,26 @@ desktop.ini
 .agents/
 .kimchi/
 .vibe/
+.cline/
+.roo/
 skills-lock.json
 
 # Temporary screenshots & inspection artifacts
 /public/screenshot*.png
 screenshot*.png
 
-# Cache directories
+# Testing & coverage artifacts
+test-results/
+playwright-report/
+.nyc_output/
+
+# Cache directories & build artifacts
 .eslintcache
 .cache/
+.turbo/
+
+# Credentials & local keys
+*.pem
+*.key
+*.cert
+*.crt
