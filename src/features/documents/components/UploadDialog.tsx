@@ -175,23 +175,26 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
 
   return (
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset(); }}>
-      <DialogContent className="sm:max-w-lg bg-card border-white/10 text-white rounded-2xl">
+      <DialogContent className="sm:max-w-lg glass-card glass-highlight border-border/80 text-foreground rounded-3xl p-6 sm:p-7 shadow-2xl">
         <DialogHeader className="pb-2">
-          <DialogTitle className="text-lg font-bold font-display text-white flex items-center gap-2">
-            <CloudLightning className="h-5 w-5 text-primary" /> Add a source
+          <DialogTitle className="text-lg font-semibold font-display text-foreground flex items-center gap-2">
+            <div className="h-7 w-7 rounded-full bg-slate-900 dark:bg-sky-500 text-white flex items-center justify-center">
+              <CloudLightning className="h-4 w-4 text-sky-300 dark:text-white" />
+            </div>
+            <span>Add Study Material</span>
           </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="file" className="w-full">
-          <TabsList className="grid grid-cols-3 w-full bg-surface-elevated p-1 rounded-xl border border-white/5">
-            <TabsTrigger value="file" className="rounded-lg text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">File</span>
+          <TabsList className="grid grid-cols-3 w-full glass-pill p-1 rounded-full border border-border/80">
+            <TabsTrigger value="file" className="rounded-full text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground hover:text-foreground">
+              <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0 text-sky-500" /> <span className="hidden sm:inline">File</span>
             </TabsTrigger>
-            <TabsTrigger value="youtube" className="rounded-lg text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Youtube className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">YouTube</span>
+            <TabsTrigger value="youtube" className="rounded-full text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground hover:text-foreground">
+              <Youtube className="h-3.5 w-3.5 sm:mr-1.5 shrink-0 text-rose-500" /> <span className="hidden sm:inline">YouTube</span>
             </TabsTrigger>
-            <TabsTrigger value="text" className="rounded-lg text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <FileText className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">Text</span>
+            <TabsTrigger value="text" className="rounded-full text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground hover:text-foreground">
+              <FileText className="h-3.5 w-3.5 sm:mr-1.5 shrink-0 text-violet-500" /> <span className="hidden sm:inline">Text</span>
             </TabsTrigger>
           </TabsList>
 
@@ -199,29 +202,29 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
           <TabsContent value="file" className="space-y-4 pt-4 focus-visible:outline-none">
             <div
               {...getRootProps()}
-              className={`border border-dashed rounded-xl p-8 text-center cursor-pointer transition-all relative overflow-hidden focus-ring ${
+              className={`border border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all relative overflow-hidden focus-ring ${
                 isDragActive
-                  ? "border-primary bg-primary/5 shadow-glow"
-                  : "border-white/10 hover:border-primary/40 bg-surface-raised"
+                  ? "border-sky-500 bg-sky-50/50 dark:bg-sky-500/10"
+                  : "border-border hover:border-slate-400 dark:hover:border-slate-600 bg-muted/30"
               }`}
             >
               <input {...getInputProps()} aria-label="Choose a file to upload" />
               
               {file ? (
                 <div className="space-y-2 py-4">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto mb-2">
+                  <div className="h-10 w-10 rounded-xl bg-sky-100 dark:bg-sky-500/20 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-300 mx-auto mb-2">
                     <FileType className="h-5 w-5" />
                   </div>
-                  <p className="text-xs font-semibold text-white truncate max-w-xs mx-auto">{file.name}</p>
-                  <p className="text-xs text-neutral-500">{(file.size / 1024 / 1024).toFixed(2)} MB · Tap to replace</p>
+                  <p className="text-xs font-semibold text-foreground truncate max-w-xs mx-auto">{file.name}</p>
+                  <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB · Click to replace</p>
                 </div>
               ) : (
                 <div className="space-y-2 py-4">
-                  <Upload className="h-7 w-7 mx-auto text-neutral-500 mb-2" />
-                  <p className="text-xs text-neutral-300 font-semibold">
+                  <Upload className="h-7 w-7 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-xs text-foreground font-semibold">
                     {isDragActive ? "Drop the file here" : "Drag files or click to browse"}
                   </p>
-                  <p className="text-xs text-neutral-500 max-w-xs mx-auto">
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto">
                     Supports PDF, DOCX, mp3, wav, mp4 or mov (Max 50MB)
                   </p>
                 </div>
@@ -231,11 +234,11 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
             <Button 
               onClick={createFileDoc} 
               disabled={!file || submitting} 
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-colors"
+              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold py-2.5 rounded-full transition-colors text-xs shadow-sm"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Ingesting file...
+                  <Loader2 className="h-4 w-4 animate-spin text-white" /> Ingesting file...
                 </span>
               ) : (
                 <span>Upload</span>
@@ -246,26 +249,26 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
           {/* YouTube Content */}
           <TabsContent value="youtube" className="space-y-4 pt-4 focus-visible:outline-none">
             <div className="space-y-2">
-              <Label htmlFor="yt" className="text-xs text-neutral-300">YouTube Video Link</Label>
+              <Label htmlFor="yt" className="text-xs text-foreground">YouTube Video Link</Label>
               <Input 
                 id="yt" 
                 value={ytUrl} 
                 onChange={(e) => setYtUrl(e.target.value)} 
                 placeholder="https://youtube.com/watch?v=..." 
-                className="bg-surface-raised border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-xs"
+                className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
               />
-              <p className="text-xs text-neutral-500 leading-normal">
+              <p className="text-xs text-muted-foreground leading-normal">
                 We will automatically fetch the video transcription or dialogue recap to build notes.
               </p>
             </div>
             <Button 
               onClick={createYoutubeDoc} 
               disabled={!ytUrl.trim() || submitting} 
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-colors"
+              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold py-2.5 rounded-full transition-colors text-xs shadow-sm"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Queuing link...
+                  <Loader2 className="h-4 w-4 animate-spin text-white" /> Queuing link...
                 </span>
               ) : (
                 <span>Add video</span>
@@ -277,35 +280,35 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
           <TabsContent value="text" className="space-y-4 pt-4 focus-visible:outline-none">
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="title" className="text-xs text-neutral-300">Title</Label>
+                <Label htmlFor="title" className="text-xs text-foreground">Title</Label>
                 <Input 
                   id="title" 
                   value={textTitle} 
                   onChange={(e) => setTextTitle(e.target.value)} 
                   placeholder="E.g., History Lecture 5 Notes" 
-                  className="bg-surface-raised border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-xs"
+                  className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="content" className="text-xs text-neutral-300">Paste your material</Label>
+                <Label htmlFor="content" className="text-xs text-foreground">Paste your material</Label>
                 <Textarea 
                   id="content" 
                   value={textContent} 
                   onChange={(e) => setTextContent(e.target.value)} 
                   rows={6} 
                   placeholder="Paste your readings, articles, transcripts here..." 
-                  className="bg-surface-raised border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-xs resize-none"
+                  className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs resize-none"
                 />
               </div>
             </div>
             <Button 
               onClick={createTextDoc} 
               disabled={!textContent.trim() || submitting} 
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-colors"
+              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold py-2.5 rounded-full transition-colors text-xs shadow-sm"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Saving notes...
+                  <Loader2 className="h-4 w-4 animate-spin text-white" /> Saving notes...
                 </span>
               ) : (
                 <span>Add text</span>

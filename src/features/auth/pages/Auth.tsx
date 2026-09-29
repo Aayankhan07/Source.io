@@ -6,12 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Loader2, Mail, ArrowLeft, ArrowUpRight, Upload, Headphones, ListChecks } from "lucide-react";
+import { Sparkles, Loader2, Mail, ArrowLeft, ArrowUpRight, Upload, Headphones, ListChecks, ArrowRight, ShieldCheck } from "lucide-react";
+import ThemeToggle from "@/components/common/ThemeToggle";
+import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 
 export default function Auth() {
-  const { user, loading } = useAuth();
+  const { user, loading, signInAsGuest } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme } = useTheme();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,92 +66,116 @@ export default function Auth() {
     }
   };
 
+  const handleGuestDemo = () => {
+    signInAsGuest();
+    toast({
+      title: "Guest Session Active",
+      description: "Welcome to Source.io! Exploring sample documents.",
+    });
+    navigate("/app");
+  };
+
   return (
-    <main className="min-h-screen flex bg-background text-foreground relative overflow-hidden">
-      {/* Background radial highlights */}
-      <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-500/5 blur-[120px] pointer-events-none" />
+    <main className={cn("luminous-app min-h-screen flex bg-background text-foreground relative font-sans antialiased", theme === "dark" && "dark")}>
+      {/* Top right theme toggle */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle variant="pill" />
+      </div>
 
       {/* Left split pane: Branding / Features (Hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-popover border-r border-white/5 p-12 flex-col justify-between relative z-10">
+      <div className="hidden lg:flex lg:w-1/2 bg-muted/40 border-r border-border p-12 flex-col justify-between relative z-10">
         {/* Top brand header */}
-        <Link to="/" className="flex items-center gap-2 group self-start">
-          <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 bg-card group-hover:border-primary/50 transition-colors">
+        <Link to="/" className="flex items-center gap-2.5 group self-start">
+          <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden border border-border bg-card shadow-2xs">
             <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
           </div>
-          <span className="font-semibold tracking-tight text-lg font-display text-white">Source.io</span>
+          <span className="font-semibold tracking-tight text-base font-display text-foreground">Source.io</span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-card border border-border text-muted-foreground">
+            STUDIO
+          </span>
         </Link>
 
         {/* Content Showcase */}
-        <div className="space-y-10 max-w-lg my-auto">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 text-xs text-primary font-mono font-medium">
-              <Sparkles className="h-3 w-3 animate-pulse" /> Unified Knowledge Engine
+        <div className="space-y-8 max-w-md my-auto">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-foreground text-xs font-mono">
+              <Sparkles className="h-3 w-3 text-sky-500" />
+              <span>Grounded Learning Architecture</span>
             </div>
-            <h2 className="text-4xl font-extrabold tracking-tight font-display text-white leading-tight">
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight font-display text-foreground leading-tight">
               One central canvas for all your sources.
             </h2>
-            <p className="text-neutral-400 text-sm leading-relaxed">
-              Consolidate PDFs, YouTube clips, audio notes, and DOCX files. Get structured study sets and a conversational podcast summary immediately.
+            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+              Consolidate PDFs, YouTube clips, audio notes, and papers. Get structured study sets, spaced flashcards, and a conversational audio recap immediately.
             </p>
           </div>
 
           {/* Stepper demonstration */}
-          <div className="space-y-6">
-            <div className="flex gap-4 items-start">
-              <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 shrink-0 font-semibold font-mono text-xs">01</div>
+          <div className="space-y-3.5">
+            <div className="flex gap-3.5 items-start p-3.5 rounded-2xl bg-card border border-border/80 shadow-2xs">
+              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+                <Upload className="h-4 w-4" />
+              </div>
               <div>
-                <h4 className="text-sm font-semibold text-white font-display mb-1 flex items-center gap-1.5"><Upload className="h-3.5 w-3.5 text-neutral-400" /> Ingest Sources</h4>
-                <p className="text-xs text-neutral-400">Drag files or drop media links. Our parser indexes contents locally.</p>
+                <h4 className="text-xs font-semibold text-foreground mb-0.5">Ingest Any Source</h4>
+                <p className="text-xs text-muted-foreground">Drop PDFs, lecture audios, or YouTube links. Synthesized in seconds.</p>
               </div>
             </div>
-            <div className="flex gap-4 items-start">
-              <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 shrink-0 font-semibold font-mono text-xs">02</div>
+
+            <div className="flex gap-3.5 items-start p-3.5 rounded-2xl bg-card border border-border/80 shadow-2xs">
+              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+                <Headphones className="h-4 w-4" />
+              </div>
               <div>
-                <h4 className="text-sm font-semibold text-white font-display mb-1 flex items-center gap-1.5"><Headphones className="h-3.5 w-3.5 text-neutral-400" /> Synthesize Recap</h4>
-                <p className="text-xs text-neutral-400">Audio summaries compile automatically alongside notes & quiz modules.</p>
+                <h4 className="text-xs font-semibold text-foreground mb-0.5">Conversational Audio Recap</h4>
+                <p className="text-xs text-muted-foreground">Listen to a 2-host podcast walkthrough with interactive transcripts.</p>
               </div>
             </div>
-            <div className="flex gap-4 items-start">
-              <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 shrink-0 font-semibold font-mono text-xs">03</div>
+
+            <div className="flex gap-3.5 items-start p-3.5 rounded-2xl bg-card border border-border/80 shadow-2xs">
+              <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+                <ListChecks className="h-4 w-4" />
+              </div>
               <div>
-                <h4 className="text-sm font-semibold text-white font-display mb-1 flex items-center gap-1.5"><ListChecks className="h-3.5 w-3.5 text-neutral-400" /> Grounded Dialogue</h4>
-                <p className="text-xs text-neutral-400">Chat with documents. Answers cite underlying source fragments directly.</p>
+                <h4 className="text-xs font-semibold text-foreground mb-0.5">Grounded Inquiry & Quizzes</h4>
+                <p className="text-xs text-muted-foreground">Answers cite precise source passages with similarity confidence scores.</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-xs text-neutral-500 flex justify-between">
-          <span>© Source.io Study Companion</span>
-          <a href="/" className="hover:underline flex items-center gap-0.5">Explore features <ArrowUpRight className="h-3 w-3" /></a>
+        <div className="text-xs text-muted-foreground flex justify-between items-center">
+          <span>© Source.io AI Study Companion</span>
+          <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1 font-medium">
+            Explore features <ArrowUpRight className="h-3 w-3" />
+          </Link>
         </div>
       </div>
 
       {/* Right split pane: Login / SignUp Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 sm:px-12 py-16 relative z-10">
         {/* Brand header for mobile */}
-        <div className="lg:hidden flex items-center gap-2 justify-center mb-10">
-          <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 bg-card">
+        <div className="lg:hidden flex items-center gap-2 justify-center mb-8">
+          <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden border border-border bg-card shadow-2xs">
             <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-white font-display">Source.io</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-foreground font-display">Source.io</h1>
         </div>
 
         <div className="w-full max-w-sm">
-          {/* Glass Form Card */}
-          <div className="glass-panel p-8 rounded-2xl border border-white/10 shadow-2xl relative">
+          {/* Card Form */}
+          <div className="bg-card border border-border p-7 sm:p-8 rounded-3xl shadow-xl relative">
             {signupSuccess ? (
               <div className="text-center py-4 space-y-6 animate-in fade-in zoom-in duration-300">
-                <div className="h-16 w-16 mx-auto rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-glow">
-                  <Mail className="h-8 w-8 text-primary" />
+                <div className="h-16 w-16 mx-auto rounded-full bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/30 flex items-center justify-center text-sky-600 dark:text-sky-400 shadow-sm">
+                  <Mail className="h-8 w-8" />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold tracking-tight text-white font-display">Check your inbox</h2>
-                  <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
-                    We have sent a verification link to <span className="font-semibold text-white">{email}</span>. 
-                    Please click the link to activate your account and start using Source.io.
+                  <h2 className="text-2xl font-bold tracking-tight text-foreground font-display">Check your inbox</h2>
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                    We have sent a verification link to <span className="font-semibold text-foreground">{email}</span>. 
+                    Please click the link to activate your account.
                   </p>
                 </div>
                 <Button 
@@ -155,7 +183,7 @@ export default function Auth() {
                     setSignupSuccess(false);
                     setMode("signin");
                   }} 
-                  className="w-full mt-4 bg-white hover:bg-neutral-200 text-black font-semibold"
+                  className="w-full mt-4 font-semibold rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white"
                 >
                   Back to Sign In
                 </Button>
@@ -163,43 +191,61 @@ export default function Auth() {
             ) : (
               <>
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold tracking-tight text-white font-display">
-                    {mode === "signin" ? "Welcome back" : "Create account"}
+                  <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground font-display">
+                    {mode === "signin" ? "Welcome back" : "Create your account"}
                   </h2>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    {mode === "signin" ? "Log in to access your study materials." : "Start building your document workspace."}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {mode === "signin" ? "Log in to access your study library." : "Start building your intelligent workspace."}
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Instant Demo Launcher Pill */}
+                <div className="mb-5">
+                  <Button
+                    type="button"
+                    onClick={handleGuestDemo}
+                    className="w-full bg-sky-50 hover:bg-sky-100 dark:bg-sky-500/15 dark:hover:bg-sky-500/25 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-500/30 font-semibold py-2.5 rounded-full flex items-center justify-center gap-2 text-xs shadow-2xs transition-all"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400 shrink-0" />
+                    <span>Instant Demo Mode (No sign-up needed)</span>
+                    <ArrowRight className="h-3.5 w-3.5 ml-auto text-sky-500" />
+                  </Button>
+                </div>
+
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2.5 text-[10px] text-muted-foreground font-mono">or email account</span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-3.5">
                   {mode === "signup" && (
                     <div className="space-y-1.5">
-                      <Label htmlFor="name" className="text-xs text-neutral-300">Display name</Label>
+                      <Label htmlFor="name" className="text-xs text-foreground font-medium">Display name</Label>
                       <Input 
                         id="name" 
                         value={displayName} 
                         onChange={(e) => setDisplayName(e.target.value)} 
                         placeholder="Your name" 
-                        className="bg-surface-raised border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                        className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
                       />
                     </div>
                   )}
                   <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-xs text-neutral-300">Email address</Label>
+                    <Label htmlFor="email" className="text-xs text-foreground font-medium">Email address</Label>
                     <Input 
                       id="email" 
                       type="email" 
                       value={email} 
                       onChange={(e) => setEmail(e.target.value)} 
                       required 
-                      placeholder="name@domain.com" 
-                      className="bg-surface-raised border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                      placeholder="name@university.edu" 
+                      className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password" className="text-xs text-neutral-300">Password</Label>
-                    </div>
+                    <Label htmlFor="password" className="text-xs text-foreground font-medium">Password</Label>
                     <Input 
                       id="password" 
                       type="password" 
@@ -208,36 +254,36 @@ export default function Auth() {
                       required 
                       minLength={6} 
                       placeholder="••••••••" 
-                      className="bg-surface-raised border-white/5 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                      className="bg-muted/40 border-border focus:border-sky-500 text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
                     />
                   </div>
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-lg transition-colors mt-2" 
+                    className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold py-2.5 rounded-full transition-colors text-xs shadow-sm mt-1" 
                     disabled={submitting}
                   >
                     {submitting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Working…
+                        <Loader2 className="h-4 w-4 animate-spin text-white" /> Connecting…
                       </span>
                     ) : (
-                      <span>{mode === "signin" ? "Sign in" : "Register"}</span>
+                      <span>{mode === "signin" ? "Sign in to Workspace" : "Create Account"}</span>
                     )}
                   </Button>
                 </form>
 
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5" /></div>
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2.5 text-xs text-neutral-500 font-mono">or continue with</span>
+                    <span className="bg-card px-2.5 text-[10px] text-muted-foreground font-mono">or continue with</span>
                   </div>
                 </div>
 
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full bg-white/5 border-white/10 hover:bg-white/10 text-white font-medium py-2.5 rounded-lg flex items-center justify-center gap-2"
+                  className="w-full bg-card border-border hover:bg-accent text-foreground font-medium py-2 rounded-full flex items-center justify-center gap-2 text-xs shadow-2xs"
                   disabled={submitting}
                   onClick={async () => {
                     setSubmitting(true);
@@ -249,8 +295,6 @@ export default function Auth() {
                         },
                       });
                       if (error) throw error;
-                      // On success the browser navigates away; leave `submitting` set
-                      // so the form stays disabled during the redirect.
                     } catch (err: unknown) {
                       toast({
                         title: "Google sign-in failed",
@@ -267,16 +311,16 @@ export default function Auth() {
                   Google Workspace
                 </Button>
 
-                <div className="mt-6 text-center text-xs text-neutral-400">
+                <div className="mt-5 text-center text-xs text-muted-foreground">
                   {mode === "signin" ? (
                     <>
                       Don't have an account?{" "}
-                      <button className="text-primary hover:text-primary-glow font-medium hover:underline transition-all rounded focus-ring" onClick={() => setMode("signup")}>Sign up free</button>
+                      <button className="text-sky-600 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signup")}>Sign up free</button>
                     </>
                   ) : (
                     <>
                       Already have an account?{" "}
-                      <button className="text-primary hover:text-primary-glow font-medium hover:underline transition-all rounded focus-ring" onClick={() => setMode("signin")}>Sign in here</button>
+                      <button className="text-sky-600 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signin")}>Sign in here</button>
                     </>
                   )}
                 </div>
@@ -284,8 +328,8 @@ export default function Auth() {
             )}
           </div>
 
-          <p className="text-center text-xs text-neutral-500 mt-8">
-            <Link to="/" className="hover:text-white transition-colors flex items-center justify-center gap-1">
+          <p className="text-center text-xs text-muted-foreground mt-6">
+            <Link to="/" className="hover:text-foreground transition-colors inline-flex items-center gap-1.5 font-medium">
               <ArrowLeft className="h-3 w-3" /> Back to home
             </Link>
           </p>

@@ -3,13 +3,16 @@ import { Outlet } from "react-router-dom";
 import AppSidebar from "@/features/documents/components/AppSidebar";
 import UploadDialog from "@/features/documents/components/UploadDialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 
 export default function AppHome() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { theme } = useTheme();
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
+    <div className={cn("luminous-app flex h-screen bg-background text-foreground antialiased font-sans", theme === "dark" && "dark")}>
       {/* Desktop sidebar */}
       <div className="hidden md:flex">
         <AppSidebar onNew={() => setUploadOpen(true)} />

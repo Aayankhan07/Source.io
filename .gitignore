@@ -52,3 +52,21 @@ desktop.ini
 # Standalone executables and zip packages
 *.exe
 *.zip
+
+# AI assistants & local tooling
+.claude/
+.impeccable/
+.cursor/
+.gemini/
+.agents/
+.kimchi/
+.vibe/
+skills-lock.json
+
+# Temporary screenshots & inspection artifacts
+/public/screenshot*.png
+screenshot*.png
+
+# Cache directories
+.eslintcache
+.cache/

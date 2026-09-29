@@ -88,29 +88,27 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
     <div className="space-y-6 text-left animate-fade-in">
       {/* Gamified Celebration Score card */}
       {submitted && (
-        <div className="glass-panel rounded-2xl border border-white/10 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-          
+        <div className="glass-card glass-highlight rounded-2xl border border-border/80 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-md">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-glow shrink-0">
-              <Award className="h-8 w-8" />
+            <div className="h-14 w-14 rounded-2xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0">
+              <Award className="h-7 w-7" />
             </div>
             <div className="space-y-1">
-              <span className="text-xs uppercase font-bold tracking-widest text-primary font-mono">Quiz Completed</span>
-              <h3 className="text-xl font-bold text-white font-display">
+              <span className="text-xs uppercase font-semibold tracking-wider text-sky-700 dark:text-sky-400 font-mono">Quiz Completed</span>
+              <h3 className="text-xl font-semibold text-foreground font-display">
                 {percentage === 100 ? "Perfect Score!" : percentage >= 70 ? "Excellent Work!" : "Keep practicing!"}
               </h3>
-              <p className="text-sm text-neutral-400">
-                You correctly answered <span className="font-semibold text-white">{score}</span> out of <span className="font-semibold text-white">{total}</span> questions ({percentage}%).
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                You correctly answered <span className="font-semibold text-foreground">{score}</span> out of <span className="font-semibold text-foreground">{total}</span> questions ({percentage}%).
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-end">
-            <div className="h-12 w-12 rounded-full border-2 border-white/5 bg-surface-elevated flex items-center justify-center font-mono text-sm font-bold text-white">
+            <div className="h-12 w-12 rounded-full border border-border bg-muted flex items-center justify-center font-mono text-sm font-bold text-foreground shadow-2xs">
               {percentage}%
             </div>
-            <Button onClick={reset} className="bg-white hover:bg-neutral-200 text-black font-semibold text-xs py-2 px-4 rounded-lg flex items-center gap-1.5 shrink-0">
+            <Button onClick={reset} className="font-semibold text-xs py-2 px-5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white flex items-center gap-1.5 shrink-0 shadow-sm">
               <RotateCcw className="h-3.5 w-3.5" /> Try again
             </Button>
           </div>
@@ -126,27 +124,27 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
             <div
               key={q.id}
               className={cn(
-                "p-5 rounded-2xl border transition-all glass-panel",
+                "glass-card p-6 rounded-2xl border transition-all shadow-2xs",
                 submitted 
-                  ? (correct ? "border-emerald-500/20 bg-emerald-500/[0.02]" : "border-destructive/20 bg-destructive/[0.02]") 
-                  : "border-white/5 bg-card/40"
+                  ? (correct ? "border-emerald-500/40 bg-emerald-50/30 dark:bg-emerald-950/30" : "border-rose-500/40 bg-rose-50/30 dark:bg-rose-950/30") 
+                  : "border-border/80"
               )}
             >
               {/* Question metadata header */}
               <div className="flex items-start gap-3 mb-4">
-                <Badge variant="outline" className="mt-0.5 text-xs font-mono border-white/10 text-white bg-white/5 shrink-0">
+                <Badge variant="outline" className="mt-0.5 text-xs font-mono border-border text-muted-foreground bg-muted rounded-md shrink-0">
                   {String(i + 1).padStart(2, '0')}
                 </Badge>
                 <div className="flex-1">
-                  <div className="font-bold text-white leading-relaxed text-sm font-display">{q.question}</div>
-                  <div className="text-xs uppercase tracking-wider text-neutral-500 font-mono mt-1">
+                  <div className="font-semibold text-foreground leading-relaxed text-sm font-display">{q.question}</div>
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
                     {q.type === "mcq" ? "Multiple choice question" : q.type === "true_false" ? "True / False" : "Short answer"}
                   </div>
                 </div>
                 {submitted && (correct ? (
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-destructive shrink-0" />
+                  <XCircle className="h-5 w-5 text-rose-500 shrink-0" />
                 ))}
               </div>
 
@@ -163,17 +161,17 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         onClick={() => !submitted && setAnswers((a) => ({ ...a, [q.id]: c }))}
                         disabled={submitted}
                         className={cn(
-                          "w-full text-left p-3.5 rounded-xl border text-sm transition-all relative flex items-center justify-between font-medium focus-ring",
-                          !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-white/5 text-neutral-300 hover:text-white",
-                          selected && !submitted && "border-primary bg-primary/10 text-white",
-                          submitted && isAnswer && "border-emerald-500/50 bg-emerald-500/10 text-emerald-300 font-semibold",
-                          submitted && selected && !isAnswer && "border-destructive/50 bg-destructive/10 text-destructive-foreground font-semibold",
-                          submitted && !selected && !isAnswer && "border-white/5 opacity-55 text-neutral-500"
+                          "w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition-all relative flex items-center justify-between font-medium focus-ring",
+                          !submitted && "hover:border-slate-400 dark:hover:border-slate-600 hover:bg-muted/60 border-border text-foreground",
+                          selected && !submitted && "border-sky-500 bg-sky-50/60 dark:bg-sky-500/10 text-foreground ring-2 ring-sky-500/20",
+                          submitted && isAnswer && "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-semibold",
+                          submitted && selected && !isAnswer && "border-rose-500 bg-rose-50/70 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 font-semibold",
+                          submitted && !selected && !isAnswer && "border-border opacity-50 text-muted-foreground"
                         )}
                       >
                         <span>{c}</span>
-                        {submitted && isAnswer && <Check className="h-4 w-4 text-emerald-400 shrink-0" />}
-                        {submitted && selected && !isAnswer && <X className="h-4 w-4 text-destructive shrink-0" />}
+                        {submitted && isAnswer && <Check className="h-4 w-4 text-emerald-500 shrink-0" />}
+                        {submitted && selected && !isAnswer && <X className="h-4 w-4 text-rose-500 shrink-0" />}
                       </button>
                     );
                   })}
@@ -193,17 +191,17 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                         onClick={() => !submitted && setAnswers((a) => ({ ...a, [q.id]: c }))}
                         disabled={submitted}
                         className={cn(
-                          "p-3 rounded-xl border text-sm font-semibold text-center transition-all flex items-center justify-center gap-1.5 focus-ring",
-                          !submitted && "hover:border-primary/40 hover:bg-white/[0.02] border-white/5 text-neutral-300 hover:text-white",
-                          selected && !submitted && "border-primary bg-primary/10 text-white",
-                          submitted && isAnswer && "border-emerald-500/50 bg-emerald-500/10 text-emerald-300",
-                          submitted && selected && !isAnswer && "border-destructive/50 bg-destructive/10 text-destructive-foreground",
-                          submitted && !selected && !isAnswer && "border-white/5 opacity-55 text-neutral-500"
+                          "p-3 rounded-xl border text-xs sm:text-sm font-semibold text-center transition-all flex items-center justify-center gap-1.5 focus-ring",
+                          !submitted && "hover:border-slate-400 dark:hover:border-slate-600 hover:bg-muted/60 border-border text-foreground",
+                          selected && !submitted && "border-sky-500 bg-sky-50/60 dark:bg-sky-500/10 text-foreground ring-2 ring-sky-500/20",
+                          submitted && isAnswer && "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300",
+                          submitted && selected && !isAnswer && "border-rose-500 bg-rose-50/70 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300",
+                          submitted && !selected && !isAnswer && "border-border opacity-50 text-muted-foreground"
                         )}
                       >
                         <span>{c}</span>
-                        {submitted && isAnswer && <Check className="h-3.5 w-3.5 text-emerald-400" />}
-                        {submitted && selected && !isAnswer && <X className="h-3.5 w-3.5 text-destructive" />}
+                        {submitted && isAnswer && <Check className="h-3.5 w-3.5 text-emerald-500" />}
+                        {submitted && selected && !isAnswer && <X className="h-3.5 w-3.5 text-rose-500" />}
                       </button>
                     );
                   })}
@@ -220,23 +218,23 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
                     onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
                     disabled={submitted}
                     placeholder="Type your answer explanation here..."
-                    className="bg-surface-raised border-white/10 focus:border-primary/50 text-white placeholder-neutral-600 rounded-lg text-sm"
+                    className="bg-card border-border focus:border-primary/50 text-foreground placeholder:text-muted-foreground rounded-xl text-sm"
                   />
                 </div>
               )}
 
               {/* Submitted Feedback details */}
               {submitted && (
-                <div className="mt-4 pt-3 border-t border-white/5 text-sm space-y-2 animate-fade-in">
+                <div className="mt-4 pt-3 border-t border-border/60 text-sm space-y-2 animate-fade-in">
                   {!correct && (
-                    <div className="flex items-center gap-1.5 text-neutral-300 bg-white/5 p-2.5 rounded-lg border border-white/5">
-                      <span className="text-neutral-500">Correct Answer:</span>
-                      <span className="font-semibold text-emerald-400">{q.correct}</span>
+                    <div className="flex items-center gap-1.5 text-foreground bg-muted/60 p-2.5 rounded-xl border border-border">
+                      <span className="text-muted-foreground">Correct Answer:</span>
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">{q.correct}</span>
                     </div>
                   )}
                   {q.explanation && (
-                    <div className="text-neutral-400 bg-neutral-900/50 p-3 rounded-lg border border-white/5 leading-relaxed text-sm">
-                      <span className="font-bold text-white block mb-1">Explanation:</span>
+                    <div className="text-muted-foreground bg-muted/30 p-3 rounded-xl border border-border leading-relaxed text-sm">
+                      <span className="font-bold text-foreground block mb-1">Explanation:</span>
                       {q.explanation}
                     </div>
                   )}
@@ -249,18 +247,18 @@ export default function QuizPlayer({ quiz }: { quiz: QuizRow }) {
 
       {/* Floating Action Submit footer bar */}
       {!submitted && (
-        <div className="sticky bottom-0 bg-background/80 backdrop-blur py-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
-          <div className="text-xs text-neutral-500 font-mono">
+        <div className="sticky bottom-0 bg-background/80 backdrop-blur py-4 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
+          <div className="text-xs text-muted-foreground font-mono">
             {Object.keys(answers).length} of {total} answered.
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             {!allAnswered && (
-              <span className="text-xs text-neutral-500">Answer all questions to submit</span>
+              <span className="text-xs text-muted-foreground">Answer all questions to submit</span>
             )}
             <Button 
               onClick={submit} 
               disabled={!allAnswered || saving} 
-              className="w-full sm:w-auto bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-6 py-2 text-xs"
+              className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-6 py-2 text-xs rounded-full shadow-sm"
             >
               {saving ? (
                 <span className="flex items-center gap-1">

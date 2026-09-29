@@ -9,6 +9,8 @@ import { Suspense, lazy } from "react";
 import { Loader2 } from "lucide-react";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 
+import { ThemeProvider } from "@/hooks/use-theme";
+
 // Route-level splitting: the marketing page, the workspace, and the PDF/DOCX
 // extractors no longer all ship in the first-load bundle.
 const Index = lazy(() => import("./pages/Index"));
@@ -39,12 +41,13 @@ const queryClient = new QueryClient({
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <ErrorBoundary>
-            <Suspense fallback={<RouteFallback />}>
+      <ThemeProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <ErrorBoundary>
+              <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
@@ -65,6 +68,7 @@ const App = () => (
           </ErrorBoundary>
         </AuthProvider>
       </BrowserRouter>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

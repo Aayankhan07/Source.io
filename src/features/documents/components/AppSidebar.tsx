@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, FileText, Mic, Video, Youtube, FileType2, LogOut, Loader2, AlertCircle, Library, RefreshCw } from "lucide-react";
 import { cn, errorMessage } from "@/lib/utils";
 import { queryKeys } from "@/lib/queryKeys";
+import ThemeToggle from "@/components/common/ThemeToggle";
+import { DEMO_DOCUMENT_LIST } from "@/features/documents/data/mockDocuments";
 
 const sourceIcon = {
   pdf: FileType2,
@@ -44,6 +46,8 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
       return (data ?? []) as DocumentRow[];
     },
   });
+
+  const displayDocs = documents.length > 0 ? documents : DEMO_DOCUMENT_LIST;
 
   // Realtime rows land in the query cache directly — writing them anywhere else
   // would leave two sources of truth that drift apart.
@@ -93,18 +97,17 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
 
   return (
     <aside className="w-full md:w-64 shrink-0 border-r border-sidebar-border bg-sidebar flex flex-col h-screen relative z-25">
-      {/* Decorative top corner glow */}
-      <div className="absolute top-0 left-0 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none" />
-
       {/* Brand Section */}
       <div className="p-4 border-b border-sidebar-border/60">
-        <Link to="/app" className="flex items-center gap-2 px-2 py-1 relative group">
-          <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden border border-white/5 bg-card/60 shadow-inner group-hover:border-primary/45 transition-colors">
-            <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
+        <Link to="/app" className="flex items-center gap-2.5 px-2 py-1 relative group">
+          <div className="h-8 w-8 rounded-full bg-slate-900 dark:bg-card border border-transparent dark:border-border flex items-center justify-center text-white shadow-sm overflow-hidden">
+            <img src="/favicon.png" className="h-4 w-4 object-contain" alt="Logo" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold tracking-tight text-white font-display text-sm">Source.io</span>
-            <span className="text-xs text-neutral-500 font-mono">Workspace v1.1</span>
+            <span className="font-semibold tracking-tight text-foreground font-display text-sm">
+              Source<span className="text-sky-600 dark:text-sky-400">.io</span>
+            </span>
+            <span className="text-[10px] text-muted-foreground font-mono">Research Studio</span>
           </div>
         </Link>
       </div>
@@ -113,25 +116,29 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
       <div className="p-4">
         <Button 
           onClick={onNew} 
-          className="w-full bg-primary hover:bg-primary-glow text-primary-foreground font-semibold py-2.5 rounded-lg flex items-center justify-start gap-2 shadow-glow transition-all" 
+          className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold py-2.5 rounded-full flex items-center justify-center gap-2 shadow-sm transition-all focus-ring text-xs" 
           size="sm"
         >
-          <Plus className="h-4 w-4 shrink-0" />
+          <Plus className="h-4 w-4 shrink-0 text-sky-400 dark:text-white" />
           <span>New Document</span>
         </Button>
       </div>
 
       {/* Library Scroll list */}
-      <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-4">
-        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-neutral-500 px-2">
-          <span className="flex items-center gap-1"><Library className="h-3 w-3" /> Library</span>
-          <span className="font-mono text-neutral-600 bg-white/5 px-1.5 py-0.5 rounded">{documents.length}</span>
+      <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-3">
+        <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground px-2">
+          <span className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider">
+            <Library className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" /> Library
+          </span>
+          <span className="font-mono text-[11px] text-muted-foreground bg-card border border-border/80 px-2 py-0.5 rounded-full shadow-2xs">
+            {displayDocs.length}
+          </span>
         </div>
         
         {isLoading && (
           <div className="space-y-1.5 px-1" aria-label="Loading your library">
             {[0, 1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-9 w-full rounded-lg bg-white/5" />
+              <Skeleton key={i} className="h-9 w-full rounded-xl bg-muted/60" />
             ))}
           </div>
         )}
@@ -139,29 +146,29 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
         {isError && (
           <div className="px-2 py-5 text-center border border-dashed border-destructive/20 rounded-xl bg-destructive/5 space-y-2.5">
             <AlertCircle className="h-4 w-4 text-destructive mx-auto" />
-            <p className="text-xs text-neutral-400 leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Couldn't load your library.
-              <span className="block text-neutral-500 mt-1">{errorMessage(error)}</span>
+              <span className="block text-muted-foreground mt-1">{errorMessage(error)}</span>
             </p>
             <Button
               size="sm"
               variant="outline"
               onClick={() => refetch()}
-              className="border-white/10 text-neutral-300 hover:text-white bg-white/5 text-xs h-8"
+              className="border-border text-foreground hover:bg-card bg-card text-xs h-8 rounded-full"
             >
               <RefreshCw className="h-3 w-3 mr-1.5" /> Retry
             </Button>
           </div>
         )}
 
-        {!isLoading && !isError && documents.length === 0 && (
-          <div className="text-xs text-neutral-500 px-2 py-6 text-center border border-dashed border-white/5 rounded-xl bg-white/5">
-            No sources imported yet.
+        {!isLoading && !isError && displayDocs.length === 0 && (
+          <div className="text-xs text-muted-foreground px-3 py-8 text-center border border-dashed border-border/80 rounded-xl bg-card shadow-2xs">
+            No documents imported yet. Click <span className="font-semibold text-foreground">+ New Document</span> to start.
           </div>
         )}
 
         <ul className="space-y-1">
-          {documents.map((d) => {
+          {displayDocs.map((d) => {
             const Icon = sourceIcon[d.source_type] ?? FileText;
             const active = d.id === docId;
             return (
@@ -172,20 +179,17 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
                     onNavigate?.();
                   }}
                   className={cn(
-                    "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-left transition-all relative group focus-ring",
+                    "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-left transition-all relative group focus-ring",
                     active
-                      ? "bg-white/5 text-white border border-white/10 shadow-md"
-                      : "hover:bg-white/5 text-neutral-400 hover:text-neutral-200 border border-transparent"
+                      ? "bg-card text-foreground border border-border shadow-xs font-medium"
+                      : "hover:bg-accent/60 text-muted-foreground hover:text-foreground border border-transparent"
                   )}
                 >
-                  {/* Left indicator bar for active item */}
-                  {active && (
-                    <span className="absolute left-0 top-2 bottom-2 w-1 bg-primary rounded-r-md" />
-                  )}
-
                   <div className={cn(
-                    "h-6 w-6 rounded flex items-center justify-center shrink-0 border",
-                    active ? "bg-primary/10 border-primary/20 text-primary" : "bg-neutral-900 border-white/5 text-neutral-500 group-hover:text-neutral-300 group-hover:border-white/10"
+                    "h-6 w-6 rounded-lg flex items-center justify-center shrink-0 border transition-colors",
+                    active 
+                      ? "bg-sky-50 dark:bg-sky-500/10 border-sky-200 dark:border-sky-500/30 text-sky-700 dark:text-sky-400" 
+                      : "bg-card border-border text-muted-foreground group-hover:text-foreground"
                   )}>
                     <Icon className="h-3.5 w-3.5" />
                   </div>
@@ -193,10 +197,10 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
                   <span className="truncate flex-1 font-medium">{d.title}</span>
 
                   {d.status !== "ready" && d.status !== "failed" && (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-600 dark:text-sky-400 shrink-0" />
                   )}
                   {d.status === "failed" && (
-                    <AlertCircle className="h-3.5 w-3.5 text-destructive" />
+                    <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
                   )}
                 </button>
               </li>
@@ -205,26 +209,31 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
         </ul>
       </div>
 
-      {/* Account Info Footer */}
-      <div className="p-3 border-t border-sidebar-border/60 bg-surface-sunken">
-        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg border border-transparent hover:border-white/5 hover:bg-white/5 transition-all">
-          <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-xs font-semibold text-primary shadow-inner">
-            {(user?.email ?? "?").slice(0, 1).toUpperCase()}
+      {/* Account Info & Theme Footer */}
+      <div className="p-3 border-t border-sidebar-border/60 bg-sidebar">
+        <div className="flex items-center gap-2 px-2.5 py-2 rounded-xl glass-card shadow-2xs">
+          <div className="h-7 w-7 rounded-full bg-slate-900 dark:bg-sky-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 shadow-2xs">
+            {(user?.user_metadata?.display_name || user?.email || "S").slice(0, 1).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-white truncate">{user?.email?.split("@")[0]}</div>
-            <div className="text-xs text-neutral-500 truncate">{user?.email}</div>
+            <div className="text-xs font-semibold text-foreground truncate">
+              {user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Scholar"}
+            </div>
+            <div className="text-[11px] text-muted-foreground truncate">{user?.email || "guest@source.io"}</div>
           </div>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 text-neutral-400 hover:text-white hover:bg-white/10 shrink-0"
-            onClick={signOut}
-            title="Sign out"
-            aria-label="Sign out"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1 shrink-0">
+            <ThemeToggle className="h-7 w-7 border-none bg-transparent hover:bg-accent" />
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-accent shrink-0 rounded-full"
+              onClick={signOut}
+              title="Sign out"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
       </div>
     </aside>

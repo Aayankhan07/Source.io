@@ -1,8 +1,9 @@
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Plus, Menu, FileText, Headphones, Sparkles, BookOpen, Clock } from "lucide-react";
+import { Plus, Menu, FileText, Sparkles, BookOpen, ArrowRight, Layers, Cpu, Play } from "lucide-react";
 
 export default function AppEmpty() {
+  const navigate = useNavigate();
   const { openUpload, openMobileNav } = useOutletContext<{
     openUpload: () => void;
     openMobileNav: () => void;
@@ -10,71 +11,103 @@ export default function AppEmpty() {
 
   return (
     <div className="h-full flex flex-col bg-background relative overflow-hidden">
-      {/* Background orbs */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-primary/5 blur-[80px] pointer-events-none" />
-
       {/* Mobile top bar */}
-      <div className="md:hidden flex items-center justify-between border-b border-white/5 bg-sidebar px-4 py-3 shrink-0">
-        <Button variant="ghost" size="icon" onClick={openMobileNav} aria-label="Open navigation" className="text-neutral-400 hover:text-white">
+      <div className="md:hidden flex items-center justify-between border-b border-border bg-sidebar px-4 py-3 shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={openMobileNav}
+          aria-label="Open navigation"
+          className="text-muted-foreground hover:text-foreground"
+        >
           <Menu className="h-5 w-5" />
         </Button>
-        <span className="font-semibold text-white font-display text-sm">Source.io</span>
+        <span className="font-semibold text-foreground font-display text-sm">Source.io</span>
         <div className="w-9" />
       </div>
 
       {/* Main Empty State Content */}
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 max-w-2xl mx-auto py-12 relative z-10">
-        <div className="h-14 w-14 rounded-xl flex items-center justify-center mb-6 overflow-hidden border border-white/10 bg-card shadow-glow relative group">
-          <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
-          <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 max-w-xl mx-auto py-12 relative z-10">
+        {/* Soft Ambient Center Icon */}
+        <div className="h-16 w-16 rounded-full bg-slate-900 dark:bg-card border border-transparent dark:border-border text-white dark:text-sky-400 flex items-center justify-center mb-6 shadow-md">
+          <Sparkles className="h-7 w-7 text-sky-400 dark:text-sky-400" />
         </div>
-        
-        <h2 className="text-2xl font-bold text-white mb-2 font-display">Create Your First Study Asset</h2>
-        <p className="text-neutral-400 text-sm mb-8 max-w-md leading-relaxed">
-          Source.io transforms static files and audio links into active revision guides, conversational recap podcasts, and a grounded QA chatbot.
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border text-foreground text-xs font-mono uppercase tracking-wider mb-4 shadow-2xs">
+          <span>Source Studio Active</span>
+        </div>
+
+        <h2 className="text-3xl sm:text-4xl font-display font-semibold text-foreground mb-3 tracking-tight">
+          Select or import study material
+        </h2>
+        <p className="text-sm text-muted-foreground mb-8 max-w-md leading-relaxed">
+          Upload any PDF, audio, YouTube lecture, or notes. Source.io converts it into structured study notes, spaced flashcards, adaptive quizzes, audio recap podcasts, and grounded chat.
         </p>
 
-        {/* Shortcut Quick Tiles Grid */}
-        <div className="grid sm:grid-cols-2 gap-4 w-full mb-8 text-left">
-          {[
-            {
-              icon: FileText,
-              title: "Import a source file",
-              desc: "Upload local PDF, DOCX, or text files to build formatted study outlines."
-            },
-            {
-              icon: Headphones,
-              title: "Draft an audio podcast",
-              desc: "Synthesize notes to compile a simulated audio dialogue summary."
-            }
-          ].map((item, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={openUpload}
-              className="glass-panel p-4 rounded-xl border border-white/5 hover:border-primary/30 cursor-pointer transition-all flex gap-3 group text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              <div className="h-8 w-8 rounded-lg bg-neutral-900 border border-white/5 flex items-center justify-center text-neutral-400 group-hover:text-primary group-hover:bg-primary/10 transition-colors shrink-0">
-                <item.icon className="h-4 w-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-semibold text-white font-display mb-1 flex items-center gap-1">
-                  {item.title}
+        {/* Quick Launch Sample Documents */}
+        <div className="grid sm:grid-cols-2 gap-3.5 w-full mb-8 text-left">
+          <button
+            type="button"
+            onClick={() => navigate("/app/doc/demo-quantum")}
+            className="p-4 rounded-2xl bg-card border border-border/80 hover:border-sky-500/40 hover:shadow-xs cursor-pointer transition-all flex gap-3 text-left w-full group focus-ring"
+          >
+            <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0 group-hover:scale-105 transition-transform">
+              <Cpu className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-0.5">
+                <h4 className="text-xs font-semibold text-foreground truncate">
+                  Quantum Computing
                 </h4>
-                <p className="text-xs text-neutral-500 leading-normal">{item.desc}</p>
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
               </div>
-            </button>
-          ))}
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                Notes, 4 flashcards, 3-question quiz & audio recap ready.
+              </p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/app/doc/demo-linalg")}
+            className="p-4 rounded-2xl bg-card border border-border/80 hover:border-sky-500/40 hover:shadow-xs cursor-pointer transition-all flex gap-3 text-left w-full group focus-ring"
+          >
+            <div className="h-8 w-8 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 shrink-0 group-hover:scale-105 transition-transform">
+              <FileText className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-0.5">
+                <h4 className="text-xs font-semibold text-foreground truncate">
+                  Linear Algebra Lecture
+                </h4>
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                Eigenvalues, spectral decomposition & flashcards.
+              </p>
+            </div>
+          </button>
         </div>
 
-        <Button 
-          onClick={openUpload} 
-          size="lg" 
-          className="bg-primary hover:bg-primary-glow text-primary-foreground font-semibold px-6 py-5 rounded-xl shadow-glow"
-        >
-          <Plus className="h-4 w-4 mr-2 shrink-0" />
-          <span>Add Study Source</span>
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <Button
+            onClick={openUpload}
+            size="lg"
+            className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-7 py-3 rounded-full shadow-sm text-xs sm:text-sm"
+          >
+            <Plus className="h-4 w-4 mr-2 shrink-0 text-white" />
+            <span>Upload New Material</span>
+          </Button>
+          <Button
+            onClick={() => navigate("/app/doc/demo-quantum")}
+            variant="outline"
+            size="lg"
+            className="border-border text-foreground hover:bg-accent rounded-full text-xs sm:text-sm"
+          >
+            <Play className="h-3.5 w-3.5 mr-1.5 text-sky-600 dark:text-sky-400" />
+            <span>Open Sample Document</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

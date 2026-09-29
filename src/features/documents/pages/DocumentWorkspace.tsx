@@ -19,8 +19,10 @@ import { generatePodcast } from "@/lib/services/podcast";
 import FlashcardsDeck from "@/features/flashcards/components/FlashcardsDeck";
 import QuizPlayer from "@/features/quiz/components/QuizPlayer";
 import ChatPanel from "@/features/chat/components/ChatPanel";
+import CustomAudioPlayer from "@/features/documents/components/CustomAudioPlayer";
 import { cn, errorMessage } from "@/lib/utils";
 import { queryKeys } from "@/lib/queryKeys";
+import { DEMO_DOCUMENTS } from "@/features/documents/data/mockDocuments";
 
 type DocumentAssets = {
   note: NoteRow | null;
@@ -53,11 +55,17 @@ export default function DocumentWorkspace() {
   // Custom audio cassette spinning state
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [currentTab, setCurrentTab] = useState("notes");
+
+  const isDemo = Boolean(docId && DEMO_DOCUMENTS[docId]);
 
   const docQuery = useQuery({
     queryKey: queryKeys.document(docId ?? ""),
     enabled: !!docId && !!user,
     queryFn: async () => {
+      if (docId && DEMO_DOCUMENTS[docId]) {
+        return DEMO_DOCUMENTS[docId].document;
+      }
       const { data, error } = await supabase
         .from("documents")
         .select("id,title,source_type,status,error_code,created_at")
@@ -72,6 +80,16 @@ export default function DocumentWorkspace() {
     queryKey: queryKeys.assets(docId ?? ""),
     enabled: !!docId && !!user,
     queryFn: async (): Promise<DocumentAssets> => {
+      if (docId && DEMO_DOCUMENTS[docId]) {
+        const d = DEMO_DOCUMENTS[docId];
+        return {
+          note: d.note,
+          cards: d.cards,
+          quiz: d.quiz,
+          podcast: d.podcast,
+        };
+      }
+
       const [n, f, q, p] = await Promise.all([
         supabase.from("notes").select("id,document_id,markdown").eq("document_id", docId!).maybeSingle(),
         supabase.from("flashcards").select("id,document_id,front,back,order_index").eq("document_id", docId!).order("order_index"),
@@ -107,7 +125,7 @@ export default function DocumentWorkspace() {
   // Realtime: document status and podcast progress write into the same cache the
   // queries above own, so there is never a second copy to fall out of sync.
   useEffect(() => {
-    if (!docId || !user) return;
+    if (!docId || !user || isDemo) return;
 
     const channel = supabase
       .channel(`doc-${docId}`)
@@ -268,19 +286,19 @@ export default function DocumentWorkspace() {
   if (docQuery.isError) {
     return (
       <div className="h-full flex items-center justify-center bg-background px-6">
-        <div className="text-center p-8 border border-dashed border-destructive/20 rounded-2xl max-w-sm glass-panel space-y-4">
-          <div className="h-10 w-10 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
+        <div className="text-center p-8 border border-dashed border-destructive/20 rounded-sm max-w-sm plate space-y-4">
+          <div className="h-10 w-10 rounded-sm bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
             <AlertCircle className="h-5 w-5" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-bold text-white font-display text-sm">Couldn't load this document</h3>
-            <p className="text-sm text-neutral-400 leading-relaxed">{errorMessage(docQuery.error)}</p>
+            <h3 className="font-bold text-foreground font-display text-sm">Couldn't load this document</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{errorMessage(docQuery.error)}</p>
           </div>
           <div className="flex items-center justify-center gap-2">
             <Button onClick={() => docQuery.refetch()} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs">
               <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
             </Button>
-            <Button variant="outline" onClick={() => navigate("/app")} className="border-white/10 text-white hover:bg-white/5 text-xs">
+            <Button variant="outline" onClick={() => navigate("/app")} className="border-border text-foreground hover:bg-surface-raised text-xs">
               Go to library
             </Button>
           </div>
@@ -292,9 +310,9 @@ export default function DocumentWorkspace() {
   if (!doc) {
     return (
       <div className="h-full flex items-center justify-center bg-background">
-        <div className="text-center p-8 border border-dashed border-white/10 rounded-2xl max-w-sm glass-panel">
-          <p className="text-neutral-400 text-sm mb-4">Study document was not found.</p>
-          <Button variant="outline" onClick={() => navigate("/app")} className="border-white/10 text-white hover:bg-white/5">
+        <div className="text-center p-8 border border-dashed border-border rounded-sm max-w-sm plate">
+          <p className="text-muted-foreground text-sm mb-4">Study document was not found.</p>
+          <Button variant="outline" onClick={() => navigate("/app")} className="border-border text-foreground hover:bg-surface-raised">
             <ChevronLeft className="h-4 w-4 mr-1 shrink-0" /> Go to library
           </Button>
         </div>
@@ -307,13 +325,13 @@ export default function DocumentWorkspace() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Workspace Header Panel */}
-      <div className="border-b border-white/5 bg-sidebar px-6 py-4 flex items-center justify-between gap-4 shrink-0">
+      <div className="border-b border-border/80 glass-dock px-6 py-3.5 flex items-center justify-between gap-4 shrink-0 shadow-xs z-10">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           {outlet?.openMobileNav && (
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden -ml-2 text-neutral-400 hover:text-white"
+              className="md:hidden -ml-2 text-muted-foreground hover:text-foreground"
               onClick={outlet.openMobileNav}
               aria-label="Open navigation"
             >
@@ -321,25 +339,25 @@ export default function DocumentWorkspace() {
             </Button>
           )}
           <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <Badge variant="outline" className="text-xs uppercase font-mono tracking-wider border-white/10 text-neutral-400">{doc.source_type}</Badge>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <Badge variant="outline" className="text-[11px] uppercase font-mono tracking-wider border-border/80 text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{doc.source_type}</Badge>
               {doc.status === "ready" && (
-                <span className="flex items-center gap-1 text-xs text-emerald-400 font-medium bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Ready
+                <span className="flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400 font-medium bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/40">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Ready
                 </span>
               )}
               {isProcessing && (
-                <span className="flex items-center gap-1 text-xs text-primary font-medium bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
-                  <Loader2 className="h-2.5 w-2.5 animate-spin" /> Ingesting...
+                <span className="flex items-center gap-1 text-[11px] text-sky-700 dark:text-sky-400 font-medium bg-sky-50 dark:bg-sky-950/40 px-2.5 py-0.5 rounded-full border border-sky-200 dark:border-sky-800/40">
+                  <Loader2 className="h-2.5 w-2.5 animate-spin text-sky-600 dark:text-sky-400" /> Ingesting...
                 </span>
               )}
               {doc.status === "failed" && (
-                <span className="flex items-center gap-1 text-xs text-destructive font-medium bg-destructive/5 px-2 py-0.5 rounded border border-destructive/10">
+                <span className="flex items-center gap-1 text-[11px] text-destructive font-medium bg-destructive/5 px-2.5 py-0.5 rounded-full border border-destructive/20">
                   {doc.error_code ?? "Failed"}
                 </span>
               )}
             </div>
-            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate font-display">{doc.title}</h1>
+            <h1 className="text-base sm:text-lg font-semibold text-foreground tracking-tight truncate font-display">{doc.title}</h1>
           </div>
         </div>
         <Button
@@ -348,27 +366,27 @@ export default function DocumentWorkspace() {
           onClick={() => setDeleteOpen(true)}
           title="Delete document"
           aria-label="Delete document"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/20 shrink-0 transition-all"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full shrink-0 transition-all"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
 
         <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-          <AlertDialogContent className="bg-card border-white/10 text-white rounded-2xl">
+          <AlertDialogContent className="bg-card border-border text-foreground rounded-2xl shadow-xl">
             <AlertDialogHeader>
-              <AlertDialogTitle className="font-display">Delete this document?</AlertDialogTitle>
-              <AlertDialogDescription className="text-neutral-400">
-                <span className="text-white font-medium">{doc.title}</span> and everything generated from
-                it — notes, flashcards, quiz and podcast — will be permanently removed. This can't be undone.
+              <AlertDialogTitle className="font-display text-lg">Delete this document?</AlertDialogTitle>
+              <AlertDialogDescription className="text-muted-foreground text-xs sm:text-sm">
+                <span className="text-foreground font-medium">{doc.title}</span> and everything generated from
+                it — notes, flashcards, quiz and podcast — will be permanently removed. This cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel className="border-border bg-card text-foreground hover:bg-muted rounded-full text-xs">
                 Keep it
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full text-xs"
               >
                 Delete document
               </AlertDialogAction>
@@ -378,23 +396,23 @@ export default function DocumentWorkspace() {
       </div>
 
       {/* Tabs Layout */}
-      <Tabs defaultValue="notes" className="flex-1 flex flex-col overflow-hidden">
-        {/* Editor-console tabs bar */}
-        <div className="border-b border-white/5 bg-sidebar px-4 shrink-0 overflow-x-auto">
-          <TabsList className="bg-transparent h-12 p-0 gap-1 flex justify-start items-stretch">
+      <Tabs value={currentTab} onValueChange={setCurrentTab} className="flex-1 flex flex-col overflow-hidden">
+        {/* Floating Pill Tabs Bar */}
+        <div className="border-b border-border/80 glass-dock px-6 py-2.5 shrink-0 overflow-x-auto z-10">
+          <TabsList className="glass-pill p-1 rounded-full gap-1 inline-flex items-center">
             {[
               { val: "notes", label: "Study Notes", icon: FileText },
               { val: "flashcards", label: "Flashcards", icon: Layers },
               { val: "quiz", label: "Quiz Practice", icon: ListChecks },
-              { val: "podcast", label: "Podcast Recap", icon: Headphones },
-              { val: "chat", label: "AI Grounded Chat", icon: MessagesSquare }
+              { val: "podcast", label: "Audio Recap", icon: Headphones },
+              { val: "chat", label: "Grounded Chat", icon: MessagesSquare }
             ].map((tab) => {
               const TabIcon = tab.icon;
               return (
                 <TabsTrigger 
                   key={tab.val}
                   value={tab.val} 
-                  className="rounded-none border-b-2 border-transparent bg-transparent px-4 text-xs font-medium text-neutral-400 hover:text-neutral-200 data-[state=active]:border-primary data-[state=active]:text-primary transition-all flex items-center gap-1.5"
+                  className="rounded-full px-4 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs transition-all flex items-center gap-1.5"
                 >
                   <TabIcon className="h-3.5 w-3.5" />
                   <span>{tab.label}</span>
@@ -405,57 +423,60 @@ export default function DocumentWorkspace() {
         </div>
 
         {/* Tab content screens */}
-        <div className="flex-1 overflow-y-auto bg-background/30">
+        <div className="flex-1 overflow-y-auto bg-background relative">
+          <div className="ambient-hero-aura pointer-events-none absolute inset-x-0 top-0 h-96 opacity-50 dark:opacity-25" />
+          <div className="ambient-mid-aura pointer-events-none absolute inset-0 opacity-30 dark:opacity-15" />
           {/* One gate for every tab: a failed asset read must never fall through to
               the "generate" states, which would invite overwriting existing work. */}
           {assetsQuery.isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              <Loader2 className="h-5 w-5 animate-spin text-sky-600 dark:text-sky-400" />
             </div>
           ) : assetsQuery.isError ? (
-            <div className="border border-dashed border-destructive/20 bg-destructive/5 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4">
-              <div className="h-10 w-10 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
+            <div className="border border-dashed border-destructive/20 bg-destructive/5 rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4">
+              <div className="h-10 w-10 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
                 <AlertCircle className="h-5 w-5" />
               </div>
               <div className="space-y-1">
-                <h3 className="font-bold text-white font-display text-sm">Couldn't load this document's content</h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
+                <h3 className="font-semibold text-foreground font-display text-sm">Couldn't load this document's content</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Your notes, cards and quiz are safe — we just couldn't fetch them.
-                  <span className="block text-neutral-500 mt-1">{errorMessage(assetsQuery.error)}</span>
+                  <span className="block text-muted-foreground mt-1">{errorMessage(assetsQuery.error)}</span>
                 </p>
               </div>
-              <Button onClick={() => assetsQuery.refetch()} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs">
+              <Button onClick={() => assetsQuery.refetch()} className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold text-xs rounded-full">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
               </Button>
             </div>
           ) : (
           <>
           {/* Notes screen */}
-          <TabsContent value="notes" className="m-0 p-6 max-w-3xl mx-auto focus-visible:outline-none">
+          <TabsContent value="notes" className="m-0 p-6 sm:p-8 max-w-4xl mx-auto focus-visible:outline-none">
             {note?.markdown ? (
               <div className="space-y-6 animate-fade-in">
-                <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5">
+                <div className="glass-card glass-highlight p-7 sm:p-9 rounded-3xl border border-border shadow-md">
                   <MarkdownView>{note.markdown}</MarkdownView>
                 </div>
                 {streaming && (
-                  <div className="flex items-center gap-2 text-xs text-primary font-mono bg-primary/5 p-3 rounded-lg border border-primary/10 max-w-max">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Stream compiling notes…
+                  <div className="flex items-center gap-2 text-xs text-sky-700 dark:text-sky-300 font-mono bg-sky-50 dark:bg-sky-950/40 p-3 rounded-full border border-sky-200 dark:border-sky-800/40 max-w-max shadow-2xs">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-600 dark:text-sky-400" /> Stream compiling notes…
                   </div>
                 )}
               </div>
+
             ) : doc.status === "ready" ? (
-              <div className="border border-dashed border-white/10 rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-card/40 glass-panel animate-fade-in">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+              <div className="border border-border rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-card shadow-sm animate-fade-in">
+                <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 mx-auto">
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-white font-display text-sm">Generate study notes</h3>
-                  <p className="text-sm text-neutral-400 leading-relaxed">
-                    We've read your source. Generate notes to get started.
+                  <h3 className="font-semibold text-foreground font-display text-sm">Generate study notes</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    We've read your source. Generate structured notes to get started.
                   </p>
                 </div>
-                <Button onClick={generate} disabled={streaming} className="bg-primary hover:bg-primary-glow text-primary-foreground font-semibold px-4 py-2 text-xs">
-                  {streaming ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
+                <Button onClick={generate} disabled={streaming} className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-5 py-2 text-xs rounded-full shadow-sm">
+                  {streaming ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin text-sky-400 dark:text-white" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5 text-sky-400 dark:text-white" />}
                   Generate Notes
                 </Button>
               </div>
@@ -469,7 +490,7 @@ export default function DocumentWorkspace() {
           </TabsContent>
 
           {/* Flashcards screen */}
-          <TabsContent value="flashcards" className="m-0 p-6 max-w-3xl mx-auto focus-visible:outline-none">
+          <TabsContent value="flashcards" className="m-0 p-6 sm:p-8 max-w-4xl mx-auto focus-visible:outline-none">
             {cards.length === 0 ? (
               <DerivativesEmpty
                 kind="flashcards"
@@ -479,11 +500,11 @@ export default function DocumentWorkspace() {
               />
             ) : (
               <div className="space-y-6 animate-fade-in">
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">{cards.length} cards</h2>
-                  <Button variant="ghost" size="sm" onClick={runDerivatives} disabled={derivLoading} className="text-neutral-400 hover:text-white text-xs">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest font-mono">{cards.length} cards</h2>
+                  <Button variant="outline" size="sm" onClick={runDerivatives} disabled={derivLoading} className="text-muted-foreground hover:text-foreground text-xs rounded-full bg-card border-border">
                     {derivLoading ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1.5" />}
-                    Regenerate
+                    Regenerate Deck
                   </Button>
                 </div>
                 <FlashcardsDeck cards={cards} />
@@ -492,7 +513,7 @@ export default function DocumentWorkspace() {
           </TabsContent>
 
           {/* Quiz screen */}
-          <TabsContent value="quiz" className="m-0 p-6 max-w-3xl mx-auto focus-visible:outline-none">
+          <TabsContent value="quiz" className="m-0 p-6 sm:p-8 max-w-4xl mx-auto focus-visible:outline-none">
             {!qz || qz.questions.length === 0 ? (
               <DerivativesEmpty
                 kind="quiz"
@@ -502,11 +523,11 @@ export default function DocumentWorkspace() {
               />
             ) : (
               <div className="space-y-6 animate-fade-in">
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">{qz.title} · {qz.questions.length} questions</h2>
-                  <Button variant="ghost" size="sm" onClick={runDerivatives} disabled={derivLoading} className="text-neutral-400 hover:text-white text-xs">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest font-mono">{qz.title} · {qz.questions.length} questions</h2>
+                  <Button variant="outline" size="sm" onClick={runDerivatives} disabled={derivLoading} className="text-muted-foreground hover:text-foreground text-xs rounded-full bg-card border-border">
                     {derivLoading ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1.5" />}
-                    Regenerate
+                    Regenerate Quiz
                   </Button>
                 </div>
                 <QuizPlayer quiz={qz} />
@@ -515,108 +536,70 @@ export default function DocumentWorkspace() {
           </TabsContent>
 
           {/* Podcast recap screen */}
-          <TabsContent value="podcast" className="m-0 p-6 max-w-3xl mx-auto focus-visible:outline-none">
+          <TabsContent value="podcast" className="m-0 p-6 sm:p-8 max-w-4xl mx-auto focus-visible:outline-none">
             {!note?.markdown ? (
               <Placeholder title="Podcast unavailable" desc="Generate study notes first, then compile the conversational recap dialogue." />
-            ) : pod?.audio_url ? (
+            ) : pod?.audio_url || pod?.script ? (
               <div className="space-y-6 animate-fade-in">
-                {/* Cassette layout box */}
-                <div className="glass-panel p-8 rounded-2xl border border-white/5 flex flex-col items-center justify-center space-y-6 relative overflow-hidden shadow-2xl">
-                  {/* Decorative background grid */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#ffffff03_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-
-                  {/* Retro Cassette Graphic */}
-                  <div className="cassette-shell z-10">
-                    <div className="cassette-label">
-                      <div className="cassette-window">
-                        <div className={cn("cassette-spindle", audioPlaying && "spindle-spinning")} />
-                        <div className={cn("cassette-spindle", audioPlaying && "spindle-spinning-reverse")} />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[8px] font-mono text-neutral-500 uppercase tracking-widest">
-                      AUDIO RECAP
-                    </div>
-                  </div>
-
-                  <div className="text-center z-10 space-y-1">
-                    <h3 className="font-bold text-white font-display text-sm flex items-center gap-1 justify-center">
-                      <HeadphonesIcon className="h-4 w-4 text-primary" /> Audio recap summary
-                    </h3>
-                    <p className="text-xs text-neutral-400">Play below to listen to the dialogue recap between the two AI hosts.</p>
-                  </div>
-
-                  <div className="w-full max-w-md z-10">
-                    <audio 
-                      controls 
-                      src={pod.audio_url} 
-                      className="w-full accent-primary rounded-lg" 
-                      onPlay={() => setAudioPlaying(true)}
-                      onPause={() => setAudioPlaying(false)}
-                      onEnded={() => setAudioPlaying(false)}
-                    />
-                  </div>
-                  
-                  <Button variant="ghost" size="sm" onClick={runPodcast} disabled={podcastLoading} className="text-neutral-400 hover:text-white border border-white/5 hover:bg-white/5 text-xs">
+                <CustomAudioPlayer 
+                  audioUrl={pod?.audio_url} 
+                  script={pod?.script} 
+                  title={`${doc?.title || "Document"} — Audio Recap`} 
+                />
+                <div className="flex justify-center">
+                  <Button variant="outline" size="sm" onClick={runPodcast} disabled={podcastLoading} className="text-muted-foreground hover:text-foreground border border-border bg-card rounded-full text-xs font-medium shadow-2xs">
                     {podcastLoading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 mr-1.5" />}
-                    Regenerate Podcast
+                    Regenerate Audio Recap
                   </Button>
                 </div>
-
-                {pod.script ? (
-                  <div className="border border-white/5 rounded-2xl p-6 bg-card/40 space-y-3 glass-panel">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">Conversational Script</h3>
-                    <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-neutral-400 max-h-96 overflow-y-auto p-4 bg-background border border-white/5 rounded-xl">{pod.script}</pre>
-                  </div>
-                ) : null}
               </div>
             ) : pod?.status === "generating" || podcastLoading ? (
-              <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-12 text-center space-y-4 max-w-md mx-auto mt-12 animate-pulse-slow">
-                <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
+              <div className="border border-border bg-card rounded-2xl p-12 text-center space-y-4 max-w-md mx-auto mt-12 shadow-sm animate-pulse-slow">
+                <Loader2 className="h-6 w-6 animate-spin text-sky-600 dark:text-sky-400 mx-auto" />
                 <div className="space-y-1">
-                  <h4 className="font-bold text-white text-sm">Generating Audio Podcast...</h4>
-                  <p className="text-sm text-neutral-400 leading-relaxed">
+                  <h4 className="font-semibold text-foreground text-sm">Generating Audio Podcast...</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     We're compiling the conversation script and generating speech files. This can take a minute.
                   </p>
                 </div>
               </div>
             ) : pod?.status === "failed" ? (
-              <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12">
-                <div className="h-10 w-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mx-auto">
+              <div className="border border-destructive/20 bg-destructive/5 rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12">
+                <div className="h-10 w-10 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
                   <AlertCircle className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-white text-sm">Podcast Generation Failed</h3>
-                  <p className="text-xs text-neutral-400">Try rebuilding the recap audio files from your notes.</p>
+                  <h3 className="font-semibold text-foreground text-sm">Podcast Generation Failed</h3>
+                  <p className="text-xs text-muted-foreground">Try rebuilding the recap audio files from your notes.</p>
                 </div>
-                <Button onClick={runPodcast} disabled={podcastLoading} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-4 py-2 text-xs">
+                <Button onClick={runPodcast} disabled={podcastLoading} className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-5 py-2 text-xs rounded-full">
                   {podcastLoading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Headphones className="h-3.5 w-3.5 mr-1.5" />}
                   Retry Generator
                 </Button>
               </div>
             ) : (
-              <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+              <div className="border border-border bg-card rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12 shadow-sm">
+                <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/30 flex items-center justify-center text-amber-700 dark:text-amber-400 mx-auto">
                   <Headphones className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-white font-display text-sm">Generate recap audio podcast</h3>
-                  <p className="text-sm text-neutral-400 leading-relaxed">
+                  <h3 className="font-semibold text-foreground font-display text-sm">Generate recap audio podcast</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     Create a simulated two-host conversational review file based on your generated notes.
                   </p>
                 </div>
-                <Button onClick={runPodcast} disabled={podcastLoading} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-4 py-2 text-xs">
-                  {podcastLoading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Headphones className="h-3.5 w-3.5 mr-1.5" />}
+                <Button onClick={runPodcast} disabled={podcastLoading} className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-5 py-2 text-xs rounded-full shadow-sm">
+                  {podcastLoading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin text-white" /> : <Headphones className="h-3.5 w-3.5 mr-1.5 text-white" />}
                   Generate Podcast
                 </Button>
               </div>
             )}
           </TabsContent>
 
-          {/* Grounded QA Chat screen. `h-full` + flex lets ChatPanel size itself
-              from this container instead of guessing at the viewport. */}
+          {/* Grounded QA Chat screen */}
           <TabsContent
             value="chat"
-            className="m-0 p-6 max-w-3xl mx-auto w-full h-full flex flex-col data-[state=inactive]:hidden focus-visible:outline-none"
+            className="m-0 p-6 sm:p-8 max-w-4xl mx-auto w-full h-full flex flex-col data-[state=inactive]:hidden focus-visible:outline-none"
           >
             <ChatPanel documentId={doc.id} noteReady={!!note?.markdown} />
           </TabsContent>
@@ -630,16 +613,16 @@ export default function DocumentWorkspace() {
 
 function Placeholder({ title, desc, loading = false }: { title: string; desc: string; loading?: boolean }) {
   return (
-    <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-3">
+    <div className="glass-card border border-border/80 rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-3 shadow-md">
       {loading ? (
-        <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
+        <Loader2 className="h-6 w-6 animate-spin text-sky-600 dark:text-sky-400 mx-auto" />
       ) : (
-        <div className="h-8 w-8 rounded-lg bg-neutral-900 border border-white/5 flex items-center justify-center text-neutral-500 mx-auto">
+        <div className="h-8 w-8 rounded-xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto">
           <FileText className="h-4 w-4" />
         </div>
       )}
-      <h3 className="font-bold text-white font-display text-sm">{title}</h3>
-      <p className="text-sm text-neutral-400 leading-relaxed">{desc}</p>
+      <h3 className="font-semibold text-foreground font-display text-sm">{title}</h3>
+      <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
     </div>
   );
 }
@@ -651,18 +634,18 @@ function DerivativesEmpty({
     return <Placeholder title={`No ${kind} generated yet`} desc="Generate study notes first, then compile flashcard & quiz modules." />;
   }
   return (
-    <div className="border border-dashed border-white/10 bg-card/40 glass-panel rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4">
-      <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+    <div className="glass-card glass-highlight border border-border/80 rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-4 shadow-md">
+      <div className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-500/10 border border-sky-100 dark:border-sky-500/30 flex items-center justify-center text-sky-700 dark:text-sky-400 mx-auto">
         <Sparkles className="h-5 w-5" />
       </div>
       <div className="space-y-1">
-        <h3 className="font-bold text-white font-display text-sm">Generate {kind} sets</h3>
-        <p className="text-sm text-neutral-400 leading-relaxed">
+        <h3 className="font-semibold text-foreground font-display text-sm">Generate {kind} sets</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed">
           We will analyze your compiled study notes to create {kind === "flashcards" ? "revision card sets" : "assessment quiz modules"}.
         </p>
       </div>
-      <Button onClick={onGenerate} disabled={loading} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-4 py-2 text-xs">
-        {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
+      <Button onClick={onGenerate} disabled={loading} className="bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 text-white font-semibold px-5 py-2 text-xs rounded-full shadow-sm">
+        {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin text-white" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5 text-white" />}
         Generate Now
       </Button>
     </div>
