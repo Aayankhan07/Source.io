@@ -23,11 +23,11 @@ export default function Index() {
     },
     { 
       front: "Explain Quantum Entanglement.", 
-      back: "A physical state where multiple qubits correlate such that measuring one instantaneously determines the state of the other across arbitrary distance." 
+      back: "A physical phenomenon where multiple qubits correlate such that measuring one instantaneously determines the state of the other across arbitrary distance." 
     },
     { 
       front: "What causes Quantum Decoherence?", 
-      back: "Environmental interference such as thermal noise or electromagnetic stray fields that decays quantum phase into classical probability." 
+      back: "Environmental interference such as thermal noise or electromagnetic fields that decays quantum phase into classical probability." 
     }
   ];
   const [cardIdx, setCardIdx] = useState(0);
@@ -124,42 +124,38 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#07090e] text-slate-100 font-sans relative overflow-x-clip selection:bg-sky-500/30 selection:text-sky-200">
-      {/* Precision ambient background illumination */}
+    <div className="min-h-[100dvh] bg-[#fafbfc] text-slate-900 font-sans relative overflow-x-clip selection:bg-slate-200">
+      {/* Subtle clean ambient lighting */}
       <div 
         aria-hidden="true" 
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[640px] opacity-40 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(14,165,233,0.18),rgba(15,23,42,0)_70%)]" 
-      />
-      <div 
-        aria-hidden="true" 
-        className="pointer-events-none absolute top-[1400px] right-[-10%] w-[500px] h-[500px] opacity-20 bg-[radial-gradient(circle,rgba(56,189,248,0.2),transparent_70%)] blur-3xl" 
+        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[520px] bg-gradient-to-b from-slate-100/60 via-slate-50/20 to-transparent" 
       />
 
       {/* Floating Pill Navigation Bar */}
-      <header className="sticky top-4 z-50 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto bg-[#0d121d]/85 backdrop-blur-xl border border-white/[0.08] rounded-full px-4 sm:px-6 py-2.5 shadow-2xl shadow-black/60">
+      <header className="sticky top-5 z-50 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-full px-4 sm:px-6 py-2.5 shadow-sm shadow-slate-900/5">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="h-7 w-7 rounded-full bg-sky-500/10 border border-sky-400/30 flex items-center justify-center text-sky-400 group-hover:scale-105 transition-transform">
-                <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="h-6 w-6 rounded-full bg-slate-900 flex items-center justify-center text-white">
+                <Sparkles className="h-3 w-3 text-sky-300" strokeWidth={1.5} />
               </div>
-              <span className="font-semibold tracking-tight text-sm font-display text-white">
-                Source<span className="text-sky-400">.io</span>
+              <span className="font-semibold tracking-tight text-sm font-display text-slate-900">
+                Source<span className="text-slate-400">.io</span>
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-400">
-              <a href="#simulator" className="hover:text-white transition-colors">Workspace Demo</a>
-              <a href="#synthesis" className="hover:text-white transition-colors">Architecture</a>
-              <a href="#workflow" className="hover:text-white transition-colors">Workflow</a>
-              <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-600">
+              <a href="#simulator" className="hover:text-slate-900 transition-colors">Workspace</a>
+              <a href="#architecture" className="hover:text-slate-900 transition-colors">Architecture</a>
+              <a href="#workflow" className="hover:text-slate-900 transition-colors">Workflow</a>
+              <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
+                className="md:hidden p-1.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                 aria-label="Toggle navigation menu"
                 aria-expanded={mobileMenuOpen}
               >
@@ -169,7 +165,7 @@ export default function Index() {
               {user ? (
                 <Link 
                   to="/app" 
-                  className="bg-white hover:bg-slate-200 text-slate-950 rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
+                  className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
                 >
                   Open workspace
                   <ArrowRight className="h-3 w-3" strokeWidth={1.5} />
@@ -178,13 +174,13 @@ export default function Index() {
                 <>
                   <Link 
                     to="/auth" 
-                    className="text-xs font-medium text-slate-400 hover:text-white px-3 py-1.5 transition-colors hidden sm:inline-block"
+                    className="text-xs font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 transition-colors hidden sm:inline-block"
                   >
                     Sign in
                   </Link>
                   <Link 
                     to="/auth" 
-                    className="bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-full px-4 py-1.5 text-xs shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
+                    className="bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-full px-4 py-1.5 text-xs shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
                   >
                     Get started free
                   </Link>
@@ -195,49 +191,49 @@ export default function Index() {
 
           {/* Mobile Collapsible Navigation Links */}
           {mobileMenuOpen && (
-            <nav className="md:hidden mt-3 pt-3 border-t border-white/[0.08] flex flex-col gap-2 text-xs font-medium text-slate-400 pb-1">
-              <a href="#simulator" onClick={() => setMobileMenuOpen(false)} className="hover:text-white py-1 transition-colors">Workspace Demo</a>
-              <a href="#synthesis" onClick={() => setMobileMenuOpen(false)} className="hover:text-white py-1 transition-colors">Architecture</a>
-              <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="hover:text-white py-1 transition-colors">Workflow</a>
-              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-white py-1 transition-colors">Pricing</a>
+            <nav className="md:hidden mt-3 pt-3 border-t border-slate-200/80 flex flex-col gap-2 text-xs font-medium text-slate-600 pb-1">
+              <a href="#simulator" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Workspace</a>
+              <a href="#architecture" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Architecture</a>
+              <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Workflow</a>
+              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Pricing</a>
             </nav>
           )}
         </div>
       </header>
 
-      {/* Hero Section: Disciplined Viewport Fit */}
+      {/* Hero Section: Luminous Minimalist Viewport */}
       <section className="pt-16 md:pt-20 pb-12 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-12 gap-10 items-center">
+        <div className="grid lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Focused Copy Stack (Eyebrow, H1, Subtext, CTAs) */}
           <div className="lg:col-span-7 space-y-6 text-left">
             {/* Eyebrow 1 of 2 across page */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/[0.08] border border-sky-400/20 text-xs font-mono text-sky-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse motion-reduce:animate-none" />
-              <span>MULTI-MODAL COGNITIVE ENGINE</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200/90 text-xs font-mono text-slate-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-900" />
+              <span>MULTI-MODAL INTELLIGENCE</span>
             </div>
 
             {/* Disciplined Headline: max 2 lines desktop */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-display font-medium tracking-tight text-white leading-[1.08]">
-              Turn complex research into verifiable mastery
+            <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-display font-medium tracking-tight text-slate-900 leading-[1.08]">
+              Turn any source into structured mastery
             </h1>
 
             {/* Disciplined Subtext: max 20 words */}
-            <p className="text-sm sm:text-base text-slate-400 max-w-xl leading-relaxed">
-              Synthesize documents, audio, and lectures into cited notes, active recall decks, quizzes, and podcast dialogues with mathematical grounding.
+            <p className="text-sm sm:text-base text-slate-600 max-w-xl leading-relaxed">
+              Synthesize documents, audio, and lectures into verified notes, active recall decks, quizzes, and podcast dialogues with mathematical grounding.
             </p>
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 to={user ? "/app" : "/auth"}
-                className="bg-white hover:bg-slate-200 text-slate-950 font-semibold text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-lg shadow-white/5 active:scale-[0.98] transition-all inline-flex items-center gap-2"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-sm active:scale-[0.98] transition-all inline-flex items-center gap-2"
               >
                 {user ? "Open workspace" : "Get started free"}
                 <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
               </Link>
               <a
                 href="#simulator"
-                className="bg-[#101726] hover:bg-[#162035] text-slate-300 hover:text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-full border border-white/[0.08] active:scale-[0.98] transition-all inline-flex items-center gap-1.5"
+                className="bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs sm:text-sm px-5 py-2.5 rounded-full border border-slate-200/90 shadow-2xs active:scale-[0.98] transition-all inline-flex items-center gap-1.5"
               >
                 Explore live demo
                 <ChevronRight className="h-4 w-4 text-slate-400" strokeWidth={1.5} />
@@ -245,44 +241,43 @@ export default function Index() {
             </div>
 
             <div className="pt-2 flex items-center gap-6 text-[11px] font-mono text-slate-500">
-              <span>Whisper speech pipeline</span>
-              <span className="h-1 w-1 rounded-full bg-slate-700" />
-              <span>Llama 3 inference</span>
-              <span className="h-1 w-1 rounded-full bg-slate-700" />
-              <span>Zero hallucination guarantee</span>
+              <span>Whisper speech parsing</span>
+              <span className="h-1 w-1 rounded-full bg-slate-300" />
+              <span>Vector coordinate verification</span>
+              <span className="h-1 w-1 rounded-full bg-slate-300" />
+              <span>Zero hallucination</span>
             </div>
           </div>
 
-          {/* Right Column: Hero Visual Asset (3D holographic crystal prisms) */}
+          {/* Right Column: Hero Visual Asset (Clean architectural workspace visual) */}
           <div className="lg:col-span-5 relative">
             <motion.div 
-              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.95 }}
+              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="relative rounded-2xl overflow-hidden border border-white/[0.1] shadow-2xl shadow-black/80 group"
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-xl shadow-slate-900/5 group bg-white"
             >
               <img 
-                src="/assets/hero_visual.jpg" 
-                alt="Multi-modal intelligence research visual with holographic crystal documents"
-                className="w-full h-auto object-cover aspect-[16/10] group-hover:scale-105 transition-transform duration-700 ease-out"
+                src="/assets/luminous_minimal_hero.jpg" 
+                alt="Minimalist architectural desk with tablet and open research notebook"
+                className="w-full h-auto object-cover aspect-[16/10] group-hover:scale-102 transition-transform duration-700 ease-out"
                 loading="eager"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#07090e] via-transparent to-transparent opacity-60" />
-              <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-[#090d16]/90 backdrop-blur-md border border-white/[0.08] flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  <span className="font-mono text-slate-300 text-[11px]">Vector Mesh Active</span>
+              <div className="p-3 bg-white border-t border-slate-100 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-700">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="font-mono text-slate-600 text-[11px]">Ready for ingestion</span>
                 </div>
-                <span className="font-mono text-sky-400 text-[11px]">350 tok/s</span>
+                <span className="font-mono text-slate-500 text-[11px]">PDF • Audio • Video</span>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Universal Ingestion Formats Strip */}
-      <section className="py-8 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto border-y border-white/[0.06]">
-        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
+      {/* Ingestion Sources Ribbon */}
+      <section className="py-7 px-4 sm:px-6 relative z-10 max-w-5xl mx-auto border-y border-slate-200/70">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           {[
             { icon: FileText, label: "PDF Documents" },
             { icon: Mic, label: "Audio & Speech" },
@@ -294,9 +289,9 @@ export default function Index() {
           ].map((item) => (
             <div
               key={item.label}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0d1320] border border-white/[0.06] text-xs font-medium text-slate-300"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-xs font-medium text-slate-700 shadow-2xs"
             >
-              <item.icon className="h-3.5 w-3.5 text-sky-400" strokeWidth={1.5} />
+              <item.icon className="h-3.5 w-3.5 text-slate-500" strokeWidth={1.5} />
               <span>{item.label}</span>
             </div>
           ))}
@@ -304,18 +299,18 @@ export default function Index() {
       </section>
 
       {/* Live Interactive Workspace Demo */}
-      <section id="simulator" className="py-16 px-4 sm:px-6 relative z-10 max-w-5xl mx-auto scroll-mt-20">
-        <div className="text-center max-w-2xl mx-auto mb-8">
-          <h2 className="text-2xl sm:text-3xl font-display font-medium text-white tracking-tight mb-2">
-            Experience the multi-modal study pipeline
+      <section id="simulator" className="py-20 px-4 sm:px-6 relative z-10 max-w-4xl mx-auto scroll-mt-24">
+        <div className="text-center max-w-xl mx-auto mb-8">
+          <h2 className="text-2xl sm:text-3xl font-display font-medium text-slate-900 tracking-tight mb-2">
+            Experience the study workflow
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-600">
             Select a mode to inspect how Source converts raw sources into active understanding.
           </p>
         </div>
 
-        {/* Tab Navigator */}
-        <div className="flex items-center justify-center gap-1.5 p-1.5 rounded-full bg-[#0d1320] border border-white/[0.08] max-w-2xl mx-auto mb-6 flex-wrap">
+        {/* Tab Switcher */}
+        <div className="flex items-center justify-center gap-1.5 p-1.5 rounded-full bg-slate-100/90 border border-slate-200/80 max-w-xl mx-auto mb-6 flex-wrap">
           {([
             { id: "notes", label: "Study Notes", icon: FileText },
             { id: "flashcards", label: "Flashcards", icon: Layers },
@@ -331,8 +326,8 @@ export default function Index() {
                 onClick={() => setActiveSimTab(t.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                   active 
-                    ? "bg-sky-500 text-slate-950 font-semibold shadow-sm" 
-                    : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                    ? "bg-white text-slate-900 font-semibold shadow-xs" 
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -342,78 +337,76 @@ export default function Index() {
           })}
         </div>
 
-        {/* Workspace Console Shell */}
-        <div className="bg-[#0b101b] rounded-2xl border border-white/[0.09] shadow-2xl shadow-black/80 overflow-hidden">
-          {/* Console Header Bar */}
-          <div className="bg-[#0f1626] border-b border-white/[0.08] px-4 py-3 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-slate-700" />
-              <span className="h-2.5 w-2.5 rounded-full bg-slate-700" />
-              <span className="h-2.5 w-2.5 rounded-full bg-slate-700" />
+        {/* Console Shell */}
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl shadow-slate-900/5 overflow-hidden">
+          {/* Header Bar */}
+          <div className="bg-slate-50/80 border-b border-slate-100 px-4 py-3 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+              <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+              <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
             </div>
 
-            <div className="flex-1 max-w-md mx-auto hidden sm:flex items-center justify-center">
-              <div className="w-full bg-[#070b14] border border-white/[0.08] rounded-md px-3 py-1 text-xs text-slate-300 flex items-center justify-between font-mono">
-                <span className="truncate">source.io / quantum_computing_intro.pdf</span>
-                <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                  Grounded
-                </span>
+            <div className="flex-1 max-w-xs mx-auto hidden sm:flex items-center justify-center">
+              <div className="w-full bg-white border border-slate-200/80 rounded px-2.5 py-0.5 text-xs text-slate-600 flex items-center justify-between font-mono">
+                <span className="truncate">quantum_computing_intro.pdf</span>
+                <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1 rounded font-medium">Grounded</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+            <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
               <span className="hidden md:inline">48 Citations Indexed</span>
-              <span className="h-2 w-2 rounded-full bg-sky-400" />
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
             </div>
           </div>
 
           {/* Interactive Workspace Body */}
-          <div className="p-5 sm:p-7 min-h-[360px]">
+          <div className="p-6 sm:p-8 min-h-[350px]">
             <AnimatePresence mode="wait">
               {/* Tab 1: Notes */}
               {activeSimTab === "notes" && (
                 <motion.div 
                   key="notes"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
                   className="max-w-2xl mx-auto space-y-4 text-left"
                 >
-                  <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div>
-                      <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-sky-400" strokeWidth={1.5} /> Introduction to Quantum Computing
+                      <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-slate-700" strokeWidth={1.5} /> Introduction to Quantum Computing
                       </h3>
-                      <p className="text-xs text-slate-400 mt-0.5">Synthesized from Chapter 1: The Quantum State Representation</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Synthesized from Chapter 1: The Quantum State Representation</p>
                     </div>
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.08] text-slate-300 font-mono">
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-mono">
                       3 min read
                     </span>
                   </div>
                   
-                  <div className="text-xs sm:text-sm text-slate-300 leading-relaxed space-y-3">
+                  <div className="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
                     <p>
                       Quantum computation is fundamentally distinguished by its exploitation of <strong>superposition</strong> and <strong>quantum entanglement</strong>. Unlike classical binary systems where bits represent discrete states of either 0 or 1, quantum systems utilize complex Hilbert vector spaces.
                     </p>
 
                     <div className="grid sm:grid-cols-2 gap-3 my-3">
-                      <div className="p-3 rounded-xl bg-[#0e1422] border border-white/[0.06]">
-                        <span className="text-[11px] font-semibold text-sky-400 block mb-1 font-mono">Principle 1: Superposition</span>
-                        <p className="text-xs text-slate-400 leading-normal">
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span className="text-[11px] font-semibold text-slate-900 block mb-1 font-mono">Principle 1: Superposition</span>
+                        <p className="text-xs text-slate-600 leading-normal">
                           A qubit exists in a normalized linear superposition |ψ⟩ = α|0⟩ + β|1⟩, evaluating multi-path algorithms simultaneously until measurement.
                         </p>
                       </div>
-                      <div className="p-3 rounded-xl bg-[#0e1422] border border-white/[0.06]">
-                        <span className="text-[11px] font-semibold text-sky-400 block mb-1 font-mono">Principle 2: Entanglement</span>
-                        <p className="text-xs text-slate-400 leading-normal">
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span className="text-[11px] font-semibold text-slate-900 block mb-1 font-mono">Principle 2: Entanglement</span>
+                        <p className="text-xs text-slate-600 leading-normal">
                           Entangled Bell pairs establish instant state correlations across spatial separations, enabling dense coding and cryptographic key distribution.
                         </p>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-400/20 text-xs text-sky-200 flex items-start gap-2.5">
-                      <ShieldCheck className="h-4 w-4 text-sky-400 shrink-0 mt-0.5" strokeWidth={1.5} />
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700 flex items-start gap-2.5">
+                      <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" strokeWidth={1.5} />
                       <span>Every paragraph in this synthesis is indexed to source coordinates [p. 2-5] with 96% verification fidelity.</span>
                     </div>
                   </div>
@@ -424,17 +417,17 @@ export default function Index() {
               {activeSimTab === "flashcards" && (
                 <motion.div 
                   key="flashcards"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
                   className="max-w-md mx-auto space-y-4 text-center py-2"
                 >
-                  <div className="flex justify-between items-center text-xs text-slate-400">
+                  <div className="flex justify-between items-center text-xs text-slate-500">
                     <span className="font-mono">Card {cardIdx + 1} of {simFlashcards.length}</span>
                     <button 
                       onClick={() => { setCardIdx(0); setCardFlipped(false); }}
-                      className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 text-xs transition-colors"
+                      className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs transition-colors"
                     >
                       Reset deck
                     </button>
@@ -442,7 +435,7 @@ export default function Index() {
 
                   {/* Flip Card Design */}
                   <div
-                    className="relative w-full min-h-[14rem] h-56 cursor-pointer select-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                    className="relative w-full min-h-[14rem] h-52 cursor-pointer select-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
                     style={{ perspective: "1000px" }}
                     onClick={() => setCardFlipped(!cardFlipped)}
                     onKeyDown={(e) => {
@@ -464,30 +457,30 @@ export default function Index() {
                     >
                       {/* Front */}
                       <div 
-                        className="absolute inset-0 rounded-2xl border border-white/[0.09] bg-[#0e1422] p-6 flex flex-col items-center justify-center text-center shadow-lg"
+                        className="absolute inset-0 rounded-2xl border border-slate-200/90 bg-white p-6 flex flex-col items-center justify-center text-center shadow-xs"
                         style={{ backfaceVisibility: "hidden" }}
                       >
-                        <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-400 text-[10px] font-mono font-semibold mb-3 border border-sky-400/20">
+                        <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-mono font-semibold mb-3">
                           QUESTION
                         </span>
-                        <p className="text-base font-semibold text-white leading-snug">
+                        <p className="text-base font-semibold text-slate-900 leading-snug">
                           {simFlashcards[cardIdx].front}
                         </p>
-                        <p className="absolute bottom-4 text-xs text-slate-500">Click or press Space to reveal answer</p>
+                        <p className="absolute bottom-4 text-xs text-slate-400">Click or press Space to reveal answer</p>
                       </div>
 
                       {/* Back */}
                       <div 
-                        className="absolute inset-0 rounded-2xl border border-sky-400/30 bg-[#0c1626] p-6 flex flex-col items-center justify-center text-center shadow-lg"
+                        className="absolute inset-0 rounded-2xl border border-slate-300 bg-slate-50/80 p-6 flex flex-col items-center justify-center text-center shadow-xs"
                         style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                       >
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-semibold mb-3 border border-emerald-400/20">
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-mono font-semibold mb-3 border border-emerald-200/60">
                           EXPLANATION
                         </span>
-                        <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                        <p className="text-xs sm:text-sm text-slate-800 leading-relaxed">
                           {simFlashcards[cardIdx].back}
                         </p>
-                        <p className="absolute bottom-4 text-xs text-slate-500">Click or press Space to flip back</p>
+                        <p className="absolute bottom-4 text-xs text-slate-400">Click or press Space to flip back</p>
                       </div>
                     </div>
                   </div>
@@ -497,16 +490,16 @@ export default function Index() {
                     <button 
                       onClick={() => { setCardFlipped(false); setCardIdx(i => Math.max(0, i - 1)); }}
                       disabled={cardIdx === 0}
-                      className="px-3 py-1.5 rounded-full border border-white/[0.08] text-xs text-slate-400 disabled:opacity-40 hover:bg-white/[0.04] transition-colors"
+                      className="px-3 py-1.5 rounded-full border border-slate-200 text-xs text-slate-600 disabled:opacity-40 hover:bg-slate-50 transition-colors"
                     >
                       Previous
                     </button>
                     <div className="flex gap-1.5" role="group" aria-label="Leitner confidence rating">
                       {[
-                        { label: "Again", style: "hover:bg-rose-500/20 hover:text-rose-300" },
-                        { label: "Hard", style: "hover:bg-amber-500/20 hover:text-amber-300" },
-                        { label: "Good", style: "hover:bg-sky-500/20 hover:text-sky-300" },
-                        { label: "Easy", style: "hover:bg-emerald-500/20 hover:text-emerald-300" },
+                        { label: "Again", style: "hover:bg-rose-50 hover:text-rose-700" },
+                        { label: "Hard", style: "hover:bg-amber-50 hover:text-amber-700" },
+                        { label: "Good", style: "hover:bg-slate-100 hover:text-slate-900" },
+                        { label: "Easy", style: "hover:bg-emerald-50 hover:text-emerald-700" },
                       ].map((item) => (
                         <button
                           key={item.label}
@@ -515,7 +508,7 @@ export default function Index() {
                             setCardFlipped(false);
                             setCardIdx((i) => (i + 1) % simFlashcards.length);
                           }}
-                          className={`text-[11px] px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.08] text-slate-300 font-medium transition-colors ${item.style}`}
+                          className={`text-[11px] px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-medium transition-colors ${item.style}`}
                           aria-label={`Mark as ${item.label} and show next card`}
                         >
                           {item.label}
@@ -525,7 +518,7 @@ export default function Index() {
                     <button 
                       onClick={() => { setCardFlipped(false); setCardIdx(i => Math.min(simFlashcards.length - 1, i + 1)); }}
                       disabled={cardIdx === simFlashcards.length - 1}
-                      className="px-3 py-1.5 rounded-full border border-white/[0.08] text-xs text-slate-400 disabled:opacity-40 hover:bg-white/[0.04] transition-colors"
+                      className="px-3 py-1.5 rounded-full border border-slate-200 text-xs text-slate-600 disabled:opacity-40 hover:bg-slate-50 transition-colors"
                     >
                       Next
                     </button>
@@ -537,20 +530,20 @@ export default function Index() {
               {activeSimTab === "quiz" && (
                 <motion.div 
                   key="quiz"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
                   className="max-w-xl mx-auto space-y-4 text-left"
                 >
-                  <div className="border border-white/[0.08] bg-[#0e1422] rounded-2xl p-5 sm:p-6 space-y-4">
+                  <div className="border border-slate-200/90 bg-white rounded-2xl p-5 sm:p-6 space-y-4">
                     <div className="flex items-start gap-2.5">
-                      <span className="px-2 py-0.5 rounded bg-sky-500 text-slate-950 text-xs font-mono font-bold mt-0.5">Q1</span>
+                      <span className="px-2 py-0.5 rounded bg-slate-900 text-white text-xs font-mono font-bold mt-0.5">Q1</span>
                       <div>
-                        <h4 className="text-sm sm:text-base font-semibold text-white">
+                        <h4 className="text-sm sm:text-base font-semibold text-slate-900">
                           Which decay mechanism transforms a qubit's quantum superposition into classical probability?
                         </h4>
-                        <p className="text-xs text-slate-400 mt-1 font-mono">Single choice • Vector verified</p>
+                        <p className="text-xs text-slate-500 mt-0.5 font-mono">Single choice • Vector verified</p>
                       </div>
                     </div>
 
@@ -564,17 +557,17 @@ export default function Index() {
                         const isSelected = selectedChoice === opt.idx;
                         const isCorrect = opt.correct;
                         
-                        let btnStyle = "border-white/[0.08] hover:border-white/[0.15] bg-[#070b14] text-slate-300";
+                        let btnStyle = "border-slate-200/80 hover:border-slate-300 bg-white text-slate-700";
                         if (isSelected) {
                           if (quizSubmitted) {
                             btnStyle = isCorrect 
-                              ? "border-emerald-500 bg-emerald-500/10 text-emerald-200" 
-                              : "border-rose-500 bg-rose-500/10 text-rose-200";
+                              ? "border-emerald-500 bg-emerald-50 text-emerald-900" 
+                              : "border-rose-500 bg-rose-50 text-rose-900";
                           } else {
-                            btnStyle = "border-sky-400 bg-sky-500/10 text-white ring-1 ring-sky-400";
+                            btnStyle = "border-slate-900 bg-slate-50 text-slate-900 ring-1 ring-slate-900";
                           }
                         } else if (quizSubmitted && isCorrect) {
-                          btnStyle = "border-emerald-500 bg-emerald-500/10 text-emerald-200";
+                          btnStyle = "border-emerald-500 bg-emerald-50 text-emerald-900";
                         }
 
                         return (
@@ -587,19 +580,19 @@ export default function Index() {
                             className={`w-full text-left p-3 rounded-xl border transition-all text-xs sm:text-sm font-medium flex items-center justify-between ${btnStyle}`}
                           >
                             <span>{opt.text}</span>
-                            {quizSubmitted && isCorrect && <Check className="h-4 w-4 text-emerald-400" strokeWidth={1.5} />}
-                            {quizSubmitted && isSelected && !isCorrect && <X className="h-4 w-4 text-rose-400" strokeWidth={1.5} />}
+                            {quizSubmitted && isCorrect && <Check className="h-4 w-4 text-emerald-600" strokeWidth={1.5} />}
+                            {quizSubmitted && isSelected && !isCorrect && <X className="h-4 w-4 text-rose-600" strokeWidth={1.5} />}
                           </button>
                         );
                       })}
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.08]">
-                      <span className="text-xs text-slate-400">Select an option to test your comprehension</span>
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                      <span className="text-xs text-slate-500">Select an option to test your comprehension</span>
                       {quizSubmitted ? (
                         <button 
                           onClick={() => { setSelectedChoice(null); setQuizSubmitted(false); }}
-                          className="px-3.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] text-white text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                          className="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
                         >
                           <RotateCcw className="h-3 w-3" strokeWidth={1.5} /> Retry
                         </button>
@@ -607,7 +600,7 @@ export default function Index() {
                         <button 
                           disabled={selectedChoice === null}
                           onClick={() => setQuizSubmitted(true)}
-                          className="px-4 py-1.5 rounded-full bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold disabled:opacity-40 transition-colors"
+                          className="px-4 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold disabled:opacity-40 transition-colors"
                         >
                           Submit Answer
                         </button>
@@ -615,9 +608,9 @@ export default function Index() {
                     </div>
 
                     {quizSubmitted && (
-                      <div className="text-xs text-slate-300 bg-[#070b14] p-3.5 rounded-xl border border-white/[0.08] leading-relaxed">
-                        <strong className="text-white font-semibold block mb-0.5">Rationale:</strong> 
-                        Decoherence occurs when environmental thermal fluctuations or electromagnetic fields interact with qubits, inducing rapid loss of phase coherence.
+                      <div className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 leading-relaxed">
+                        <strong className="text-slate-900 font-semibold block mb-0.5">Rationale:</strong> 
+                        Decoherence occurs when environmental thermal vibrations or electromagnetic fields interact with qubits, inducing rapid loss of phase coherence.
                       </div>
                     )}
                   </div>
@@ -628,16 +621,16 @@ export default function Index() {
               {activeSimTab === "podcast" && (
                 <motion.div 
                   key="podcast"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25 }}
-                  className="max-w-md mx-auto space-y-5 text-center py-2"
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="max-w-md mx-auto space-y-4 text-center py-2"
                 >
-                  <div className="w-full bg-[#0e1422] rounded-2xl p-6 border border-white/[0.08] text-left">
+                  <div className="w-full bg-slate-900 text-white rounded-2xl p-6 text-left shadow-sm">
                     <div className="flex items-center justify-between mb-3 text-xs text-slate-400 font-mono">
                       <span>SYNTHESIZED EPISODE</span>
-                      <span className="px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-400/20">
+                      <span className="px-2 py-0.5 rounded-full bg-white/10 text-white border border-white/10">
                         2 AI Hosts
                       </span>
                     </div>
@@ -645,16 +638,16 @@ export default function Index() {
                     <h4 className="text-base font-semibold text-white mb-1">
                       Demystifying Superposition and Entanglement
                     </h4>
-                    <p className="text-xs text-slate-400 mb-6">Generated conversation from Chapter 1</p>
+                    <p className="text-xs text-slate-400 mb-6">Generated dialogue from Chapter 1</p>
 
                     {/* Playback Controls */}
                     <div className="flex items-center gap-4">
                       <button
                         onClick={() => setPodcastPlaying(!podcastPlaying)}
                         aria-label={podcastPlaying ? "Pause audio preview" : "Play audio preview"}
-                        className="h-11 w-11 rounded-full bg-sky-500 hover:bg-sky-400 text-slate-950 flex items-center justify-center transition-all shadow-md shrink-0 active:scale-95"
+                        className="h-10 w-10 rounded-full bg-white hover:bg-slate-100 text-slate-950 flex items-center justify-center transition-all shrink-0 active:scale-95"
                       >
-                        {podcastPlaying ? <Pause className="h-5 w-5" strokeWidth={1.5} /> : <Play className="h-5 w-5 ml-0.5" strokeWidth={1.5} />}
+                        {podcastPlaying ? <Pause className="h-4 w-4" strokeWidth={1.5} /> : <Play className="h-4 w-4 ml-0.5" strokeWidth={1.5} />}
                       </button>
                       <div className="flex-1 space-y-1">
                         <div 
@@ -665,7 +658,7 @@ export default function Index() {
                           aria-valuemax={100}
                           aria-label="Podcast preview progress"
                         >
-                          <div className="h-full bg-sky-400 transition-all duration-300" style={{ width: `${audioProgress}%` }} />
+                          <div className="h-full bg-white transition-all duration-300" style={{ width: `${audioProgress}%` }} />
                         </div>
                         <div className="flex justify-between text-[11px] text-slate-400 font-mono">
                           <span>0:48</span>
@@ -676,14 +669,14 @@ export default function Index() {
                   </div>
 
                   {/* Transcript Snippet */}
-                  <div className="text-left w-full space-y-2 text-xs bg-[#090d16] border border-white/[0.06] p-4 rounded-xl">
+                  <div className="text-left w-full space-y-2 text-xs bg-slate-50 border border-slate-200/80 p-4 rounded-xl">
                     <div>
-                      <span className="font-semibold text-sky-400 font-mono text-[11px]">Host A (Clara):</span>
-                      <p className="text-slate-300 mt-0.5">"So when a qubit is in superposition, it is not merely alternating between zero and one, correct?"</p>
+                      <span className="font-semibold text-slate-900 font-mono text-[11px]">Host A (Clara):</span>
+                      <p className="text-slate-600 mt-0.5">"So when a qubit is in superposition, it is not merely alternating between zero and one, correct?"</p>
                     </div>
                     <div>
-                      <span className="font-semibold text-slate-400 font-mono text-[11px]">Host B (Julian):</span>
-                      <p className="text-slate-300 mt-0.5">"Precisely. It occupies a normalized vector space until physical measurement prompts state reduction."</p>
+                      <span className="font-semibold text-slate-900 font-mono text-[11px]">Host B (Julian):</span>
+                      <p className="text-slate-600 mt-0.5">"Precisely. It occupies a normalized vector space until physical measurement prompts state reduction."</p>
                     </div>
                   </div>
                 </motion.div>
@@ -693,11 +686,11 @@ export default function Index() {
               {activeSimTab === "chat" && (
                 <motion.div 
                   key="chat"
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25 }}
-                  className="max-w-xl mx-auto flex flex-col h-[380px] justify-between text-left"
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="max-w-xl mx-auto flex flex-col h-[360px] justify-between text-left"
                 >
                   <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
                     {chatMessages.map((m, idx) => {
@@ -706,8 +699,8 @@ export default function Index() {
                         <div key={idx} className={`flex ${isAi ? "justify-start" : "justify-end"}`}>
                           <div className={`max-w-[88%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
                             isAi 
-                              ? "bg-[#0e1422] border border-white/[0.08] text-slate-200" 
-                              : "bg-sky-500 text-slate-950 font-medium"
+                              ? "bg-slate-50 border border-slate-200/80 text-slate-800" 
+                              : "bg-slate-900 text-white font-medium"
                           }`}>
                             {m.content === "" ? (
                               <div className="flex items-center gap-1.5 py-1 text-slate-400">
@@ -719,11 +712,11 @@ export default function Index() {
                               <>
                                 <p>{m.content}</p>
                                 {m.citation && (
-                                  <div className="mt-2 pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-slate-400">
-                                    <span className="text-sky-400 font-medium flex items-center gap-1">
-                                      <BookmarkCheck className="h-3 w-3" strokeWidth={1.5} /> {m.citation}
+                                  <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                                    <span className="text-slate-800 font-medium flex items-center gap-1">
+                                      <BookmarkCheck className="h-3 w-3 text-slate-600" strokeWidth={1.5} /> {m.citation}
                                     </span>
-                                    <span className="bg-sky-500/10 text-sky-300 px-1.5 py-0.5 rounded border border-sky-400/20">
+                                    <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
                                       {Math.round((m.score || 0.95) * 100)}% match
                                     </span>
                                   </div>
@@ -737,19 +730,19 @@ export default function Index() {
                   </div>
 
                   {/* Input area */}
-                  <div className="border-t border-white/[0.08] pt-3 mt-2 space-y-2">
+                  <div className="border-t border-slate-100 pt-3 mt-2 space-y-2">
                     <div className="flex gap-1.5 flex-wrap">
                       <button 
                         onClick={() => handleSendChat("What is quantum superposition?")}
                         disabled={chatTyping}
-                        className="text-xs px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 transition-colors"
+                        className="text-xs px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                       >
                         What is superposition?
                       </button>
                       <button 
                         onClick={() => handleSendChat("Explain entanglement in simple terms.")}
                         disabled={chatTyping}
-                        className="text-xs px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 transition-colors"
+                        className="text-xs px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                       >
                         Explain entanglement
                       </button>
@@ -764,14 +757,14 @@ export default function Index() {
                         placeholder="Ask a question about your document..."
                         disabled={chatTyping}
                         aria-label="Ask a question about the document"
-                        className="flex-1 bg-[#070b14] border border-white/[0.08] rounded-full px-4 py-2 text-xs sm:text-sm text-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-400"
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-900"
                       />
                       <button 
                         type="button"
                         onClick={() => handleSendChat(chatInput)}
                         disabled={chatTyping || !chatInput.trim()}
                         aria-label="Send message"
-                        className="h-9 w-9 rounded-full bg-sky-500 hover:bg-sky-400 text-slate-950 flex items-center justify-center disabled:opacity-40 transition-all shrink-0 active:scale-95"
+                        className="h-9 w-9 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center disabled:opacity-40 transition-all shrink-0 active:scale-95"
                       >
                         <Send className="h-3.5 w-3.5" strokeWidth={1.5} />
                       </button>
@@ -784,49 +777,46 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Asymmetric Bento Architecture Showcase */}
-      <section id="synthesis" className="py-20 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto scroll-mt-20">
+      {/* Architecture Bento Section */}
+      <section id="architecture" className="py-20 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto scroll-mt-24">
         <div className="text-left max-w-2xl mb-12">
           {/* Eyebrow 2 of 2 across page */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/[0.08] border border-sky-400/20 text-xs font-mono text-sky-400 mb-3">
-            <span>VERIFIABLE GROUNDING</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200/90 text-xs font-mono text-slate-700 mb-3">
+            <span>CITATION ACCURACY</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-medium text-white tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl font-display font-medium text-slate-900 tracking-tight leading-tight">
             Engineered for scholars who require mathematical precision
           </h2>
-          <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+          <p className="text-sm text-slate-600 mt-2 leading-relaxed">
             Every output retains an immutable anchor back to page coordinates and timestamps.
           </p>
         </div>
 
-        {/* Bento Grid: 3 Cells with Real Visual Texture */}
+        {/* Bento Grid: 3 Clean Cells */}
         <div className="grid lg:grid-cols-12 gap-6">
-          {/* Cell 1: Large Feature with Real Visual Asset */}
-          <div className="lg:col-span-7 bg-[#0b101b] rounded-3xl border border-white/[0.08] p-6 sm:p-8 flex flex-col justify-between overflow-hidden relative group">
-            <div className="mb-6 relative z-10">
-              <h3 className="text-xl sm:text-2xl font-display font-medium text-white mb-2">
+          {/* Cell 1: Neural Transcription */}
+          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 flex flex-col justify-between shadow-xs">
+            <div>
+              <h3 className="text-xl font-display font-medium text-slate-900 mb-2">
                 Acoustic transcriptions with word-level alignment
               </h3>
-              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-lg">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg mb-6">
                 Whisper neural models isolate multi-speaker conversations from lectures, webinars, and audiobooks, indexing each sentence to precise timestamps.
               </p>
             </div>
 
-            <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] mt-2">
-              <img 
-                src="/assets/neural_audio.jpg" 
-                alt="Acoustic waveform and vector coordinate clusters visual"
-                className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0b101b] via-transparent to-transparent opacity-80" />
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs font-mono text-slate-300">
-                <span className="bg-[#070b14]/90 px-2.5 py-1 rounded border border-white/[0.08]">
-                  44.1kHz • 2 Channels
-                </span>
-                <span className="text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded border border-sky-400/20">
-                  98.4% WER Accuracy
-                </span>
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2 font-mono text-xs text-slate-700">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 text-[11px] text-slate-500">
+                <span>SPEAKER DIARIZATION</span>
+                <span>TIMESTAMP</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Clara: "Superposition allows a linear combination..."</span>
+                <span className="text-slate-500">01:14</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Julian: "Evaluating multi-path algorithms simultaneously..."</span>
+                <span className="text-slate-500">01:28</span>
               </div>
             </div>
           </div>
@@ -834,55 +824,55 @@ export default function Index() {
           {/* Right Column: 2 Stacked Cells */}
           <div className="lg:col-span-5 flex flex-col gap-6">
             {/* Cell 2: Vector Coordinate Scoring */}
-            <div className="bg-[#0b101b] rounded-3xl border border-white/[0.08] p-6 flex-1 flex flex-col justify-between">
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 flex-1 flex flex-col justify-between shadow-xs">
               <div>
-                <h3 className="text-lg font-display font-medium text-white mb-2">
+                <h3 className="text-lg font-display font-medium text-slate-900 mb-2">
                   Cosine similarity ranking
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
                   Incoming questions compute dense vector embeddings, retrieving the top matched fragments with transparent certainty scores.
                 </p>
               </div>
 
-              <div className="space-y-2 bg-[#070b14] p-3.5 rounded-xl border border-white/[0.06] font-mono text-xs">
-                <div className="flex items-center justify-between text-slate-400 border-b border-white/[0.06] pb-2 text-[11px]">
+              <div className="space-y-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 font-mono text-xs">
+                <div className="flex items-center justify-between text-slate-500 border-b border-slate-200/60 pb-2 text-[11px]">
                   <span>PASSAGE EXCERPT</span>
                   <span>CONFIDENCE</span>
                 </div>
-                <div className="flex items-center justify-between text-slate-300 pt-1">
+                <div className="flex items-center justify-between text-slate-800 pt-1">
                   <span className="truncate max-w-[210px]">§ 1.2 "Superposition collapse..."</span>
-                  <span className="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">0.96</span>
+                  <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60">0.96</span>
                 </div>
-                <div className="flex items-center justify-between text-slate-300">
+                <div className="flex items-center justify-between text-slate-800">
                   <span className="truncate max-w-[210px]">§ 2.4 "Thermal decoherence in..."</span>
-                  <span className="text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">0.91</span>
+                  <span className="text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/60">0.91</span>
                 </div>
               </div>
             </div>
 
-            {/* Cell 3: Spaced Repetition Logic */}
-            <div className="bg-[#0b101b] rounded-3xl border border-white/[0.08] p-6 flex-1 flex flex-col justify-between">
+            {/* Cell 3: Spaced Repetition */}
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 flex-1 flex flex-col justify-between shadow-xs">
               <div>
-                <h3 className="text-lg font-display font-medium text-white mb-2">
+                <h3 className="text-lg font-display font-medium text-slate-900 mb-2">
                   Adaptive Leitner scheduling
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
                   Surfaces challenging concepts right before memory decay occurs, reducing total review time while reinforcing long-term retention.
                 </p>
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-                <div className="p-2.5 rounded-xl bg-[#070b14] border border-white/[0.06]">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
                   <span className="text-slate-500 block text-[10px]">INTERVAL</span>
-                  <span className="font-semibold text-white">4 Days</span>
+                  <span className="font-semibold text-slate-900">4 Days</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#070b14] border border-white/[0.06]">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
                   <span className="text-slate-500 block text-[10px]">RETENTION</span>
-                  <span className="font-semibold text-emerald-400">94.2%</span>
+                  <span className="font-semibold text-emerald-700">94.2%</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#070b14] border border-white/[0.06]">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
                   <span className="text-slate-500 block text-[10px]">DECKS</span>
-                  <span className="font-semibold text-sky-400">28 Cards</span>
+                  <span className="font-semibold text-slate-900">28 Cards</span>
                 </div>
               </div>
             </div>
@@ -890,13 +880,13 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Streamlined Knowledge Pipeline Workflow */}
-      <section id="workflow" className="py-20 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto scroll-mt-20 border-t border-white/[0.06]">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <h2 className="text-3xl sm:text-4xl font-display font-medium text-white tracking-tight mb-2">
+      {/* Knowledge Pipeline Workflow */}
+      <section id="workflow" className="py-20 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto scroll-mt-24 border-t border-slate-200/70">
+        <div className="text-center max-w-xl mx-auto mb-14">
+          <h2 className="text-3xl sm:text-4xl font-display font-medium text-slate-900 tracking-tight mb-2">
             From raw media to complete comprehension
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-600">
             A continuous four-stage pipeline that operates without manual prompt tinkering.
           </p>
         </div>
@@ -926,17 +916,17 @@ export default function Index() {
           ].map((stage, idx) => (
             <div 
               key={stage.title}
-              className="bg-[#0b101b] rounded-2xl border border-white/[0.08] p-6 flex flex-col justify-between"
+              className="bg-white rounded-2xl border border-slate-200/80 p-6 flex flex-col justify-between shadow-xs"
             >
               <div>
-                <span className="text-sky-400 font-mono text-xs font-semibold block mb-3">
+                <span className="text-slate-400 font-mono text-xs font-semibold block mb-3">
                   Stage {idx + 1}
                 </span>
-                <h3 className="text-base font-semibold text-white mb-2">{stage.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{stage.desc}</p>
+                <h3 className="text-base font-semibold text-slate-900 mb-2">{stage.title}</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">{stage.desc}</p>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-white/[0.06] text-[11px] font-mono text-slate-500">
+              <div className="pt-4 mt-4 border-t border-slate-100 text-[11px] font-mono text-slate-500">
                 {stage.metric}
               </div>
             </div>
@@ -945,28 +935,28 @@ export default function Index() {
       </section>
 
       {/* Transparent Pricing Comparison */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 relative z-10 max-w-5xl mx-auto scroll-mt-20">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <h2 className="text-3xl sm:text-4xl font-display font-medium text-white tracking-tight mb-2">
+      <section id="pricing" className="py-20 px-4 sm:px-6 relative z-10 max-w-4xl mx-auto scroll-mt-24">
+        <div className="text-center max-w-xl mx-auto mb-14">
+          <h2 className="text-3xl sm:text-4xl font-display font-medium text-slate-900 tracking-tight mb-2">
             Predictable plans for researchers and teams
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-600">
             Start free without a credit card and upgrade whenever you require unlimited volume.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 items-stretch">
           {/* Card 1: Free Tier */}
-          <div className="bg-[#0b101b] rounded-3xl p-8 border border-white/[0.08] flex flex-col justify-between text-left">
+          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 flex flex-col justify-between text-left shadow-xs">
             <div>
-              <span className="text-xs font-mono text-slate-400 font-semibold block mb-4">
+              <span className="text-xs font-mono text-slate-500 font-semibold block mb-4">
                 FREE TIER
               </span>
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-4xl sm:text-5xl font-display font-bold text-white">$0</span>
-                <span className="text-xs text-slate-400 font-mono">/ forever</span>
+                <span className="text-4xl sm:text-5xl font-display font-bold text-slate-900">$0</span>
+                <span className="text-xs text-slate-500 font-mono">/ forever</span>
               </div>
-              <p className="text-xs text-slate-400 mb-8">Fundamental research utilities for individual students.</p>
+              <p className="text-xs text-slate-600 mb-8">Fundamental research utilities for individual students.</p>
 
               <div className="space-y-3 mb-8">
                 {[
@@ -977,8 +967,8 @@ export default function Index() {
                   "2 audio podcast recaps",
                   "Grounded chat with passage citations"
                 ].map((feat) => (
-                  <div key={feat} className="flex items-center gap-2.5 text-xs text-slate-300">
-                    <Check className="h-4 w-4 text-sky-400 shrink-0" strokeWidth={1.5} />
+                  <div key={feat} className="flex items-center gap-2.5 text-xs text-slate-700">
+                    <Check className="h-4 w-4 text-slate-900 shrink-0" strokeWidth={1.5} />
                     <span>{feat}</span>
                   </div>
                 ))}
@@ -987,20 +977,20 @@ export default function Index() {
 
             <Link
               to="/auth"
-              className="w-full text-center py-3 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-white font-semibold text-xs transition-colors active:scale-[0.98]"
+              className="w-full text-center py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-800 font-semibold text-xs transition-colors active:scale-[0.98]"
             >
               Get started free
             </Link>
           </div>
 
           {/* Card 2: Scholar Pro Tier */}
-          <div className="bg-[#0e1524] rounded-3xl p-8 border border-sky-400/30 shadow-2xl shadow-sky-500/5 flex flex-col justify-between relative overflow-hidden text-left">
-            <div className="relative z-10">
+          <div className="bg-slate-900 text-white rounded-3xl p-8 border border-slate-800 shadow-xl shadow-slate-950/10 flex flex-col justify-between relative overflow-hidden text-left">
+            <div>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-xs font-mono text-sky-400 font-semibold">
+                <span className="text-xs font-mono text-slate-400 font-semibold">
                   SCHOLAR PRO
                 </span>
-                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-400/30 font-semibold">
+                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/10 text-white border border-white/10 font-semibold">
                   RECOMMENDED
                 </span>
               </div>
@@ -1021,7 +1011,7 @@ export default function Index() {
                   "Priority cloud sync and source backup"
                 ].map((feat) => (
                   <div key={feat} className="flex items-center gap-2.5 text-xs text-slate-200">
-                    <Check className="h-4 w-4 text-sky-400 shrink-0" strokeWidth={1.5} />
+                    <Check className="h-4 w-4 text-emerald-400 shrink-0" strokeWidth={1.5} />
                     <span>{feat}</span>
                   </div>
                 ))}
@@ -1030,7 +1020,7 @@ export default function Index() {
 
             <Link
               to="/auth"
-              className="relative z-10 w-full text-center py-3 rounded-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs shadow-md transition-all active:scale-[0.98]"
+              className="w-full text-center py-2.5 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs shadow-md transition-all active:scale-[0.98]"
             >
               Start 14-day free trial
             </Link>
@@ -1038,19 +1028,19 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Focused Bottom Call to Action */}
-      <section className="pt-16 pb-24 px-4 sm:px-6 relative z-10 text-center max-w-4xl mx-auto">
-        <h2 className="text-3xl sm:text-5xl font-display font-medium text-white tracking-tight leading-tight mb-4">
+      {/* Bottom Call to Action */}
+      <section className="pt-16 pb-24 px-4 sm:px-6 relative z-10 text-center max-w-3xl mx-auto">
+        <h2 className="text-3xl sm:text-4xl font-display font-medium text-slate-900 tracking-tight leading-tight mb-3">
           Master any subject without hallucination anxiety
         </h2>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto mb-8 leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mb-8 leading-relaxed">
           Join researchers and students converting dense documents into active recall and cited answers.
         </p>
 
         <div className="flex items-center justify-center">
           <Link
             to={user ? "/app" : "/auth"}
-            className="bg-white hover:bg-slate-200 text-slate-950 font-semibold text-xs sm:text-sm px-8 py-3 rounded-full shadow-lg active:scale-[0.98] transition-all inline-flex items-center gap-2"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm px-8 py-3 rounded-full shadow-sm active:scale-[0.98] transition-all inline-flex items-center gap-2"
           >
             {user ? "Open workspace" : "Get started free"}
             <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
@@ -1058,38 +1048,38 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Clean Cohesive Footer */}
-      <footer className="px-4 sm:px-6 pb-8 max-w-6xl mx-auto relative z-10">
-        <div className="bg-[#0b101b] rounded-3xl border border-white/[0.08] p-8 sm:p-10 space-y-10 text-left">
+      {/* Clean Minimalist Footer */}
+      <footer className="px-4 sm:px-6 pb-10 max-w-5xl mx-auto relative z-10 border-t border-slate-200/80 pt-10">
+        <div className="space-y-10 text-left">
           <div className="flex flex-col md:flex-row items-start justify-between gap-8">
             <div className="space-y-3 max-w-sm">
               <Link to="/" className="flex items-center gap-2">
-                <div className="h-7 w-7 rounded-full bg-sky-500/10 border border-sky-400/30 flex items-center justify-center text-sky-400">
-                  <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
+                <div className="h-6 w-6 rounded-full bg-slate-900 flex items-center justify-center text-white">
+                  <Sparkles className="h-3 w-3 text-sky-300" strokeWidth={1.5} />
                 </div>
-                <span className="font-semibold text-sm font-display text-white">
-                  Source<span className="text-sky-400">.io</span>
+                <span className="font-semibold text-sm font-display text-slate-900">
+                  Source<span className="text-slate-400">.io</span>
                 </span>
               </Link>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 The multi-modal intelligence workspace that synthesizes complex documents into verified study notes and interactive recall systems.
               </p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-xs">
               <div>
-                <span className="font-mono text-slate-400 font-semibold block mb-3">Product</span>
-                <ul className="space-y-2 text-slate-400">
-                  <li><a href="#simulator" className="hover:text-white transition-colors">Workspace Demo</a></li>
-                  <li><a href="#synthesis" className="hover:text-white transition-colors">Architecture</a></li>
-                  <li><a href="#workflow" className="hover:text-white transition-colors">Workflow</a></li>
-                  <li><a href="#pricing" className="hover:text-white transition-colors">Pricing Plans</a></li>
+                <span className="font-mono text-slate-900 font-semibold block mb-3">Product</span>
+                <ul className="space-y-2 text-slate-600">
+                  <li><a href="#simulator" className="hover:text-slate-900 transition-colors">Workspace Demo</a></li>
+                  <li><a href="#architecture" className="hover:text-slate-900 transition-colors">Architecture</a></li>
+                  <li><a href="#workflow" className="hover:text-slate-900 transition-colors">Workflow</a></li>
+                  <li><a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing Plans</a></li>
                 </ul>
               </div>
 
               <div>
-                <span className="font-mono text-slate-400 font-semibold block mb-3">Grounding</span>
-                <ul className="space-y-2 text-slate-400">
+                <span className="font-mono text-slate-900 font-semibold block mb-3">Grounding</span>
+                <ul className="space-y-2 text-slate-600">
                   <li><span className="text-slate-500">Whisper ASR</span></li>
                   <li><span className="text-slate-500">Groq Llama 3</span></li>
                   <li><span className="text-slate-500">Vector Embeddings</span></li>
@@ -1098,10 +1088,10 @@ export default function Index() {
               </div>
 
               <div>
-                <span className="font-mono text-slate-400 font-semibold block mb-3">Platform</span>
-                <ul className="space-y-2 text-slate-400">
-                  <li><Link to="/auth" className="hover:text-white transition-colors">Sign in</Link></li>
-                  <li><Link to="/auth" className="hover:text-white transition-colors">Create account</Link></li>
+                <span className="font-mono text-slate-900 font-semibold block mb-3">Platform</span>
+                <ul className="space-y-2 text-slate-600">
+                  <li><Link to="/auth" className="hover:text-slate-900 transition-colors">Sign in</Link></li>
+                  <li><Link to="/auth" className="hover:text-slate-900 transition-colors">Create account</Link></li>
                   <li><span className="text-slate-500">Privacy Policy</span></li>
                   <li><span className="text-slate-500">Terms of Service</span></li>
                 </ul>
@@ -1109,9 +1099,9 @@ export default function Index() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <span>All inference pipelines operational</span>
             </div>
 
