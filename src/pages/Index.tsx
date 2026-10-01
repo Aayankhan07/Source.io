@@ -9,7 +9,7 @@ import {
   ArrowRight, Play, Pause, Check, X, RotateCcw, Send,
   Sparkles, FileCode, Video, Mic, Globe, Cpu, ShieldCheck,
   ChevronRight, BookmarkCheck, Database, Menu, Sun, Moon,
-  Search, Copy, Terminal, ExternalLink
+  Search, Copy, Terminal, ExternalLink, BookOpen
 } from "lucide-react";
 
 import {
@@ -179,16 +179,10 @@ export default function Index() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="min-h-[100dvh] bg-background text-foreground font-sans relative overflow-x-clip transition-colors duration-200">
-        {/* Subtle clean ambient lighting */}
-        <div 
-          aria-hidden="true" 
-          className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[480px] bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent" 
-        />
-
+      <div className="min-h-[100dvh] bg-white dark:bg-background text-foreground font-sans relative overflow-x-clip transition-colors duration-200">
         {/* Floating Pill Navigation Bar */}
-        <header className="sticky top-5 z-50 px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto bg-card/85 backdrop-blur-xl border border-border rounded-full px-4 sm:px-6 py-2.5 shadow-sm">
+        <header className="sticky top-3 sm:top-5 z-50 px-3 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto bg-card/85 backdrop-blur-xl border border-border rounded-full px-4 sm:px-6 py-2.5 shadow-sm">
             <div className="flex items-center justify-between">
               <Link to="/" className="flex items-center gap-2 group">
                 <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
@@ -289,61 +283,68 @@ export default function Index() {
           </div>
         </header>
 
-        {/* Hero Section: One Source, Five Renderings */}
-        <section className="pt-16 md:pt-20 pb-12 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
+        {/* Hero Section: One Source, Five Renderings - Full Viewport & Responsive */}
+        <section className="min-h-[calc(100dvh-5.5rem)] flex flex-col justify-center pt-8 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-10 xl:px-12 relative z-10 max-w-7xl mx-auto w-full">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center flex-1 my-auto w-full">
             {/* Left Column: Focused Copy Stack (Eyebrow, H1, Subtext, CTAs) */}
-            <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="lg:col-span-7 space-y-6 sm:space-y-7 text-left">
               {/* Eyebrow 1 of 2 across page */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent border border-border text-xs font-mono text-foreground">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-accent border border-border text-xs font-mono text-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 <span>ONE SOURCE, FIVE RENDERINGS</span>
               </div>
 
-              {/* Disciplined Headline: max 2 lines desktop */}
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-display font-medium tracking-tight text-foreground leading-[1.08]">
+              {/* Disciplined Headline: Fluid scale from mobile to 4K displays */}
+              <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] xl:text-[4.125rem] font-display font-medium tracking-tight text-foreground leading-[1.06] text-balance">
                 Turn any source into structured mastery
               </h1>
 
-              {/* Disciplined Subtext: max 20 words */}
-              <p className="text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
+              {/* Disciplined Subtext */}
+              <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-xl leading-relaxed">
                 Drop in a document, recording, or lecture. Source extracts and derives five distinct study views with verifiable passage citations.
               </p>
 
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              {/* CTAs: Responsive touch friendly row */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
                 <Link
                   to={user ? "/app" : "/auth"}
-                  className="bg-primary hover:opacity-90 text-primary-foreground font-medium text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-sm active:scale-[0.98] transition-all inline-flex items-center gap-2"
+                  className="bg-primary hover:opacity-90 text-primary-foreground font-medium text-xs sm:text-sm px-7 py-3 rounded-full shadow-sm active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2"
                 >
                   {user ? "Open workspace" : "Get started free"}
                   <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
                 </Link>
                 <a
                   href="#simulator"
-                  className="bg-card hover:bg-accent text-foreground font-medium text-xs sm:text-sm px-5 py-2.5 rounded-full border border-border shadow-2xs active:scale-[0.98] transition-all inline-flex items-center gap-1.5"
+                  className="bg-card hover:bg-accent text-foreground font-medium text-xs sm:text-sm px-6 py-3 rounded-full border border-border shadow-2xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
                 >
                   Explore live demo
                   <ChevronRight className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
                 </a>
               </div>
 
-              <div className="pt-2 flex items-center gap-6 text-[11px] font-mono text-muted-foreground">
-                <span>Whisper speech parsing</span>
-                <span className="h-1 w-1 rounded-full bg-border" />
-                <span>Vector coordinate verification</span>
-                <span className="h-1 w-1 rounded-full bg-border" />
-                <span>No hallucination</span>
+              {/* Tech Specs Badge Strip */}
+              <div className="pt-2 flex flex-wrap items-center gap-y-2 gap-x-4 sm:gap-x-6 text-[11px] sm:text-xs font-mono text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Whisper speech parsing
+                </span>
+                <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-border" />
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
+                  Vector coordinate verification
+                </span>
+                <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-border" />
+                <span>Zero hallucination tolerance</span>
               </div>
             </div>
 
             {/* Right Column: Hero Visual Asset (Clean architectural workspace visual) */}
-            <div className="lg:col-span-5 relative">
+            <div className="lg:col-span-5 relative w-full">
               <motion.div 
                 initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="relative rounded-2xl overflow-hidden border border-border shadow-lg shadow-black/5 group bg-card"
+                className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-border shadow-xl shadow-black/5 group bg-card w-full"
               >
                 <img 
                   src="/assets/luminous_minimal_hero.jpg" 
@@ -354,21 +355,21 @@ export default function Index() {
                   height={500}
                   fetchpriority="high"
                 />
-                <div className="p-3 bg-card border-t border-border flex items-center justify-between text-xs">
+                <div className="p-3.5 sm:p-4 bg-card border-t border-border flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 text-foreground">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                    <span className="font-mono text-muted-foreground text-[11px]">Ready for ingestion</span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-mono text-muted-foreground text-[11px] sm:text-xs">Ready for ingestion</span>
                   </div>
-                  <span className="font-mono text-muted-foreground text-[11px]">PDF • Audio • Video</span>
+                  <span className="font-mono text-muted-foreground text-[11px] sm:text-xs">PDF • Audio • Video</span>
                 </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Ingestion Sources Ribbon */}
-        <section className="py-7 px-4 sm:px-6 relative z-10 max-w-5xl mx-auto border-y border-border">
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+        {/* Ingestion Sources Ribbon - Full Width & Responsive */}
+        <section className="py-6 px-4 sm:px-6 lg:px-8 relative z-10 w-full border-y border-border bg-card/40 backdrop-blur-xs">
+          <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
             {[
               { icon: FileText, label: "PDF Documents" },
               { icon: Mic, label: "Audio & Speech" },
@@ -376,11 +377,12 @@ export default function Index() {
               { icon: FileCode, label: "Markdown & DOCX" },
               { icon: Cpu, label: "Whisper Transcription" },
               { icon: Globe, label: "Web Articles" },
-              { icon: Database, label: "LaTeX Equations" }
+              { icon: Database, label: "LaTeX Equations" },
+              { icon: BookOpen, label: "EPUB & Textbooks" },
             ].map((item) => (
               <div
                 key={item.label}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border text-xs font-medium text-foreground shadow-2xs"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-card border border-border text-xs font-medium text-foreground shadow-2xs transition-colors hover:bg-accent/60"
               >
                 <item.icon className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} />
                 <span>{item.label}</span>
@@ -390,7 +392,7 @@ export default function Index() {
         </section>
 
         {/* Live Interactive Workspace Demo Powered by Radix Tabs */}
-        <section id="simulator" className="py-20 px-4 sm:px-6 relative z-10 max-w-4xl mx-auto scroll-mt-24">
+        <section id="simulator" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 max-w-5xl lg:max-w-6xl mx-auto scroll-mt-24 w-full">
           <div className="text-center max-w-xl mx-auto mb-8">
             <h2 className="text-2xl sm:text-3xl font-display font-medium text-foreground tracking-tight mb-2">
               Experience the study workflow
@@ -939,7 +941,7 @@ export default function Index() {
         </section>
 
         {/* Grounding & Verification Bento Section */}
-        <section id="grounding" className="py-20 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto scroll-mt-24">
+        <section id="grounding" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl mx-auto scroll-mt-24 w-full">
           <div className="text-left max-w-2xl mb-12">
             {/* Eyebrow 2 of 2 across page */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent border border-border text-xs font-mono text-foreground mb-3">
@@ -1042,7 +1044,7 @@ export default function Index() {
         </section>
 
         {/* Knowledge Pipeline Workflow */}
-        <section id="pipeline" className="py-20 px-4 sm:px-6 relative z-10 max-w-6xl mx-auto scroll-mt-24 border-t border-border">
+        <section id="pipeline" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl mx-auto scroll-mt-24 border-t border-border w-full">
           <div className="text-center max-w-xl mx-auto mb-14">
             <h2 className="text-3xl sm:text-4xl font-display font-medium text-foreground tracking-tight mb-2">
               From raw media to complete comprehension
