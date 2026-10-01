@@ -223,7 +223,7 @@ export default function Index() {
                     <button
                       type="button"
                       onClick={toggleTheme}
-                      className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                      className="h-9 w-9 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
                     >
                       {theme === "dark" ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
@@ -237,7 +237,7 @@ export default function Index() {
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  className="md:hidden h-9 w-9 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Toggle navigation menu"
                   aria-expanded={mobileMenuOpen}
                 >
@@ -350,6 +350,9 @@ export default function Index() {
                   alt="Minimalist architectural desk with tablet and open research notebook"
                   className="w-full h-auto object-cover aspect-[16/10] group-hover:scale-102 transition-transform duration-700 ease-out"
                   loading="eager"
+                  width={800}
+                  height={500}
+                  fetchpriority="high"
                 />
                 <div className="p-3 bg-card border-t border-border flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 text-foreground">
@@ -402,25 +405,25 @@ export default function Index() {
             toast.info(`Switched to ${val === "notes" ? "Study Notes" : val === "flashcards" ? "Flashcards Deck" : val === "quiz" ? "Practice Quiz" : val === "podcast" ? "Audio Recap" : "Grounded Chat"}`);
           }}>
             {/* Tab Switcher using Radix Tabs */}
-            <div className="flex justify-center mb-6">
-              <TabsList className="bg-accent/80 border border-border p-1 rounded-full h-auto gap-1">
-                <TabsTrigger value="notes" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs">
+            <div className="flex justify-center mb-6 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <TabsList className="bg-accent/80 border border-border p-1 rounded-full h-auto gap-1 inline-flex shrink-0">
+                <TabsTrigger value="notes" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <FileText className="h-3.5 w-3.5" strokeWidth={1.5} />
                   <span>Study Notes</span>
                 </TabsTrigger>
-                <TabsTrigger value="flashcards" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs">
+                <TabsTrigger value="flashcards" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Layers className="h-3.5 w-3.5" strokeWidth={1.5} />
                   <span>Flashcards</span>
                 </TabsTrigger>
-                <TabsTrigger value="quiz" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs">
+                <TabsTrigger value="quiz" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <ListChecks className="h-3.5 w-3.5" strokeWidth={1.5} />
                   <span>Practice Quiz</span>
                 </TabsTrigger>
-                <TabsTrigger value="podcast" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs">
+                <TabsTrigger value="podcast" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Headphones className="h-3.5 w-3.5" strokeWidth={1.5} />
                   <span>Audio Recap</span>
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs">
+                <TabsTrigger value="chat" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <MessagesSquare className="h-3.5 w-3.5" strokeWidth={1.5} />
                   <span>Grounded Chat</span>
                 </TabsTrigger>
@@ -576,7 +579,7 @@ export default function Index() {
                       </button>
                     </div>
 
-                    {/* Flip Card Design */}
+                      {/* Flip Card Design */}
                     <div
                       className="relative w-full min-h-[14rem] h-52 cursor-pointer select-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       style={{ perspective: "1000px" }}
@@ -589,6 +592,7 @@ export default function Index() {
                       }}
                       role="button"
                       tabIndex={0}
+                      aria-pressed={cardFlipped}
                       aria-label={cardFlipped ? "Answer revealed. Click or press space to show question" : "Question shown. Click or press space to reveal answer"}
                     >
                       <div
@@ -631,9 +635,10 @@ export default function Index() {
                     {/* Leitner Confidence Buttons */}
                     <div className="flex items-center justify-between gap-2 pt-1">
                       <button 
+                        type="button"
                         onClick={() => { setCardFlipped(false); setCardIdx(i => Math.max(0, i - 1)); }}
                         disabled={cardIdx === 0}
-                        className="px-3 py-1.5 rounded-full border border-border text-xs text-muted-foreground disabled:opacity-40 hover:bg-accent transition-colors"
+                        className="px-3.5 py-1.5 min-h-[36px] rounded-full border border-border text-xs text-muted-foreground disabled:opacity-40 hover:bg-accent hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         Previous
                       </button>
@@ -655,7 +660,7 @@ export default function Index() {
                                     description: `Scheduled for review in ${item.days} via Leitner algorithm`,
                                   });
                                 }}
-                                className={`text-[11px] px-2.5 py-1 rounded-full bg-accent text-foreground font-medium transition-colors ${item.style}`}
+                                className={`text-xs px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent text-foreground font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${item.style}`}
                                 aria-label={`Mark as ${item.label} and show next card`}
                               >
                                 {item.label}
@@ -668,9 +673,10 @@ export default function Index() {
                         ))}
                       </div>
                       <button 
+                        type="button"
                         onClick={() => { setCardFlipped(false); setCardIdx(i => Math.min(simFlashcards.length - 1, i + 1)); }}
                         disabled={cardIdx === simFlashcards.length - 1}
-                        className="px-3 py-1.5 rounded-full border border-border text-xs text-muted-foreground disabled:opacity-40 hover:bg-accent transition-colors"
+                        className="px-3.5 py-1.5 min-h-[36px] rounded-full border border-border text-xs text-muted-foreground disabled:opacity-40 hover:bg-accent hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         Next
                       </button>
@@ -718,11 +724,12 @@ export default function Index() {
                           return (
                             <button
                               key={opt.idx}
+                              type="button"
                               role="radio"
                               aria-checked={isSelected}
                               disabled={quizSubmitted}
                               onClick={() => setSelectedChoice(opt.idx)}
-                              className={`w-full text-left p-3 rounded-xl border transition-all text-xs sm:text-sm font-medium flex items-center justify-between ${btnStyle}`}
+                              className={`w-full text-left p-3.5 rounded-xl border transition-all text-xs sm:text-sm font-medium flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${btnStyle}`}
                             >
                               <span>{opt.text}</span>
                               {quizSubmitted && isCorrect && <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />}
@@ -736,13 +743,15 @@ export default function Index() {
                         <span className="text-xs text-muted-foreground">Select an option to test your comprehension</span>
                         {quizSubmitted ? (
                           <button 
+                            type="button"
                             onClick={() => { setSelectedChoice(null); setQuizSubmitted(false); }}
-                            className="px-3.5 py-1.5 rounded-full bg-accent hover:opacity-80 text-foreground text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                            className="px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent hover:opacity-80 text-foreground text-xs font-semibold inline-flex items-center gap-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             <RotateCcw className="h-3 w-3" strokeWidth={1.5} /> Retry
                           </button>
                         ) : (
                           <button 
+                            type="button"
                             disabled={selectedChoice === null}
                             onClick={() => {
                               setQuizSubmitted(true);
@@ -752,7 +761,7 @@ export default function Index() {
                                 toast.error("Incorrect Choice", { description: "Decoherence is the primary physical decay mechanism." });
                               }
                             }}
-                            className="px-4 py-1.5 rounded-full bg-primary hover:opacity-90 text-primary-foreground text-xs font-semibold disabled:opacity-40 transition-colors"
+                            className="px-4 py-1.5 min-h-[36px] rounded-full bg-primary hover:opacity-90 text-primary-foreground text-xs font-semibold disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                           >
                             Submit Answer
                           </button>
@@ -788,6 +797,7 @@ export default function Index() {
                       {/* Playback Controls */}
                       <div className="flex items-center gap-4">
                         <button
+                          type="button"
                           onClick={() => {
                             const nextState = !podcastPlaying;
                             setPodcastPlaying(nextState);
@@ -796,7 +806,7 @@ export default function Index() {
                             }
                           }}
                           aria-label={podcastPlaying ? "Pause audio preview" : "Play audio preview"}
-                          className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center transition-all shrink-0 active:scale-95 shadow-sm"
+                          className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center transition-all shrink-0 active:scale-95 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                           {podcastPlaying ? <Pause className="h-4 w-4" strokeWidth={1.5} /> : <Play className="h-4 w-4 ml-0.5" strokeWidth={1.5} />}
                         </button>
@@ -882,16 +892,18 @@ export default function Index() {
                     <div className="border-t border-border pt-3 mt-2 space-y-2">
                       <div className="flex gap-1.5 flex-wrap">
                         <button 
+                          type="button"
                           onClick={() => handleSendChat("What is quantum superposition?")}
                           disabled={chatTyping}
-                          className="text-xs px-2.5 py-1 rounded-full bg-accent hover:opacity-80 text-foreground transition-colors"
+                          className="text-xs px-3 py-1.5 min-h-[32px] rounded-full bg-accent hover:opacity-80 text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                           What is superposition?
                         </button>
                         <button 
+                          type="button"
                           onClick={() => handleSendChat("Explain entanglement in simple terms.")}
                           disabled={chatTyping}
-                          className="text-xs px-2.5 py-1 rounded-full bg-accent hover:opacity-80 text-foreground transition-colors"
+                          className="text-xs px-3 py-1.5 min-h-[32px] rounded-full bg-accent hover:opacity-80 text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                           Explain entanglement
                         </button>
@@ -913,7 +925,7 @@ export default function Index() {
                           onClick={() => handleSendChat(chatInput)}
                           disabled={chatTyping || !chatInput.trim()}
                           aria-label="Send message"
-                          className="h-9 w-9 rounded-full bg-primary hover:opacity-90 text-primary-foreground flex items-center justify-center disabled:opacity-40 transition-all shrink-0 active:scale-95"
+                          className="h-9 w-9 rounded-full bg-primary hover:opacity-90 text-primary-foreground flex items-center justify-center disabled:opacity-40 transition-all shrink-0 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                           <Send className="h-3.5 w-3.5" strokeWidth={1.5} />
                         </button>
