@@ -6,13 +6,13 @@ import {
   ArrowRight, Play, Pause, Check, X, RotateCcw, Send,
   Sparkles, FileCode, Video, Mic, Globe, Cpu, ShieldCheck,
   ChevronRight, ArrowUpRight, Compass, BookmarkCheck,
-  Zap, Database, BarChart3, HelpCircle
+  Zap, Database, BarChart3, HelpCircle, Menu
 } from "lucide-react";
-import MarkdownView from "@/components/common/MarkdownView";
 
 export default function Index() {
   const { user } = useAuth();
   const [activeSimTab, setActiveSimTab] = useState<"notes" | "flashcards" | "quiz" | "podcast" | "chat">("notes");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Simulated Flashcards State
   const simFlashcards = [
@@ -56,6 +56,14 @@ export default function Index() {
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatTyping, setChatTyping] = useState(false);
+  const typeInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (progressInterval.current) clearInterval(progressInterval.current);
+      if (typeInterval.current) clearInterval(typeInterval.current);
+    };
+  }, []);
 
   const handleSendChat = (text: string) => {
     if (!text.trim() || chatTyping) return;
@@ -87,7 +95,8 @@ export default function Index() {
       
       let charIdx = 0;
       const STEP = 4;
-      const typeInterval = setInterval(() => {
+      if (typeInterval.current) clearInterval(typeInterval.current);
+      typeInterval.current = setInterval(() => {
         charIdx = Math.min(charIdx + STEP, fullResponse.length);
         const slice = fullResponse.slice(0, charIdx);
         setChatMessages((prev) =>
@@ -96,7 +105,8 @@ export default function Index() {
           ),
         );
         if (charIdx >= fullResponse.length) {
-          clearInterval(typeInterval);
+          if (typeInterval.current) clearInterval(typeInterval.current);
+          typeInterval.current = null;
           setChatTyping(false);
         }
       }, 25);
@@ -104,55 +114,77 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafbfc] text-slate-900 font-sans relative overflow-x-hidden antialiased">
+    <div className="min-h-screen bg-background text-slate-900 font-sans relative overflow-x-clip antialiased">
       {/* Ambient Top Glow Mesh */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[850px] ambient-hero-aura pointer-events-none z-0" />
 
       {/* Floating Pill Navigation Bar */}
       <header className="sticky top-5 z-50 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md border border-slate-200/90 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] flex items-center justify-between transition-[background-color,border-color,box-shadow]">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="h-7 w-7 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-sky-300" />
-            </div>
-            <span className="font-semibold tracking-tight text-base font-display text-slate-900">
-              Source<span className="text-sky-600">.io</span>
-            </span>
-          </Link>
+        <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-2xl md:rounded-full px-4 sm:px-6 py-2.5 shadow-md shadow-slate-900/5 transition-[background-color,border-color,box-shadow]">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="h-7 w-7 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-sm">
+                <Sparkles className="h-3.5 w-3.5 text-sky-300" />
+              </div>
+              <span className="font-semibold tracking-tight text-base font-display text-slate-900">
+                Source<span className="text-sky-600">.io</span>
+              </span>
+            </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
-            <a href="#simulator" className="hover:text-slate-900 transition-colors">Showcase</a>
-            <a href="#philosophy" className="hover:text-slate-900 transition-colors">Philosophy</a>
-            <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
-            <a href="#workflow" className="hover:text-slate-900 transition-colors">How it works</a>
-            <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
-          </nav>
+            <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
+              <a href="#simulator" className="hover:text-slate-900 transition-colors">Showcase</a>
+              <a href="#philosophy" className="hover:text-slate-900 transition-colors">Philosophy</a>
+              <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
+              <a href="#workflow" className="hover:text-slate-900 transition-colors">How it works</a>
+              <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
+            </nav>
 
-          <div className="flex items-center gap-2.5">
-            {user ? (
-              <Link 
-                to="/app" 
-                className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-[background-color,box-shadow]"
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-1.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                aria-label="Toggle navigation menu"
+                aria-expanded={mobileMenuOpen}
               >
-                Open Workspace <ArrowRight className="h-3 w-3" />
-              </Link>
-            ) : (
-              <>
+                {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              </button>
+              {user ? (
                 <Link 
-                  to="/auth" 
-                  className="text-xs font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 transition-colors hidden sm:inline-block"
+                  to="/app" 
+                  className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-[background-color,box-shadow]"
                 >
-                  Sign in
+                  Open Workspace <ArrowRight className="h-3 w-3" />
                 </Link>
-                <Link 
-                  to="/auth" 
-                  className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1 transition-[background-color,box-shadow] hover:shadow"
-                >
-                  Get started
-                </Link>
-              </>
-            )}
+              ) : (
+                <>
+                  <Link 
+                    to="/auth" 
+                    className="text-xs font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 transition-colors hidden sm:inline-block"
+                  >
+                    Sign in
+                  </Link>
+                  <Link 
+                    to="/auth" 
+                    className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm inline-flex items-center gap-1 transition-[background-color,box-shadow] hover:shadow"
+                  >
+                    Get started
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
+
+          {/* Mobile Collapsible Navigation Links */}
+          {mobileMenuOpen && (
+            <nav className="md:hidden mt-3 pt-3 border-t border-slate-200/80 flex flex-col gap-2 text-xs font-medium text-slate-600 pb-1">
+              <a href="#simulator" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Showcase</a>
+              <a href="#philosophy" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Philosophy</a>
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Features</a>
+              <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">How it works</a>
+              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-900 py-1 transition-colors">Pricing</a>
+            </nav>
+          )}
         </div>
       </header>
 
@@ -160,7 +192,7 @@ export default function Index() {
       <section className="pt-16 pb-12 px-4 sm:px-6 relative z-10 text-center max-w-5xl mx-auto">
         {/* Eyebrow Pill Badge */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-slate-200 shadow-sm text-xs font-medium text-slate-700 mb-8 backdrop-blur-sm">
-          <span className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
+          <span className="h-2 w-2 rounded-full bg-sky-500 animate-pulse motion-reduce:animate-none" />
           <span className="font-mono uppercase tracking-wider text-[11px] text-slate-800">Announcing Source 2.0</span>
           <span className="text-slate-300">|</span>
           <span className="text-slate-500">Multi-modal AI research</span>
@@ -181,7 +213,7 @@ export default function Index() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-14">
           <Link
             to={user ? "/app" : "/auth"}
-            className="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white font-semibold text-sm px-7 py-3 rounded-full shadow-[0_4px_14px_0_rgba(15,23,42,0.25)] hover:shadow-lg transition-[background-color,box-shadow,transform] inline-flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white font-semibold text-sm px-7 py-3 rounded-full shadow-md shadow-slate-950/20 hover:shadow-lg transition-[background-color,box-shadow,transform] inline-flex items-center justify-center gap-2"
           >
             {user ? "Go to workspace" : "Start free trial"}
             <ArrowRight className="h-4 w-4" />
@@ -195,8 +227,8 @@ export default function Index() {
           </a>
         </div>
 
-        {/* Connector Tree Hierarchy down to Simulator Tabs */}
-        <div className="relative pt-6 max-w-3xl mx-auto">
+        {/* Connector Tree Hierarchy down to Simulator Tabs - hidden on mobile to prevent alignment defect */}
+        <div className="relative pt-6 max-w-3xl mx-auto hidden sm:block">
           {/* Vertical stem from CTAs */}
           <div className="w-px h-6 bg-slate-200 mx-auto" />
           {/* Horizontal branching rail */}
@@ -209,7 +241,9 @@ export default function Index() {
             <div className="border-l border-slate-200 h-full mx-auto" />
             <div className="border-l border-slate-200 h-full mx-auto" />
           </div>
+        </div>
 
+        <div className="relative max-w-3xl mx-auto">
           {/* 5 Floating Feature Node Pills */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1 pb-6 px-2">
             {([
@@ -240,7 +274,7 @@ export default function Index() {
         </div>
 
         {/* Live Workspace Mock Dashboard (Window Container) */}
-        <div id="simulator" className="mt-2 text-left bg-white rounded-2xl border border-slate-200/90 shadow-[0_24px_68px_-12px_rgba(15,23,42,0.08)] overflow-hidden transition-[border-color,box-shadow] scroll-mt-28">
+        <div id="simulator" className="mt-2 text-left bg-white rounded-2xl border border-slate-200/90 shadow-2xl shadow-slate-900/10 overflow-hidden transition-[border-color,box-shadow] scroll-mt-28">
           {/* Window Chrome Header */}
           <div className="bg-slate-50/80 border-b border-slate-200/80 px-4 py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
@@ -359,15 +393,21 @@ export default function Index() {
 
                 {/* Flip Card Design */}
                 <div
-                  className="relative w-full h-56 cursor-pointer select-none rounded-2xl"
+                  className="relative w-full min-h-[14rem] h-56 cursor-pointer select-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   style={{ perspective: "1000px" }}
                   onClick={() => setCardFlipped(!cardFlipped)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setCardFlipped(prev => !prev);
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
-                  aria-label={cardFlipped ? "Show question" : "Reveal answer"}
+                  aria-label={cardFlipped ? "Answer revealed. Click or press space to show question" : "Question shown. Click or press space to reveal answer"}
                 >
                   <div
-                    className="absolute inset-0 transition-transform duration-500"
+                    className="absolute inset-0 transition-transform duration-500 motion-reduce:transition-none"
                     style={{
                       transformStyle: "preserve-3d",
                       transform: cardFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -384,7 +424,7 @@ export default function Index() {
                       <p className="text-base sm:text-lg font-semibold text-slate-900 leading-snug">
                         {simFlashcards[cardIdx].front}
                       </p>
-                      <p className="absolute bottom-4 text-xs text-slate-400 font-medium">Click to flip & inspect answer</p>
+                      <p className="absolute bottom-4 text-xs text-slate-400 font-medium">Click or press Space to flip & inspect answer</p>
                     </div>
 
                     {/* Back */}
@@ -398,7 +438,7 @@ export default function Index() {
                       <p className="text-sm sm:text-base text-slate-800 leading-relaxed">
                         {simFlashcards[cardIdx].back}
                       </p>
-                      <p className="absolute bottom-4 text-xs text-slate-400 font-medium">Click to flip back</p>
+                      <p className="absolute bottom-4 text-xs text-slate-400 font-medium">Click or press Space to flip back</p>
                     </div>
                   </div>
                 </div>
@@ -408,21 +448,35 @@ export default function Index() {
                   <button 
                     onClick={() => { setCardFlipped(false); setCardIdx(i => Math.max(0, i - 1)); }}
                     disabled={cardIdx === 0}
-                    className="px-3.5 py-1.5 rounded-full border border-slate-200 text-xs text-slate-600 disabled:opacity-40 hover:bg-slate-50 font-medium"
+                    className="px-3.5 py-1.5 rounded-full border border-slate-200 text-xs text-slate-600 disabled:opacity-40 hover:bg-slate-50 font-medium transition-colors"
                   >
                     Previous
                   </button>
-                  <div className="flex gap-1.5">
-                    {["Again", "Hard", "Good", "Easy"].map((label) => (
-                      <span key={label} className="text-[11px] px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-medium">
-                        {label}
-                      </span>
+                  <div className="flex gap-1.5" role="group" aria-label="Leitner confidence rating">
+                    {[
+                      { label: "Again", hover: "hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200" },
+                      { label: "Hard", hover: "hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200" },
+                      { label: "Good", hover: "hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200" },
+                      { label: "Easy", hover: "hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200" },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => {
+                          setCardFlipped(false);
+                          setCardIdx((i) => (i + 1) % simFlashcards.length);
+                        }}
+                        className={`text-[11px] px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-medium transition-colors cursor-pointer ${item.hover}`}
+                        aria-label={`Mark as ${item.label} and show next card`}
+                      >
+                        {item.label}
+                      </button>
                     ))}
                   </div>
                   <button 
                     onClick={() => { setCardFlipped(false); setCardIdx(i => Math.min(simFlashcards.length - 1, i + 1)); }}
                     disabled={cardIdx === simFlashcards.length - 1}
-                    className="px-3.5 py-1.5 rounded-full border border-slate-200 text-xs text-slate-600 disabled:opacity-40 hover:bg-slate-50 font-medium"
+                    className="px-3.5 py-1.5 rounded-full border border-slate-200 text-xs text-slate-600 disabled:opacity-40 hover:bg-slate-50 font-medium transition-colors"
                   >
                     Next
                   </button>
@@ -444,7 +498,7 @@ export default function Index() {
                     </div>
                   </div>
 
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-2 pt-1" role="radiogroup" aria-label="Question 1 choices">
                     {[
                       { idx: 0, text: "Quantum Teleportation" },
                       { idx: 1, text: "Quantum Decoherence", correct: true },
@@ -468,6 +522,8 @@ export default function Index() {
                       return (
                         <button
                           key={opt.idx}
+                          role="radio"
+                          aria-checked={isSelected}
                           disabled={quizSubmitted}
                           onClick={() => setSelectedChoice(opt.idx)}
                           className={`w-full text-left p-3 rounded-xl border transition-[background-color,border-color,color] text-xs sm:text-sm font-medium flex items-center justify-between ${btnStyle}`}
@@ -535,7 +591,14 @@ export default function Index() {
                         {podcastPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
                       </button>
                       <div className="flex-1 space-y-1">
-                        <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div 
+                          className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden"
+                          role="progressbar"
+                          aria-valuenow={audioProgress}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label="Podcast preview progress"
+                        >
                           <div className="h-full bg-sky-400 transition-[width] duration-300" style={{ width: `${audioProgress}%` }} />
                         </div>
                         <div className="flex justify-between text-[11px] text-slate-400 font-mono">
@@ -633,8 +696,10 @@ export default function Index() {
                       className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/20 focus-visible:border-sky-500 transition-[border-color,box-shadow]"
                     />
                     <button 
+                      type="button"
                       onClick={() => handleSendChat(chatInput)}
                       disabled={chatTyping || !chatInput.trim()}
+                      aria-label="Send message"
                       className="h-9 w-9 rounded-full bg-slate-950 hover:bg-slate-800 text-white flex items-center justify-center disabled:opacity-40 transition-[background-color,opacity] shrink-0"
                     >
                       <Send className="h-3.5 w-3.5" />
@@ -715,7 +780,7 @@ export default function Index() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Card 1: Multi-Format Synthesis Engine */}
-          <div className="bg-[#0b0f19] text-white rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden flex flex-col justify-between group">
+          <div className="bg-slate-950 text-white rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden flex flex-col justify-between group">
             {/* Ambient inner glow */}
             <div className="absolute top-0 right-0 w-72 h-72 bg-sky-600/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -732,10 +797,10 @@ export default function Index() {
             </div>
 
             {/* Visual Hardware/App Interface Graphic */}
-            <div className="relative z-10 bg-slate-950/80 rounded-2xl border border-white/10 p-5 shadow-inner">
+            <div className="relative z-10 bg-slate-900/90 rounded-2xl border border-white/10 p-5 shadow-inner">
               <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
                   <span className="text-xs font-mono text-slate-300">Live Synthesis Engine</span>
                 </div>
                 <span className="text-[11px] font-mono text-sky-400">Groq • 350 tok/s</span>
@@ -758,7 +823,7 @@ export default function Index() {
           </div>
 
           {/* Card 2: Grounded Passage Coordinates */}
-          <div className="bg-[#0b0f19] text-white rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden flex flex-col justify-between group">
+          <div className="bg-slate-950 text-white rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden flex flex-col justify-between group">
             {/* Ambient inner glow */}
             <div className="absolute top-0 right-0 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -1008,7 +1073,7 @@ export default function Index() {
           </div>
 
           {/* Card 2: Pro Scholar (Deep Obsidian Dark Card) */}
-          <div className="bg-[#0b0f19] text-white rounded-3xl p-8 border border-white/10 shadow-2xl flex flex-col justify-between relative overflow-hidden">
+          <div className="bg-slate-950 text-white rounded-3xl p-8 border border-white/10 shadow-2xl flex flex-col justify-between relative overflow-hidden">
             {/* Top ambient highlight */}
             <div className="absolute top-0 right-0 w-60 h-60 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
 
