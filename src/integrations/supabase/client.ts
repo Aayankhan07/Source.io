@@ -2,15 +2,15 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const CONFIGURED_URL = import.meta.env.VITE_SUPABASE_URL;
-const CONFIGURED_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+const CONFIGURED_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const CONFIGURED_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Placeholders keep the module importable in test/build environments that have
 // no credentials. Any real request against them will fail, so make the cause loud.
 if (!CONFIGURED_URL || !CONFIGURED_KEY) {
   console.error(
-    "[supabase] VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY are not set. " +
-      "Copy .env.example to .env and fill them in — every request will fail until you do.",
+    "[supabase] NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY are not set. " +
+      "Copy .env.example to .env.local and fill them in — every request will fail until you do.",
   );
 }
 
@@ -22,7 +22,7 @@ export const SUPABASE_PUBLISHABLE_KEY = CONFIGURED_KEY || "eyJhbGciOiJIUzI1NiIsI
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: typeof window !== "undefined" ? localStorage : undefined,
     persistSession: true,
     autoRefreshToken: true,
   }
