@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Hash, Clock, FileText, ChevronRight, Bookmark, ChevronDown, List } from "lucide-react";
+import { Hash, Clock, FileText, ChevronRight, Bookmark, ChevronDown, List, Minus, Circle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface OutlineHeading {
@@ -35,6 +35,8 @@ interface WorkspaceOutlineProps {
   className?: string;
   /** Render as horizontal scrollable chips (for Notes tab inline) */
   inlineChips?: boolean;
+  /** Render as slim numbered rail (for left sidebar) */
+  slimRail?: boolean;
   /** Max chips to show before overflow (default: all level 1-2 headings) */
   maxChips?: number;
 }
@@ -45,6 +47,7 @@ export default function WorkspaceOutline({
   onSelectHeading,
   className,
   inlineChips = false,
+  slimRail = false,
   maxChips = 8,
 }: WorkspaceOutlineProps) {
   const headings = useMemo(() => extractHeadings(markdown), [markdown]);
@@ -100,6 +103,44 @@ export default function WorkspaceOutline({
           </button>
         )}
       </div>
+    );
+  }
+
+  if (slimRail) {
+    return (
+      <aside className={cn("flex flex-col h-full w-12 bg-surface-sunken/40 border-r border-border/80 text-foreground items-center", className)}>
+        <div className="flex flex-col items-center gap-3 pt-4 pb-4">
+          {headings.slice(0, 5).map((h, idx) => {
+            const isActive = activeHeadingId === h.id;
+            const icons = [Circle, CheckCircle2, FileText, Bookmark, Minus];
+            const Icon = icons[idx] || Circle;
+            return (
+              <button
+                key={`${h.id}-${idx}`}
+                onClick={() => scrollToHeading(h.id)}
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center transition-all",
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-sm scale-110"
+                    : "bg-surface-2 text-muted-foreground hover:text-foreground hover:bg-muted hover:scale-105"
+                )}
+                title={h.text}
+                aria-label={`Section ${idx + 1}: ${h.text}`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            );
+          })}
+          {headings.length === 0 && (
+            <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center">
+              <Minus className="h-4 w-4 text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        <div className="mt-auto mb-4 text-[10px] font-mono text-muted-foreground">
+          {headings.length} sections
+        </div>
+      </aside>
     );
   }
 

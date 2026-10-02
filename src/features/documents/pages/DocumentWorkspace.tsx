@@ -477,14 +477,15 @@ export default function DocumentWorkspace() {
         {/* Desktop View (>= 1024px) */}
         <div className="hidden lg:block h-full w-full">
           <ResizablePanelGroup direction="horizontal" className="h-full w-full">
-            {/* Left Rail: Document Outline (only in Notes tab) */}
+            {/* Left Rail: Document Outline (only in Notes tab) - Slim 48px rail */}
             {outlineOpen && !focusMode && mobileTab === "notes" && (
               <>
-                <ResizablePanel defaultSize={18} minSize={14} maxSize={26}>
+                <ResizablePanel defaultSize={12} minSize={12} maxSize={12}>
                   <WorkspaceOutline
                     markdown={note?.markdown}
                     activeHeadingId={activeHeadingId}
                     onSelectHeading={(id) => setActiveHeadingId(id)}
+                    slimRail
                   />
                 </ResizablePanel>
                 <ResizableHandle withHandle />
@@ -492,7 +493,8 @@ export default function DocumentWorkspace() {
             )}
 
             {/* Center Stage: Notes Content */}
-            <ResizablePanel defaultSize={outlineOpen && askPanelOpen ? 50 : outlineOpen || askPanelOpen ? 70 : 100}>
+            {/* Left rail is fixed at 12 (48px), so adjust center defaults: 100 - 12 = 88 for center+right */}
+            <ResizablePanel defaultSize={outlineOpen && askPanelOpen ? 56 : outlineOpen || askPanelOpen ? 76 : 88}>
               <main className="h-full overflow-y-auto relative bg-background/50">
                 {/* Notes Toolbar */}
                 <div className="sticky top-0 z-10 backdrop-blur-md bg-background/80 border-b border-border/60 px-6 py-2 flex items-center justify-between gap-4 text-xs">
@@ -586,7 +588,7 @@ export default function DocumentWorkspace() {
             {askPanelOpen && !focusMode && mobileTab === "notes" && (
               <>
                 <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={32} minSize={24} maxSize={50}>
+                <ResizablePanel defaultSize={20} minSize={16} maxSize={35}>
                   <AskPanel
                     documentId={doc.id}
                     noteMarkdown={note?.markdown}
