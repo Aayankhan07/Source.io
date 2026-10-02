@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { Hash, Clock, FileText, ChevronRight, Bookmark } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Hash, Clock, FileText, ChevronRight, Bookmark, ChevronDown, List } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface OutlineHeading {
@@ -33,6 +33,10 @@ interface WorkspaceOutlineProps {
   activeHeadingId?: string | null;
   onSelectHeading?: (id: string) => void;
   className?: string;
+  /** Render as horizontal scrollable chips (for Notes tab inline) */
+  inlineChips?: boolean;
+  /** Max chips to show before overflow (default: all level 1-2 headings) */
+  maxChips?: number;
 }
 
 export default function WorkspaceOutline({
@@ -40,8 +44,11 @@ export default function WorkspaceOutline({
   activeHeadingId,
   onSelectHeading,
   className,
+  inlineChips = false,
+  maxChips = 8,
 }: WorkspaceOutlineProps) {
   const headings = useMemo(() => extractHeadings(markdown), [markdown]);
+  const [panelOpen, setPanelOpen] = useState(true);
 
   const stats = useMemo(() => {
     if (!markdown) return { words: 0, readMinutes: 0 };
@@ -50,6 +57,9 @@ export default function WorkspaceOutline({
     return { words, readMinutes };
   }, [markdown]);
 
+  // Filter to top-level headings for chips (H1/H2 only)
+  const chipHeadings = useMemo(() => headings.filter((h) => h.level <= 2).slice(0, maxChips), [headings, maxChips]);
+
   const scrollToHeading = (id: string) => {
     onSelectHeading?.(id);
     const element = document.getElementById(id);
@@ -57,6 +67,41 @@ export default function WorkspaceOutline({
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  if (inlineChips) {
+    return (
+      <div className={cn("flex items-center gap-1.5 overflow-x-auto pb-1 pr-4 -mr-4 scrollbar-hide", className)}>
+        {chipHeadings.map((h, idx) => {
+          const isActive = activeHeadingId === h.id;
+          return (
+            <button
+              key={`${h.id}-${idx}`}
+              onClick={() => scrollToHeading(h.id)}
+              className={cn(
+                "shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-surface-2 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/60"
+              )}
+              title={h.text}
+            >
+              <Hash className={cn("h-2.5 w-2.5", isActive ? "text-current" : "opacity-60")} />
+              <span className="truncate max-w-[120px]">{h.text}</span>
+            </button>
+          );
+        })}
+        {headings.length > maxChips && (
+          <button
+            className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-surface-2 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/60"
+            title="Open full outline"
+          >
+            <List className="h-3 w-3" />
+            <span>+{headings.length - maxChips}</span>
+          </button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <aside className={cn("flex flex-col h-full bg-surface-sunken/40 border-r border-border/80 text-foreground", className)}>
@@ -68,9 +113,19 @@ export default function WorkspaceOutline({
             Document Outline
           </span>
         </div>
-        <span className="text-[11px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border/60">
-          {headings.length} sections
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border/60">
+            {headings.length} sections
+          </span>
+          <button
+            onClick={() => setPanelOpen(!panelOpen)}
+            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label={panelOpen ? "Collapse outline" : "Expand outline"}
+            aria-expanded={panelOpen}
+          >
+            {panelOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+          </button>
+        </div>
       </div>
 
       {/* Reading Metadata metrics */}
@@ -86,7 +141,7 @@ export default function WorkspaceOutline({
       </div>
 
       {/* Headings Navigator Tree */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-0.5 text-xs">
+      <div className={cn("flex-1 overflow-y-auto p-2 space-y-0.5 text-xs", !panelOpen && "hidden")}>
         {headings.length === 0 ? (
           <div className="p-4 text-center text-xs text-muted-foreground">
             <p>No headings generated yet.</p>

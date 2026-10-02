@@ -15,10 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import MarkdownView from "@/components/common/MarkdownView";
 import {
-  AlertCircle, FileText, Layers, ListChecks, Headphones, MessagesSquare,
-  Loader2, Trash2, ChevronLeft, Sparkles, RefreshCw, Menu,
-  Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen,
-  PanelRightClose, PanelRightOpen, Search, Copy, Check, Share2
+  AlertCircle, FileText, Layers, ListChecks, Headphones, Loader2, Trash2, ChevronLeft, Sparkles, RefreshCw, Menu,
+  Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Search, Copy, Check, Share2
 } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { streamNotes, generateDerivatives } from "@/lib/services/pipeline";
@@ -28,8 +26,7 @@ import { queryKeys } from "@/lib/queryKeys";
 import { DEMO_DOCUMENTS } from "@/features/documents/data/mockDocuments";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import WorkspaceOutline, { extractHeadings } from "@/features/documents/components/WorkspaceOutline";
-import WorkspaceCompanion, { CompanionTab } from "@/features/documents/components/WorkspaceCompanion";
-import WorkspaceCommandMenu from "@/features/documents/components/WorkspaceCommandMenu";
+import { AskPanel } from "@/features/documents/components/AskPanel";
 
 type DocumentAssets = {
   note: NoteRow | null;
@@ -37,6 +34,8 @@ type DocumentAssets = {
   quiz: QuizRow | null;
   podcast: PodcastRow | null;
 };
+
+type TabId = "notes" | "podcast" | "cards" | "quiz";
 
 export default function DocumentWorkspace() {
   const params = useParams();
@@ -60,19 +59,16 @@ export default function DocumentWorkspace() {
   }, []);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [commandOpen, setCommandOpen] = useState(false);
 
-  // Multi-Pane Linear Studio layout state
+  // Layout state
   const [outlineOpen, setOutlineOpen] = useState(true);
-  const [companionOpen, setCompanionOpen] = useState(true);
-  const [companionTab, setCompanionTab] = useState<CompanionTab>("chat");
-  const [companionExpanded, setCompanionExpanded] = useState(false);
+  const [askPanelOpen, setAskPanelOpen] = useState(true);
   const [focusMode, setFocusMode] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
   const [copiedNotes, setCopiedNotes] = useState(false);
 
-  // Mobile fallback tab
-  const [mobileTab, setMobileTab] = useState<"notes" | "outline" | "chat" | "podcast" | "cards" | "quiz">("notes");
+  // Mobile tab state
+  const [mobileTab, setMobileTab] = useState<TabId>("notes");
 
   const isDemo = Boolean(docId && DEMO_DOCUMENTS[docId]);
 
@@ -111,7 +107,7 @@ export default function DocumentWorkspace() {
         supabase.from("notes").select("id,document_id,markdown").eq("document_id", docId!).maybeSingle(),
         supabase.from("flashcards").select("id,document_id,front,back,order_index").eq("document_id", docId!).order("order_index"),
         supabase.from("quizzes").select("id,document_id,title").eq("document_id", docId!).maybeSingle(),
-        supabase.from("podcasts").select("id,document_id,script,audio_url,status").eq("document_id", docId!).maybeSingle(),
+        supabase.from("podcasts").select("id,document_id,title,script,audio_url,status").eq("document_id", docId!).maybeSingle(),
       ]);
 
       for (const r of [n, f, q, p]) {
@@ -133,7 +129,7 @@ export default function DocumentWorkspace() {
         note: (n.data as NoteRow) ?? null,
         cards: (f.data as FlashcardRow[]) ?? [],
         quiz,
-        podcast: (p.data as PodcastRow) ?? null,
+        podcast: (p.data as unknown as PodcastRow) ?? null,
       };
     },
   });
@@ -341,11 +337,18 @@ export default function DocumentWorkspace() {
 
   const isProcessing = doc.status === "pending" || doc.status === "processing";
 
+  const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
+    { id: "notes", label: "Notes", icon: <FileText className="h-3.5 w-3.5" /> },
+    { id: "podcast", label: "Podcast", icon: <Headphones className="h-3.5 w-3.5" /> },
+    { id: "cards", label: "Cards", icon: <Layers className="h-3.5 w-3.5" /> },
+    { id: "quiz", label: "Quiz", icon: <Check className="h-3.5 w-3.5" /> },
+  ];
+
   return (
     <div className="h-full flex flex-col bg-background overflow-hidden">
-      {/* 1. Linear Workbench Top Header */}
+      {/* 1. Top Header */}
       <header className="border-b border-border/80 bg-background/95 backdrop-blur-md px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3 shrink-0 z-20">
-        {/* Left: Mobile Trigger & Breadcrumb Hierarchy */}
+        {/* Left: Mobile Trigger & Breadcrumb */}
         <div className="flex items-center gap-3 min-w-0">
           {openMobileNav && (
             <Button
@@ -378,21 +381,7 @@ export default function DocumentWorkspace() {
           </div>
         </div>
 
-        {/* Center: Command Omnibar Trigger */}
-        <div className="hidden md:flex items-center">
-          <button
-            onClick={() => setCommandOpen(true)}
-            className="flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-surface-sunken/80 border border-border/80 hover:border-primary/40 text-xs text-muted-foreground hover:text-foreground transition-[border-color,background-color] shadow-2xs group"
-          >
-            <Search className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-            <span className="text-xs">Search document & commands...</span>
-            <kbd className="text-[10px] font-mono bg-muted/80 px-1.5 py-0.5 rounded border border-border/70 text-muted-foreground">
-              ⌘K
-            </kbd>
-          </button>
-        </div>
-
-        {/* Right: Studio Controls (Outline Toggle, Focus Mode, Companion Toggle, Actions) */}
+        {/* Right: Studio Controls */}
         <div className="flex items-center gap-1.5 shrink-0">
           {/* Outline Panel Toggle */}
           <Button
@@ -403,23 +392,23 @@ export default function DocumentWorkspace() {
               "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex",
               outlineOpen && "bg-muted/60 text-foreground"
             )}
-            title={outlineOpen ? "Collapse Outline (TOC)" : "Expand Outline (TOC)"}
+            title={outlineOpen ? "Collapse Outline" : "Expand Outline"}
           >
             {outlineOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
           </Button>
 
-          {/* Focus Mode (distraction-free single view) */}
+          {/* Focus Mode */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => {
               if (!focusMode) {
                 setOutlineOpen(false);
-                setCompanionOpen(false);
+                setAskPanelOpen(false);
                 setFocusMode(true);
               } else {
                 setOutlineOpen(true);
-                setCompanionOpen(true);
+                setAskPanelOpen(true);
                 setFocusMode(false);
               }
             }}
@@ -427,25 +416,24 @@ export default function DocumentWorkspace() {
               "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex",
               focusMode && "bg-primary/10 text-primary"
             )}
-            title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode (Full Width)"}
+            title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
           >
             {focusMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </Button>
 
-          {/* Companion Panel Toggle */}
+          {/* Ask Panel Toggle */}
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setCompanionOpen(!companionOpen)}
+            onClick={() => setAskPanelOpen(!askPanelOpen)}
             className={cn(
               "h-8 px-2.5 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground gap-1.5 border border-border/70 hidden lg:inline-flex",
-              companionOpen && "bg-muted/80 text-foreground border-primary/30"
+              askPanelOpen && "bg-muted/80 text-foreground border-primary/30"
             )}
-            title="Toggle Companion Dock (Cmd+\)"
+            title="Toggle Ask Panel"
           >
-            {companionOpen ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
-            <span>Dock</span>
-            <kbd className="text-[9px] font-mono opacity-60">⌘\</kbd>
+            {askPanelOpen ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
+            <span>Ask</span>
           </Button>
 
           {/* Delete Document */}
@@ -461,16 +449,9 @@ export default function DocumentWorkspace() {
         </div>
       </header>
 
-      {/* 2. Mobile Responsive Sub-Nav Bar (< 1024px) */}
+      {/* 2. Mobile Tab Bar */}
       <div className="lg:hidden border-b border-border/80 bg-muted/40 px-4 py-2 flex items-center gap-1 overflow-x-auto shrink-0 z-10">
-        {[
-          { id: "notes" as const, label: "Notes", icon: FileText },
-          { id: "outline" as const, label: "Outline", icon: ListChecks },
-          { id: "chat" as const, label: "Chat", icon: MessagesSquare },
-          { id: "podcast" as const, label: "Audio", icon: Headphones },
-          { id: "cards" as const, label: "Cards", icon: Layers },
-          { id: "quiz" as const, label: "Quiz", icon: Check },
-        ].map((t) => {
+        {tabs.map((t) => {
           const Icon = t.icon;
           const isActive = mobileTab === t.id;
           return (
@@ -484,20 +465,20 @@ export default function DocumentWorkspace() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className="h-3 w-3" />
+              {Icon}
               <span>{t.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* 3. Main Multi-Pane Studio Body (Desktop: ResizablePanels / Mobile: Active View) */}
+      {/* 3. Main Content */}
       <div className="flex-1 overflow-hidden relative">
-        {/* Desktop View (>= 1024px) with ResizablePanelGroup */}
+        {/* Desktop View (>= 1024px) */}
         <div className="hidden lg:block h-full w-full">
           <ResizablePanelGroup direction="horizontal" className="h-full w-full">
-            {/* Left Rail: Document Outline */}
-            {outlineOpen && !focusMode && (
+            {/* Left Rail: Document Outline (only in Notes tab) */}
+            {outlineOpen && !focusMode && mobileTab === "notes" && (
               <>
                 <ResizablePanel defaultSize={18} minSize={14} maxSize={26}>
                   <WorkspaceOutline
@@ -510,8 +491,8 @@ export default function DocumentWorkspace() {
               </>
             )}
 
-            {/* Center Stage: The Teaching Notes */}
-            <ResizablePanel defaultSize={outlineOpen && companionOpen ? 50 : outlineOpen || companionOpen ? 70 : 100}>
+            {/* Center Stage: Notes Content */}
+            <ResizablePanel defaultSize={outlineOpen && askPanelOpen ? 50 : outlineOpen || askPanelOpen ? 70 : 100}>
               <main className="h-full overflow-y-auto relative bg-background/50">
                 {/* Notes Toolbar */}
                 <div className="sticky top-0 z-10 backdrop-blur-md bg-background/80 border-b border-border/60 px-6 py-2 flex items-center justify-between gap-4 text-xs">
@@ -521,6 +502,17 @@ export default function DocumentWorkspace() {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    {/* Inline Outline Chips */}
+                    {note?.markdown && (
+                      <WorkspaceOutline
+                        markdown={note?.markdown}
+                        activeHeadingId={activeHeadingId}
+                        onSelectHeading={(id) => setActiveHeadingId(id)}
+                        inlineChips
+                        maxChips={6}
+                      />
+                    )}
+
                     <Button
                       variant="ghost"
                       size="sm"
@@ -590,28 +582,16 @@ export default function DocumentWorkspace() {
               </main>
             </ResizablePanel>
 
-            {/* Right Split: Companion Dock */}
-            {companionOpen && !focusMode && (
+            {/* Right: Ask Panel */}
+            {askPanelOpen && !focusMode && mobileTab === "notes" && (
               <>
                 <ResizableHandle withHandle />
-                <ResizablePanel
-                  defaultSize={companionExpanded ? 55 : 32}
-                  minSize={24}
-                  maxSize={60}
-                >
-                  <WorkspaceCompanion
+                <ResizablePanel defaultSize={32} minSize={24} maxSize={50}>
+                  <AskPanel
                     documentId={doc.id}
-                    noteReady={!!note?.markdown}
-                    activeTab={companionTab}
-                    onTabChange={setCompanionTab}
-                    onClose={() => setCompanionOpen(false)}
-                    podcast={pod}
-                    onGeneratePodcast={runPodcast}
-                    cards={cards}
-                    onRegenerateDerivatives={runDerivatives}
-                    quiz={qz}
-                    isExpanded={companionExpanded}
-                    onToggleExpanded={() => setCompanionExpanded(!companionExpanded)}
+                    noteMarkdown={note?.markdown}
+                    headings={headings}
+                    onScrollToHeading={(id) => setActiveHeadingId(id)}
                   />
                 </ResizablePanel>
               </>
@@ -623,6 +603,18 @@ export default function DocumentWorkspace() {
         <div className="lg:hidden h-full overflow-y-auto">
           {mobileTab === "notes" && (
             <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4">
+              {/* Inline Outline Chips */}
+              {note?.markdown && (
+                <div className="pb-2">
+                  <WorkspaceOutline
+                    markdown={note?.markdown}
+                    activeHeadingId={activeHeadingId}
+                    onSelectHeading={(id) => setActiveHeadingId(id)}
+                    inlineChips
+                    maxChips={6}
+                  />
+                </div>
+              )}
               {note?.markdown ? (
                 <div className="bg-card p-6 rounded-2xl border border-border shadow-xs">
                   <MarkdownView>{note.markdown}</MarkdownView>
@@ -634,118 +626,39 @@ export default function DocumentWorkspace() {
                   </Button>
                 </div>
               )}
-            </div>
-          )}
-
-          {mobileTab === "outline" && (
-            <WorkspaceOutline
-              markdown={note?.markdown}
-              activeHeadingId={activeHeadingId}
-              onSelectHeading={(id) => {
-                setActiveHeadingId(id);
-                setMobileTab("notes");
-              }}
-            />
-          )}
-
-          {mobileTab === "chat" && (
-            <div className="h-full flex flex-col">
-              <WorkspaceCompanion
-                documentId={doc.id}
-                noteReady={!!note?.markdown}
-                activeTab="chat"
-                onTabChange={setCompanionTab}
-                onClose={() => setMobileTab("notes")}
-                podcast={pod}
-                onGeneratePodcast={runPodcast}
-                cards={cards}
-                onRegenerateDerivatives={runDerivatives}
-                quiz={qz}
-              />
+              {/* Ask Panel as Sheet on mobile */}
+              <div className="mt-4 border-t border-border/60 pt-4">
+                <AskPanel
+                  documentId={doc.id}
+                  noteMarkdown={note?.markdown}
+                  headings={headings}
+                  onScrollToHeading={(id) => setActiveHeadingId(id)}
+                />
+              </div>
             </div>
           )}
 
           {mobileTab === "podcast" && (
             <div className="p-4">
-              <WorkspaceCompanion
-                documentId={doc.id}
-                noteReady={!!note?.markdown}
-                activeTab="podcast"
-                onTabChange={setCompanionTab}
-                onClose={() => setMobileTab("notes")}
-                podcast={pod}
-                onGeneratePodcast={runPodcast}
-                cards={cards}
-                onRegenerateDerivatives={runDerivatives}
-                quiz={qz}
-              />
+              <PodcastPlayer documentId={doc.id} podcast={pod} onGenerate={runPodcast} loading={podcastLoading} />
             </div>
           )}
 
           {mobileTab === "cards" && (
             <div className="p-4">
-              <WorkspaceCompanion
-                documentId={doc.id}
-                noteReady={!!note?.markdown}
-                activeTab="cards"
-                onTabChange={setCompanionTab}
-                onClose={() => setMobileTab("notes")}
-                podcast={pod}
-                onGeneratePodcast={runPodcast}
-                cards={cards}
-                onRegenerateDerivatives={runDerivatives}
-                quiz={qz}
-              />
+              <FlashcardsDeck documentId={doc.id} cards={cards} onRegenerate={runDerivatives} loading={derivLoading} />
             </div>
           )}
 
           {mobileTab === "quiz" && (
             <div className="p-4">
-              <WorkspaceCompanion
-                documentId={doc.id}
-                noteReady={!!note?.markdown}
-                activeTab="quiz"
-                onTabChange={setCompanionTab}
-                onClose={() => setMobileTab("notes")}
-                podcast={pod}
-                onGeneratePodcast={runPodcast}
-                cards={cards}
-                onRegenerateDerivatives={runDerivatives}
-                quiz={qz}
-              />
+              <QuizPlayer documentId={doc.id} quiz={qz} onRegenerate={runDerivatives} loading={derivLoading} />
             </div>
           )}
         </div>
       </div>
 
-      {/* 4. Global Omnibar Command Menu (<kbd>Cmd+K</kbd>) */}
-      <WorkspaceCommandMenu
-        open={commandOpen}
-        onOpenChange={setCommandOpen}
-        headings={headings}
-        onSelectHeading={(id) => {
-          setActiveHeadingId(id);
-          const el = document.getElementById(id);
-          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }}
-        companionTab={companionTab}
-        onSelectCompanionTab={(tab) => {
-          setCompanionTab(tab);
-          setCompanionOpen(true);
-          setFocusMode(false);
-        }}
-        companionOpen={companionOpen}
-        onToggleCompanion={() => setCompanionOpen(!companionOpen)}
-        focusMode={focusMode}
-        onToggleFocusMode={() => setFocusMode(!focusMode)}
-        onRegenerateNotes={generate}
-        onRegenerateDerivatives={runDerivatives}
-        onRegeneratePodcast={runPodcast}
-        notesMarkdown={note?.markdown}
-        onNavigateHome={() => router.push("/app")}
-      />
-
-      {/* 5. Delete Document Confirmation Dialog */}
+      {/* 4. Delete Document Confirmation Dialog */}
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent className="bg-card border-border text-foreground rounded-2xl shadow-xl">
           <AlertDialogHeader>
@@ -772,6 +685,8 @@ export default function DocumentWorkspace() {
   );
 }
 
+// --- Helper Components ---
+
 function Placeholder({ title, desc, loading = false }: { title: string; desc: string; loading?: boolean }) {
   return (
     <div className="bg-card border border-border/80 rounded-2xl p-10 text-center max-w-md mx-auto mt-12 space-y-3 shadow-sm">
@@ -784,6 +699,184 @@ function Placeholder({ title, desc, loading = false }: { title: string; desc: st
       )}
       <h3 className="font-semibold text-foreground font-display text-sm">{title}</h3>
       <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
+    </div>
+  );
+}
+
+// Podcast Player Component
+function PodcastPlayer({
+  documentId,
+  podcast,
+  onGenerate,
+  loading,
+}: {
+  documentId: string;
+  podcast: PodcastRow | null;
+  onGenerate: () => void;
+  loading: boolean;
+}) {
+  return (
+    <div className="space-y-4">
+      {podcast?.status === "ready" && podcast.audio_url ? (
+        <CustomAudioPlayer audioUrl={podcast.audio_url} script={podcast.script} title={podcast.title} />
+      ) : (
+        <div className="bg-card p-8 rounded-2xl border border-border text-center space-y-4">
+          <Headphones className="h-10 w-10 text-muted-foreground mx-auto" />
+          <h3 className="font-semibold text-foreground">No podcast yet</h3>
+          <p className="text-xs text-muted-foreground">Generate an audio recap of this document</p>
+          <Button onClick={onGenerate} disabled={loading} className="rounded-full text-xs">
+            {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
+            Generate Podcast
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Flashcards Deck Component (simplified)
+function FlashcardsDeck({
+  documentId,
+  cards,
+  onRegenerate,
+  loading,
+}: {
+  documentId: string;
+  cards: FlashcardRow[];
+  onRegenerate: () => void;
+  loading: boolean;
+}) {
+  if (cards.length === 0) {
+    return (
+      <div className="bg-card p-8 rounded-2xl border border-border text-center space-y-4">
+        <Layers className="h-10 w-10 text-muted-foreground mx-auto" />
+        <h3 className="font-semibold text-foreground">No flashcards yet</h3>
+        <p className="text-xs text-muted-foreground">Generate flashcards from your notes</p>
+        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs">
+          {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
+          Generate Flashcards
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="p-4">
+      <p className="text-sm text-muted-foreground mb-4">{cards.length} cards generated</p>
+      <div className="grid gap-4 md:grid-cols-2">
+        {cards.slice(0, 6).map((card) => (
+          <div key={card.id} className="bg-card p-4 rounded-xl border border-border">
+            <p className="font-medium text-sm">{card.front}</p>
+            <p className="text-xs text-muted-foreground mt-2">{card.back}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Quiz Player Component (simplified)
+function QuizPlayer({
+  documentId,
+  quiz,
+  onRegenerate,
+  loading,
+}: {
+  documentId: string;
+  quiz: QuizRow | null;
+  onRegenerate: () => void;
+  loading: boolean;
+}) {
+  if (!quiz) {
+    return (
+      <div className="bg-card p-8 rounded-2xl border border-border text-center space-y-4">
+        <ListChecks className="h-10 w-10 text-muted-foreground mx-auto" />
+        <h3 className="font-semibold text-foreground">No quiz yet</h3>
+        <p className="text-xs text-muted-foreground">Generate a practice quiz from your notes</p>
+        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs">
+          {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
+          Generate Quiz
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="p-4 space-y-4">
+      <h3 className="font-semibold">{quiz.title}</h3>
+      <p className="text-xs text-muted-foreground">{quiz.questions.length} questions</p>
+      <div className="space-y-3">
+        {quiz.questions.slice(0, 3).map((q) => (
+          <div key={q.id} className="bg-card p-4 rounded-xl border border-border">
+            <p className="text-sm font-medium">{q.question}</p>
+            {q.type === "mcq" && q.choices && (
+              <div className="mt-2 space-y-1">
+                {q.choices.map((c, i) => (
+                  <label key={i} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                    <input type="radio" name={q.id} className="h-3 w-3" />
+                    {c}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Custom Audio Player (inline version)
+function CustomAudioPlayer({
+  audioUrl,
+  script,
+  title,
+}: {
+  audioUrl: string;
+  script: string | null;
+  title: string;
+}) {
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+    const onTimeUpdate = () => setProgress(audio.currentTime / audio.duration);
+    const onEnded = () => setPlaying(false);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("ended", onEnded);
+    return () => {
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("ended", onEnded);
+      audio.pause();
+    };
+  }, [audioUrl]);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (playing) audioRef.current.pause();
+    else audioRef.current.play();
+    setPlaying(!playing);
+  };
+
+  return (
+    <div className="bg-card p-6 rounded-2xl border border-border space-y-4">
+      <div className="flex items-center gap-2">
+        <Headphones className="h-5 w-5 text-primary" />
+        <span className="font-medium text-sm">{title}</span>
+      </div>
+      <button onClick={togglePlay} className="w-full h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors">
+        {playing ? <span>⏸ Pause</span> : <span>▶ Play</span>}
+      </button>
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
+        <div className="h-full bg-primary rounded-full transition-all duration-100" style={{ width: `${progress * 100}%` }} />
+      </div>
+      {script && (
+        <details className="text-xs text-muted-foreground">
+          <summary className="cursor-pointer mb-1">Show transcript</summary>
+          <pre className="whitespace-pre-wrap text-left p-2 bg-muted/50 rounded">{script}</pre>
+        </details>
+      )}
     </div>
   );
 }
