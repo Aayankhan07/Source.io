@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { DocumentRow } from "@/features/documents/types";
 import {
@@ -28,7 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
 const sourceIconMap = {
@@ -49,7 +51,7 @@ export default function DocumentCardBento({
   document: doc,
   onDelete,
 }: DocumentCardBentoProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -71,7 +73,7 @@ export default function DocumentCardBento({
 
   return (
     <div
-      onClick={() => navigate(`/app/doc/${doc.id}`)}
+      onClick={() => router.push(`/app/doc/${doc.id}`)}
       className="p-5 rounded-2xl sm:rounded-3xl bg-card border border-border/80 hover:border-primary/40 shadow-xs hover:shadow-md transition-[color,background-color,border-color,box-shadow,transform] duration-200 cursor-pointer flex flex-col justify-between group relative overflow-hidden"
     >
       {/* Top Meta Row */}
@@ -116,7 +118,7 @@ export default function DocumentCardBento({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44 rounded-xl">
-                <DropdownMenuItem onClick={() => navigate(`/app/doc/${doc.id}`)}>
+                <DropdownMenuItem onClick={() => router.push(`/app/doc/${doc.id}`)}>
                   <ExternalLink className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
                   <span>Open Studio</span>
                 </DropdownMenuItem>
@@ -160,7 +162,7 @@ export default function DocumentCardBento({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/app/doc/${doc.id}`);
+            router.push(`/app/doc/${doc.id}`);
           }}
           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors"
           title="Open Notes"
@@ -172,7 +174,7 @@ export default function DocumentCardBento({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/app/doc/${doc.id}`);
+            router.push(`/app/doc/${doc.id}`);
           }}
           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors"
           title="Review Flashcards"
@@ -184,7 +186,7 @@ export default function DocumentCardBento({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/app/doc/${doc.id}`);
+            router.push(`/app/doc/${doc.id}`);
           }}
           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors"
           title="Practice Quiz"
@@ -196,7 +198,7 @@ export default function DocumentCardBento({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/app/doc/${doc.id}`);
+            router.push(`/app/doc/${doc.id}`);
           }}
           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors"
           title="Listen Podcast"

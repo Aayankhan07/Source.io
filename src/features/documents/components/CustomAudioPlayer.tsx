@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import { Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX, Headphones, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";

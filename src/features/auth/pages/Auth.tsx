@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -13,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 export default function Auth() {
   const { user, loading, signInAsGuest } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
   const { theme } = useTheme();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -24,8 +27,8 @@ export default function Auth() {
   const [signupSuccess, setSignupSuccess] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate("/app", { replace: true });
-  }, [user, loading, navigate]);
+    if (!loading && user) router.replace("/app");
+  }, [user, loading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +75,7 @@ export default function Auth() {
       title: "Guest Session Active",
       description: "Welcome to Source.io! Exploring sample documents.",
     });
-    navigate("/app");
+    router.push("/app");
   };
 
   return (
@@ -85,7 +88,7 @@ export default function Auth() {
       {/* Left split pane: Branding / Features (Hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-muted/40 border-r border-border p-12 flex-col justify-between relative z-10">
         {/* Top brand header */}
-        <Link to="/" className="flex items-center gap-2.5 group self-start">
+        <Link href="/" className="flex items-center gap-2.5 group self-start">
           <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden border border-border bg-card shadow-2xs">
             <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
           </div>
@@ -147,7 +150,7 @@ export default function Auth() {
         {/* Footer */}
         <div className="text-xs text-muted-foreground flex justify-between items-center">
           <span>© Source.io AI Study Companion</span>
-          <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1 font-medium">
+          <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1 font-medium">
             Explore features <ArrowUpRight className="h-3 w-3" />
           </Link>
         </div>
@@ -329,7 +332,7 @@ export default function Auth() {
           </div>
 
           <p className="text-center text-xs text-muted-foreground mt-6">
-            <Link to="/" className="hover:text-foreground transition-colors inline-flex items-center gap-1.5 font-medium">
+            <Link href="/" className="hover:text-foreground transition-colors inline-flex items-center gap-1.5 font-medium">
               <ArrowLeft className="h-3 w-3" /> Back to home
             </Link>
           </p>

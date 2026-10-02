@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useTheme } from "@/hooks/use-theme";
 import { toast } from "sonner";
@@ -64,7 +66,7 @@ export default function Index() {
         <header className="sticky top-3 sm:top-5 z-50 px-3 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto bg-card/85 backdrop-blur-xl border border-border rounded-full px-4 sm:px-6 py-2.5 shadow-sm">
             <div className="flex items-center justify-between">
-              <Link to="/" className="flex items-center gap-2 group">
+              <Link href="/" className="flex items-center gap-2 group">
                 <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                   <Sparkles className="h-3 w-3" strokeWidth={1.5} />
                 </div>
@@ -120,7 +122,7 @@ export default function Index() {
 
                 {user ? (
                   <Link 
-                    to="/app" 
+                    href="/app" 
                     className="bg-primary hover:opacity-90 text-primary-foreground rounded-full px-4 py-1.5 text-xs font-medium shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
                   >
                     Open workspace
@@ -129,13 +131,13 @@ export default function Index() {
                 ) : (
                   <>
                     <Link 
-                      to="/auth" 
+                      href="/auth" 
                       className="text-xs font-medium text-muted-foreground hover:text-foreground px-2.5 py-1.5 transition-colors hidden sm:inline-block"
                     >
                       Sign in
                     </Link>
                     <Link 
-                      to="/auth" 
+                      href="/auth" 
                       className="bg-primary hover:opacity-90 text-primary-foreground font-medium rounded-full px-4 py-1.5 text-xs shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
                     >
                       Get started free
@@ -184,7 +186,7 @@ export default function Index() {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
                 <Link
-                  to={user ? "/app" : "/auth"}
+                  href={user ? "/app" : "/auth"}
                   className="bg-primary hover:opacity-90 text-primary-foreground font-medium text-xs sm:text-sm px-7 py-3 rounded-full shadow-sm active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2"
                 >
                   {user ? "Open workspace" : "Get started free"}
@@ -314,7 +316,7 @@ export default function Index() {
           <div className="space-y-10 text-left">
             <div className="flex flex-col md:flex-row items-start justify-between gap-8">
               <div className="space-y-3 max-w-sm">
-                <Link to="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                   <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                     <Sparkles className="h-3 w-3" strokeWidth={1.5} />
                   </div>
@@ -350,8 +352,8 @@ export default function Index() {
                 <div>
                   <span className="font-mono text-foreground font-semibold block mb-3">Platform</span>
                   <ul className="space-y-2 text-muted-foreground">
-                    <li><Link to="/auth" className="hover:text-foreground transition-colors">Sign in</Link></li>
-                    <li><Link to="/auth" className="hover:text-foreground transition-colors">Create account</Link></li>
+                    <li><Link href="/auth" className="hover:text-foreground transition-colors">Sign in</Link></li>
+                    <li><Link href="/auth" className="hover:text-foreground transition-colors">Create account</Link></li>
                     <li><span className="text-muted-foreground">Privacy Policy</span></li>
                     <li><span className="text-muted-foreground">Terms of Service</span></li>
                   </ul>

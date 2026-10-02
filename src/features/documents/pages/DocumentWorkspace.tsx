@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useNavigate, useOutletContext } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
+import { useAppShell } from "@/features/documents/context/AppShellContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DocumentRow, FlashcardRow, NoteRow, PodcastRow, QuizQuestionRow, QuizRow } from "@/features/documents/types";
@@ -36,11 +39,12 @@ type DocumentAssets = {
 };
 
 export default function DocumentWorkspace() {
-  const { docId } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const docId = Array.isArray(params.docId) ? params.docId[0] : params.docId;
+  const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
-  const outlet = useOutletContext<{ openMobileNav?: () => void }>();
+  const { openMobileNav } = useAppShell();
   const queryClient = useQueryClient();
 
   const [streaming, setStreaming] = useState(false);
@@ -248,6 +252,7 @@ export default function DocumentWorkspace() {
             podcast: {
               id: prev.podcast?.id ?? "draft",
               document_id: docId,
+              title: "Generating...",
               script: prev.podcast?.script ?? null,
               audio_url: null,
               status: "generating",
@@ -278,7 +283,7 @@ export default function DocumentWorkspace() {
     queryClient.invalidateQueries({ queryKey: queryKeys.documents });
     queryClient.removeQueries({ queryKey: queryKeys.document(docId) });
     queryClient.removeQueries({ queryKey: queryKeys.assets(docId) });
-    navigate("/app");
+    router.push("/app");
   };
 
   const handleCopyNotes = () => {
@@ -312,7 +317,7 @@ export default function DocumentWorkspace() {
             <Button onClick={() => docQuery.refetch()} className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs rounded-full">
               <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
             </Button>
-            <Button variant="outline" onClick={() => navigate("/app")} className="border-border text-foreground hover:bg-muted rounded-full text-xs">
+            <Button variant="outline" onClick={() => router.push("/app")} className="border-border text-foreground hover:bg-muted rounded-full text-xs">
               Go to library
             </Button>
           </div>
@@ -326,7 +331,7 @@ export default function DocumentWorkspace() {
       <div className="h-full flex items-center justify-center bg-background">
         <div className="text-center p-8 border border-dashed border-border rounded-2xl max-w-sm bg-card shadow-sm">
           <p className="text-muted-foreground text-sm mb-4">Study document was not found.</p>
-          <Button variant="outline" onClick={() => navigate("/app")} className="border-border text-foreground hover:bg-muted rounded-full text-xs">
+          <Button variant="outline" onClick={() => router.push("/app")} className="border-border text-foreground hover:bg-muted rounded-full text-xs">
             <ChevronLeft className="h-4 w-4 mr-1 shrink-0" /> Go to library
           </Button>
         </div>
@@ -342,12 +347,12 @@ export default function DocumentWorkspace() {
       <header className="border-b border-border/80 bg-background/95 backdrop-blur-md px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3 shrink-0 z-20">
         {/* Left: Mobile Trigger & Breadcrumb Hierarchy */}
         <div className="flex items-center gap-3 min-w-0">
-          {outlet?.openMobileNav && (
+          {openMobileNav && (
             <Button
               variant="ghost"
               size="icon"
               className="md:hidden -ml-2 text-muted-foreground hover:text-foreground"
-              onClick={outlet.openMobileNav}
+              onClick={openMobileNav}
               aria-label="Open navigation"
             >
               <Menu className="h-5 w-5" />
@@ -358,7 +363,7 @@ export default function DocumentWorkspace() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/app")}
+              onClick={() => router.push("/app")}
               className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex"
             >
               <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Library
@@ -494,7 +499,7 @@ export default function DocumentWorkspace() {
             {/* Left Rail: Document Outline */}
             {outlineOpen && !focusMode && (
               <>
-                <ResizablePanel orientation="horizontal" defaultSize={18} minSize={14} maxSize={26}>
+                <ResizablePanel defaultSize={18} minSize={14} maxSize={26}>
                   <WorkspaceOutline
                     markdown={note?.markdown}
                     activeHeadingId={activeHeadingId}
@@ -737,7 +742,7 @@ export default function DocumentWorkspace() {
         onRegenerateDerivatives={runDerivatives}
         onRegeneratePodcast={runPodcast}
         notesMarkdown={note?.markdown}
-        onNavigateHome={() => navigate("/app")}
+        onNavigateHome={() => router.push("/app")}
       />
 
       {/* 5. Delete Document Confirmation Dialog */}

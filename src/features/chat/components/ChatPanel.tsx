@@ -1,3 +1,5 @@
+"use client";
+
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -423,7 +425,7 @@ const MessageBubble = memo(function MessageBubble({ message }: { message: ChatMe
         {!isUser && message.citations && message.citations.length > 0 && (
           <div className="mt-3 pt-2.5 border-t border-border/60 flex flex-wrap gap-1.5">
             {message.citations.map((c) => (
-              <CitationChip key={c.n} citation={c} />
+              <CitationChip key={c.chunk_id} citation={c} />
             ))}
           </div>
         )}
@@ -442,12 +444,12 @@ function RenderWithCitations({ text, citations }: { text: string; citations: Cit
   // Rebuilding the map and re-splitting on every render was pure waste — this runs
   // inside the streaming path, where the component re-renders constantly.
   const rendered = useMemo(() => {
-    const known = new Set(citations.map((c) => c.n));
+    const known = new Set(citations.map((c) => c.chunk_id));
     return text
       .split(/(\[\d+\])/g)
       .map((p) => {
         const m = p.match(/^\[(\d+)\]$/);
-        return m && known.has(Number(m[1])) ? ` **[${m[1]}]**` : p;
+        return m && known.has(m[1]) ? ` **[${m[1]}]**` : p;
       })
       .join("");
   }, [text, citations]);
@@ -466,21 +468,19 @@ function CitationChip({ citation }: { citation: Citation }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          // Strength reads as diameter first and a figure second, so a glance
-          // across the citations shows which passages carry the answer.
           className="inline-flex items-center gap-1.5 text-xs font-mono px-2 py-0.5 rounded-sm bg-surface-sunken border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors focus-ring"
-          aria-label={`Source ${citation.n}, ${pct} percent match`}
+          aria-label={`Source ${citation.chunk_id}, ${pct} percent match`}
         >
           <Magnitude value={citation.similarity} className="text-primary" />
-          [{citation.n}]
+          [{citation.chunk_id}]
           <span className="text-muted-foreground/70">{pct}%</span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-80 text-xs bg-popover border-border text-foreground rounded-sm shadow-plate p-4 max-h-60 overflow-y-auto">
         <div className="font-bold mb-1.5 text-muted-foreground font-mono text-xs uppercase tracking-wider">
-          Passage fragment #{citation.order_index + 1}
+          Passage fragment #{citation.chunk_id}
         </div>
-        <p className="whitespace-pre-wrap leading-relaxed text-foreground/90 font-sans text-xs">{citation.text}</p>
+        <p className="whitespace-pre-wrap leading-relaxed text-foreground/90 font-sans text-xs">{citation.content}</p>
       </PopoverContent>
     </Popover>
   );

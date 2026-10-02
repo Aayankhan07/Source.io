@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { 
   Check, X, Sparkles, GraduationCap, ArrowRight, ShieldCheck, 
   HelpCircle, Scale, Stethoscope, Binary, BookOpenCheck
@@ -319,7 +321,7 @@ export function CredibilityAndComparison() {
 
           <div className="pt-2">
             <Link
-              to="/auth"
+              href="/auth"
               className="bg-primary hover:opacity-90 text-primary-foreground font-medium text-xs sm:text-sm px-8 py-3 rounded-full shadow-sm active:scale-[0.98] transition-all inline-flex items-center gap-2"
             >
               Get started free

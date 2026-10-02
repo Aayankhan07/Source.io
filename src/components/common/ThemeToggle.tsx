@@ -1,7 +1,10 @@
+"use client";
+
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 interface ThemeToggleProps {
   className?: string;
@@ -10,6 +13,45 @@ interface ThemeToggleProps {
 
 export default function ThemeToggle({ className, variant = "icon" }: ThemeToggleProps) {
   const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Render a placeholder that matches server-rendered HTML (dark theme)
+    if (variant === "pill") {
+      return (
+        <button
+          className={cn(
+            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border",
+            "bg-slate-800/80 border-slate-700/80 text-slate-200",
+            className
+          )}
+          aria-label="Switch to light mode"
+        >
+          <Sun className="h-3.5 w-3.5 text-amber-400" />
+          <span>Light</span>
+        </button>
+      );
+    }
+
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn(
+          "h-8 w-8 rounded-full transition-colors border",
+          "border-slate-800 bg-slate-900/60 text-slate-300",
+          className
+        )}
+      >
+        <Sun className="h-3.5 w-3.5 text-amber-400" />
+      </Button>
+    );
+  }
+
   const isDark = theme === "dark";
 
   if (variant === "pill") {
@@ -59,7 +101,7 @@ export default function ThemeToggle({ className, variant = "icon" }: ThemeToggle
       {isDark ? (
         <Sun className="h-3.5 w-3.5 text-amber-400 transition-transform duration-300 rotate-0 hover:rotate-45" />
       ) : (
-        <Moon className="h-3.5 w-3.5 text-slate-700 transition-transform duration-300 hover:-rotate-12" />
+        <Moon className="h-3.5 w-3.5 text-slate-600 transition-transform duration-300 hover:-rotate-12" />
       )}
     </Button>
   );

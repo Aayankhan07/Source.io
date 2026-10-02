@@ -1,14 +1,17 @@
-import { Link, useLocation } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
 
 const NotFound = () => {
-  const location = useLocation();
+  const pathname = usePathname();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
+    console.error("404 Error: User attempted to access non-existent route:", pathname);
+  }, [pathname]);
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-6 relative overflow-hidden">
@@ -31,10 +34,10 @@ const NotFound = () => {
 
         <div className="flex items-center justify-center gap-2 pt-1">
           <Button asChild className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold">
-            <Link to="/app">Go to workspace</Link>
+            <Link href="/app">Go to workspace</Link>
           </Button>
           <Button asChild variant="outline" className="border-white/10 text-white hover:bg-white/5">
-            <Link to="/">Back to home</Link>
+            <Link href="/">Back to home</Link>
           </Button>
         </div>
       </div>

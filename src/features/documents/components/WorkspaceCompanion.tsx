@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { MessagesSquare, Headphones, Layers, ListChecks, X, Maximize2, Minimize2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";

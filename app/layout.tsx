@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import SWUnregister from "./SWUnregister";
 
 export const metadata: Metadata = {
   title: "Source.io: AI study workspace for any content",
@@ -44,6 +45,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>{children}</Providers>
+        <SWUnregister />
       </body>
     </html>
   );

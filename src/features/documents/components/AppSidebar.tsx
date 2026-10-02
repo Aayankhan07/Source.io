@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -24,7 +27,7 @@ const sourceIcon = {
 export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; onNavigate?: () => void }) {
   const { user, signOut } = useAuth();
   const { docId } = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const {
@@ -99,7 +102,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
     <aside className="w-full md:w-64 shrink-0 border-r border-sidebar-border bg-sidebar flex flex-col h-screen relative z-25">
       {/* Brand Section */}
       <div className="p-4 border-b border-sidebar-border/60">
-        <Link to="/app" className="flex items-center gap-2.5 px-2 py-1 relative group">
+        <Link href="/app" className="flex items-center gap-2.5 px-2 py-1 relative group">
           <div className="h-8 w-8 rounded-full bg-slate-900 dark:bg-card border border-transparent dark:border-border flex items-center justify-center text-white shadow-sm overflow-hidden">
             <img src="/favicon.png" className="h-4 w-4 object-contain" alt="Logo" />
           </div>
@@ -175,7 +178,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
               <li key={d.id}>
                 <button
                   onClick={() => {
-                    navigate(`/app/doc/${d.id}`);
+                    router.push(`/app/doc/${d.id}`);
                     onNavigate?.();
                   }}
                   className={cn(

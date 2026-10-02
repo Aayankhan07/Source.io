@@ -27,5 +27,5 @@ export type QuizQuestionRow = {
   order_index: number;
 };
 export type QuizRow = { id: string; document_id: string; title: string; questions: QuizQuestionRow[] };
-export type PodcastRow = { id: string; document_id: string; script: string | null; audio_url: string | null; status: string };
+export type PodcastRow = { id: string; document_id: string; title: string; script: string | null; audio_url: string | null; status: string };
 

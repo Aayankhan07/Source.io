@@ -1,14 +1,24 @@
-import { Navigate, useLocation } from "react-router-dom";
+"use client";
+
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading, error, signInAsGuest } = useAuth();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (!loading && !user && !error) {
+      router.replace("/auth");
+    }
+  }, [loading, user, error, router]);
 
   if (loading) {
     return (
@@ -40,6 +50,13 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!user) return <Navigate to="/auth" state={{ from: location }} replace />;
+  if (!user) {
+    return (
+      <div className={cn("luminous-app min-h-screen flex items-center justify-center bg-background", theme === "dark" && "dark")}>
+        <Loader2 className="h-5 w-5 animate-spin text-foreground" />
+      </div>
+    );
+  }
+
   return <>{children}</>;
 }

@@ -1,10 +1,12 @@
+"use client";
+
 import { useMemo } from "react";
 import { DocumentRow } from "@/features/documents/types";
 import { Upload, Sparkles, BookOpen, Clock, Layers, ArrowRight, Zap, FileText } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 interface BentoTelemetryProps {
   documents: DocumentRow[];
@@ -17,7 +19,7 @@ export default function BentoTelemetry({
   onDropFiles,
   onOpenUpload,
 }: BentoTelemetryProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: true,
@@ -138,7 +140,7 @@ export default function BentoTelemetry({
         <div className="pt-3 border-t border-border/60">
           {recentDoc ? (
             <Button
-              onClick={() => navigate(`/app/doc/${recentDoc.id}`)}
+              onClick={() => router.push(`/app/doc/${recentDoc.id}`)}
               className="w-full rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white shadow-2xs group justify-between"
             >
               <span>Resume Study Session</span>

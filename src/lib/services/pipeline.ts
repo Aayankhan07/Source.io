@@ -13,7 +13,7 @@ export async function embedChunks(documentId: string): Promise<{ ok: boolean; ch
   return await resp.json();
 }
 
-export type Citation = { n: number; order_index: number; similarity: number; text: string };
+export type Citation = { chunk_id: string; similarity: number; content: string };
 
 type SseHandlers = {
   /** Called for each `data:` payload, with the name of the preceding `event:` line if any. */

@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useMemo } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { queryKeys } from "@/lib/queryKeys";
@@ -12,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAppShell } from "@/features/documents/context/AppShellContext";
 import {
   Plus,
   Menu,
@@ -31,15 +34,11 @@ import {
 } from "lucide-react";
 
 export default function AppEmpty() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-
-  const { openUpload, openMobileNav } = useOutletContext<{
-    openUpload: () => void;
-    openMobileNav: () => void;
-  }>();
+  const { openUpload, openMobileNav } = useAppShell();
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState("");
