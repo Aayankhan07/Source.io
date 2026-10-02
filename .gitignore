@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.next
 *.local
 
 # Editor directories and files
@@ -38,12 +39,6 @@ supabase/functions/*/.env
 # Deployment platform metadata
 .vercel/
 .netlify/
-
-# Vite/Vitest cache and coverage
-.vite/
-coverage/
-.nyc_output/
-*.tsbuildinfo
 
 # System files
 Thumbs.db
@@ -84,3 +79,22 @@ playwright-report/
 *.key
 *.cert
 *.crt
+
+# Next.js
+.next/
+out/
+build/
+
+# Supabase
+supabase/.env
+supabase/functions/*/.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
