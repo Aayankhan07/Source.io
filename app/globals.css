@@ -1,0 +1,605 @@
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Source.io — Modern dark (ChatGPT/Linear vibe) */
+
+@layer base {
+  /* The app is dark-only: index.html hard-codes <html class="dark"> and nothing
+     removes it, so the `.dark` block below is what actually renders. This :root
+     block is kept as the shadcn-expected default layer — primitives assume these
+     variables exist — and as the starting point if a light theme is ever added. */
+  /* SOURCE.IO DESIGN SYSTEM — Unified Luminous (Light) & Obsidian (Dark) */
+  :root {
+    --background: 0 0% 100%;            /* #ffffff pure white */
+    --foreground: 222 47% 11%;          /* #0f172a slate-900 */
+    --card: 0 0% 100%;                  /* #ffffff */
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 222 47% 11%;             /* #0f172a obsidian primary */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 199 89% 48%;        /* sky-500 accent */
+
+    --secondary: 210 40% 96.1%;         /* #f1f5f9 */
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;    /* #64748b */
+
+    --accent: 210 40% 94%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 158 64% 40%;
+    --warning: 38 92% 50%;
+
+    --border: 214 32% 91%;              /* #e2e8f0 */
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
+
+    --radius: 0.75rem;                  /* 12px cohesive rounded scale */
+
+    --surface-sunken: 210 30% 96%;
+    --surface-raised: 0 0% 100%;
+    --surface-elevated: 0 0% 100%;
+
+    --sidebar-background: 210 25% 97.5%; /* #f8fafc */
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 47% 11%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 94%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 199 89% 48%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --shadow-plate: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+    --shadow-glow: 0 4px 16px -4px rgba(14, 165, 233, 0.25);
+  }
+
+  /* NOIR / OBSIDIAN BLACK THEME — Pure, high-contrast black workspace */
+  .dark {
+    --background: 0 0% 2%;              /* #050505 pure pitch black canvas */
+    --foreground: 0 0% 98%;             /* #fafafa crisp white text */
+    --card: 0 0% 5%;                    /* #0d0d0d jet black card surface */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Crisp High-Contrast Monochrome Accent */
+    --primary: 0 0% 98%;                /* #fafafa white highlight */
+    --primary-foreground: 0 0% 5%;      /* #0d0d0d */
+    --primary-glow: 0 0% 85%;
+
+    --secondary: 0 0% 11%;              /* #1c1c1c */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 11%;
+    --muted-foreground: 240 5% 65%;     /* #a1a1aa neutral zinc text */
+
+    --accent: 0 0% 13%;                 /* #222222 */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 158 64% 45%;
+    --warning: 38 92% 54%;
+
+    --border: 0 0% 14%;                 /* #242424 subtle hairline */
+    --input: 0 0% 14%;
+    --ring: 0 0% 80%;
+
+    --radius: 0.75rem;
+
+    --surface-sunken: 0 0% 1%;          /* #030303 */
+    --surface-raised: 0 0% 8%;          /* #141414 clean charcoal */
+    --surface-elevated: 0 0% 12%;       /* #1f1f1f elevated modal/card */
+
+    --sidebar-background: 0 0% 2%;      /* #050505 matte black sidebar */
+    --sidebar-foreground: 240 5% 72%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 0% 80%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 98%), hsl(0 0% 82%));
+    --shadow-plate: 0 16px 40px -12px rgba(0, 0, 0, 0.9);
+    --shadow-glow: 0 4px 20px -2px rgba(255, 255, 255, 0.08);
+  }
+
+  /* THE LUMINOUS STUDIO — high-craft light workspace matching the landing page */
+  .luminous-app {
+    --background: 210 20% 98%;          /* #fafbfc */
+    --foreground: 222 47% 11%;          /* #0f172a slate-900 */
+    --card: 0 0% 100%;                  /* #ffffff */
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 222 47% 11%;             /* #0f172a obsidian */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 199 89% 48%;        /* sky-500 accent */
+
+    --secondary: 210 40% 96.1%;         /* #f1f5f9 */
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;    /* #64748b */
+
+    --accent: 210 40% 94%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 158 64% 40%;
+    --warning: 38 92% 50%;
+
+    --border: 214 32% 91%;              /* #e2e8f0 */
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
+
+    --radius: 0.5rem;                   /* 8px modern rounded corners */
+
+    --surface-sunken: 210 30% 96%;
+    --surface-raised: 0 0% 100%;
+    --surface-elevated: 0 0% 100%;
+
+    --sidebar-background: 210 25% 97.5%; /* #f8fafc */
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 47% 11%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 94%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 199 89% 48%;
+
+    --shadow-plate: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+    --shadow-glow: 0 4px 16px -4px rgba(14, 165, 233, 0.25);
+  }
+
+  /* NOIR / OBSIDIAN BLACK THEME — high-craft pure black workspace */
+  .luminous-app.dark,
+  .dark .luminous-app,
+  .dark.luminous-app {
+    --background: 0 0% 2%;              /* #050505 pure pitch black canvas */
+    --foreground: 0 0% 98%;             /* #fafafa crisp white text */
+    --card: 0 0% 5%;                    /* #0d0d0d jet black card surface */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;                /* #fafafa crisp white highlight */
+    --primary-foreground: 0 0% 5%;      /* #0d0d0d */
+    --primary-glow: 0 0% 85%;
+
+    --secondary: 0 0% 11%;              /* #1c1c1c */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 11%;
+    --muted-foreground: 240 5% 65%;     /* #a1a1aa neutral zinc text */
+
+    --accent: 0 0% 13%;                 /* #222222 */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 158 64% 45%;
+    --warning: 38 92% 54%;
+
+    --border: 0 0% 14%;                 /* #242424 subtle hairline */
+    --input: 0 0% 14%;
+    --ring: 0 0% 80%;
+
+    --radius: 0.5rem;
+
+    --surface-sunken: 0 0% 1%;          /* #030303 */
+    --surface-raised: 0 0% 8%;          /* #141414 clean charcoal */
+    --surface-elevated: 0 0% 12%;       /* #1f1f1f elevated modal/card */
+
+    --sidebar-background: 0 0% 2%;      /* #050505 deeper black sidebar foundation */
+    --sidebar-foreground: 240 5% 72%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 0% 80%;
+
+    --shadow-plate: 0 16px 40px -12px rgba(0, 0, 0, 0.9);
+    --shadow-glow: 0 4px 20px -2px rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* MAGNITUDE RAMP
+   On a star chart importance is diameter on a fixed scale, never a louder colour.
+   Every sized indicator in the app reads off this one ramp, so hierarchy stops
+   being improvised per component. m1 is brightest/most important. */
+@layer base {
+  :root {
+    --mag-1: 0.75rem;
+    --mag-2: 0.625rem;
+    --mag-3: 0.5rem;
+    --mag-4: 0.375rem;
+    --mag-5: 0.25rem;
+
+    /* Plate rhythm. More space above a heading than below it. */
+    --plate-gutter: 1.5rem;
+    --plate-rule: 1px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html, body, #root {
+    @apply h-full;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    /* Figures are data on a chart: they align in columns everywhere. */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "cv11" 1, "ss01" 1;
+  }
+
+  /* Plate titles. Engraved chart lettering, set tight. */
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Spectral', 'Literata', ui-serif, Georgia, serif;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
+
+  /* Browser surfaces belong to the design too. */
+  ::selection {
+    background: hsl(var(--primary) / 0.28);
+    color: hsl(var(--foreground));
+  }
+  :root {
+    caret-color: hsl(var(--primary));
+    accent-color: hsl(var(--primary));
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 2px;               /* a ruled edge, not a pill */
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--surface-elevated)); background-clip: padding-box; }
+
+  a { text-underline-offset: 0.2em; }
+}
+
+@layer utilities {
+  /* Keyboard focus ring for hand-rolled interactive elements. The shadcn Button
+     ships its own; raw <button>/<div role="button"> elements need this so keyboard
+     users can see where they are. */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* PLATE — the primary surface. An engraved plate laid on the chart ground:
+     opaque, hairline-ruled, no blur. `.glass-panel` is kept as the name because
+     the whole app calls it, but the material is no longer glass. */
+  .glass-panel,
+  .plate {
+    background: hsl(var(--card));
+    border: var(--plate-rule) solid hsl(var(--border));
+    box-shadow: var(--shadow-plate);
+  }
+
+  /* Registration marks: the corner ticks an engraved plate carries. */
+  .plate-registered {
+    position: relative;
+  }
+  .plate-registered::before,
+  .plate-registered::after {
+    content: '';
+    position: absolute;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-color: hsl(var(--primary) / 0.5);
+    pointer-events: none;
+  }
+  .plate-registered::before {
+    top: -1px; left: -1px;
+    border-top: var(--plate-rule) solid;
+    border-left: var(--plate-rule) solid;
+  }
+  .plate-registered::after {
+    bottom: -1px; right: -1px;
+    border-bottom: var(--plate-rule) solid;
+    border-right: var(--plate-rule) solid;
+  }
+
+  .glass-panel-hover {
+    transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-panel-hover:hover {
+    background: hsl(var(--surface-raised));
+    border-color: hsl(var(--primary) / 0.35);
+  }
+
+  /* Coordinate rules — the faint gridlines that field a chart. */
+  .plate-field {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.35) var(--plate-rule), transparent var(--plate-rule)),
+      linear-gradient(to bottom, hsl(var(--border) / 0.35) var(--plate-rule), transparent var(--plate-rule));
+    background-size: 4rem 4rem;
+  }
+
+  /* Magnitude dot: importance as diameter, read off the fixed ramp. */
+  .magnitude {
+    display: inline-block;
+    border-radius: 9999px;
+    background: currentColor;
+    flex: none;
+  }
+
+  /* MOTION — a plate is drawn, not flown in.
+     The one authored moment: content settles from a hair below with its rule
+     resolving, on an exponential ease-out. Everything starts visible, so a
+     failed animation never hides content. */
+  @keyframes plate-settle {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .plate-settle {
+    animation: plate-settle 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Ingestion: a rule sweeping across the plate as the source is surveyed. */
+  @keyframes plate-survey {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .plate-surveying {
+    position: relative;
+    overflow: hidden;
+  }
+  .plate-surveying::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.14),
+      transparent
+    );
+    animation: plate-survey 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plate-settle,
+    .plate-surveying::after,
+    .animate-fade-in,
+    .animate-pulse-slow {
+      animation: none !important;
+    }
+    .plate-settle { opacity: 1; transform: none; }
+  }
+
+  /* Custom Markdown Study Note Styling.
+     Generated study material is the one place users actually read at length, so it
+     gets Literata — a face built for screen reading — while the surrounding app
+     chrome stays on the UI sans. */
+  .prose-invert-tight {
+    font-family: 'Literata', Georgia, ui-serif, serif;
+    font-optical-sizing: auto;
+  }
+  /* Rhythm: more space above a heading than below it, so sections group. */
+  .prose-invert-tight h1 { @apply text-2xl font-display mt-10 mb-3 text-foreground; }
+  .prose-invert-tight h2 { @apply text-xl font-display mt-9 mb-3 text-foreground border-b border-border pb-2; }
+  .prose-invert-tight h3 { @apply text-lg font-display mt-7 mb-2 text-foreground; }
+  .prose-invert-tight p  { @apply my-4 text-foreground/85 text-[15px] leading-[1.75]; }
+  .prose-invert-tight ul { @apply list-disc pl-6 my-3 space-y-1.5 text-foreground/80; }
+  .prose-invert-tight ol { @apply list-decimal pl-6 my-3 space-y-1.5 text-foreground/80; }
+  .prose-invert-tight code { @apply px-1.5 py-0.5 rounded font-mono bg-muted/65 border border-border/50 text-primary text-xs; }
+  .prose-invert-tight pre { @apply bg-card/60 border border-border/40 rounded-xl p-4 overflow-x-auto my-4 shadow-inner font-mono; }
+  .prose-invert-tight pre code { @apply bg-transparent p-0 border-none text-foreground text-xs; }
+  .prose-invert-tight table { @apply w-full my-5 border-collapse rounded-lg overflow-hidden border border-border/40; }
+  .prose-invert-tight th, .prose-invert-tight td { @apply border-b border-border/40 px-4 py-2.5 text-left text-sm; }
+  .prose-invert-tight th { @apply bg-muted/80 text-foreground font-semibold text-xs uppercase tracking-wider; }
+  .prose-invert-tight td { @apply bg-transparent; }
+  .prose-invert-tight strong { @apply text-foreground font-bold; }
+  .prose-invert-tight a { @apply text-primary hover:text-primary-glow font-medium underline underline-offset-4 transition-colors; }
+  .prose-invert-tight blockquote {
+    @apply border-l-[3px] border-primary/70 bg-primary/5 pl-4 pr-3 py-2.5 rounded-r-xl not-italic text-foreground/90 my-4 shadow-sm;
+  }
+  .prose-invert-tight blockquote p {
+    @apply my-1 text-foreground/90 text-[14.5px] leading-relaxed;
+  }
+  .prose-invert-tight blockquote strong {
+    @apply text-foreground font-semibold;
+  }
+  .prose-invert-tight .katex-display {
+    @apply my-5 overflow-x-auto overflow-y-hidden py-2 text-center text-foreground;
+  }
+  .prose-invert-tight .katex {
+    font-size: 1.05em;
+  }
+
+  /* Retro cassette tape mock animation styles for Podcast component */
+  .cassette-shell {
+    position: relative;
+    width: 200px;
+    height: 120px;
+    background: #1e1e24;
+    border: 4px solid #111114;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.1);
+  }
+  .cassette-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 30px;
+    background: linear-gradient(180deg, #3b3b4f, #222235);
+    border-radius: 4px;
+    border: 2px solid #111114;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cassette-window {
+    width: 80px;
+    height: 35px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid #111114;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+  }
+  .cassette-spindle {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #555 30%, #222 50%, #888 80%);
+    border-radius: 50%;
+    border: 2px solid #111;
+  }
+  .spindle-spinning {
+    animation: spin-clockwise 3s linear infinite;
+  }
+  .spindle-spinning-reverse {
+    animation: spin-clockwise 3s linear infinite reverse;
+  }
+
+  @keyframes spin-clockwise {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Extra Blending & Interactive features */
+  .interactive-heading {
+    background-size: 200% auto;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .interactive-heading:hover {
+    background-position: right center;
+    color: hsl(var(--primary-glow));
+    text-shadow: 0 0 15px hsl(var(--primary) / 0.3);
+  }
+
+  /* A plate does not levitate on hover; its rule brightens as it comes under
+     the eye. */
+  .interactive-card {
+    transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .interactive-card:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    background: hsl(var(--surface-raised));
+  }
+
+  .interactive-button-glow {
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Luminous landing page ambient glow auras */
+  .ambient-hero-aura {
+    background: radial-gradient(circle at 50% 0%, rgba(186, 230, 253, 0.55) 0%, rgba(224, 231, 255, 0.45) 35%, rgba(240, 249, 255, 0.2) 65%, transparent 85%);
+  }
+
+  .ambient-mid-aura {
+    background: radial-gradient(circle at 50% 50%, rgba(199, 210, 254, 0.35) 0%, rgba(224, 242, 254, 0.25) 45%, transparent 75%);
+  }
+
+  .ambient-bottom-aura {
+    background: radial-gradient(circle at 50% 100%, rgba(186, 230, 253, 0.6) 0%, rgba(219, 234, 254, 0.4) 40%, rgba(248, 250, 252, 0) 80%);
+  }
+
+  /* ========================================================
+     Glassmorphism Design Utilities (Luminous & Obsidian)
+     ======================================================== */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.06);
+  }
+
+  .dark .glass-card,
+  .dark.glass-card {
+    background: rgba(13, 13, 13, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.7);
+  }
+
+  .glass-dock {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+  }
+
+  .dark .glass-dock,
+  .dark.glass-dock {
+    background: rgba(10, 10, 10, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.8);
+  }
+
+  .glass-pill {
+    background: rgba(241, 245, 249, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.7);
+  }
+
+  .dark .glass-pill,
+  .dark.glass-pill {
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-highlight {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-highlight.fixed,
+  .fixed.glass-highlight {
+    position: fixed;
+  }
+  .glass-highlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    pointer-events: none;
+  }
+  .dark .glass-highlight::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  }
+}
+
