@@ -99,7 +99,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
             <span className="h-2.5 w-2.5 rounded-full bg-border" />
             <span className="h-2.5 w-2.5 rounded-full bg-border" />
           </div>
-          <span className="text-[11px] font-mono text-muted-foreground ml-2">
+          <span className="text-xs font-mono text-muted-foreground ml-2">
             interactive_sandbox.app
           </span>
         </div>
@@ -109,12 +109,12 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
             <button
               type="button"
               onClick={resetDemo}
-              className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-2 py-0.5 rounded-full hover:bg-accent transition-colors"
+              className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground px-2 py-0.5 rounded-full hover:bg-accent transition-colors"
             >
               <RotateCcw className="h-3 w-3" /> Replay
             </button>
           )}
-          <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
             Live Preview
           </span>
         </div>
@@ -137,9 +137,9 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
               </div>
 
               <div className="space-y-1.5 max-w-sm">
-                <h3 className="text-base font-semibold text-foreground tracking-tight">
+                <h2 className="text-base font-semibold text-foreground tracking-tight">
                   Drop a PDF or paste lecture link
-                </h3>
+                </h2>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Extracts verified notes, Leitner flashcards, practice quizzes, and 2-host audio recap.
                 </p>
@@ -156,7 +156,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                   <span>Try sample: quantum_intro.pdf</span>
                   <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </button>
-                <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground mt-2 px-1">
+                <div className="flex items-center justify-between text-xs font-mono text-muted-foreground mt-2 px-1">
                   <span>38 pages • Chapter 1</span>
                   <span>Audio & LaTeX</span>
                 </div>

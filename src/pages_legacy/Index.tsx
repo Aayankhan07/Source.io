@@ -112,10 +112,10 @@ export default function Index() {
                 {mounted && user ? (
                   <Link 
                     href="/app" 
-                    className="bg-primary hover:opacity-90 text-primary-foreground rounded-full px-4 py-1.5 text-xs font-medium shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
+                    className="border border-border/80 bg-background/60 hover:bg-accent text-foreground rounded-full px-4 py-1.5 text-xs font-medium shadow-2xs inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
                   >
                     Open workspace
-                    <ArrowRight className="h-3 w-3" strokeWidth={1.5} />
+                    <ArrowRight className="h-3 w-3 text-muted-foreground" strokeWidth={1.5} />
                   </Link>
                 ) : (
                   <>
@@ -127,9 +127,9 @@ export default function Index() {
                     </Link>
                     <Link 
                       href="/auth" 
-                      className="bg-primary hover:opacity-90 text-primary-foreground font-medium rounded-full px-4 py-1.5 text-xs shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
+                      className="border border-border/80 bg-background/60 hover:bg-accent text-foreground font-medium rounded-full px-4 py-1.5 text-xs shadow-2xs inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
                     >
-                      Get started free
+                      Get started
                     </Link>
                   </>
                 )}
@@ -154,7 +154,7 @@ export default function Index() {
             <div className="lg:col-span-7 space-y-6 sm:space-y-7 text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-accent border border-border text-xs font-mono text-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                <span>ONE SOURCE, FIVE RENDERINGS</span>
+                <span className="tracking-wide">One source, five views</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] xl:text-[4.125rem] font-display font-medium tracking-tight text-foreground leading-[1.06] text-balance">

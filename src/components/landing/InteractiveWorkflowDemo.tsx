@@ -201,7 +201,7 @@ export function InteractiveWorkflowDemo({
 
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         {/* Tab Switcher */}
-        <div className="flex justify-center mb-6 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex justify-center mb-3 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
           <TabsList className="bg-accent/80 border border-border p-1 rounded-full h-auto gap-1 inline-flex shrink-0">
             <TabsTrigger value="notes" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <FileText className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -410,7 +410,7 @@ export function InteractiveWorkflowDemo({
                       </motion.div>
                     </AnimatePresence>
 
-                    <p className="text-[11px] font-mono text-muted-foreground mt-3">
+                    <p className="text-xs font-mono text-muted-foreground mt-3">
                       Coordinate: {sourcePassages[highlightedPassage - 1].sourceCoordinates}
                     </p>
                   </div>
@@ -419,7 +419,7 @@ export function InteractiveWorkflowDemo({
                     <button
                       type="button"
                       onClick={() => handleCopyCitation(sourcePassages[highlightedPassage - 1].section, sourcePassages[highlightedPassage - 1].similarity)}
-                      className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded bg-accent hover:bg-card border border-border text-foreground transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-accent hover:bg-card border border-border text-foreground transition-colors cursor-pointer"
                     >
                       <Copy className="h-3 w-3" /> Copy Coordinate
                     </button>

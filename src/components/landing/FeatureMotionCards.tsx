@@ -145,13 +145,20 @@ export function FeatureMotionCards() {
                 <h3 className="text-lg font-display font-medium text-foreground">
                   Cosine similarity ranking
                 </h3>
-                <button
-                  type="button"
-                  onClick={() => setSimQueryIdx((prev) => (prev + 1) % queries.length)}
-                  className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-accent hover:bg-card border border-border transition-colors cursor-pointer"
-                >
-                  Rotate query ↻
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline-block">
+                    Interactive
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Rotate sample query to test dynamic re-ranking"
+                    title="Rotate sample query"
+                    onClick={() => setSimQueryIdx((prev) => (prev + 1) % queries.length)}
+                    className="text-xs font-mono px-2.5 py-1 rounded-full bg-accent hover:bg-card border border-border transition-colors cursor-pointer"
+                  >
+                    Rotate query ↻
+                  </button>
+                </div>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed mb-4">
                 Incoming queries compute dense vector embeddings, retrieving matched source fragments with transparent certainty scores.
@@ -172,8 +179,13 @@ export function FeatureMotionCards() {
               {/* Progress similarity bars */}
               <div className="space-y-2 pt-1">
                 <div>
-                  <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="truncate max-w-[200px] text-foreground">{queries[simQueryIdx].topPassage}</span>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span 
+                      className="truncate max-w-[240px] sm:max-w-xs text-foreground"
+                      title={queries[simQueryIdx].topPassage}
+                    >
+                      {queries[simQueryIdx].topPassage}
+                    </span>
                     <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">
                       {queries[simQueryIdx].topScore}
                     </span>
@@ -190,8 +202,13 @@ export function FeatureMotionCards() {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between text-[11px] mb-1 text-muted-foreground">
-                    <span className="truncate max-w-[200px]">§2.1 Secondary baseline...</span>
+                  <div className="flex items-center justify-between text-xs mb-1 text-muted-foreground">
+                    <span 
+                      className="truncate max-w-[240px] sm:max-w-xs"
+                      title="§2.1 Secondary baseline comparison"
+                    >
+                      §2.1 Secondary baseline...
+                    </span>
                     <span className="tabular-nums">{queries[simQueryIdx].secondScore}</span>
                   </div>
                   <div className="h-1.5 w-full bg-accent rounded-full overflow-hidden">
@@ -215,13 +232,20 @@ export function FeatureMotionCards() {
                 <h3 className="text-lg font-display font-medium text-foreground">
                   Adaptive Leitner scheduling
                 </h3>
-                <button
-                  type="button"
-                  onClick={simulateReview}
-                  className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all cursor-pointer"
-                >
-                  <RotateCcw className="h-2.5 w-2.5" /> Simulate Review
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline-block">
+                    Interactive
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Simulate spaced-repetition review step"
+                    title="Simulate spaced-repetition review step"
+                    onClick={simulateReview}
+                    className="inline-flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all cursor-pointer"
+                  >
+                    <RotateCcw className="h-3 w-3" /> Simulate Review
+                  </button>
+                </div>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed mb-4">
                 Surfaces challenging concepts right before memory decay occurs, reducing total review time while reinforcing long-term retention.
