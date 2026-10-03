@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
   }
   const userId = claimsData.claims.sub as string;
 
-  let body: { document_id?: string };
+  let body: { document_id?: string; flashcard_count?: number; quiz_difficulty?: string };
   try { body = await req.json(); } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -170,22 +170,33 @@ Deno.serve(async (req) => {
   const MAX = 35_000;
   const trimmed = source.length > MAX ? source.slice(0, MAX) : source;
 
-  const callGroq = (model = "openai/gpt-oss-20b") => fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${GROQ_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.3,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Source title: ${doc.title}\n\n--- SOURCE ---\n${trimmed}\n--- END ---\n\nReturn ONLY the JSON object described in the system prompt.` },
-      ],
-    }),
-  });
+    const customPromptInstructions = [
+      body.flashcard_count ? `Generate approximately ${body.flashcard_count} flashcards.` : null,
+      body.quiz_difficulty ? `Cognitive difficulty level: ${body.quiz_difficulty}.` : null,
+    ].filter(Boolean).join(" ");
+
+    return fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.3,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: `Source title: ${doc.title}\n\n--- SOURCE ---\n${trimmed}\n--- END ---\n${
+              customPromptInstructions ? `\n${customPromptInstructions}\n` : ""
+            }\nReturn ONLY the JSON object described in the system prompt.`,
+          },
+        ],
+      }),
+    });
+  };
 
   let aiResp = await callGroq("openai/gpt-oss-20b");
   if (aiResp.status === 429) {

@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { DEMO_DOCUMENTS } from "@/features/documents/data/mockDocuments";
 
 export default function DataStorageSettings() {
-  const { resetSettings } = useSettings();
+  const { settings, notesSettings, resetSettings } = useSettings();
   const { toast } = useToast();
 
   const handleExportLibrary = () => {
@@ -16,6 +16,10 @@ export default function DataStorageSettings() {
       const exportData = {
         exportedAt: new Date().toISOString(),
         version: "1.0",
+        userPreferences: {
+          general: settings,
+          notes: notesSettings,
+        },
         documents: Object.values(DEMO_DOCUMENTS).map((d) => ({
           id: d.document.id,
           title: d.document.title,

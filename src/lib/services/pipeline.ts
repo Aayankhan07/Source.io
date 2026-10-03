@@ -115,10 +115,17 @@ export async function streamChat({
 }
 
 /** Trigger flashcards + quiz generation. Returns counts. */
-export async function generateDerivatives(documentId: string): Promise<{
+export async function generateDerivatives(
+  documentId: string,
+  options?: { flashcardCount?: number; quizDifficulty?: string }
+): Promise<{
   flashcards_count: number; questions_count: number; quiz_id: string | null;
 }> {
-  const resp = await callFunction("generate_derivatives", { document_id: documentId });
+  const resp = await callFunction("generate_derivatives", {
+    document_id: documentId,
+    flashcard_count: options?.flashcardCount,
+    quiz_difficulty: options?.quizDifficulty,
+  });
   if (!resp.ok) throw await functionError(resp, "Generation failed");
   return await resp.json();
 }
@@ -130,16 +137,34 @@ export async function generateDerivatives(documentId: string): Promise<{
  */
 export async function streamNotes({
   documentId,
+  tone,
+  notesDepth,
+  model,
+  apiKey,
   onDelta,
   signal,
 }: {
   documentId: string;
+  tone?: string;
+  notesDepth?: string;
+  model?: string;
+  apiKey?: string;
   onDelta: (chunk: string) => void;
   signal?: AbortSignal;
 }): Promise<string> {
   let resp: Response | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
-    resp = await callFunction("generate_notes", { document_id: documentId }, { signal });
+    resp = await callFunction(
+      "generate_notes",
+      {
+        document_id: documentId,
+        tone,
+        notes_depth: notesDepth,
+        model,
+        api_key: apiKey,
+      },
+      { signal }
+    );
     if (resp.status !== 429) break;
     const waitMs = 2000 * Math.pow(2, attempt);
     await new Promise((r) => setTimeout(r, waitMs));

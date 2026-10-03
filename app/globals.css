@@ -603,3 +603,25 @@
   }
 }
 
+/* Dynamic Accent Tinting */
+[data-accent="sky"] {
+  --primary-glow: 199 89% 48%;
+  --ring: 199 89% 48%;
+}
+
+[data-accent="emerald"] {
+  --primary-glow: 158 64% 45%;
+  --ring: 158 64% 45%;
+}
+
+[data-accent="violet"] {
+  --primary-glow: 262 83% 58%;
+  --ring: 262 83% 58%;
+}
+
+[data-accent="slate"] {
+  --primary-glow: 0 0% 85%;
+  --ring: 0 0% 80%;
+}
+
+

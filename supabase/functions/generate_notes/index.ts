@@ -178,7 +178,13 @@ Deno.serve(async (req) => {
   }
   const userId = claimsData.claims.sub as string;
 
-  let body: { document_id?: string };
+  let body: {
+    document_id?: string;
+    tone?: string;
+    notes_depth?: string;
+    model?: string;
+    api_key?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -217,15 +223,28 @@ Deno.serve(async (req) => {
   const MAX_CHARS = 35_000;
   const source = doc.raw_text.length > MAX_CHARS ? doc.raw_text.slice(0, MAX_CHARS) : doc.raw_text;
 
+  let toneInstruction = "";
+  if (body.tone === "simplified" || body.notes_depth === "feynman") {
+    toneInstruction = "\n\nSTYLE INSTRUCTION: Use the Feynman technique: explain complex concepts with intuitive, relatable analogies, simple everyday words, and clear breakdown of cause-and-effect.";
+  } else if (body.tone === "exam-prep") {
+    toneInstruction = "\n\nSTYLE INSTRUCTION: Exam preparation focus: heavily emphasize high-yield exam takeaways, common test pitfalls, formulas with symbol meanings, and quick-revision bullet points.";
+  } else if (body.notes_depth === "concise") {
+    toneInstruction = "\n\nSTYLE INSTRUCTION: Concise study guide: focus strictly on core definitions, critical rules, and essential comparisons without verbose padding.";
+  } else if (body.notes_depth === "comprehensive") {
+    toneInstruction = "\n\nSTYLE INSTRUCTION: Comprehensive textbook style: provide thorough theoretical coverage, complete step-by-step mathematical/conceptual derivations, and rigorous definitions.";
+  }
+
   const userPrompt =
     `Source title: ${doc.title}\n\n--- SOURCE START ---\n${source}\n--- SOURCE END ---\n\n` +
-    `Generate the study notes now, following the required structure exactly.`;
+    `Generate the study notes now, following the required structure exactly.${toneInstruction}`;
+
+  const groqApiKey = body.api_key?.trim() || GROQ_API_KEY;
 
   async function callGroq(model = "openai/gpt-oss-120b"): Promise<Response> {
     return await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
+        Authorization: `Bearer ${groqApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

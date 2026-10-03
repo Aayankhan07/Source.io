@@ -50,6 +50,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     setIsLoaded(true);
   }, []);
 
+  // Synchronize dynamic accent tint to HTML root
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.documentElement.setAttribute("data-accent", settings.accentColor || "slate");
+  }, [settings.accentColor]);
+
   const updateSettings = useCallback((partial: Partial<GeneralSettings>) => {
     setSettings((prev) => {
       const next = { ...prev, ...partial };

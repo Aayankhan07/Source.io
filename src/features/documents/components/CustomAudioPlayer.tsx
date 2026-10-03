@@ -5,6 +5,7 @@ import { Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX, Headphones, Sparkle
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/features/settings/context/SettingsContext";
 
 interface TranscriptLine {
   speaker: string;
@@ -27,12 +28,22 @@ export default function CustomAudioPlayer({
   isPlayingSimulated,
   onPlayStateChange,
 }: CustomAudioPlayerProps) {
+  const { settings } = useSettings();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(settings?.playbackSpeed ?? 1);
   const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    if (settings?.playbackSpeed) {
+      setPlaybackRate(settings.playbackSpeed);
+      if (audioRef.current) {
+        audioRef.current.playbackRate = settings.playbackSpeed;
+      }
+    }
+  }, [settings?.playbackSpeed]);
 
   // Parse script into structured lines with estimated timestamps if audio script exists
   const parsedTranscript: TranscriptLine[] = (() => {

@@ -32,15 +32,18 @@ export default function MarkdownView({
   const renderKaTeX = propRenderKaTeX ?? notesSettings.renderKaTeX;
 
   const fontClasses = cn(
-    fontFamily === "serif" && "font-serif",
-    fontFamily === "mono" && "font-mono",
-    fontFamily === "sans" && "font-sans",
-    fontSize === "compact" && "text-sm",
-    fontSize === "regular" && "text-base",
-    fontSize === "large" && "text-lg",
-    lineHeight === "tight" && "leading-normal",
-    lineHeight === "normal" && "leading-relaxed",
-    lineHeight === "relaxed" && "leading-loose"
+    // Typeface
+    fontFamily === "serif" && "font-serif [&_p]:font-serif [&_li]:font-serif [&_td]:font-serif",
+    fontFamily === "mono" && "font-mono [&_p]:font-mono [&_li]:font-mono [&_td]:font-mono",
+    fontFamily === "sans" && "font-sans [&_p]:font-sans [&_li]:font-sans [&_td]:font-sans",
+    // Font Size
+    fontSize === "compact" && "text-sm [&_p]:text-sm [&_li]:text-sm [&_td]:text-xs",
+    fontSize === "regular" && "text-base [&_p]:text-base [&_li]:text-base [&_td]:text-sm",
+    fontSize === "large" && "text-lg [&_p]:text-lg [&_li]:text-lg [&_td]:text-base",
+    // Line Height
+    lineHeight === "tight" && "leading-snug [&_p]:leading-snug [&_li]:leading-snug",
+    lineHeight === "normal" && "leading-relaxed [&_p]:leading-relaxed [&_li]:leading-relaxed",
+    lineHeight === "relaxed" && "leading-loose [&_p]:leading-loose [&_li]:leading-loose"
   );
 
   const remarkPlugins = renderKaTeX ? [remarkGfm, remarkMath] : [remarkGfm];

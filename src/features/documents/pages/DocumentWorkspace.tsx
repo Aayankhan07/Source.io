@@ -69,7 +69,7 @@ export default function DocumentWorkspace() {
   const [focusMode, setFocusMode] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
   const [copiedNotes, setCopiedNotes] = useState(false);
-  const { notesSettings } = useSettings();
+  const { settings, notesSettings } = useSettings();
 
   // Active workspace tab state
   const [currentTab, setCurrentTab] = useState<TabId>("notes");
@@ -207,8 +207,9 @@ export default function DocumentWorkspace() {
   const readTimeMinutes = useMemo(() => {
     if (!note?.markdown) return 1;
     const wordCount = note.markdown.trim().split(/\s+/).filter(Boolean).length;
-    return Math.max(1, Math.round(wordCount / 200));
-  }, [note?.markdown]);
+    const wpm = settings?.readingTargetWpm || 200;
+    return Math.max(1, Math.round(wordCount / wpm));
+  }, [note?.markdown, settings?.readingTargetWpm]);
 
   const generate = async () => {
     if (!docId || streaming) return;
@@ -217,6 +218,10 @@ export default function DocumentWorkspace() {
     try {
       const streamed = await streamNotes({
         documentId: docId,
+        tone: notesSettings.regenerationTone,
+        notesDepth: settings.notesDepth,
+        model: settings.preferredModel,
+        apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
         onDelta: (chunk) => {
           pendingNotesRef.current += chunk;
           if (notesFlushRef.current !== null) return;
@@ -294,15 +299,6 @@ export default function DocumentWorkspace() {
     }
   };
 
-  useEffect(() => {
-    if (!docId || assetsQuery.isLoading) return;
-    if (docStatus === "ready" && !note?.markdown && autoStartedRef.current !== docId && !streaming) {
-      autoStartedRef.current = docId;
-      generate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docId, docStatus, note?.markdown, assetsQuery.isLoading]);
-
   const [derivLoading, setDerivLoading] = useState(false);
   const [podcastLoading, setPodcastLoading] = useState(false);
 
@@ -310,7 +306,10 @@ export default function DocumentWorkspace() {
     if (!docId || derivLoading) return;
     setDerivLoading(true);
     try {
-      await generateDerivatives(docId);
+      await generateDerivatives(docId, {
+        flashcardCount: settings.flashcardBatchSize,
+        quizDifficulty: settings.quizDifficulty,
+      });
       await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
       toast({ title: "Flashcards & quiz ready" });
     } catch (e: unknown) {
@@ -339,7 +338,7 @@ export default function DocumentWorkspace() {
         : prev,
     );
     try {
-      await generatePodcast(docId);
+      await generatePodcast(docId, { voiceDuo: settings.podcastVoiceDuo });
       await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
       toast({ title: "Podcast ready", description: "Your audio recap is ready to play." });
     } catch (e: unknown) {
@@ -349,6 +348,26 @@ export default function DocumentWorkspace() {
       setPodcastLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!docId || assetsQuery.isLoading) return;
+    if (docStatus === "ready" && !note?.markdown && autoStartedRef.current !== docId && !streaming) {
+      autoStartedRef.current = docId;
+      generate();
+    }
+    // Auto-generate podcast if user enabled setting and no podcast exists yet
+    if (
+      settings.autoGeneratePodcast &&
+      docStatus === "ready" &&
+      note?.markdown &&
+      !pod &&
+      !podcastLoading &&
+      !isDemo
+    ) {
+      runPodcast();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docId, docStatus, note?.markdown, assetsQuery.isLoading, settings.autoGeneratePodcast, pod, podcastLoading, isDemo]);
 
   const handleDelete = async () => {
     if (!docId) return;
@@ -640,7 +659,7 @@ export default function DocumentWorkspace() {
                         </div>
                       ) : note?.markdown ? (
                         <div className="space-y-6 animate-fade-in pb-16">
-                          <div className="bg-card p-8 sm:p-12 rounded-3xl border border-border/80 shadow-sm leading-relaxed">
+                          <div className="bg-card p-8 sm:p-12 rounded-3xl border border-border/80 shadow-sm">
                             <MarkdownView>{note.markdown}</MarkdownView>
                           </div>
                           {streaming && (

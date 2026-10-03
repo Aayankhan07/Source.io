@@ -118,7 +118,7 @@ export async function handler(req: Request): Promise<Response> {
   if (claimsErr || !claimsData?.claims) return json({ error: "Unauthorized" }, 401);
   const userId = claimsData.claims.sub as string;
 
-  let body: { document_id?: string };
+  let body: { document_id?: string; voice_duo?: string };
   try {
     body = await req.json();
   } catch {
@@ -127,6 +127,17 @@ export async function handler(req: Request): Promise<Response> {
 
   const documentId = body.document_id?.trim();
   if (!documentId) return json({ error: "document_id required" }, 400);
+
+  // Configure synthetic voice duo profiles
+  let host1Voice = HOST_1_VOICE;
+  let host2Voice = HOST_2_VOICE;
+  if (body.voice_duo === "rachel-alex") {
+    host1Voice = "en-US-JennyNeural";
+    host2Voice = "en-US-GuyNeural";
+  } else if (body.voice_duo === "emma-daniel") {
+    host1Voice = "en-GB-SoniaNeural";
+    host2Voice = "en-GB-RyanNeural";
+  }
 
   const { data: doc } = await admin
     .from("documents")
@@ -232,7 +243,7 @@ export async function handler(req: Request): Promise<Response> {
     const segments = parseScript(script);
     const audioChunks: Uint8Array[] = [];
     for (const segment of segments) {
-      const voice = segment.speaker === "host_1" ? HOST_1_VOICE : HOST_2_VOICE;
+      const voice = segment.speaker === "host_1" ? host1Voice : host2Voice;
       audioChunks.push(await synthesizeSegment(segment.text, voice));
     }
 
