@@ -529,20 +529,6 @@ export default function DocumentWorkspace() {
                 {focusMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
               </Button>
 
-              {/* Ask Panel Toggle */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setAskPanelOpen(!askPanelOpen)}
-                className={cn(
-                  "h-7 px-2.5 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground gap-1.5 border border-border/70 hidden lg:inline-flex",
-                  askPanelOpen && "bg-muted/80 text-foreground border-primary/30"
-                )}
-                title="Toggle Ask Panel"
-              >
-                {askPanelOpen ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
-                <span>Ask</span>
-              </Button>
             </>
           )}
 
@@ -694,11 +680,26 @@ export default function DocumentWorkspace() {
                         noteMarkdown={note?.markdown}
                         headings={headings}
                         onScrollToHeading={(id) => setActiveHeadingId(id)}
+                        onClose={() => setAskPanelOpen(false)}
                       />
                     </ResizablePanel>
                   </>
                 )}
               </ResizablePanelGroup>
+
+              {/* Floating Ask Button when panel is collapsed */}
+              {!askPanelOpen && !focusMode && (
+                <div className="absolute right-4 bottom-6 z-30 animate-fade-in">
+                  <Button
+                    onClick={() => setAskPanelOpen(true)}
+                    className="h-9 px-3.5 rounded-full shadow-lg bg-card/95 backdrop-blur-md border border-border/80 text-foreground hover:bg-muted text-xs font-semibold flex items-center gap-2 transition-all hover:scale-105 hover:border-primary/40 cursor-pointer"
+                    title="Open Ask this lecture"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <span>Ask</span>
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Mobile Viewport (< 1024px) */}

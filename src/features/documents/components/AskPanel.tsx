@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Sparkles, Loader2, ArrowUpRight, Copy, Check } from "lucide-react";
+import { Send, Sparkles, Loader2, ArrowUpRight, Copy, Check, PanelRightClose } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,6 +15,7 @@ interface AskPanelProps {
   noteMarkdown?: string | null;
   headings?: { id: string; text: string; level: number }[];
   onScrollToHeading?: (id: string) => void;
+  onClose?: () => void;
 }
 
 interface ChatMessage {
@@ -33,7 +34,7 @@ const SUGGESTED_QUESTIONS = [
   "Real-world example",
 ];
 
-export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHeading }: AskPanelProps) {
+export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHeading, onClose }: AskPanelProps) {
   const { toast } = useToast();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -133,15 +134,30 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
             Ask this lecture
           </span>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-full"
-          onClick={() => setSuggestedExpanded(!suggestedExpanded)}
-          aria-label={suggestedExpanded ? "Collapse suggestions" : "Expand suggestions"}
-        >
-          <Sparkles className={cn("h-3.5 w-3.5 transition-transform", suggestedExpanded && "rotate-180")} />
-        </Button>
+        <div className="flex items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-full"
+            onClick={() => setSuggestedExpanded(!suggestedExpanded)}
+            title={suggestedExpanded ? "Collapse suggestions" : "Expand suggestions"}
+            aria-label={suggestedExpanded ? "Collapse suggestions" : "Expand suggestions"}
+          >
+            <Sparkles className={cn("h-3.5 w-3.5 transition-transform", suggestedExpanded && "rotate-180")} />
+          </Button>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-full"
+              onClick={onClose}
+              title="Collapse Ask panel"
+              aria-label="Collapse Ask panel"
+            >
+              <PanelRightClose className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Suggested Questions */}
