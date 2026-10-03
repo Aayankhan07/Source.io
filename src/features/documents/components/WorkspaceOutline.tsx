@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useState } from "react";
 import { Hash, Clock, FileText, ChevronRight, Bookmark, ChevronDown, List, Minus, Circle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";

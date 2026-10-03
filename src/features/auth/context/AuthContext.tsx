@@ -38,16 +38,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(() => {
-    try {
-      if (typeof window !== "undefined" && localStorage.getItem("source_io_guest_session") === "true") {
-        return GUEST_USER;
-      }
-    } catch {
-      // ignore
-    }
-    return null;
-  });
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,6 +54,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    try {
+      if (localStorage.getItem("source_io_guest_session") === "true") {
+        setUser(GUEST_USER);
+        setLoading(false);
+      }
+    } catch {
+      // ignore
+    }
+
     // Set up listener FIRST
     const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
       if (sess?.user) {

@@ -36,7 +36,7 @@ import { CredibilityAndComparison } from "@/components/landing/CredibilityAndCom
 
 export default function Index() {
   const { user } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
 
@@ -100,13 +100,13 @@ export default function Index() {
                       type="button"
                       onClick={toggleTheme}
                       className="h-9 w-9 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
-                      aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                      aria-label={!mounted || theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
                     >
-                      {theme === "dark" ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
+                      {!mounted || theme === "dark" ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    <p className="text-xs">{theme === "dark" ? "Luminous Light" : "Obsidian Studio"}</p>
+                    <p className="text-xs">{!mounted || theme === "dark" ? "Luminous Light" : "Obsidian Studio"}</p>
                   </TooltipContent>
                 </Tooltip>
 
@@ -120,7 +120,7 @@ export default function Index() {
                   {mobileMenuOpen ? <X className="h-4 w-4" strokeWidth={1.5} /> : <Menu className="h-4 w-4" strokeWidth={1.5} />}
                 </button>
 
-                {user ? (
+                {mounted && user ? (
                   <Link 
                     href="/app" 
                     className="bg-primary hover:opacity-90 text-primary-foreground rounded-full px-4 py-1.5 text-xs font-medium shadow-sm inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
@@ -186,10 +186,10 @@ export default function Index() {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
                 <Link
-                  href={user ? "/app" : "/auth"}
+                  href={mounted && user ? "/app" : "/auth"}
                   className="bg-primary hover:opacity-90 text-primary-foreground font-medium text-xs sm:text-sm px-7 py-3 rounded-full shadow-sm active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2"
                 >
-                  {user ? "Open workspace" : "Get started free"}
+                  {mounted && user ? "Open workspace" : "Get started free"}
                   <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
                 </Link>
                 <a
@@ -434,12 +434,12 @@ export default function Index() {
             </CommandGroup>
             <CommandGroup heading="Quick Navigation">
               <CommandItem onSelect={() => { toggleTheme(); setCmdOpen(false); }}>
-                {theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+                {!mounted || theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
                 <span>Toggle Light / Dark Theme</span>
               </CommandItem>
               <CommandItem onSelect={() => { window.location.href = user ? "/app" : "/auth"; setCmdOpen(false); }}>
                 <ExternalLink className="mr-2 h-4 w-4" />
-                <span>{user ? "Go to Document Library" : "Create Free Account"}</span>
+                <span>{mounted && user ? "Go to Document Library" : "Create Free Account"}</span>
               </CommandItem>
             </CommandGroup>
           </CommandList>

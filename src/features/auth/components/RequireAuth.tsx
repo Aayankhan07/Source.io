@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, ArrowRight } from "lucide-react";
@@ -11,7 +11,6 @@ import { useEffect } from "react";
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading, error, signInAsGuest } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
   const { theme } = useTheme();
 
   useEffect(() => {
