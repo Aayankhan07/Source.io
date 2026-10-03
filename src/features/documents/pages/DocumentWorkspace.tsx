@@ -105,15 +105,38 @@ export default function DocumentWorkspace() {
       }
 
       const [n, f, q, p] = await Promise.all([
-        supabase.from("notes").select("id,document_id,markdown").eq("document_id", docId!).maybeSingle(),
-        supabase.from("flashcards").select("id,document_id,front,back,order_index").eq("document_id", docId!).order("order_index"),
-        supabase.from("quizzes").select("id,document_id,title").eq("document_id", docId!).maybeSingle(),
-        supabase.from("podcasts").select("id,document_id,title,script,audio_url,status").eq("document_id", docId!).maybeSingle(),
+        supabase
+          .from("notes")
+          .select("id,document_id,markdown")
+          .eq("document_id", docId!)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("flashcards")
+          .select("id,document_id,front,back,order_index")
+          .eq("document_id", docId!)
+          .order("order_index"),
+        supabase
+          .from("quizzes")
+          .select("id,document_id,title")
+          .eq("document_id", docId!)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("podcasts")
+          .select("id,document_id,title,script,audio_url,status")
+          .eq("document_id", docId!)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ]);
 
-      for (const r of [n, f, q, p]) {
-        if (r.error) throw r.error;
-      }
+      if (n.error) console.error("Error loading note:", n.error);
+      if (f.error) console.error("Error loading flashcards:", f.error);
+      if (q.error) console.error("Error loading quiz:", q.error);
+      if (p.error) console.error("Error loading podcast:", p.error);
 
       let quiz: QuizRow | null = null;
       if (q.data) {
@@ -122,7 +145,7 @@ export default function DocumentWorkspace() {
           .select("id,quiz_id,question,type,choices,correct,explanation,order_index")
           .eq("quiz_id", q.data.id)
           .order("order_index");
-        if (qErr) throw qErr;
+        if (qErr) console.error("Error loading quiz questions:", qErr);
         quiz = { ...(q.data as Omit<QuizRow, "questions">), questions: (questions ?? []) as QuizQuestionRow[] };
       }
 
@@ -189,7 +212,7 @@ export default function DocumentWorkspace() {
     setStreaming(true);
     setDraftMarkdown("");
     try {
-      await streamNotes({
+      const streamed = await streamNotes({
         documentId: docId,
         onDelta: (chunk) => {
           pendingNotesRef.current += chunk;
@@ -208,9 +231,58 @@ export default function DocumentWorkspace() {
         cancelAnimationFrame(notesFlushRef.current);
         notesFlushRef.current = null;
       }
+      const finalMarkdown = (streamed || pendingNotesRef.current || draftMarkdown || "").trim();
       pendingNotesRef.current = "";
-      await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
-      setDraftMarkdown(null);
+
+      if (finalMarkdown) {
+        // 1. Immediately ensure cache has the final note to prevent ANY flicker or blank screen
+        const completedNote: NoteRow = {
+          id: persistedNote?.id ?? crypto.randomUUID(),
+          document_id: docId,
+          markdown: finalMarkdown,
+        };
+
+        queryClient.setQueryData<DocumentAssets>(queryKeys.assets(docId), (prev) => ({
+          note: completedNote,
+          cards: prev?.cards ?? [],
+          quiz: prev?.quiz ?? null,
+          podcast: prev?.podcast ?? null,
+        }));
+
+        // 2. Persist to Supabase notes table directly as guaranteed backup
+        if (user?.id && !isDemo) {
+          try {
+            const { data: existing } = await supabase
+              .from("notes")
+              .select("id")
+              .eq("document_id", docId)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+
+            if (existing) {
+              await supabase
+                .from("notes")
+                .update({ markdown: finalMarkdown })
+                .eq("id", existing.id);
+            } else {
+              await supabase
+                .from("notes")
+                .insert({ document_id: docId, user_id: user.id, markdown: finalMarkdown });
+            }
+          } catch (persistErr) {
+            console.error("Client-side note persistence fallback error:", persistErr);
+          }
+        }
+
+        // 3. Clear draft now that persisted note is safely in React Query cache
+        setDraftMarkdown(null);
+
+        // 4. Invalidate to sync server IDs in background
+        await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
+      } else {
+        setDraftMarkdown(null);
+      }
     } catch (e: unknown) {
       setDraftMarkdown(null);
       toast({ title: "Notes generation failed", description: errorMessage(e), variant: "destructive" });
@@ -220,13 +292,13 @@ export default function DocumentWorkspace() {
   };
 
   useEffect(() => {
-    if (!docId) return;
+    if (!docId || assetsQuery.isLoading) return;
     if (docStatus === "ready" && !note?.markdown && autoStartedRef.current !== docId && !streaming) {
       autoStartedRef.current = docId;
       generate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docId, docStatus, note?.markdown]);
+  }, [docId, docStatus, note?.markdown, assetsQuery.isLoading]);
 
   const [derivLoading, setDerivLoading] = useState(false);
   const [podcastLoading, setPodcastLoading] = useState(false);

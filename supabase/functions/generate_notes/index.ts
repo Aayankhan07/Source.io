@@ -329,7 +329,6 @@ Deno.serve(async (req) => {
       } catch (e) {
         console.error("stream error", e);
       } finally {
-        safeClose();
         try {
           if (fullMarkdown.trim().length > 0) {
             const { data: existing } = await admin
@@ -350,6 +349,8 @@ Deno.serve(async (req) => {
           }
         } catch (e) {
           console.error("note persist error", e);
+        } finally {
+          safeClose();
         }
       }
     },
