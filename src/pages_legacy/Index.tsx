@@ -9,7 +9,7 @@ import {
   FileText, Headphones, MessagesSquare, ListChecks, Layers,
   ArrowRight, Sparkles, FileCode, Video, Mic, Globe, Cpu,
   ChevronRight, BookmarkCheck, Database, Menu, X, Sun, Moon,
-  Search, ExternalLink, BookOpen
+  ExternalLink, BookOpen
 } from "lucide-react";
 
 import {
@@ -79,17 +79,6 @@ export default function Index() {
                 <a href="#simulator" className="hover:text-foreground transition-colors">Workspace</a>
                 <a href="#grounding" className="hover:text-foreground transition-colors">Grounding</a>
                 <a href="#pipeline" className="hover:text-foreground transition-colors">Pipeline</a>
-                
-                {/* CMDK Search Trigger Button */}
-                <button
-                  type="button"
-                  onClick={() => setCmdOpen(true)}
-                  className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-accent/60 border border-border text-[11px] text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <Search className="h-3 w-3" strokeWidth={1.5} />
-                  <span>Search source...</span>
-                  <kbd className="font-mono text-[9px] px-1 py-0.5 rounded bg-card border border-border">⌘K</kbd>
-                </button>
               </nav>
 
               <div className="flex items-center gap-2 sm:gap-2.5">
@@ -153,13 +142,6 @@ export default function Index() {
                 <a href="#simulator" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground py-1 transition-colors">Workspace</a>
                 <a href="#grounding" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground py-1 transition-colors">Grounding</a>
                 <a href="#pipeline" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground py-1 transition-colors">Pipeline</a>
-                <button
-                  type="button"
-                  onClick={() => { setMobileMenuOpen(false); setCmdOpen(true); }}
-                  className="flex items-center gap-2 py-1 hover:text-foreground text-left"
-                >
-                  <Search className="h-3.5 w-3.5" /> Quick search (⌘K)
-                </button>
               </nav>
             )}
           </div>
