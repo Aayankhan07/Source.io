@@ -208,6 +208,128 @@ Here, $\\lambda$ is the **eigenvalue** and $v$ is the non-zero **eigenvector**.
       { n: 1, sim: 0.91, text: "Eigenvectors satisfy Av = λv and define the invariant axes of linear maps." },
     ],
   },
+  "demo-networking": {
+    document: {
+      id: "demo-networking",
+      title: "Multiple Access Control Protocols",
+      source_type: "pdf",
+      status: "ready",
+      error_code: null,
+      created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+    },
+    note: {
+      id: "note-networking",
+      document_id: "demo-networking",
+      markdown: `# Multiple Access Control
+
+## 🎯 What You'll Learn
+Overview of data link layer protocols for shared channel access, collision detection, and avoidance mechanisms.
+
+## ⭐ Key Concepts at a Glance
+* Contention-based vs controlled access vs channelization.
+* Throughput limits of ALOHA and slotted variants.
+* Carrier Sense Multiple Access (CSMA) and exponential backoff.
+
+## 📖 Full Notes
+
+### 1. Random Access
+In random access methods, no station is superior to another station and none is assigned control over another.
+
+### 2. Pure ALOHA
+The original ALOHA protocol is called pure ALOHA. Each station sends a frame whenever it has data to send.
+
+### 3. Throughput of Pure ALOHA
+The throughput of pure ALOHA is maximized when the frame generation rate $G = 1/2$, yielding an optimal channel throughput of $S = G e^{-2G} \\approx 18.4\\%$.
+
+### 4. Slotted ALOHA
+Slotted ALOHA was invented to improve efficiency by forcing stations to send only at the beginning of discrete time slots of $T_{fr}$ seconds. Peak throughput is $S = G e^{-G} \\approx 36.8\\%$.
+
+### 5. CSMA (Carrier Sense Multiple Access)
+To minimize collisions and improve performance, CSMA requires that each station first sense the medium before attempting transmission. "Listen before talk".
+
+### 6. Vulnerable Time in CSMA
+The vulnerable time for CSMA is the propagation time $T_p$, the time needed for a signal to propagate from one end of the medium to the other.
+
+### 7. Persistence Methods
+Three persistence strategies dictate what a station does when the channel is busy vs idle: 1-Persistent, Non-Persistent, and p-Persistent.
+
+### 8. CSMA/CD (Collision Detection)
+In this method, a station monitors the medium after sending a frame to detect collisions immediately and abort transmission.
+
+### 9. Energy Levels During Transmission
+Energy in the channel has three distinct states: zero (idle), normal (one station transmitting), or abnormal (collision detected by elevated voltage/energy).
+
+### 10. CSMA/CA (Collision Avoidance)
+Used primarily in wireless LANs (IEEE 802.11) where collision detection is difficult due to high signal attenuation and hidden terminal phenomena.
+
+### 11. Controlled Access (Authorization)
+In controlled access, stations consult one another to determine which station has the authorization to transmit data.
+
+### 12. Reservation Method
+Stations reserve transmission slots in advance. Time is divided into intervals where reservation frames precede data payload frames.
+
+### 13. Polling Method
+Polling works with primary-secondary topologies where one device is designated primary and arbitrates all exchanges.
+
+### 14. Token Passing
+In token-passing, stations are organized in a logical ring where a special token frame circulates sequentially.
+
+### 15. Channelization (Multiplexing)
+Channelization shares available link bandwidth across time, frequency, or orthogonal code domains.
+
+### 16. Frequency-Division Multiple Access (FDMA)
+Available bandwidth is divided into discrete frequency bands allocated per station.
+
+### 17. Time-Division Multiple Access (TDMA)
+Stations share channel bandwidth in time, with each station allocated a recurring time slot.
+
+### 18. Code-Division Multiple Access (CDMA)
+One channel carries all transmissions simultaneously, differentiated by orthogonal spreading codes.
+
+### 19. Properties of CDMA Chips
+Each station is assigned an orthogonal chip sequence where the inner product of distinct codes equals 0.
+
+### 20. Walsh Table for Sequences
+Orthogonal chip sequences are generated recursively via Walsh tables (Hadamard matrices).`,
+    },
+    cards: [
+      {
+        id: "card-n1",
+        document_id: "demo-networking",
+        front: "What is the peak theoretical throughput of Pure ALOHA?",
+        back: "18.4% (achieved at G = 0.5)",
+        order_index: 0,
+      },
+      {
+        id: "card-n2",
+        document_id: "demo-networking",
+        front: "What is the peak theoretical throughput of Slotted ALOHA?",
+        back: "36.8% (achieved at G = 1.0)",
+        order_index: 1,
+      },
+    ],
+    quiz: {
+      id: "quiz-networking",
+      document_id: "demo-networking",
+      title: "Multiple Access Protocols Quiz",
+      questions: [
+        {
+          id: "qn-1",
+          quiz_id: "quiz-networking",
+          question: "Which multiple access protocol uses the principle of 'listen before talk'?",
+          type: "mcq",
+          choices: ["Pure ALOHA", "CSMA", "Token Ring", "FDMA"],
+          correct: "CSMA",
+          explanation: "CSMA requires stations to sense the transmission medium prior to transmitting.",
+          order_index: 0,
+        },
+      ],
+    },
+    podcast: null,
+    citations: [
+      { n: 1, sim: 0.95, text: "CSMA requires that each station first sense the medium before attempting transmission." },
+    ],
+  },
 };
 
 export const DEMO_DOCUMENT_LIST: DocumentRow[] = Object.values(DEMO_DOCUMENTS).map(d => d.document);
