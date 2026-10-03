@@ -62,13 +62,14 @@ export default function DocumentWorkspace() {
 
   // Layout state
   const [outlineOpen, setOutlineOpen] = useState(true);
+  const [outlineRetracted, setOutlineRetracted] = useState(false);
   const [askPanelOpen, setAskPanelOpen] = useState(true);
   const [focusMode, setFocusMode] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
   const [copiedNotes, setCopiedNotes] = useState(false);
 
-  // Mobile tab state
-  const [mobileTab, setMobileTab] = useState<TabId>("notes");
+  // Active workspace tab state
+  const [currentTab, setCurrentTab] = useState<TabId>("notes");
 
   const isDemo = Boolean(docId && DEMO_DOCUMENTS[docId]);
 
@@ -176,6 +177,12 @@ export default function DocumentWorkspace() {
   const docStatus = doc?.status;
 
   const headings = useMemo(() => extractHeadings(note?.markdown), [note?.markdown]);
+
+  const readTimeMinutes = useMemo(() => {
+    if (!note?.markdown) return 1;
+    const wordCount = note.markdown.trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(wordCount / 200));
+  }, [note?.markdown]);
 
   const generate = async () => {
     if (!docId || streaming) return;
@@ -337,28 +344,43 @@ export default function DocumentWorkspace() {
 
   const isProcessing = doc.status === "pending" || doc.status === "processing";
 
-  const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
-    { id: "notes", label: "Notes", icon: <FileText className="h-3.5 w-3.5" /> },
-    { id: "podcast", label: "Podcast", icon: <Headphones className="h-3.5 w-3.5" /> },
-    { id: "cards", label: "Cards", icon: <Layers className="h-3.5 w-3.5" /> },
-    { id: "quiz", label: "Quiz", icon: <Check className="h-3.5 w-3.5" /> },
+  const tabs: { id: TabId; label: string; count?: number }[] = [
+    { id: "notes", label: "Notes" },
+    { id: "cards", label: "Cards", count: cards.length },
+    { id: "quiz", label: "Quiz" },
+    { id: "podcast", label: "Podcast" },
   ];
 
   return (
     <div className="h-full flex flex-col bg-background overflow-hidden">
-      {/* 1. Top Header */}
-      <header className="border-b border-border/80 bg-background/95 backdrop-blur-md px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3 shrink-0 z-20">
-        {/* Left: Mobile Trigger & Breadcrumb */}
-        <div className="flex items-center gap-3 min-w-0">
+      {/* 1. Header (Wireframe clean style, no search) */}
+      <header className="border-b border-border/80 bg-background/95 backdrop-blur-md px-3 sm:px-6 py-2 flex items-center justify-between gap-3 shrink-0 z-20">
+        {/* Left: Sidebar Toggle, Library Back & Document Info */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {currentTab === "notes" && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setOutlineRetracted(!outlineRetracted)}
+              className={cn(
+                "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex shrink-0",
+                !outlineRetracted && "bg-muted/60 text-foreground"
+              )}
+              title={outlineRetracted ? "Expand outline" : "Retract outline"}
+            >
+              {outlineRetracted ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </Button>
+          )}
+
           {openMobileNav && (
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden -ml-2 text-muted-foreground hover:text-foreground"
+              className="md:hidden -ml-1 text-muted-foreground hover:text-foreground shrink-0"
               onClick={openMobileNav}
               aria-label="Open navigation"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4" />
             </Button>
           )}
 
@@ -367,74 +389,90 @@ export default function DocumentWorkspace() {
               variant="ghost"
               size="sm"
               onClick={() => router.push("/app")}
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex"
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex shrink-0"
             >
               <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Library
             </Button>
             <span className="text-muted-foreground/40 hidden sm:inline">/</span>
-            <Badge variant="outline" className="text-[10px] uppercase font-mono tracking-wider border-border/80 text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-full shrink-0">
-              {doc.source_type}
-            </Badge>
-            <h1 className="text-xs sm:text-sm font-semibold text-foreground tracking-tight truncate max-w-xs sm:max-w-md md:max-w-lg font-display">
+            <h1 className="text-xs sm:text-sm font-semibold text-foreground tracking-tight truncate max-w-xs sm:max-w-sm md:max-w-md font-display">
               {doc.title}
             </h1>
+            <Badge variant="outline" className="text-[10px] uppercase font-mono tracking-wider border-border/80 text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full shrink-0">
+              {doc.source_type}
+            </Badge>
+            <span className="text-xs text-muted-foreground hidden md:inline shrink-0 font-mono">
+              {readTimeMinutes} min read
+            </span>
           </div>
         </div>
 
-        {/* Right: Studio Controls */}
+        {/* Right: Actions */}
         <div className="flex items-center gap-1.5 shrink-0">
-          {/* Outline Panel Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setOutlineOpen(!outlineOpen)}
-            className={cn(
-              "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex",
-              outlineOpen && "bg-muted/60 text-foreground"
-            )}
-            title={outlineOpen ? "Collapse Outline" : "Expand Outline"}
-          >
-            {outlineOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
-          </Button>
+          {currentTab === "notes" && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyNotes}
+                className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex border-border/80"
+              >
+                {copiedNotes ? <Check className="h-3 w-3 mr-1 text-emerald-500" /> : <Copy className="h-3 w-3 mr-1" />}
+                <span>{copiedNotes ? "Copied" : "Copy"}</span>
+              </Button>
 
-          {/* Focus Mode */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              if (!focusMode) {
-                setOutlineOpen(false);
-                setAskPanelOpen(false);
-                setFocusMode(true);
-              } else {
-                setOutlineOpen(true);
-                setAskPanelOpen(true);
-                setFocusMode(false);
-              }
-            }}
-            className={cn(
-              "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex",
-              focusMode && "bg-primary/10 text-primary"
-            )}
-            title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
-          >
-            {focusMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </Button>
+              {note?.markdown && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={generate}
+                  disabled={streaming}
+                  className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex border-border/80"
+                >
+                  <RefreshCw className={cn("h-3 w-3 mr-1", streaming && "animate-spin text-primary")} />
+                  <span>Regenerate</span>
+                </Button>
+              )}
 
-          {/* Ask Panel Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setAskPanelOpen(!askPanelOpen)}
-            className={cn(
-              "h-8 px-2.5 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground gap-1.5 border border-border/70 hidden lg:inline-flex",
-              askPanelOpen && "bg-muted/80 text-foreground border-primary/30"
-            )}
-            title="Toggle Ask Panel"
-          >
-            {askPanelOpen ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
-            <span>Ask</span>
-          </Button>
+              {/* Focus Mode */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (!focusMode) {
+                    setOutlineOpen(false);
+                    setAskPanelOpen(false);
+                    setFocusMode(true);
+                  } else {
+                    setOutlineOpen(true);
+                    setAskPanelOpen(true);
+                    setFocusMode(false);
+                  }
+                }}
+                className={cn(
+                  "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex",
+                  focusMode && "bg-primary/10 text-primary"
+                )}
+                title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
+              >
+                {focusMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </Button>
+
+              {/* Ask Panel Toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setAskPanelOpen(!askPanelOpen)}
+                className={cn(
+                  "h-7 px-2.5 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground gap-1.5 border border-border/70 hidden lg:inline-flex",
+                  askPanelOpen && "bg-muted/80 text-foreground border-primary/30"
+                )}
+                title="Toggle Ask Panel"
+              >
+                {askPanelOpen ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
+                <span>Ask</span>
+              </Button>
+            </>
+          )}
 
           {/* Delete Document */}
           <Button
@@ -442,222 +480,216 @@ export default function DocumentWorkspace() {
             size="icon"
             onClick={() => setDeleteOpen(true)}
             title="Delete document"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full shrink-0"
+            className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full shrink-0"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </div>
       </header>
 
-      {/* 2. Mobile Tab Bar */}
-      <div className="lg:hidden border-b border-border/80 bg-muted/40 px-4 py-2 flex items-center gap-1 overflow-x-auto shrink-0 z-10">
+      {/* 2. Workspace Horizontal Tab Bar (Wireframe Style) */}
+      <div className="border-b border-border/80 bg-background/95 backdrop-blur-md px-3 sm:px-6 flex items-center gap-1 sm:gap-2 overflow-x-auto shrink-0 z-10">
         {tabs.map((t) => {
-          const Icon = t.icon;
-          const isActive = mobileTab === t.id;
+          const isActive = currentTab === t.id;
           return (
             <button
               key={t.id}
-              onClick={() => setMobileTab(t.id)}
+              onClick={() => setCurrentTab(t.id)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors shrink-0",
+                "px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors shrink-0 relative flex items-center gap-1.5 cursor-pointer",
                 isActive
-                  ? "bg-card text-foreground shadow-2xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-foreground font-semibold border-b-2 border-foreground"
+                  : "text-muted-foreground hover:text-foreground border-b-2 border-transparent"
               )}
             >
-              {Icon}
               <span>{t.label}</span>
+              {t.count !== undefined && t.count > 0 && (
+                <span
+                  className={cn(
+                    "text-[10px] px-1.5 py-0.2 rounded-full font-mono",
+                    isActive ? "bg-primary/10 text-primary font-bold" : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {t.count}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* 3. Main Content */}
+      {/* 3. Main Workspace Content */}
       <div className="flex-1 overflow-hidden relative">
-        {/* Desktop View (>= 1024px) */}
-        <div className="hidden lg:block h-full w-full">
-          <ResizablePanelGroup direction="horizontal" className="h-full w-full">
-            {/* Left Rail: Document Outline (only in Notes tab) - Slim 48px rail */}
-            {outlineOpen && !focusMode && mobileTab === "notes" && (
-              <>
-                <ResizablePanel defaultSize={12} minSize={12} maxSize={12}>
-                  <WorkspaceOutline
-                    markdown={note?.markdown}
-                    activeHeadingId={activeHeadingId}
-                    onSelectHeading={(id) => setActiveHeadingId(id)}
-                    slimRail
-                  />
-                </ResizablePanel>
-                <ResizableHandle withHandle />
-              </>
-            )}
-
-            {/* Center Stage: Notes Content */}
-            {/* Left rail is fixed at 12 (48px), so adjust center defaults: 100 - 12 = 88 for center+right */}
-            <ResizablePanel defaultSize={outlineOpen && askPanelOpen ? 56 : outlineOpen || askPanelOpen ? 76 : 88}>
-              <main className="h-full overflow-y-auto relative bg-background/50">
-                {/* Notes Toolbar */}
-                <div className="sticky top-0 z-10 backdrop-blur-md bg-background/80 border-b border-border/60 px-6 py-2 flex items-center justify-between gap-4 text-xs">
-                  <div className="flex items-center gap-2 text-muted-foreground font-mono text-[11px]">
-                    <span className="font-semibold text-foreground">Teaching Notes</span>
-                    {note?.markdown && <span>· {headings.length} sections</span>}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {/* Inline Outline Chips */}
-                    {note?.markdown && (
+        {currentTab === "notes" && (
+          <>
+            {/* Desktop View (>= 1024px) */}
+            <div className="hidden lg:block h-full w-full">
+              <ResizablePanelGroup direction="horizontal" className="h-full w-full">
+                {/* Left Rail: Retractable Document Outline */}
+                {outlineOpen && !focusMode && (
+                  <>
+                    <ResizablePanel
+                      defaultSize={outlineRetracted ? 4 : 18}
+                      minSize={outlineRetracted ? 4 : 14}
+                      maxSize={outlineRetracted ? 5 : 28}
+                    >
                       <WorkspaceOutline
                         markdown={note?.markdown}
                         activeHeadingId={activeHeadingId}
                         onSelectHeading={(id) => setActiveHeadingId(id)}
-                        inlineChips
-                        maxChips={6}
+                        isRetracted={outlineRetracted}
+                        onToggleRetract={() => setOutlineRetracted(!outlineRetracted)}
                       />
-                    )}
+                    </ResizablePanel>
+                    <ResizableHandle withHandle />
+                  </>
+                )}
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleCopyNotes}
-                      className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-full"
-                    >
-                      {copiedNotes ? <Check className="h-3 w-3 mr-1 text-emerald-500" /> : <Copy className="h-3 w-3 mr-1" />}
-                      <span>{copiedNotes ? "Copied" : "Copy"}</span>
-                    </Button>
-
-                    {note?.markdown && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={generate}
-                        disabled={streaming}
-                        className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-full"
-                      >
-                        <RefreshCw className={cn("h-3 w-3 mr-1", streaming && "animate-spin text-primary")} />
-                        <span>Regenerate</span>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Notes Content Body */}
-                <div className="p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
-                  {assetsQuery.isLoading ? (
-                    <div className="flex items-center justify-center py-24">
-                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                    </div>
-                  ) : note?.markdown ? (
-                    <div className="space-y-6 animate-fade-in pb-16">
-                      <div className="bg-card p-8 sm:p-12 rounded-3xl border border-border/80 shadow-sm leading-relaxed">
-                        <MarkdownView>{note.markdown}</MarkdownView>
-                      </div>
-                      {streaming && (
-                        <div className="flex items-center gap-2 text-xs text-primary font-mono bg-primary/10 p-3 rounded-full border border-primary/20 max-w-max">
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" /> Stream compiling notes…
+                {/* Center Stage: Notes Reading Content */}
+                <ResizablePanel defaultSize={outlineRetracted ? (askPanelOpen ? 72 : 96) : (askPanelOpen ? 58 : 82)}>
+                  <main className="h-full overflow-y-auto relative bg-background/50">
+                    <div className="p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
+                      {/* "On this page: ..." Summary Banner (Wireframe Badge 4) */}
+                      {headings.length > 0 && (
+                        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted/40 border border-border/70 text-xs text-muted-foreground animate-fade-in">
+                          <span className="font-semibold text-foreground shrink-0 font-display">On this page:</span>
+                          <div className="flex items-center gap-1.5 overflow-x-auto truncate scrollbar-none">
+                            {headings.slice(0, 6).map((h, idx) => (
+                              <button
+                                key={h.id}
+                                onClick={() => setActiveHeadingId(h.id)}
+                                className="hover:text-foreground hover:underline transition-colors shrink-0 text-left cursor-pointer"
+                              >
+                                {h.text}{idx < Math.min(headings.length, 6) - 1 ? " · " : ""}
+                              </button>
+                            ))}
+                            {headings.length > 6 && (
+                              <span className="shrink-0 text-muted-foreground/60">+{headings.length - 6} more</span>
+                            )}
+                          </div>
                         </div>
                       )}
-                    </div>
-                  ) : doc.status === "ready" ? (
-                    <div className="border border-border rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-card shadow-sm animate-fade-in">
-                      <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
-                        <Sparkles className="h-5 w-5" />
-                      </div>
-                      <div className="space-y-1">
-                        <h3 className="font-semibold text-foreground font-display text-sm">Generate study notes</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          We've indexed your material. Generate structured teaching notes to begin.
-                        </p>
-                      </div>
-                      <Button onClick={generate} disabled={streaming} className="rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90">
-                        {streaming ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-                        Generate Notes
-                      </Button>
-                    </div>
-                  ) : isProcessing ? (
-                    <Placeholder title="Parsing source file..." desc="We're compiling the documents. The study dashboard will start shortly." loading />
-                  ) : doc.status === "failed" ? (
-                    <Placeholder title="Ingestion failed" desc={doc.error_code ?? "Something went wrong while parsing the source."} />
-                  ) : (
-                    <Placeholder title="Pending workspace" desc="Waiting for the background compiler to finish processing." />
-                  )}
-                </div>
-              </main>
-            </ResizablePanel>
 
-            {/* Right: Ask Panel */}
-            {askPanelOpen && !focusMode && mobileTab === "notes" && (
-              <>
-                <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={20} minSize={16} maxSize={35}>
+                      {assetsQuery.isLoading ? (
+                        <div className="flex items-center justify-center py-24">
+                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        </div>
+                      ) : note?.markdown ? (
+                        <div className="space-y-6 animate-fade-in pb-16">
+                          <div className="bg-card p-8 sm:p-12 rounded-3xl border border-border/80 shadow-sm leading-relaxed">
+                            <MarkdownView>{note.markdown}</MarkdownView>
+                          </div>
+                          {streaming && (
+                            <div className="flex items-center gap-2 text-xs text-primary font-mono bg-primary/10 p-3 rounded-full border border-primary/20 max-w-max">
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" /> Stream compiling notes…
+                            </div>
+                          )}
+                        </div>
+                      ) : doc.status === "ready" ? (
+                        <div className="border border-border rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-card shadow-sm animate-fade-in">
+                          <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+                            <Sparkles className="h-5 w-5" />
+                          </div>
+                          <div className="space-y-1">
+                            <h3 className="font-semibold text-foreground font-display text-sm">Generate study notes</h3>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                              We've indexed your material. Generate structured teaching notes to begin.
+                            </p>
+                          </div>
+                          <Button onClick={generate} disabled={streaming} className="rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90">
+                            {streaming ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
+                            Generate Notes
+                          </Button>
+                        </div>
+                      ) : isProcessing ? (
+                        <Placeholder title="Parsing source file..." desc="We're compiling the documents. The study dashboard will start shortly." loading />
+                      ) : doc.status === "failed" ? (
+                        <Placeholder title="Ingestion failed" desc={doc.error_code ?? "Something went wrong while parsing the source."} />
+                      ) : (
+                        <Placeholder title="Pending workspace" desc="Waiting for the background compiler to finish processing." />
+                      )}
+                    </div>
+                  </main>
+                </ResizablePanel>
+
+                {/* Right Rail: Ask Panel */}
+                {askPanelOpen && !focusMode && (
+                  <>
+                    <ResizableHandle withHandle />
+                    <ResizablePanel defaultSize={24} minSize={18} maxSize={35}>
+                      <AskPanel
+                        documentId={doc.id}
+                        noteMarkdown={note?.markdown}
+                        headings={headings}
+                        onScrollToHeading={(id) => setActiveHeadingId(id)}
+                      />
+                    </ResizablePanel>
+                  </>
+                )}
+              </ResizablePanelGroup>
+            </div>
+
+            {/* Mobile Viewport (< 1024px) */}
+            <div className="lg:hidden h-full overflow-y-auto">
+              <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4">
+                {headings.length > 0 && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/70 text-xs text-muted-foreground">
+                    <span className="font-semibold text-foreground shrink-0">On this page:</span>
+                    <div className="flex items-center gap-1.5 overflow-x-auto truncate">
+                      {headings.slice(0, 5).map((h, idx) => (
+                        <button
+                          key={h.id}
+                          onClick={() => setActiveHeadingId(h.id)}
+                          className="hover:text-foreground hover:underline transition-colors shrink-0 text-left"
+                        >
+                          {h.text}{idx < Math.min(headings.length, 5) - 1 ? " · " : ""}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {note?.markdown ? (
+                  <div className="bg-card p-6 rounded-2xl border border-border shadow-xs">
+                    <MarkdownView>{note.markdown}</MarkdownView>
+                  </div>
+                ) : (
+                  <div className="p-8 text-center bg-card rounded-2xl border border-border">
+                    <Button onClick={generate} disabled={streaming} className="rounded-full text-xs">
+                      Generate Notes
+                    </Button>
+                  </div>
+                )}
+                {/* Ask Panel */}
+                <div className="mt-4 border-t border-border/60 pt-4">
                   <AskPanel
                     documentId={doc.id}
                     noteMarkdown={note?.markdown}
                     headings={headings}
                     onScrollToHeading={(id) => setActiveHeadingId(id)}
                   />
-                </ResizablePanel>
-              </>
-            )}
-          </ResizablePanelGroup>
-        </div>
-
-        {/* Mobile Viewport (< 1024px) */}
-        <div className="lg:hidden h-full overflow-y-auto">
-          {mobileTab === "notes" && (
-            <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4">
-              {/* Inline Outline Chips */}
-              {note?.markdown && (
-                <div className="pb-2">
-                  <WorkspaceOutline
-                    markdown={note?.markdown}
-                    activeHeadingId={activeHeadingId}
-                    onSelectHeading={(id) => setActiveHeadingId(id)}
-                    inlineChips
-                    maxChips={6}
-                  />
                 </div>
-              )}
-              {note?.markdown ? (
-                <div className="bg-card p-6 rounded-2xl border border-border shadow-xs">
-                  <MarkdownView>{note.markdown}</MarkdownView>
-                </div>
-              ) : (
-                <div className="p-8 text-center bg-card rounded-2xl border border-border">
-                  <Button onClick={generate} disabled={streaming} className="rounded-full text-xs">
-                    Generate Notes
-                  </Button>
-                </div>
-              )}
-              {/* Ask Panel as Sheet on mobile */}
-              <div className="mt-4 border-t border-border/60 pt-4">
-                <AskPanel
-                  documentId={doc.id}
-                  noteMarkdown={note?.markdown}
-                  headings={headings}
-                  onScrollToHeading={(id) => setActiveHeadingId(id)}
-                />
               </div>
             </div>
-          )}
+          </>
+        )}
 
-          {mobileTab === "podcast" && (
-            <div className="p-4">
-              <PodcastPlayer documentId={doc.id} podcast={pod} onGenerate={runPodcast} loading={podcastLoading} />
-            </div>
-          )}
+        {currentTab === "cards" && (
+          <div className="h-full overflow-y-auto p-4 sm:p-8 max-w-4xl mx-auto">
+            <FlashcardsDeck documentId={doc.id} cards={cards} onRegenerate={runDerivatives} loading={derivLoading} />
+          </div>
+        )}
 
-          {mobileTab === "cards" && (
-            <div className="p-4">
-              <FlashcardsDeck documentId={doc.id} cards={cards} onRegenerate={runDerivatives} loading={derivLoading} />
-            </div>
-          )}
+        {currentTab === "quiz" && (
+          <div className="h-full overflow-y-auto p-4 sm:p-8 max-w-4xl mx-auto">
+            <QuizPlayer documentId={doc.id} quiz={qz} onRegenerate={runDerivatives} loading={derivLoading} />
+          </div>
+        )}
 
-          {mobileTab === "quiz" && (
-            <div className="p-4">
-              <QuizPlayer documentId={doc.id} quiz={qz} onRegenerate={runDerivatives} loading={derivLoading} />
-            </div>
-          )}
-        </div>
+        {currentTab === "podcast" && (
+          <div className="h-full overflow-y-auto p-4 sm:p-8 max-w-4xl mx-auto">
+            <PodcastPlayer documentId={doc.id} podcast={pod} onGenerate={runPodcast} loading={podcastLoading} />
+          </div>
+        )}
       </div>
 
       {/* 4. Delete Document Confirmation Dialog */}
