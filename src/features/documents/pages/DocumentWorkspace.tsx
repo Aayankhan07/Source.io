@@ -27,6 +27,8 @@ import { DEMO_DOCUMENTS } from "@/features/documents/data/mockDocuments";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import WorkspaceOutline, { extractHeadings } from "@/features/documents/components/WorkspaceOutline";
 import { AskPanel } from "@/features/documents/components/AskPanel";
+import NotesSettingsPopover from "@/features/documents/components/NotesSettingsPopover";
+import { useSettings } from "@/features/settings/context/SettingsContext";
 
 type DocumentAssets = {
   note: NoteRow | null;
@@ -67,6 +69,7 @@ export default function DocumentWorkspace() {
   const [focusMode, setFocusMode] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
   const [copiedNotes, setCopiedNotes] = useState(false);
+  const { notesSettings } = useSettings();
 
   // Active workspace tab state
   const [currentTab, setCurrentTab] = useState<TabId>("notes");
@@ -505,6 +508,9 @@ export default function DocumentWorkspace() {
                 </Button>
               )}
 
+              {/* In-Context Notes & Reading Settings Popover */}
+              <NotesSettingsPopover />
+
               {/* Focus Mode */}
               <Button
                 variant="ghost"
@@ -608,7 +614,7 @@ export default function DocumentWorkspace() {
                   <main className="h-full overflow-y-auto relative bg-background/50">
                     <div className="p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
                       {/* "On this page: ..." Summary Banner (Wireframe Badge 4) */}
-                      {headings.length > 0 && (
+                      {headings.length > 0 && notesSettings.showPageSummaryBanner && (
                         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted/40 border border-border/70 text-xs text-muted-foreground animate-fade-in">
                           <span className="font-semibold text-foreground shrink-0 font-display">On this page:</span>
                           <div className="flex items-center gap-1.5 overflow-x-auto truncate scrollbar-none">
@@ -705,7 +711,7 @@ export default function DocumentWorkspace() {
             {/* Mobile Viewport (< 1024px) */}
             <div className="lg:hidden h-full overflow-y-auto">
               <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4">
-                {headings.length > 0 && (
+                {headings.length > 0 && notesSettings.showPageSummaryBanner && (
                   <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/70 text-xs text-muted-foreground">
                     <span className="font-semibold text-foreground shrink-0">On this page:</span>
                     <div className="flex items-center gap-1.5 overflow-x-auto truncate">

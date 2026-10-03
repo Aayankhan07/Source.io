@@ -2,14 +2,14 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { DocumentRow } from "@/features/documents/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, FileText, Mic, Video, Youtube, FileType2, LogOut, Loader2, AlertCircle, Library, RefreshCw } from "lucide-react";
+import { Plus, FileText, Mic, Video, Youtube, FileType2, LogOut, Loader2, AlertCircle, Library, RefreshCw, Settings } from "lucide-react";
 import { cn, errorMessage } from "@/lib/utils";
 import { queryKeys } from "@/lib/queryKeys";
 import ThemeToggle from "@/components/common/ThemeToggle";
@@ -28,6 +28,7 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
   const { user, signOut } = useAuth();
   const { docId } = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
 
   const {
@@ -212,6 +213,23 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
         </ul>
       </div>
 
+      {/* Settings Navigation Link */}
+      <div className="px-3 pb-2 pt-1 border-t border-sidebar-border/40">
+        <Link
+          href="/app/settings"
+          onClick={onNavigate}
+          className={cn(
+            "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer",
+            pathname === "/app/settings"
+              ? "bg-slate-900 text-white dark:bg-white dark:text-zinc-950 font-semibold shadow-2xs"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+          )}
+        >
+          <Settings className="h-4 w-4 shrink-0" />
+          <span className="flex-1">Settings</span>
+        </Link>
+      </div>
+
       {/* Account Info & Theme Footer */}
       <div className="p-3 border-t border-sidebar-border/60 bg-sidebar">
         <div className="flex items-center gap-2 px-2.5 py-2 rounded-xl glass-card shadow-2xs">
@@ -225,6 +243,15 @@ export default function AppSidebar({ onNew, onNavigate }: { onNew: () => void; o
             <div className="text-[11px] text-muted-foreground truncate">{user?.email || "guest@source.io"}</div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
+            <Link
+              href="/app/settings"
+              onClick={onNavigate}
+              className="h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent flex items-center justify-center transition-colors"
+              title="Settings"
+              aria-label="Settings"
+            >
+              <Settings className="h-3.5 w-3.5" />
+            </Link>
             <ThemeToggle className="h-7 w-7 border-none bg-transparent hover:bg-accent" />
             <Button
               size="icon"

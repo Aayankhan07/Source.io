@@ -25,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/features/settings/context/SettingsContext";
 
 export interface OutlineHeading {
   id: string;
@@ -145,12 +146,14 @@ export default function WorkspaceOutline({
   const activeItemRef = useRef<HTMLButtonElement>(null);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
+  const { settings, notesSettings } = useSettings();
   const stats = useMemo(() => {
     if (!markdown) return { words: 0, readMinutes: 0 };
     const words = markdown.trim().split(/\s+/).filter(Boolean).length;
-    const readMinutes = Math.max(1, Math.ceil(words / 200));
+    const wpm = settings?.readingTargetWpm || 200;
+    const readMinutes = Math.max(1, Math.ceil(words / wpm));
     return { words, readMinutes };
-  }, [markdown]);
+  }, [markdown, settings?.readingTargetWpm]);
 
   // Current active index for progress bar
   const activeIndex = useMemo(() => {
@@ -166,7 +169,7 @@ export default function WorkspaceOutline({
 
   // Scroll spy: observe headings in main content
   useEffect(() => {
-    if (parsedHeadings.length === 0) return;
+    if (parsedHeadings.length === 0 || !notesSettings.autoScrollOutline) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -197,11 +200,11 @@ export default function WorkspaceOutline({
       observedElements.forEach((el) => observer.unobserve(el));
       observer.disconnect();
     };
-  }, [parsedHeadings, onSelectHeading]);
+  }, [parsedHeadings, onSelectHeading, notesSettings.autoScrollOutline]);
 
   // Smoothly auto-scroll active heading inside sidebar list
   useEffect(() => {
-    if (!activeItemRef.current || !listContainerRef.current) return;
+    if (!notesSettings.autoScrollOutline || !activeItemRef.current || !listContainerRef.current) return;
     const container = listContainerRef.current;
     const element = activeItemRef.current;
     const containerRect = container.getBoundingClientRect();
@@ -210,7 +213,7 @@ export default function WorkspaceOutline({
     if (elemRect.top < containerRect.top || elemRect.bottom > containerRect.bottom) {
       element.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
-  }, [activeId]);
+  }, [activeId, notesSettings.autoScrollOutline]);
 
   const scrollToHeading = useCallback(
     (id: string) => {

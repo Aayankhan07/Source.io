@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/features/auth/context/AuthContext";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { SettingsProvider } from "@/features/settings/context/SettingsContext";
 import { useState } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -26,9 +27,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <ThemeProvider>
-          <Toaster />
-          <Sonner />
-          <AuthProvider>{children}</AuthProvider>
+          <SettingsProvider>
+            <Toaster />
+            <Sonner />
+            <AuthProvider>{children}</AuthProvider>
+          </SettingsProvider>
         </ThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>
