@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   FileText, ArrowRight, CheckCircle2, RotateCcw, 
-  Sparkles, ShieldCheck, ChevronRight, Upload, Play, Clock,
+  Loader2, ShieldCheck, ChevronRight, Upload, Play, Clock,
   Layers, Headphones, HelpCircle, MessagesSquare, Check
 } from "lucide-react";
 import { toast } from "sonner";
@@ -95,26 +95,18 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
   }, []);
 
   return (
-    <div className="relative w-full group isolate">
-      {/* Soft Ambient Contact Bloom (Melds card seamlessly with both light and dark backgrounds) */}
-      <div 
-        className="absolute -inset-3 sm:-inset-5 rounded-[32px] sm:rounded-[40px] opacity-40 dark:opacity-75 group-hover:opacity-60 dark:group-hover:opacity-95 blur-2xl z-0 transition-opacity duration-700 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at 50% 30%, rgba(6, 182, 212, 0.28), rgba(14, 116, 144, 0.15) 55%, transparent 82%)",
-        }}
-      />
-
-      {/* Main Frosted Glass Shell */}
-      <div className="relative z-10 w-full rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-white/[0.08] dark:border-t-white/25 bg-white/95 dark:bg-[#070A12]/85 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.06)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.12)] overflow-hidden transition-all duration-300">
-        {/* Top Chrome Window Header with glassy gradient */}
-        <div className="bg-slate-50/80 dark:bg-gradient-to-r dark:from-white/[0.05] dark:via-white/[0.02] dark:to-transparent border-b border-slate-200/80 dark:border-white/[0.07] px-4 py-3 flex items-center justify-between">
+    <div className="relative w-full group">
+      {/* Main Sandbox Shell: Recessed Card with 12px radius and ink shadows */}
+      <div className="relative z-10 w-full rounded-xl border border-slate-200/90 dark:border-white/[0.08] bg-card text-card-foreground shadow-md transition-all duration-150 overflow-hidden">
+        {/* Top Chrome Window Header */}
+        <div className="bg-muted/40 border-b border-border/80 px-4 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5" aria-hidden="true">
-              <span className="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-white/20" />
-              <span className="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-white/20" />
-              <span className="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-white/20" />
+              <span className="size-2 rounded-full bg-slate-300 dark:bg-white/20" />
+              <span className="size-2 rounded-full bg-slate-300 dark:bg-white/20" />
+              <span className="size-2 rounded-full bg-slate-300 dark:bg-white/20" />
             </div>
-            <span className="text-xs font-mono text-muted-foreground ml-2">
+            <span className="text-[11px] font-mono text-muted-foreground ml-2">
               source_sandbox.app
             </span>
           </div>
@@ -124,12 +116,12 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
               <button
                 type="button"
                 onClick={resetDemo}
-                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground px-2 py-0.5 rounded-full hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-2 py-0.5 rounded-md hover:bg-muted/70 transition-colors cursor-pointer"
               >
                 <RotateCcw className="h-3 w-3" /> Replay
               </button>
             )}
-            <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.12)]">
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 shadow-xs font-mono">
               Interactive
             </span>
           </div>
@@ -193,7 +185,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <Sparkles className="h-4 w-4 animate-spin text-primary" />
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
                   </div>
                   <div>
                     <h3 className="text-xs font-semibold text-foreground font-mono">
@@ -237,7 +229,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                     >
                       <div className="flex items-center gap-2">
                         {isDone ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
                         ) : isCurrent ? (
                           <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                         ) : (
@@ -278,7 +270,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                   </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1 text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1 text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                   <ShieldCheck className="h-3 w-3" /> Grounded
                 </span>
               </div>
@@ -370,7 +362,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                     </p>
                     <div className="flex items-center justify-between text-xs font-mono pt-1 border-t border-slate-200 dark:border-border/50">
                       <span className="text-slate-600 dark:text-zinc-400">Next review: In 4 Days</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">94.2% Retention</span>
+                      <span className="text-foreground font-semibold">94.2% Retention</span>
                     </div>
                   </div>
                 )}
@@ -392,9 +384,9 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                           className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer font-mono text-xs flex items-center justify-between ${
                             quizSelected === opt.id
                               ? opt.correct
-                                ? "bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/40 text-emerald-800 dark:text-emerald-300 font-semibold shadow-[0_0_15px_rgba(16,185,129,0.15)]"
-                                : "bg-rose-500/10 dark:bg-rose-500/20 border-rose-500/40 text-rose-800 dark:text-rose-300 font-semibold shadow-[0_0_15px_rgba(244,63,94,0.15)]"
-                              : "bg-white dark:bg-card border-slate-200 dark:border-border hover:border-emerald-500/40 text-foreground"
+                                ? "bg-primary/10 dark:bg-primary/20 border-primary/40 text-primary font-semibold shadow-xs"
+                                : "bg-muted/60 border-border text-muted-foreground font-semibold"
+                              : "bg-white dark:bg-card border-slate-200 dark:border-border hover:border-primary/40 text-foreground"
                           }`}
                         >
                           <div>
@@ -410,8 +402,8 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                       ))}
                     </div>
                     {quizSelected === 1 && (
-                      <div className="text-xs text-emerald-700 dark:text-emerald-300 font-mono flex items-center gap-1.5 pt-0.5">
-                        <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                      <div className="text-xs text-primary font-mono flex items-center gap-1.5 pt-0.5">
+                        <Check className="h-3 w-3 text-primary" />
                         <span>Grounding confirmed from Chapter 1, equation (1.4).</span>
                       </div>
                     )}
@@ -483,8 +475,8 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
         <div className="bg-slate-50/80 dark:bg-gradient-to-r dark:from-white/[0.03] dark:via-white/[0.01] dark:to-transparent border-t border-slate-200/80 dark:border-white/[0.07] px-4 py-2.5 flex items-center justify-between text-xs font-mono text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
             </span>
             <span>Whisper ASR • Vector Ingestion Engine</span>
           </div>

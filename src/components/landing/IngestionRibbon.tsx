@@ -9,26 +9,28 @@ const INGESTION_FORMATS = [
   { icon: Video, label: "YouTube Lectures" },
   { icon: Mic, label: "Audio & Speech" },
   { icon: Database, label: "LaTeX Equations" },
-  { icon: Cpu, label: "Whisper Transcription" },
+  { icon: Cpu, label: "Whisper ASR" },
   { icon: FileCode, label: "Markdown & DOCX" },
   { icon: Globe, label: "Web Articles" },
-  { icon: BookOpen, label: "EPUB & Textbooks" },
+  { icon: BookOpen, label: "EPUB Textbooks" },
 ];
 
 export function IngestionRibbon() {
   return (
-    <section className="py-6 px-4 sm:px-6 lg:px-8 relative z-10 w-full border-y border-slate-200/80 dark:border-border/80 bg-slate-50/80 dark:bg-[#070A12]/50 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+    <section className="py-4 px-2 relative z-10 w-full flex flex-col items-center justify-center">
+      <div className="p-3 sm:p-4 rounded-[36px] bg-card/80 dark:bg-card/50 backdrop-blur-xl border border-border/80 shadow-[0_12px_30px_-10px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.35)] flex flex-wrap items-center justify-center gap-2 sm:gap-3 max-w-4xl relative">
         {INGESTION_FORMATS.map((item) => {
           const Icon = item.icon;
           return (
             <div
               key={item.label}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200/90 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-xs font-medium text-slate-700 dark:text-zinc-300 hover:text-cyan-950 dark:hover:text-cyan-100 hover:border-cyan-500/50 dark:hover:border-cyan-500/40 hover:bg-cyan-50/80 dark:hover:bg-cyan-500/10 hover:shadow-[0_0_15px_rgba(6,182,212,0.12)] transition-all duration-200 select-none cursor-default group hover:scale-[1.02] shadow-2xs"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border/70 bg-background/90 hover:bg-muted/80 text-foreground text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-sm transition-all select-none cursor-default"
             >
-              <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500 dark:text-zinc-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" strokeWidth={1.75} />
-              <span className="font-medium text-slate-700 dark:text-zinc-300 group-hover:text-cyan-950 dark:group-hover:text-cyan-100">{item.label}</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-500/40 dark:bg-cyan-400/40 group-hover:bg-cyan-500 dark:group-hover:bg-cyan-400 group-hover:shadow-[0_0_8px_rgba(6,182,212,0.6)] transition-all" />
+              <div className="size-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <Icon className="size-3" />
+              </div>
+              <span>{item.label}</span>
+              <span className="size-1.5 rounded-full bg-amber-400/80 dark:bg-amber-400/90 shadow-2xs" aria-hidden="true" />
             </div>
           );
         })}

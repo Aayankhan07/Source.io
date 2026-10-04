@@ -313,7 +313,7 @@ export default function WorkspaceOutline({
               {h.emoji ? (
                 <span className="text-xs">{h.emoji}</span>
               ) : h.number ? (
-                <span className="font-mono text-[10px] opacity-70">{h.number}</span>
+                <span className="font-mono text-[11px] opacity-70">{h.number}</span>
               ) : (
                 <Hash className={cn("h-2.5 w-2.5", isActive ? "text-current" : "opacity-60")} />
               )}
@@ -386,7 +386,7 @@ export default function WorkspaceOutline({
                       >
                         {isActive ? (
                           <div className="w-5 h-5 rounded-full bg-primary text-primary-foreground shadow-xs flex items-center justify-center ring-2 ring-primary/20">
-                            <span className="font-mono text-[9px] font-bold">
+                            <span className="font-mono text-[11px] font-bold leading-none">
                               {h.number ? h.number : idx + 1}
                             </span>
                           </div>
@@ -408,7 +408,7 @@ export default function WorkspaceOutline({
                       <div className="flex items-center gap-1.5 text-xs">
                         {h.emoji && <span>{h.emoji}</span>}
                         {h.number && (
-                          <span className="font-mono text-[10px] text-muted-foreground font-semibold">
+                          <span className="font-mono text-[11px] text-muted-foreground font-semibold">
                             {h.number}.
                           </span>
                         )}
@@ -460,7 +460,7 @@ export default function WorkspaceOutline({
           <span className="text-xs font-semibold tracking-tight text-foreground font-display truncate">
             Outline
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border/60 shrink-0">
+          <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border/60 shrink-0">
             {parsedHeadings.length}
           </span>
         </div>

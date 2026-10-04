@@ -483,7 +483,7 @@ export default function DocumentWorkspace() {
               variant="ghost"
               size="sm"
               onClick={() => router.push("/app")}
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex shrink-0"
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-md hidden sm:inline-flex shrink-0"
             >
               <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Library
             </Button>
@@ -491,7 +491,7 @@ export default function DocumentWorkspace() {
             <h1 className="text-xs sm:text-sm font-semibold text-foreground tracking-tight truncate max-w-xs sm:max-w-sm md:max-w-md font-display">
               {doc.title}
             </h1>
-            <Badge variant="outline" className="text-[10px] uppercase font-mono tracking-wider border-border/80 text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full shrink-0">
+            <Badge variant="outline" className="text-[11px] font-mono border-border/80 text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full shrink-0">
               {doc.source_type}
             </Badge>
             <span className="text-xs text-muted-foreground hidden md:inline shrink-0 font-mono">
@@ -589,8 +589,8 @@ export default function DocumentWorkspace() {
               {t.count !== undefined && t.count > 0 && (
                 <span
                   className={cn(
-                    "text-[10px] px-1.5 py-0.2 rounded-full font-mono",
-                    isActive ? "bg-primary/10 text-primary font-bold" : "bg-muted text-muted-foreground"
+                    "text-[11px] px-1.5 py-0.5 rounded-full font-mono",
+                    isActive ? "bg-primary/10 text-primary font-medium" : "bg-muted text-muted-foreground"
                   )}
                 >
                   {t.count}
@@ -717,7 +717,7 @@ export default function DocumentWorkspace() {
                 <div className="absolute right-4 bottom-6 z-30 animate-fade-in">
                   <Button
                     onClick={() => setAskPanelOpen(true)}
-                    className="h-9 px-3.5 rounded-full shadow-lg bg-card/95 backdrop-blur-md border border-border/80 text-foreground hover:bg-muted text-xs font-semibold flex items-center gap-2 transition-all hover:scale-105 hover:border-primary/40 cursor-pointer"
+                    className="h-8 px-3 rounded-lg shadow-md bg-card border border-border text-foreground hover:bg-muted text-xs font-medium flex items-center gap-1.5 transition-all hover:-translate-y-px hover:border-primary/40 cursor-pointer"
                     title="Open Ask this lecture"
                   >
                     <Sparkles className="h-3.5 w-3.5 text-primary" />

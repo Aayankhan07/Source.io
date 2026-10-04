@@ -230,7 +230,7 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
                   </div>
                 )}
 
-                <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-muted-foreground">
+                <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-muted-foreground">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -243,7 +243,7 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
                 </div>
               </div>
 
-              <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-medium">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-medium">
                 {msg.role === "user" ? (
                   <div className="w-full h-full rounded-full bg-primary/20 text-primary flex items-center justify-center" />
                 ) : (
@@ -259,7 +259,7 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
       {/* Input */}
       <div className="p-3 border-t border-border/60 shrink-0 bg-background/40 space-y-2">
         {messages.length === 0 && (
-          <div className="px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/50 text-[10px] text-muted-foreground flex items-center gap-1.5 font-mono">
+          <div className="px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/50 text-[11px] text-muted-foreground flex items-center gap-1.5 font-mono">
             <ArrowUpRight className="h-3 w-3 text-primary shrink-0" />
             <span>Answer cites ↗ highlights passage in notes</span>
           </div>

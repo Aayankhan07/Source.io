@@ -103,7 +103,7 @@ export default function WorkspaceCompanion({
                 <span>{tab.shortLabel}</span>
                 {tab.badge && (
                   <span className={cn(
-                    "text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold leading-tight",
+                    "text-[11px] px-1.5 py-0.5 rounded-full font-mono font-medium leading-tight",
                     isActive ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
                   )}>
                     {tab.badge}

@@ -134,8 +134,9 @@ export default function AppEmpty() {
         <span className="font-semibold text-foreground font-display text-sm">Source Command</span>
         <Button
           size="sm"
+          hierarchy="primary"
           onClick={openUpload}
-          className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white rounded-full text-xs h-8 px-3"
+          className="text-xs h-8 px-3"
         >
           <Plus className="h-3.5 w-3.5 mr-1" />
           <span>New</span>
@@ -147,9 +148,9 @@ export default function AppEmpty() {
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border/60 pb-6">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-card border border-border text-foreground text-[11px] font-mono uppercase tracking-wider shadow-2xs">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Source Studio Active</span>
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-card border border-border text-foreground text-[11px] font-mono shadow-xs">
+              <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+              <span>Source studio active</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-semibold text-foreground tracking-tight">
               {greeting}, <span className="text-primary">{userName}</span>
@@ -162,11 +163,12 @@ export default function AppEmpty() {
           <div className="flex items-center gap-2.5 shrink-0">
             <Button
               onClick={openUpload}
+              hierarchy="primary"
               size="lg"
-              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white font-semibold rounded-full shadow-sm text-xs sm:text-sm px-6 h-11"
+              className="font-medium text-xs sm:text-sm px-5 h-10"
             >
-              <Plus className="h-4 w-4 mr-2 shrink-0" />
-              <span>Import Material</span>
+              <Plus className="size-4 mr-1.5 shrink-0" />
+              <span>Import material</span>
             </Button>
           </div>
         </div>
@@ -204,13 +206,13 @@ export default function AppEmpty() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
               {/* Search Box */}
               <div className="relative min-w-[200px] sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search materials or topics..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-7 h-9 text-xs rounded-full bg-card border-border/80 focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none"
+                  className="pl-8 pr-7 h-9 text-xs rounded-md bg-card border-border/80 focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none"
                 />
                 {searchQuery && (
                   <button
@@ -218,7 +220,7 @@ export default function AppEmpty() {
                     className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
                     aria-label="Clear search"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="size-3" />
                   </button>
                 )}
               </div>
@@ -235,9 +237,9 @@ export default function AppEmpty() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveFilter(tab.id)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors shrink-0 ${
+                    className={`px-2.5 py-1 rounded-md text-[12px] font-medium transition-colors shrink-0 ${
                       activeFilter === tab.id
-                        ? "bg-slate-900 dark:bg-white text-white dark:text-zinc-950 font-semibold shadow-2xs"
+                        ? "bg-primary text-primary-foreground shadow-xs font-semibold"
                         : "bg-card text-muted-foreground hover:text-foreground border border-border/70 hover:bg-muted/40"
                     }`}
                   >
@@ -248,9 +250,9 @@ export default function AppEmpty() {
             </div>
           </div>
 
-          {/* Cards Grid */}
+          {/* Cards Grid: 12px gap */}
           {filteredDocs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {filteredDocs.map((doc) => (
                 <DocumentCardBento
                   key={doc.id}
@@ -260,9 +262,9 @@ export default function AppEmpty() {
               ))}
             </div>
           ) : (
-            <div className="p-12 text-center rounded-2xl sm:rounded-3xl border border-dashed border-border/80 bg-card/60 flex flex-col items-center justify-center space-y-3">
-              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                <FolderOpen className="h-5 w-5" />
+            <div className="p-8 text-center rounded-xl border border-dashed border-border bg-card/60 flex flex-col items-center justify-center space-y-3">
+              <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
+                <FolderOpen className="h-4 w-4" />
               </div>
               <h3 className="text-sm font-semibold text-foreground">
                 No matching study materials found
@@ -272,23 +274,24 @@ export default function AppEmpty() {
               </p>
               <div className="flex items-center gap-2 pt-1">
                 <Button
-                  variant="outline"
+                  hierarchy="secondary"
                   size="sm"
                   onClick={() => {
                     setSearchQuery("");
                     setActiveFilter("all");
                   }}
-                  className="rounded-full text-xs"
+                  className="text-xs"
                 >
-                  Clear Filters
+                  Clear filters
                 </Button>
                 <Button
+                  hierarchy="primary"
                   size="sm"
                   onClick={openUpload}
-                  className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-950 text-white rounded-full text-xs"
+                  className="text-xs"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />
-                  Upload Material
+                  Upload material
                 </Button>
               </div>
             </div>

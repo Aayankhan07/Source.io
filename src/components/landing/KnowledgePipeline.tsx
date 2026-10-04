@@ -1,77 +1,77 @@
 "use client";
 
-import { FileText, Sparkles, Layers, ShieldCheck } from "lucide-react";
+import { SectionHeading } from "./SectionHeading";
 
 const STAGES = [
   {
-    title: "Parse & Extract",
-    desc: "Drop in files or URLs. Local neural OCR and Whisper transcribe texts and audio timestamps with zero cloud leakage.",
+    title: "Parse & extract",
+    desc: "Drop in files or URLs. Neural OCR and Whisper ASR transcribe texts and audio timestamps with high fidelity.",
     metric: "OCR + Whisper ASR",
-    icon: FileText,
   },
   {
-    title: "Structure Notes",
+    title: "Structure notes",
     desc: "Synthesizes hierarchical markdown outlines, mathematical equations, and core definitions into study notes.",
-    metric: "Markdown Outlines",
-    icon: Sparkles,
+    metric: "Structured markdown",
   },
   {
-    title: "Derive Practice",
+    title: "Derive practice",
     desc: "Generates active spaced flashcard decks (Leitner algorithm), comprehension quizzes, and two-host conversational recaps.",
-    metric: "Leitner Decks",
-    icon: Layers,
+    metric: "Leitner decks & quiz",
   },
   {
-    title: "Query Citations",
-    desc: "Engage in grounded conversation where every statement points back to the exact passage and timestamp.",
-    metric: "Coordinate Citations",
-    icon: ShieldCheck,
+    title: "Query citations",
+    desc: "Engage in grounded conversation where every statement points back to the exact passage and audio coordinate.",
+    metric: "Coordinate citations",
   },
 ];
 
 export function KnowledgePipeline() {
   return (
-    <section id="pipeline" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl mx-auto scroll-mt-24 border-t border-slate-200/80 dark:border-border/80 w-full">
-      <div className="text-center max-w-xl mx-auto mb-14">
-        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-500/10 dark:bg-cyan-950/40 border border-cyan-500/30 dark:border-cyan-500/25 text-xs font-mono text-cyan-800 dark:text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-3">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
-          </span>
-          <span>4-STAGE INGEST ENGINE</span>
-        </div>
-        <h2 className="text-3xl sm:text-4xl font-display font-medium text-foreground tracking-tight mb-2">
-          From raw media to complete comprehension
-        </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground">
-          A continuous four-stage pipeline that operates without manual prompt tinkering.
-        </p>
-      </div>
+    <section id="pipeline" className="py-12 md:py-16 relative z-10 mx-auto scroll-mt-24 w-full">
+      <SectionHeading
+        badge="Pipeline Architecture"
+        badgeTone="amber"
+        line1="From raw multimedia,"
+        line2="to complete comprehension."
+        description="A continuous four-stage pipeline that extracts, structures, and cross-references study materials."
+        align="center"
+      />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
         {STAGES.map((stage, idx) => {
-          const Icon = stage.icon;
+          const auraColors = [
+            "bg-cyan-500/10 dark:bg-cyan-500/15",
+            "bg-amber-500/10 dark:bg-amber-500/15",
+            "bg-cyan-500/10 dark:bg-cyan-500/15",
+            "bg-amber-500/10 dark:bg-amber-500/15",
+          ];
           return (
             <div 
               key={stage.title}
-              className="bg-card/90 rounded-2xl border border-slate-200/90 dark:border-border/80 hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(6,182,212,0.08)] p-6 flex flex-col justify-between shadow-2xs transition-all duration-200 hover:scale-[1.01] group"
+              className="bg-card/95 dark:bg-card/85 backdrop-blur-xl rounded-[30px] sm:rounded-[34px] border border-border/80 hover:border-cyan-500/40 p-6 sm:p-7 flex flex-col justify-between shadow-[0_16px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.45)] hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden group"
             >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-slate-500 dark:text-muted-foreground group-hover:text-cyan-600 dark:group-hover:text-cyan-400 font-mono text-xs font-semibold tabular-nums transition-colors">
-                    Stage 0{idx + 1}
+              {/* Subtle luminous halo */}
+              <div 
+                className={`pointer-events-none absolute -top-16 -right-16 size-36 ${auraColors[idx % auraColors.length]} rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500`}
+                aria-hidden="true"
+              />
+
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-5">
+                  <span className="text-2xl font-bold font-mono text-foreground/90 tracking-tight">
+                    0{idx + 1}
                   </span>
-                  <div className="h-8 w-8 rounded-xl border border-slate-200/90 dark:border-white/[0.08] bg-slate-100/70 dark:bg-white/[0.03] group-hover:bg-cyan-500/10 group-hover:border-cyan-500/30 text-slate-500 dark:text-zinc-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 flex items-center justify-center transition-all duration-200">
-                    <Icon className="h-4 w-4" strokeWidth={1.5} />
-                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full bg-muted/60 dark:bg-muted/40 border border-border/70 text-muted-foreground font-mono text-[11px] font-medium">
+                    Step {idx + 1} of 4
+                  </span>
                 </div>
-                <h3 className="text-base font-semibold text-foreground mb-2">{stage.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{stage.desc}</p>
+                <h3 className="text-base font-bold text-foreground font-display mb-2">{stage.title}</h3>
+                <p className="text-[13px] leading-relaxed text-muted-foreground">{stage.desc}</p>
               </div>
 
-              <div className="pt-4 mt-6 border-t border-slate-200/80 dark:border-border/70 text-xs font-mono text-slate-500 dark:text-muted-foreground flex items-center justify-between">
-                <span>{stage.metric}</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-500/50 dark:bg-cyan-400/50 group-hover:bg-cyan-500 dark:group-hover:bg-cyan-400 group-hover:shadow-[0_0_8px_rgba(6,182,212,0.6)] transition-all" />
+              <div className="pt-4 mt-6 border-t border-border/60 text-xs font-mono text-muted-foreground flex items-center justify-between relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-muted/50 border border-border/60 text-[11px] font-medium">{stage.metric}</span>
+                <span className="size-2 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]" aria-hidden="true" />
               </div>
             </div>
           );

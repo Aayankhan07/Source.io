@@ -337,15 +337,15 @@ export default function CustomAudioPlayer({
                 <div className="flex flex-col items-center gap-1 shrink-0 pt-0.5">
                   <span
                     className={cn(
-                      "px-2 py-0.5 rounded-md font-mono text-[10px] uppercase font-bold",
+                      "px-2 py-0.5 rounded-md font-mono text-[11px] font-medium",
                       isAlex
-                        ? "bg-sky-100 dark:bg-zinc-700 text-sky-700 dark:text-zinc-200 border border-sky-200 dark:border-zinc-600"
+                        ? "bg-primary/10 text-primary border border-primary/20"
                         : "bg-muted text-muted-foreground border border-border"
                     )}
                   >
                     {line.speaker}
                   </span>
-                  <span className="text-[10px] font-mono text-muted-foreground">{formatTime(line.timeSec)}</span>
+                  <span className="text-[11px] font-mono text-muted-foreground">{formatTime(line.timeSec)}</span>
                 </div>
                 <p className="flex-1 leading-relaxed text-xs font-sans">{line.text}</p>
               </button>

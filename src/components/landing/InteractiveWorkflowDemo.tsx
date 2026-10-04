@@ -20,6 +20,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { SectionHeading } from "./SectionHeading";
 
 interface InteractiveWorkflowDemoProps {
   activeTab?: string;
@@ -186,79 +187,72 @@ export function InteractiveWorkflowDemo({
   };
 
   return (
-    <section id="workbench" data-alias="simulator" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative z-10 max-w-6xl mx-auto scroll-mt-24 w-full">
-      <div className="text-center max-w-xl mx-auto mb-8">
-        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-500/10 dark:bg-cyan-950/40 border border-cyan-500/30 dark:border-cyan-500/25 text-xs font-mono text-cyan-800 dark:text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-2">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
-          </span>
-          <span>INTERACTIVE WORKBENCH</span>
-        </div>
-        <h2 className="text-3xl sm:text-4xl font-display font-medium text-foreground tracking-tight mb-2">
-          Experience the study workflow
-        </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground">
-          Inspect how Source converts raw documents into 5 derived, coordinate-verified study assets.
-        </p>
-      </div>
+    <section id="workbench" data-alias="simulator" className="py-8 md:py-12 relative z-10 w-full scroll-mt-24">
+      <SectionHeading
+        badge="Interactive Workbench"
+        badgeTone="cyan"
+        line1="Experience the study workflow."
+        line2="Five derived, verified modalities."
+        description="Inspect how Source.io converts raw sources into structured study assets with exact mathematical and textual citations."
+        align="center"
+      />
 
       <Tabs value={currentTab} onValueChange={handleTabChange}>
-        {/* Tab Switcher with Chromatic Accents */}
-        <div className="flex justify-center mb-4 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <TabsList className="bg-card/80 backdrop-blur-md border border-slate-200/80 dark:border-border p-1 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-xs">
+        {/* Tab Switcher */}
+        <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="bg-card/80 backdrop-blur-md border border-border/80 p-1.5 rounded-full h-auto gap-1.5 inline-flex shrink-0 shadow-sm">
             <TabsTrigger 
               value="notes" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
+              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
             >
-              <FileText className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
+              <FileText className="h-3.5 w-3.5 transition-colors" />
               <span>Study Notes</span>
             </TabsTrigger>
             <TabsTrigger 
               value="flashcards" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
+              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
             >
-              <Layers className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
+              <Layers className="h-3.5 w-3.5 transition-colors" />
               <span>Flashcards</span>
             </TabsTrigger>
             <TabsTrigger 
               value="quiz" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
+              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
             >
-              <ListChecks className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
+              <ListChecks className="h-3.5 w-3.5 transition-colors" />
               <span>Practice Quiz</span>
             </TabsTrigger>
             <TabsTrigger 
               value="podcast" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
+              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
             >
-              <Headphones className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
+              <Headphones className="h-3.5 w-3.5 transition-colors" />
               <span>Audio Recap</span>
             </TabsTrigger>
             <TabsTrigger 
               value="chat" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
+              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
             >
-              <MessagesSquare className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
+              <MessagesSquare className="h-3.5 w-3.5 transition-colors" />
               <span>Grounded Chat</span>
             </TabsTrigger>
           </TabsList>
         </div>
 
-        {/* Console Shell */}
-        <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-xl shadow-black/5 overflow-hidden">
+        {/* Console Shell (Hero-style Tactile Squircle Shell) */}
+        <div className="bg-card/95 backdrop-blur-xl rounded-[36px] sm:rounded-[40px] border border-border/80 shadow-[0_28px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_28px_60px_-15px_rgba(0,0,0,0.55)] overflow-hidden relative">
           {/* Header Bar */}
-          <div className="bg-accent/40 border-b border-border px-4 py-3 flex items-center justify-between gap-4">
+          <div className="bg-muted/30 border-b border-border/70 px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-border" />
-              <span className="h-2.5 w-2.5 rounded-full bg-border" />
-              <span className="h-2.5 w-2.5 rounded-full bg-border" />
+              <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+              <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+              <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
             </div>
 
             <div className="flex-1 max-w-xs mx-auto hidden sm:flex items-center justify-center">
               <div className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs text-foreground flex items-center justify-between font-mono shadow-2xs">
                 <span className="truncate">quantum_computing_intro.pdf</span>
-                <span className="text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 rounded font-medium">Grounded</span>
+                <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded font-mono font-medium border border-primary/20">Grounded</span>
               </div>
             </div>
 
@@ -289,7 +283,7 @@ export function InteractiveWorkflowDemo({
                           <span className="font-semibold text-foreground block">chunk_00{p.id} • Page {p.page}</span>
                           <span className="text-muted-foreground text-xs truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
                         </div>
-                        <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-emerald-500/20">
+                        <span className="text-primary bg-primary/10 px-2 py-0.5 rounded text-xs font-semibold border border-primary/20 font-mono">
                           {p.similarity} similarity
                         </span>
                       </div>
@@ -317,11 +311,11 @@ export function InteractiveWorkflowDemo({
                   <div className="flex items-center justify-between border-b border-border pb-3">
                     <div>
                       <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-primary" strokeWidth={1.5} /> Introduction to Quantum Computing
+                        <FileText className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Introduction to Quantum Computing
                       </h3>
                       <p className="text-xs text-muted-foreground mt-0.5">Click or hover citation tags to inspect verified source passages</p>
                     </div>
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-accent text-muted-foreground font-mono tabular-nums">
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
                       3 min read
                     </span>
                   </div>
@@ -331,25 +325,25 @@ export function InteractiveWorkflowDemo({
                       Quantum computation is fundamentally distinguished by its exploitation of <strong>superposition</strong> and <strong>quantum entanglement</strong>.
                     </p>
 
-                    {/* Interactive Citation Cards */}
+                    {/* Interactive Citation Cards (Minimal, understated active state) */}
                     <div className="space-y-2.5">
                       <div 
                         onMouseEnter={() => setHighlightedPassage(1)}
                         onClick={() => setHighlightedPassage(1)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 1 
-                            ? "bg-cyan-500/10 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.12)] ring-1 ring-cyan-500/20" 
-                            : "bg-accent/40 border-border hover:bg-accent/60"
+                            ? "bg-card border-foreground/30 dark:border-white/30 shadow-xs ring-1 ring-border" 
+                            : "bg-muted/30 border-border/70 hover:bg-muted/50"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 1 ? "text-cyan-700 dark:text-cyan-300" : "text-foreground"}`}>
+                          <span className="text-xs font-semibold font-mono text-foreground">
                             Principle 1: Superposition
                           </span>
-                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
+                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-md border transition-colors ${
                             highlightedPassage === 1 
-                              ? "bg-cyan-500/10 dark:bg-cyan-950/40 border-cyan-500/30 text-cyan-800 dark:text-cyan-300" 
-                              : "bg-card border-border text-foreground"
+                              ? "bg-foreground text-background font-semibold border-foreground" 
+                              : "bg-card border-border text-muted-foreground"
                           }`}>
                             §1.1 [p. 2]
                           </span>
@@ -364,18 +358,18 @@ export function InteractiveWorkflowDemo({
                         onClick={() => setHighlightedPassage(2)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 2 
-                            ? "bg-cyan-500/10 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.12)] ring-1 ring-cyan-500/20" 
-                            : "bg-accent/40 border-border hover:bg-accent/60"
+                            ? "bg-card border-foreground/30 dark:border-white/30 shadow-xs ring-1 ring-border" 
+                            : "bg-muted/30 border-border/70 hover:bg-muted/50"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 2 ? "text-cyan-700 dark:text-cyan-300" : "text-foreground"}`}>
+                          <span className="text-xs font-semibold font-mono text-foreground">
                             Principle 2: Entanglement
                           </span>
-                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
+                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-md border transition-colors ${
                             highlightedPassage === 2 
-                              ? "bg-cyan-500/10 dark:bg-cyan-950/40 border-cyan-500/30 text-cyan-800 dark:text-cyan-300" 
-                              : "bg-card border-border text-foreground"
+                              ? "bg-foreground text-background font-semibold border-foreground" 
+                              : "bg-card border-border text-muted-foreground"
                           }`}>
                             §1.3 [p. 4]
                           </span>
@@ -390,18 +384,18 @@ export function InteractiveWorkflowDemo({
                         onClick={() => setHighlightedPassage(3)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 3 
-                            ? "bg-cyan-500/10 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.12)] ring-1 ring-cyan-500/20" 
-                            : "bg-accent/40 border-border hover:bg-accent/60"
+                            ? "bg-card border-foreground/30 dark:border-white/30 shadow-xs ring-1 ring-border" 
+                            : "bg-muted/30 border-border/70 hover:bg-muted/50"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 3 ? "text-cyan-700 dark:text-cyan-300" : "text-foreground"}`}>
+                          <span className="text-xs font-semibold font-mono text-foreground">
                             Decoherence Decay
                           </span>
-                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
+                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-md border transition-colors ${
                             highlightedPassage === 3 
-                              ? "bg-cyan-500/10 dark:bg-cyan-950/40 border-cyan-500/30 text-cyan-800 dark:text-cyan-300" 
-                              : "bg-card border-border text-foreground"
+                              ? "bg-foreground text-background font-semibold border-foreground" 
+                              : "bg-card border-border text-muted-foreground"
                           }`}>
                             §3.4 [p. 11]
                           </span>
@@ -414,21 +408,21 @@ export function InteractiveWorkflowDemo({
                   </div>
                 </div>
 
-                {/* Right: Real-time Split Source PDF Inspector */}
+                {/* Right: Real-time Split Source PDF Inspector (Minimal, refined aesthetic) */}
                 <div className="lg:col-span-5 bg-card border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between min-h-[340px]">
                   <div>
-                    <div className="flex items-center justify-between pb-2 border-b border-border text-xs mb-3 font-mono">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-border text-xs mb-3 font-mono">
                       <span className="font-semibold text-foreground flex items-center gap-1.5">
-                        <BookmarkCheck className="h-3.5 w-3.5 text-cyan-400" /> Source Passage View
+                        <BookmarkCheck className="h-3.5 w-3.5 text-foreground/80" /> Source Passage View
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.15)]">
+                      <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold border border-primary/20 font-mono">
                         {Math.round(sourcePassages[highlightedPassage - 1].similarity * 100)}% Match
                       </span>
                     </div>
 
-                    <div className="text-xs font-mono text-muted-foreground mb-2 flex items-center justify-between">
-                      <span className="text-cyan-700 dark:text-cyan-400 font-medium">{sourcePassages[highlightedPassage - 1].section}</span>
-                      <span>Page {sourcePassages[highlightedPassage - 1].page}</span>
+                    <div className="text-xs font-mono text-muted-foreground mb-3 flex items-center justify-between">
+                      <span className="text-foreground font-semibold">{sourcePassages[highlightedPassage - 1].section}</span>
+                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-muted/60 border border-border/60">Page {sourcePassages[highlightedPassage - 1].page}</span>
                     </div>
 
                     <AnimatePresence mode="wait">
@@ -438,9 +432,9 @@ export function InteractiveWorkflowDemo({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-foreground leading-relaxed font-serif relative shadow-[0_0_20px_rgba(6,182,212,0.08)]"
+                        className="p-4 rounded-xl bg-muted/40 dark:bg-muted/20 border border-border text-xs text-foreground/90 leading-relaxed font-serif relative"
                       >
-                        <span className="absolute -top-2 right-3 text-xs font-mono font-bold bg-cyan-500 dark:bg-cyan-400 text-slate-950 px-1.5 py-0.5 rounded shadow-xs">
+                        <span className="absolute -top-2.5 right-3 text-[10px] font-mono font-medium tracking-wide bg-background text-foreground px-2 py-0.5 rounded-full border border-border shadow-2xs">
                           VERIFIED HIGHLIGHT
                         </span>
                         "{sourcePassages[highlightedPassage - 1].text}"
@@ -456,12 +450,12 @@ export function InteractiveWorkflowDemo({
                     <button
                       type="button"
                       onClick={() => handleCopyCitation(sourcePassages[highlightedPassage - 1].section, sourcePassages[highlightedPassage - 1].similarity)}
-                      className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-accent hover:bg-card border border-border text-foreground transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-muted/60 hover:bg-muted text-foreground border border-border/70 transition-colors cursor-pointer"
                     >
                       <Copy className="h-3 w-3" /> Copy Coordinate
                     </button>
-                    <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-xs font-mono text-muted-foreground flex items-center gap-1.5 font-medium">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                       Verified Exact Match
                     </span>
                   </div>
@@ -535,7 +529,7 @@ export function InteractiveWorkflowDemo({
                       className="absolute inset-0 rounded-2xl border border-border bg-accent/40 p-6 flex flex-col items-center justify-center text-center shadow-xs"
                       style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                     >
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-semibold mb-3 border border-emerald-500/20">
+                      <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-mono font-semibold mb-3 border border-primary/20">
                         EXPLANATION
                       </span>
                       <p className="text-xs sm:text-sm text-foreground leading-relaxed">
@@ -627,13 +621,13 @@ export function InteractiveWorkflowDemo({
                       if (isSelected) {
                         if (quizSubmitted) {
                           btnStyle = isCorrect 
-                            ? "border-emerald-500 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300" 
-                            : "border-rose-500 bg-rose-500/10 text-rose-800 dark:text-rose-300";
+                            ? "border-primary bg-primary/10 text-primary font-semibold shadow-xs" 
+                            : "border-border bg-muted/50 text-muted-foreground";
                         } else {
                           btnStyle = "border-primary bg-accent text-foreground ring-1 ring-ring";
                         }
                       } else if (quizSubmitted && isCorrect) {
-                        btnStyle = "border-emerald-500 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300";
+                        btnStyle = "border-primary bg-primary/10 text-primary font-semibold shadow-xs";
                       }
 
                       return (
@@ -647,8 +641,8 @@ export function InteractiveWorkflowDemo({
                           className={`w-full text-left p-3.5 rounded-xl border transition-all text-xs sm:text-sm font-medium flex items-center justify-between cursor-pointer ${btnStyle}`}
                         >
                           <span>{opt.text}</span>
-                          {quizSubmitted && isCorrect && <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
-                          {quizSubmitted && isSelected && !isCorrect && <X className="h-4 w-4 text-rose-600 dark:text-rose-400" />}
+                          {quizSubmitted && isCorrect && <Check className="h-4 w-4 text-primary" />}
+                          {quizSubmitted && isSelected && !isCorrect && <X className="h-4 w-4 text-muted-foreground" />}
                         </button>
                       );
                     })}
@@ -687,7 +681,7 @@ export function InteractiveWorkflowDemo({
                     <div className="text-xs text-foreground bg-accent/60 p-3.5 rounded-xl border border-border leading-relaxed">
                       <div className="flex items-center justify-between mb-1">
                         <strong className="text-foreground font-semibold">Verified Passage Citation:</strong>
-                        <span className="font-mono text-emerald-600 dark:text-emerald-400 text-xs font-bold">Passage §3.4 [p. 11]</span>
+                        <span className="font-mono text-primary text-xs font-bold">Passage §3.4 [p. 11]</span>
                       </div>
                       Decoherence occurs when environmental thermal vibrations or electromagnetic fields interact with qubits, inducing rapid loss of phase coherence within characteristic time T₂.
                     </div>
@@ -761,8 +755,8 @@ export function InteractiveWorkflowDemo({
                     <div className="flex items-center justify-between mb-0.5">
                       <span className="font-semibold text-foreground font-mono text-xs">Host A (Clara):</span>
                       {currentSpeaker === "Clara" && podcastPlaying && (
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Speaking
+                        <span className="text-xs text-primary font-mono flex items-center gap-1">
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> Speaking
                         </span>
                       )}
                     </div>
@@ -773,8 +767,8 @@ export function InteractiveWorkflowDemo({
                     <div className="flex items-center justify-between mb-0.5">
                       <span className="font-semibold text-foreground font-mono text-xs">Host B (Julian):</span>
                       {currentSpeaker === "Julian" && podcastPlaying && (
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Speaking
+                        <span className="text-xs text-primary font-mono flex items-center gap-1">
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> Speaking
                         </span>
                       )}
                     </div>
