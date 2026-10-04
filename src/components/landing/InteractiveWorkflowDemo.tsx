@@ -188,8 +188,12 @@ export function InteractiveWorkflowDemo({
   return (
     <section id="workbench" data-alias="simulator" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative z-10 max-w-6xl mx-auto scroll-mt-24 w-full">
       <div className="text-center max-w-xl mx-auto mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent border border-border text-xs font-mono text-foreground mb-2">
-          <span>INTERACTIVE PLAYGROUND</span>
+        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/25 text-xs font-mono text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
+          </span>
+          <span>INTERACTIVE WORKBENCH</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-display font-medium text-foreground tracking-tight mb-2">
           Experience the study workflow
@@ -200,27 +204,42 @@ export function InteractiveWorkflowDemo({
       </div>
 
       <Tabs value={currentTab} onValueChange={handleTabChange}>
-        {/* Tab Switcher */}
-        <div className="flex justify-center mb-3 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <TabsList className="bg-accent/80 border border-border p-1 rounded-full h-auto gap-1 inline-flex shrink-0">
-            <TabsTrigger value="notes" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <FileText className="h-3.5 w-3.5" strokeWidth={1.5} />
+        {/* Tab Switcher with Chromatic Accents */}
+        <div className="flex justify-center mb-4 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="bg-card/80 backdrop-blur-md border border-border p-1 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-sm">
+            <TabsTrigger 
+              value="notes" 
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-amber-500/15 data-[state=active]:text-amber-300 data-[state=active]:border-amber-500/40 data-[state=active]:shadow-[0_0_12px_rgba(245,158,11,0.15)] data-[state=active]:border focus-visible:outline-none"
+            >
+              <FileText className="h-3.5 w-3.5 text-amber-400" strokeWidth={1.5} />
               <span>Study Notes</span>
             </TabsTrigger>
-            <TabsTrigger value="flashcards" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <Layers className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <TabsTrigger 
+              value="flashcards" 
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-violet-500/15 data-[state=active]:text-violet-300 data-[state=active]:border-violet-500/40 data-[state=active]:shadow-[0_0_12px_rgba(139,92,246,0.15)] data-[state=active]:border focus-visible:outline-none"
+            >
+              <Layers className="h-3.5 w-3.5 text-violet-400" strokeWidth={1.5} />
               <span>Flashcards</span>
             </TabsTrigger>
-            <TabsTrigger value="quiz" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <ListChecks className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <TabsTrigger 
+              value="quiz" 
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-emerald-500/15 data-[state=active]:text-emerald-300 data-[state=active]:border-emerald-500/40 data-[state=active]:shadow-[0_0_12px_rgba(16,185,129,0.15)] data-[state=active]:border focus-visible:outline-none"
+            >
+              <ListChecks className="h-3.5 w-3.5 text-emerald-400" strokeWidth={1.5} />
               <span>Practice Quiz</span>
             </TabsTrigger>
-            <TabsTrigger value="podcast" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <Headphones className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <TabsTrigger 
+              value="podcast" 
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-rose-500/15 data-[state=active]:text-rose-300 data-[state=active]:border-rose-500/40 data-[state=active]:shadow-[0_0_12px_rgba(244,63,94,0.15)] data-[state=active]:border focus-visible:outline-none"
+            >
+              <Headphones className="h-3.5 w-3.5 text-rose-400" strokeWidth={1.5} />
               <span>Audio Recap</span>
             </TabsTrigger>
-            <TabsTrigger value="chat" className="rounded-full text-xs gap-1.5 px-3 py-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <MessagesSquare className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <TabsTrigger 
+              value="chat" 
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.15)] data-[state=active]:border focus-visible:outline-none"
+            >
+              <MessagesSquare className="h-3.5 w-3.5 text-cyan-400" strokeWidth={1.5} />
               <span>Grounded Chat</span>
             </TabsTrigger>
           </TabsList>
@@ -319,13 +338,19 @@ export function InteractiveWorkflowDemo({
                         onClick={() => setHighlightedPassage(1)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 1 
-                            ? "bg-accent/80 border-primary ring-1 ring-primary/20 shadow-xs" 
+                            ? "bg-amber-500/10 border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.12)] ring-1 ring-amber-500/20" 
                             : "bg-accent/40 border-border hover:bg-accent/60"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold text-foreground font-mono">Principle 1: Superposition</span>
-                          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
+                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 1 ? "text-amber-300" : "text-foreground"}`}>
+                            Principle 1: Superposition
+                          </span>
+                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
+                            highlightedPassage === 1 
+                              ? "bg-amber-950/40 border-amber-500/30 text-amber-300" 
+                              : "bg-card border-border text-foreground"
+                          }`}>
                             §1.1 [p. 2]
                           </span>
                         </div>
@@ -339,13 +364,19 @@ export function InteractiveWorkflowDemo({
                         onClick={() => setHighlightedPassage(2)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 2 
-                            ? "bg-accent/80 border-primary ring-1 ring-primary/20 shadow-xs" 
+                            ? "bg-cyan-500/10 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.12)] ring-1 ring-cyan-500/20" 
                             : "bg-accent/40 border-border hover:bg-accent/60"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold text-foreground font-mono">Principle 2: Entanglement</span>
-                          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
+                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 2 ? "text-cyan-300" : "text-foreground"}`}>
+                            Principle 2: Entanglement
+                          </span>
+                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
+                            highlightedPassage === 2 
+                              ? "bg-cyan-950/40 border-cyan-500/30 text-cyan-300" 
+                              : "bg-card border-border text-foreground"
+                          }`}>
                             §1.3 [p. 4]
                           </span>
                         </div>
@@ -359,13 +390,19 @@ export function InteractiveWorkflowDemo({
                         onClick={() => setHighlightedPassage(3)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 3 
-                            ? "bg-accent/80 border-primary ring-1 ring-primary/20 shadow-xs" 
+                            ? "bg-violet-500/10 border-violet-500/40 shadow-[0_0_15px_rgba(139,92,246,0.12)] ring-1 ring-violet-500/20" 
                             : "bg-accent/40 border-border hover:bg-accent/60"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold text-foreground font-mono">Decoherence Decay</span>
-                          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
+                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 3 ? "text-violet-300" : "text-foreground"}`}>
+                            Decoherence Decay
+                          </span>
+                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
+                            highlightedPassage === 3 
+                              ? "bg-violet-950/40 border-violet-500/30 text-violet-300" 
+                              : "bg-card border-border text-foreground"
+                          }`}>
                             §3.4 [p. 11]
                           </span>
                         </div>
@@ -382,15 +419,15 @@ export function InteractiveWorkflowDemo({
                   <div>
                     <div className="flex items-center justify-between pb-2 border-b border-border text-xs mb-3 font-mono">
                       <span className="font-semibold text-foreground flex items-center gap-1.5">
-                        <BookmarkCheck className="h-3.5 w-3.5 text-primary" /> Source Passage View
+                        <BookmarkCheck className="h-3.5 w-3.5 text-cyan-400" /> Source Passage View
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                      <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.15)]">
                         {Math.round(sourcePassages[highlightedPassage - 1].similarity * 100)}% Match
                       </span>
                     </div>
 
                     <div className="text-xs font-mono text-muted-foreground mb-2 flex items-center justify-between">
-                      <span>{sourcePassages[highlightedPassage - 1].section}</span>
+                      <span className="text-cyan-400">{sourcePassages[highlightedPassage - 1].section}</span>
                       <span>Page {sourcePassages[highlightedPassage - 1].page}</span>
                     </div>
 
@@ -401,10 +438,10 @@ export function InteractiveWorkflowDemo({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="p-3.5 rounded-xl bg-accent/60 border border-primary/30 text-xs text-foreground leading-relaxed font-serif relative"
+                        className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-foreground leading-relaxed font-serif relative shadow-[0_0_20px_rgba(245,158,11,0.06)]"
                       >
-                        <span className="absolute -top-2 right-3 text-xs font-mono font-mono font-bold bg-primary text-primary-foreground px-1.5 rounded">
-                          HIGHLIGHTED
+                        <span className="absolute -top-2 right-3 text-xs font-mono font-bold bg-amber-400 text-black px-1.5 py-0.5 rounded shadow-xs">
+                          VERIFIED HIGHLIGHT
                         </span>
                         "{sourcePassages[highlightedPassage - 1].text}"
                       </motion.div>
@@ -423,7 +460,8 @@ export function InteractiveWorkflowDemo({
                     >
                       <Copy className="h-3 w-3" /> Copy Coordinate
                     </button>
-                    <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400">
+                    <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       Verified Exact Match
                     </span>
                   </div>

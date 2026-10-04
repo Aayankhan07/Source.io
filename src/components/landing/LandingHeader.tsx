@@ -21,26 +21,26 @@ export function LandingHeader() {
     <header className="sticky top-3 sm:top-5 z-50 px-3 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto bg-card/85 backdrop-blur-xl border border-border/80 rounded-full px-4 sm:px-6 py-2.5 shadow-sm transition-colors">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground transition-transform group-hover:scale-105">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_12px_rgba(6,182,212,0.35)] transition-transform group-hover:scale-105">
               <Sparkles className="h-3 w-3" strokeWidth={1.5} />
             </div>
             <span className="font-semibold tracking-tight text-sm font-display text-foreground">
-              Source<span className="text-muted-foreground">.io</span>
+              Source<span className="text-cyan-400">.io</span>
             </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-muted-foreground">
-            <a href="#workbench" className="hover:text-foreground transition-colors">
+            <a href="#workbench" className="hover:text-cyan-300 transition-colors">
               The 5 Views
             </a>
-            <a href="#grounding" className="hover:text-foreground transition-colors">
+            <a href="#grounding" className="hover:text-cyan-300 transition-colors">
               Verification Engine
             </a>
-            <a href="#pipeline" className="hover:text-foreground transition-colors">
+            <a href="#pipeline" className="hover:text-cyan-300 transition-colors">
               Pipeline
             </a>
-            <a href="#comparison" className="hover:text-foreground transition-colors">
+            <a href="#comparison" className="hover:text-cyan-300 transition-colors">
               Comparison
             </a>
           </nav>
@@ -87,10 +87,10 @@ export function LandingHeader() {
             {mounted && user ? (
               <Link
                 href="/app"
-                className="border border-border/80 bg-background/60 hover:bg-accent text-foreground rounded-full px-4 py-1.5 text-xs font-medium shadow-xs inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
+                className="bg-foreground hover:bg-foreground/90 text-background font-medium rounded-full px-4 py-1.5 text-xs shadow-[0_0_15px_rgba(6,182,212,0.25)] border border-cyan-400/40 inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
               >
                 Workspace
-                <ArrowRight className="h-3 w-3 text-muted-foreground" strokeWidth={1.5} />
+                <ArrowRight className="h-3 w-3 text-cyan-400" strokeWidth={1.5} />
               </Link>
             ) : (
               <>
@@ -102,7 +102,7 @@ export function LandingHeader() {
                 </Link>
                 <Link
                   href="/auth"
-                  className="border border-border/80 bg-background/60 hover:bg-accent text-foreground font-medium rounded-full px-4 py-1.5 text-xs shadow-xs inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
+                  className="bg-foreground hover:bg-foreground/90 text-background font-medium rounded-full px-4 py-1.5 text-xs shadow-[0_0_15px_rgba(6,182,212,0.25)] border border-cyan-400/40 inline-flex items-center gap-1.5 active:scale-[0.98] transition-all"
                 >
                   Get started
                 </Link>

@@ -46,7 +46,11 @@ export function FeatureMotionCards() {
   return (
     <section id="grounding" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl mx-auto scroll-mt-24 w-full">
       <div className="text-left max-w-2xl mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent border border-border text-xs font-mono text-foreground mb-3">
+        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/25 text-xs font-mono text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-3">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
+          </span>
           <span>GROUNDED, NOT ASSERTED</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-display font-medium text-foreground tracking-tight leading-tight">
@@ -66,7 +70,7 @@ export function FeatureMotionCards() {
               <h3 className="text-xl font-display font-medium text-foreground">
                 Acoustic transcriptions with word-level alignment
               </h3>
-              <span className="p-1.5 rounded-full bg-accent text-primary">
+              <span className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_10px_rgba(6,182,212,0.15)]">
                 <Mic className="h-4 w-4" />
               </span>
             </div>
@@ -75,16 +79,16 @@ export function FeatureMotionCards() {
             </p>
           </div>
 
-          {/* Animated Waveform Motion Visual */}
+          {/* Animated Waveform Motion Visual with Aurora Gradient */}
           <div className="my-3 p-4 rounded-2xl bg-accent/30 border border-border">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground mb-2">
               <span className="flex items-center gap-1.5 text-foreground font-semibold">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live ASR Diarization Waveform
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live ASR Diarization Waveform
               </span>
-              <span>16 kHz Mono</span>
+              <span className="text-cyan-400 font-bold">16 kHz Mono</span>
             </div>
 
-            <div className="h-12 flex items-end gap-1.5 px-1 justify-between">
+            <div className="h-14 flex items-end gap-1.5 px-1 justify-between">
               {[25, 45, 65, 30, 85, 95, 55, 40, 75, 90, 60, 35, 70, 80, 50, 65, 40, 85, 30, 60, 95, 45, 75, 55].map((val, idx) => (
                 <motion.div
                   key={idx}
@@ -97,7 +101,7 @@ export function FeatureMotionCards() {
                     repeatType: "reverse",
                     delay: (idx % 8) * 0.1,
                   }}
-                  className="w-1.5 bg-primary/70 rounded-full"
+                  className="w-1.5 bg-gradient-to-t from-cyan-500 via-teal-400 to-emerald-400 rounded-full shadow-[0_0_8px_rgba(6,182,212,0.2)]"
                 />
               ))}
             </div>
@@ -186,17 +190,17 @@ export function FeatureMotionCards() {
                     >
                       {queries[simQueryIdx].topPassage}
                     </span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">
+                    <span className="text-emerald-400 font-bold tabular-nums">
                       {queries[simQueryIdx].topScore}
                     </span>
                   </div>
-                  <div className="h-1.5 w-full bg-accent rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-accent rounded-full overflow-hidden p-0.5">
                     <motion.div
                       key={`top-${simQueryIdx}`}
                       initial={{ width: 0 }}
                       animate={{ width: `${queries[simQueryIdx].topScore * 100}%` }}
                       transition={{ duration: 0.5, ease: "easeOut" }}
-                      className="h-full bg-emerald-500 rounded-full"
+                      className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)]"
                     />
                   </div>
                 </div>
@@ -241,7 +245,7 @@ export function FeatureMotionCards() {
                     aria-label="Simulate spaced-repetition review step"
                     title="Simulate spaced-repetition review step"
                     onClick={simulateReview}
-                    className="inline-flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1 text-xs font-mono px-3 py-1 rounded-full bg-amber-400 hover:bg-amber-300 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all cursor-pointer"
                   >
                     <RotateCcw className="h-3 w-3" /> Simulate Review
                   </button>
@@ -252,36 +256,36 @@ export function FeatureMotionCards() {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-              <div className="p-3 rounded-2xl bg-accent/50 border border-border">
-                <span className="text-muted-foreground block text-xs mb-1">INTERVAL</span>
+            <div className="grid grid-cols-3 gap-2.5 text-center font-mono text-xs">
+              <div className="p-3 rounded-2xl bg-amber-950/25 border border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.06)]">
+                <span className="text-amber-400/80 block text-xs mb-1 font-semibold">INTERVAL</span>
                 <motion.span
                   key={leitnerInterval}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="font-bold text-foreground tabular-nums text-sm block"
+                  className="font-bold text-amber-300 tabular-nums text-sm block"
                 >
                   {leitnerInterval} Days
                 </motion.span>
               </div>
-              <div className="p-3 rounded-2xl bg-accent/50 border border-border">
-                <span className="text-muted-foreground block text-xs mb-1">RETENTION</span>
+              <div className="p-3 rounded-2xl bg-emerald-950/25 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.06)]">
+                <span className="text-emerald-400/80 block text-xs mb-1 font-semibold">RETENTION</span>
                 <motion.span
                   key={leitnerRetention}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums text-sm block"
+                  className="font-bold text-emerald-300 tabular-nums text-sm block"
                 >
                   {leitnerRetention}%
                 </motion.span>
               </div>
-              <div className="p-3 rounded-2xl bg-accent/50 border border-border">
-                <span className="text-muted-foreground block text-xs mb-1">DECKS</span>
+              <div className="p-3 rounded-2xl bg-violet-950/25 border border-violet-500/30 shadow-[0_0_12px_rgba(139,92,246,0.06)]">
+                <span className="text-violet-400/80 block text-xs mb-1 font-semibold">DECKS</span>
                 <motion.span
                   key={leitnerCards}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="font-bold text-foreground tabular-nums text-sm block"
+                  className="font-bold text-violet-300 tabular-nums text-sm block"
                 >
                   {leitnerCards} Cards
                 </motion.span>

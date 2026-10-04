@@ -58,9 +58,20 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        aurora: {
+          bg: "#06080F",
+          cyan: "#00F0FF",
+          sky: "#06B6D4",
+          violet: "#8B5CF6",
+          indigo: "#6366F1",
+          amber: "#F59E0B",
+          emerald: "#10B981",
+          rose: "#F43F5E",
+        },
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",
+        "aurora-gradient": "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6, 182, 212, 0.18), transparent 70%), radial-gradient(ellipse 60% 40% at 80% 10%, rgba(99, 102, 241, 0.14), transparent 60%)",
       },
       boxShadow: {
         glow: "var(--shadow-glow)",

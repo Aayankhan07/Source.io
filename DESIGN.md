@@ -38,6 +38,12 @@ colors:
   gradient-preview-end: "#ff0080"
   gradient-ship-start: "#ff4d4d"
   gradient-ship-end: "#f9cb28"
+  aurora-bg: "#06080F"
+  aurora-cyan: "#00F0FF"
+  aurora-violet: "#8B5CF6"
+  aurora-amber: "#F59E0B"
+  aurora-emerald: "#10B981"
+  aurora-rose: "#F43F5E"
   selection-bg: "#171717"
   selection-fg: "#f2f2f2"
 
