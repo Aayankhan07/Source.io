@@ -186,7 +186,7 @@ export function InteractiveWorkflowDemo({
   };
 
   return (
-    <section id="simulator" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative z-10 max-w-6xl mx-auto scroll-mt-24 w-full">
+    <section id="workbench" data-alias="simulator" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative z-10 max-w-6xl mx-auto scroll-mt-24 w-full">
       <div className="text-center max-w-xl mx-auto mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent border border-border text-xs font-mono text-foreground mb-2">
           <span>INTERACTIVE PLAYGROUND</span>
@@ -239,7 +239,7 @@ export function InteractiveWorkflowDemo({
             <div className="flex-1 max-w-xs mx-auto hidden sm:flex items-center justify-center">
               <div className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs text-foreground flex items-center justify-between font-mono shadow-2xs">
                 <span className="truncate">quantum_computing_intro.pdf</span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 rounded font-medium">Grounded</span>
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 rounded font-medium">Grounded</span>
               </div>
             </div>
 
@@ -251,7 +251,7 @@ export function InteractiveWorkflowDemo({
                 <DrawerTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-md bg-accent hover:text-foreground border border-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-accent hover:text-foreground border border-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <Terminal className="h-3 w-3" strokeWidth={1.5} /> Inspect Chunks
                   </button>
@@ -268,9 +268,9 @@ export function InteractiveWorkflowDemo({
                       <div key={p.id} className="p-3 rounded-lg bg-accent/60 border border-border flex items-center justify-between">
                         <div>
                           <span className="font-semibold text-foreground block">chunk_00{p.id} • Page {p.page}</span>
-                          <span className="text-muted-foreground text-[11px] truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
+                          <span className="text-muted-foreground text-xs truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
                         </div>
-                        <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-[11px] font-semibold border border-emerald-500/20">
+                        <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-emerald-500/20">
                           {p.similarity} similarity
                         </span>
                       </div>
@@ -324,8 +324,8 @@ export function InteractiveWorkflowDemo({
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] font-semibold text-foreground font-mono">Principle 1: Superposition</span>
-                          <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
+                          <span className="text-xs font-semibold text-foreground font-mono">Principle 1: Superposition</span>
+                          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
                             §1.1 [p. 2]
                           </span>
                         </div>
@@ -344,8 +344,8 @@ export function InteractiveWorkflowDemo({
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] font-semibold text-foreground font-mono">Principle 2: Entanglement</span>
-                          <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
+                          <span className="text-xs font-semibold text-foreground font-mono">Principle 2: Entanglement</span>
+                          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
                             §1.3 [p. 4]
                           </span>
                         </div>
@@ -364,8 +364,8 @@ export function InteractiveWorkflowDemo({
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] font-semibold text-foreground font-mono">Decoherence Decay</span>
-                          <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
+                          <span className="text-xs font-semibold text-foreground font-mono">Decoherence Decay</span>
+                          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-card border border-border text-foreground">
                             §3.4 [p. 11]
                           </span>
                         </div>
@@ -384,12 +384,12 @@ export function InteractiveWorkflowDemo({
                       <span className="font-semibold text-foreground flex items-center gap-1.5">
                         <BookmarkCheck className="h-3.5 w-3.5 text-primary" /> Source Passage View
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                      <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
                         {Math.round(sourcePassages[highlightedPassage - 1].similarity * 100)}% Match
                       </span>
                     </div>
 
-                    <div className="text-[11px] font-mono text-muted-foreground mb-2 flex items-center justify-between">
+                    <div className="text-xs font-mono text-muted-foreground mb-2 flex items-center justify-between">
                       <span>{sourcePassages[highlightedPassage - 1].section}</span>
                       <span>Page {sourcePassages[highlightedPassage - 1].page}</span>
                     </div>
@@ -403,7 +403,7 @@ export function InteractiveWorkflowDemo({
                         transition={{ duration: 0.2 }}
                         className="p-3.5 rounded-xl bg-accent/60 border border-primary/30 text-xs text-foreground leading-relaxed font-serif relative"
                       >
-                        <span className="absolute -top-2 right-3 text-[9px] font-mono font-bold bg-primary text-primary-foreground px-1.5 rounded">
+                        <span className="absolute -top-2 right-3 text-xs font-mono font-mono font-bold bg-primary text-primary-foreground px-1.5 rounded">
                           HIGHLIGHTED
                         </span>
                         "{sourcePassages[highlightedPassage - 1].text}"
@@ -423,7 +423,7 @@ export function InteractiveWorkflowDemo({
                     >
                       <Copy className="h-3 w-3" /> Copy Coordinate
                     </button>
-                    <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
+                    <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400">
                       Verified Exact Match
                     </span>
                   </div>
@@ -437,7 +437,7 @@ export function InteractiveWorkflowDemo({
                 <div className="flex justify-between items-center text-xs text-muted-foreground font-mono">
                   <span>Card {cardIdx + 1} of {flashcardsData.length}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] bg-accent px-2 py-0.5 rounded text-foreground">
+                    <span className="text-xs bg-accent px-2 py-0.5 rounded text-foreground">
                       Interval: {activeInterval}
                     </span>
                     <button 
@@ -483,7 +483,7 @@ export function InteractiveWorkflowDemo({
                       className="absolute inset-0 rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-xs"
                       style={{ backfaceVisibility: "hidden" }}
                     >
-                      <span className="px-2.5 py-0.5 rounded-full bg-accent text-foreground text-[10px] font-mono font-semibold mb-3">
+                      <span className="px-2.5 py-0.5 rounded-full bg-accent text-foreground text-xs font-mono font-semibold mb-3">
                         QUESTION
                       </span>
                       <p className="text-base font-semibold text-foreground leading-snug">
@@ -497,7 +497,7 @@ export function InteractiveWorkflowDemo({
                       className="absolute inset-0 rounded-2xl border border-border bg-accent/40 p-6 flex flex-col items-center justify-center text-center shadow-xs"
                       style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                     >
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono font-semibold mb-3 border border-emerald-500/20">
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-semibold mb-3 border border-emerald-500/20">
                         EXPLANATION
                       </span>
                       <p className="text-xs sm:text-sm text-foreground leading-relaxed">
@@ -649,7 +649,7 @@ export function InteractiveWorkflowDemo({
                     <div className="text-xs text-foreground bg-accent/60 p-3.5 rounded-xl border border-border leading-relaxed">
                       <div className="flex items-center justify-between mb-1">
                         <strong className="text-foreground font-semibold">Verified Passage Citation:</strong>
-                        <span className="font-mono text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">Passage §3.4 [p. 11]</span>
+                        <span className="font-mono text-emerald-600 dark:text-emerald-400 text-xs font-bold">Passage §3.4 [p. 11]</span>
                       </div>
                       Decoherence occurs when environmental thermal vibrations or electromagnetic fields interact with qubits, inducing rapid loss of phase coherence within characteristic time T₂.
                     </div>
@@ -709,7 +709,7 @@ export function InteractiveWorkflowDemo({
                         ))}
                       </div>
 
-                      <div className="flex justify-between text-[11px] text-muted-foreground font-mono tabular-nums">
+                      <div className="flex justify-between text-xs text-muted-foreground font-mono tabular-nums">
                         <span>{formatAudioTime(audioSeconds)}</span>
                         <span>4:12</span>
                       </div>
@@ -721,9 +721,9 @@ export function InteractiveWorkflowDemo({
                 <div className="text-left w-full space-y-2.5 text-xs bg-accent/40 border border-border p-4 rounded-xl">
                   <div className={`p-2.5 rounded-lg transition-all ${currentSpeaker === "Clara" ? "bg-card border border-primary/40 shadow-xs" : "opacity-70"}`}>
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="font-semibold text-foreground font-mono text-[11px]">Host A (Clara):</span>
+                      <span className="font-semibold text-foreground font-mono text-xs">Host A (Clara):</span>
                       {currentSpeaker === "Clara" && podcastPlaying && (
-                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Speaking
                         </span>
                       )}
@@ -733,9 +733,9 @@ export function InteractiveWorkflowDemo({
 
                   <div className={`p-2.5 rounded-lg transition-all ${currentSpeaker === "Julian" ? "bg-card border border-primary/40 shadow-xs" : "opacity-70"}`}>
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="font-semibold text-foreground font-mono text-[11px]">Host B (Julian):</span>
+                      <span className="font-semibold text-foreground font-mono text-xs">Host B (Julian):</span>
                       {currentSpeaker === "Julian" && podcastPlaying && (
-                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Speaking
                         </span>
                       )}
@@ -761,7 +761,7 @@ export function InteractiveWorkflowDemo({
                         }`}>
                           <p>{m.content}</p>
                           {m.citation && (
-                            <div className="mt-2 pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground tabular-nums">
+                            <div className="mt-2 pt-2 border-t border-border flex items-center justify-between text-xs font-mono text-muted-foreground tabular-nums">
                               <span className="text-foreground font-medium flex items-center gap-1">
                                 <BookmarkCheck className="h-3 w-3 text-primary" /> {m.citation}
                               </span>

@@ -15,8 +15,8 @@ export default {
         // `sans` and `display` mirror the faces index.css already applies to body
         // and headings; declaring them here makes `font-sans`/`font-display` real
         // utilities instead of relying on bare CSS selectors.
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Outfit", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Outfit", "Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
         // Fira Code is loaded in index.html but was never mapped, so every
         // `font-mono` fell back to the browser default.
         mono: ["Fira Code", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],

@@ -43,59 +43,59 @@ colors:
 
 typography:
   display-xl:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, Plus Jakarta Sans, Geist, Inter, system-ui, -apple-system, sans-serif
     fontSize: 48px
     fontWeight: 600
     lineHeight: 48px
     letterSpacing: -2.4px
   display-lg:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, Plus Jakarta Sans, Geist, Inter, system-ui, -apple-system, sans-serif
     fontSize: 32px
     fontWeight: 600
     lineHeight: 40px
     letterSpacing: -1.28px
   display-md:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, Plus Jakarta Sans, Geist, Inter, system-ui, -apple-system, sans-serif
     fontSize: 24px
     fontWeight: 600
     lineHeight: 32px
     letterSpacing: -0.96px
   display-sm:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, Plus Jakarta Sans, Geist, Inter, system-ui, -apple-system, sans-serif
     fontSize: 20px
     fontWeight: 600
     lineHeight: 28px
     letterSpacing: -0.6px
   body-lg:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, system-ui, -apple-system, sans-serif
     fontSize: 18px
     fontWeight: 400
     lineHeight: 28px
     letterSpacing: 0px
   body-md:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, system-ui, -apple-system, sans-serif
     fontSize: 16px
     fontWeight: 400
     lineHeight: 24px
   body-md-strong:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, system-ui, -apple-system, sans-serif
     fontSize: 16px
     fontWeight: 500
     lineHeight: 24px
   body-sm:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, system-ui, -apple-system, sans-serif
     fontSize: 14px
     fontWeight: 400
     lineHeight: 20px
     letterSpacing: -0.28px
   body-sm-strong:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Outfit, system-ui, -apple-system, sans-serif
     fontSize: 14px
     fontWeight: 500
     lineHeight: 20px
     letterSpacing: -0.28px
   caption:
-    fontFamily: Geist, Inter, system-ui, -apple-system, sans-serif
+    fontFamily: Fira Code, ui-monospace, SFMono-Regular, monospace
     fontSize: 12px
     fontWeight: 400
     lineHeight: 16px

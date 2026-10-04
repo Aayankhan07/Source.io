@@ -77,7 +77,7 @@ export function FeatureMotionCards() {
 
           {/* Animated Waveform Motion Visual */}
           <div className="my-3 p-4 rounded-2xl bg-accent/30 border border-border">
-            <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground mb-2">
+            <div className="flex items-center justify-between text-xs font-mono text-muted-foreground mb-2">
               <span className="flex items-center gap-1.5 text-foreground font-semibold">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live ASR Diarization Waveform
               </span>
@@ -105,7 +105,7 @@ export function FeatureMotionCards() {
 
           {/* Diarization Excerpt Box with Pulsing Active Speaker */}
           <div className="rounded-2xl bg-accent/50 border border-border p-4 space-y-2.5 font-mono text-xs text-foreground mt-2">
-            <div className="flex items-center justify-between pb-2 border-b border-border text-[11px] text-muted-foreground">
+            <div className="flex items-center justify-between pb-2 border-b border-border text-xs text-muted-foreground">
               <span>SPEAKER DIARIZATION</span>
               <span>TIMESTAMP</span>
             </div>
@@ -120,14 +120,14 @@ export function FeatureMotionCards() {
                   }`}
                 >
                   <div className="flex items-center gap-2 truncate pr-2">
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
                       spk.name === "Clara" 
                         ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20" 
                         : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                     }`}>
                       {spk.name}
                     </span>
-                    <span className="truncate text-[11px]">"{spk.text}"</span>
+                    <span className="truncate text-xs">"{spk.text}"</span>
                   </div>
                   <span className="text-muted-foreground tabular-nums shrink-0">{spk.timestamp}</span>
                 </motion.div>
@@ -146,7 +146,7 @@ export function FeatureMotionCards() {
                   Cosine similarity ranking
                 </h3>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline-block">
+                  <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline-block">
                     Interactive
                   </span>
                   <button
@@ -166,12 +166,12 @@ export function FeatureMotionCards() {
             </div>
 
             <div className="space-y-3 bg-accent/40 p-4 rounded-2xl border border-border font-mono text-xs">
-              <div className="text-[11px] text-muted-foreground pb-2 border-b border-border flex items-center justify-between">
+              <div className="text-xs text-muted-foreground pb-2 border-b border-border flex items-center justify-between">
                 <span>QUERY VECTOR</span>
                 <span className="text-primary font-bold">DIM 1536</span>
               </div>
               
-              <div className="p-2 rounded bg-card border border-border text-[11px] text-foreground font-semibold flex items-center gap-1.5">
+              <div className="p-2 rounded bg-card border border-border text-xs text-foreground font-semibold flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3 text-primary" />
                 <span className="truncate">"{queries[simQueryIdx].query}"</span>
               </div>
@@ -233,7 +233,7 @@ export function FeatureMotionCards() {
                   Adaptive Leitner scheduling
                 </h3>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline-block">
+                  <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline-block">
                     Interactive
                   </span>
                   <button
@@ -254,7 +254,7 @@ export function FeatureMotionCards() {
 
             <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
               <div className="p-3 rounded-2xl bg-accent/50 border border-border">
-                <span className="text-muted-foreground block text-[10px] mb-1">INTERVAL</span>
+                <span className="text-muted-foreground block text-xs mb-1">INTERVAL</span>
                 <motion.span
                   key={leitnerInterval}
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -265,7 +265,7 @@ export function FeatureMotionCards() {
                 </motion.span>
               </div>
               <div className="p-3 rounded-2xl bg-accent/50 border border-border">
-                <span className="text-muted-foreground block text-[10px] mb-1">RETENTION</span>
+                <span className="text-muted-foreground block text-xs mb-1">RETENTION</span>
                 <motion.span
                   key={leitnerRetention}
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -276,7 +276,7 @@ export function FeatureMotionCards() {
                 </motion.span>
               </div>
               <div className="p-3 rounded-2xl bg-accent/50 border border-border">
-                <span className="text-muted-foreground block text-[10px] mb-1">DECKS</span>
+                <span className="text-muted-foreground block text-xs mb-1">DECKS</span>
                 <motion.span
                   key={leitnerCards}
                   initial={{ scale: 0.9, opacity: 0 }}

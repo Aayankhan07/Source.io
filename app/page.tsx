@@ -1,5 +1,5 @@
-import Index from "@/pages_legacy/Index";
+import { LandingPage } from "@/components/landing/LandingPage";
 
 export default function HomePage() {
-  return <Index />;
+  return <LandingPage />;
 }
