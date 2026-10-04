@@ -18,19 +18,43 @@ export function LandingHero() {
   };
 
   return (
-    <section className="min-h-[calc(100dvh-5rem)] flex flex-col justify-center pt-6 sm:pt-10 pb-12 px-4 sm:px-6 lg:px-10 xl:px-12 relative z-10 max-w-7xl mx-auto w-full overflow-hidden">
-      {/* Ambient Aurora Glow Canvas (Atmospheric depth behind hero) */}
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[550px] lg:w-[700px] h-[500px] pointer-events-none select-none -z-10 opacity-35 dark:opacity-45 blur-[120px] transition-opacity duration-1000">
-        <div className="absolute top-0 right-10 w-72 h-72 rounded-full bg-cyan-500/40" />
-        <div className="absolute bottom-10 right-32 w-80 h-80 rounded-full bg-indigo-600/35" />
-        <div className="absolute top-1/3 left-10 w-64 h-64 rounded-full bg-emerald-500/25" />
+    <section className="min-h-[calc(100dvh-5rem)] flex flex-col justify-center relative isolate w-full overflow-hidden">
+      {/* Full-Bleed Atmospheric Aurora Canopy (Spans entire screen, zero edge cutoff) */}
+      <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+        {/* Primary Centered Top-Down Aurora Glow */}
+        <div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1400px] xl:w-[1800px] h-[680px] opacity-50 dark:opacity-75"
+          style={{
+            background: "radial-gradient(ellipse 75% 55% at 50% -5%, rgba(6, 182, 212, 0.28), rgba(14, 116, 144, 0.16) 45%, rgba(15, 23, 42, 0.08) 70%, transparent 85%)",
+          }}
+        />
+
+        {/* Dedicated Soft Radial Glow for Right-hand Demo Sandbox */}
+        <div 
+          className="absolute top-1/4 right-[2%] xl:right-[8%] w-[600px] h-[500px] rounded-full blur-[110px] opacity-35 dark:opacity-50"
+          style={{
+            background: "radial-gradient(circle, rgba(6, 182, 212, 0.32) 0%, rgba(14, 116, 144, 0.18) 50%, transparent 75%)",
+          }}
+        />
+
+        {/* Subtle Architectural Dot Matrix Overlay with smooth radial fade */}
+        <div 
+          className="absolute inset-0 text-slate-900/20 dark:text-white/15 opacity-50 dark:opacity-70 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(currentColor 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+            maskImage: "radial-gradient(ellipse 75% 65% at 50% 30%, black, transparent 80%)",
+            WebkitMaskImage: "radial-gradient(ellipse 75% 65% at 50% 30%, black, transparent 80%)",
+          }}
+        />
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-14 items-center flex-1 my-auto w-full">
-        {/* Left Column: Focused Copy Stack (Strictly 4 text elements per Taste Skill) */}
-        <div className="lg:col-span-7 space-y-6 text-left">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12 pt-6 sm:pt-10 pb-12 relative z-10 my-auto">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-14 items-center w-full">
+          {/* Left Column: Focused Copy Stack (Strictly 4 text elements per Taste Skill) */}
+          <div className="lg:col-span-7 space-y-6 text-left">
           {/* 1. Eyebrow pill with live chromatic pulse */}
-          <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/25 text-xs font-mono text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+          <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-500/10 dark:bg-cyan-950/40 border border-cyan-500/30 dark:border-cyan-500/25 text-xs font-mono text-cyan-800 dark:text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)]">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
@@ -67,28 +91,29 @@ export function LandingHero() {
             </button>
           </div>
 
-          {/* Telemetry Micro-Pills */}
+          {/* Telemetry Micro-Pills (Unified Electric Cyan) */}
           <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-mono text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/90 shadow-[0_0_6px_rgba(6,182,212,0.4)]" />
               <span>8 Ingest Formats</span>
             </span>
             <span className="text-border">/</span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/90 shadow-[0_0_6px_rgba(6,182,212,0.4)]" />
               <span>Sentence-Level Citations</span>
             </span>
             <span className="text-border">/</span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/90 shadow-[0_0_6px_rgba(6,182,212,0.4)]" />
               <span>100% Grounded</span>
             </span>
           </div>
         </div>
 
-        {/* Right Column: Live Interactive 5-in-1 Simulator */}
-        <div className="lg:col-span-5 relative w-full">
-          <HeroProductDemo onExploreWorkflow={scrollToWorkbench} />
+          {/* Right Column: Live Interactive 5-in-1 Simulator */}
+          <div className="lg:col-span-5 relative w-full">
+            <HeroProductDemo onExploreWorkflow={scrollToWorkbench} />
+          </div>
         </div>
       </div>
     </section>

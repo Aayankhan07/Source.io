@@ -188,7 +188,7 @@ export function InteractiveWorkflowDemo({
   return (
     <section id="workbench" data-alias="simulator" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative z-10 max-w-6xl mx-auto scroll-mt-24 w-full">
       <div className="text-center max-w-xl mx-auto mb-8">
-        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/25 text-xs font-mono text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-2">
+        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-500/10 dark:bg-cyan-950/40 border border-cyan-500/30 dark:border-cyan-500/25 text-xs font-mono text-cyan-800 dark:text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-2">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
@@ -206,40 +206,40 @@ export function InteractiveWorkflowDemo({
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         {/* Tab Switcher with Chromatic Accents */}
         <div className="flex justify-center mb-4 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <TabsList className="bg-card/80 backdrop-blur-md border border-border p-1 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-sm">
+          <TabsList className="bg-card/80 backdrop-blur-md border border-slate-200/80 dark:border-border p-1 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-xs">
             <TabsTrigger 
               value="notes" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-amber-500/15 data-[state=active]:text-amber-300 data-[state=active]:border-amber-500/40 data-[state=active]:shadow-[0_0_12px_rgba(245,158,11,0.15)] data-[state=active]:border focus-visible:outline-none"
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
             >
-              <FileText className="h-3.5 w-3.5 text-amber-400" strokeWidth={1.5} />
+              <FileText className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
               <span>Study Notes</span>
             </TabsTrigger>
             <TabsTrigger 
               value="flashcards" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-violet-500/15 data-[state=active]:text-violet-300 data-[state=active]:border-violet-500/40 data-[state=active]:shadow-[0_0_12px_rgba(139,92,246,0.15)] data-[state=active]:border focus-visible:outline-none"
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
             >
-              <Layers className="h-3.5 w-3.5 text-violet-400" strokeWidth={1.5} />
+              <Layers className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
               <span>Flashcards</span>
             </TabsTrigger>
             <TabsTrigger 
               value="quiz" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-emerald-500/15 data-[state=active]:text-emerald-300 data-[state=active]:border-emerald-500/40 data-[state=active]:shadow-[0_0_12px_rgba(16,185,129,0.15)] data-[state=active]:border focus-visible:outline-none"
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
             >
-              <ListChecks className="h-3.5 w-3.5 text-emerald-400" strokeWidth={1.5} />
+              <ListChecks className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
               <span>Practice Quiz</span>
             </TabsTrigger>
             <TabsTrigger 
               value="podcast" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-rose-500/15 data-[state=active]:text-rose-300 data-[state=active]:border-rose-500/40 data-[state=active]:shadow-[0_0_12px_rgba(244,63,94,0.15)] data-[state=active]:border focus-visible:outline-none"
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
             >
-              <Headphones className="h-3.5 w-3.5 text-rose-400" strokeWidth={1.5} />
+              <Headphones className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
               <span>Audio Recap</span>
             </TabsTrigger>
             <TabsTrigger 
               value="chat" 
-              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.15)] data-[state=active]:border focus-visible:outline-none"
+              className="rounded-full text-xs gap-1.5 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-cyan-500/10 dark:data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-900 dark:data-[state=active]:text-cyan-200 data-[state=active]:border-cyan-500/30 dark:data-[state=active]:border-cyan-500/40 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.12)] data-[state=active]:border focus-visible:outline-none group"
             >
-              <MessagesSquare className="h-3.5 w-3.5 text-cyan-400" strokeWidth={1.5} />
+              <MessagesSquare className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400 group-data-[state=active]:text-cyan-600 dark:group-data-[state=active]:text-cyan-400 transition-colors" strokeWidth={1.5} />
               <span>Grounded Chat</span>
             </TabsTrigger>
           </TabsList>
@@ -338,17 +338,17 @@ export function InteractiveWorkflowDemo({
                         onClick={() => setHighlightedPassage(1)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 1 
-                            ? "bg-amber-500/10 border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.12)] ring-1 ring-amber-500/20" 
+                            ? "bg-cyan-500/10 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.12)] ring-1 ring-cyan-500/20" 
                             : "bg-accent/40 border-border hover:bg-accent/60"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 1 ? "text-amber-300" : "text-foreground"}`}>
+                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 1 ? "text-cyan-700 dark:text-cyan-300" : "text-foreground"}`}>
                             Principle 1: Superposition
                           </span>
                           <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
                             highlightedPassage === 1 
-                              ? "bg-amber-950/40 border-amber-500/30 text-amber-300" 
+                              ? "bg-cyan-500/10 dark:bg-cyan-950/40 border-cyan-500/30 text-cyan-800 dark:text-cyan-300" 
                               : "bg-card border-border text-foreground"
                           }`}>
                             §1.1 [p. 2]
@@ -369,12 +369,12 @@ export function InteractiveWorkflowDemo({
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 2 ? "text-cyan-300" : "text-foreground"}`}>
+                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 2 ? "text-cyan-700 dark:text-cyan-300" : "text-foreground"}`}>
                             Principle 2: Entanglement
                           </span>
                           <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
                             highlightedPassage === 2 
-                              ? "bg-cyan-950/40 border-cyan-500/30 text-cyan-300" 
+                              ? "bg-cyan-500/10 dark:bg-cyan-950/40 border-cyan-500/30 text-cyan-800 dark:text-cyan-300" 
                               : "bg-card border-border text-foreground"
                           }`}>
                             §1.3 [p. 4]
@@ -390,17 +390,17 @@ export function InteractiveWorkflowDemo({
                         onClick={() => setHighlightedPassage(3)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                           highlightedPassage === 3 
-                            ? "bg-violet-500/10 border-violet-500/40 shadow-[0_0_15px_rgba(139,92,246,0.12)] ring-1 ring-violet-500/20" 
+                            ? "bg-cyan-500/10 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.12)] ring-1 ring-cyan-500/20" 
                             : "bg-accent/40 border-border hover:bg-accent/60"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 3 ? "text-violet-300" : "text-foreground"}`}>
+                          <span className={`text-xs font-semibold font-mono ${highlightedPassage === 3 ? "text-cyan-700 dark:text-cyan-300" : "text-foreground"}`}>
                             Decoherence Decay
                           </span>
                           <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${
                             highlightedPassage === 3 
-                              ? "bg-violet-950/40 border-violet-500/30 text-violet-300" 
+                              ? "bg-cyan-500/10 dark:bg-cyan-950/40 border-cyan-500/30 text-cyan-800 dark:text-cyan-300" 
                               : "bg-card border-border text-foreground"
                           }`}>
                             §3.4 [p. 11]
@@ -427,7 +427,7 @@ export function InteractiveWorkflowDemo({
                     </div>
 
                     <div className="text-xs font-mono text-muted-foreground mb-2 flex items-center justify-between">
-                      <span className="text-cyan-400">{sourcePassages[highlightedPassage - 1].section}</span>
+                      <span className="text-cyan-700 dark:text-cyan-400 font-medium">{sourcePassages[highlightedPassage - 1].section}</span>
                       <span>Page {sourcePassages[highlightedPassage - 1].page}</span>
                     </div>
 
@@ -438,9 +438,9 @@ export function InteractiveWorkflowDemo({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-foreground leading-relaxed font-serif relative shadow-[0_0_20px_rgba(245,158,11,0.06)]"
+                        className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-foreground leading-relaxed font-serif relative shadow-[0_0_20px_rgba(6,182,212,0.08)]"
                       >
-                        <span className="absolute -top-2 right-3 text-xs font-mono font-bold bg-amber-400 text-black px-1.5 py-0.5 rounded shadow-xs">
+                        <span className="absolute -top-2 right-3 text-xs font-mono font-bold bg-cyan-500 dark:bg-cyan-400 text-slate-950 px-1.5 py-0.5 rounded shadow-xs">
                           VERIFIED HIGHLIGHT
                         </span>
                         "{sourcePassages[highlightedPassage - 1].text}"
@@ -558,10 +558,10 @@ export function InteractiveWorkflowDemo({
                   </button>
                   <div className="flex gap-1.5" role="group" aria-label="Leitner confidence rating">
                     {[
-                      { label: "Again", days: "1 day", ret: "72.0%", style: "hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400" },
-                      { label: "Hard", days: "2 days", ret: "84.5%", style: "hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400" },
-                      { label: "Good", days: "4 days", ret: "94.2%", style: "hover:bg-accent hover:text-foreground" },
-                      { label: "Easy", days: "7 days", ret: "98.8%", style: "hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400" },
+                      { label: "Again", days: "1 day", ret: "72.0%" },
+                      { label: "Hard", days: "2 days", ret: "84.5%" },
+                      { label: "Good", days: "4 days", ret: "94.2%" },
+                      { label: "Easy", days: "7 days", ret: "98.8%" },
                     ].map((item) => (
                       <Tooltip key={item.label}>
                         <TooltipTrigger asChild>
@@ -576,7 +576,7 @@ export function InteractiveWorkflowDemo({
                                 description: `Retention updated to ${item.ret} via Leitner algorithm`,
                               });
                             }}
-                            className={`text-xs px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent text-foreground font-medium transition-colors ${item.style}`}
+                            className="text-xs px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent hover:bg-cyan-500/10 hover:text-cyan-800 dark:hover:text-cyan-300 text-foreground font-medium transition-colors border border-transparent hover:border-cyan-500/30 cursor-pointer"
                           >
                             {item.label}
                           </button>

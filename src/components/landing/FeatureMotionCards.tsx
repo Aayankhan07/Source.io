@@ -46,7 +46,7 @@ export function FeatureMotionCards() {
   return (
     <section id="grounding" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl mx-auto scroll-mt-24 w-full">
       <div className="text-left max-w-2xl mb-12">
-        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/25 text-xs font-mono text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-3">
+        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-cyan-500/10 dark:bg-cyan-950/40 border border-cyan-500/30 dark:border-cyan-500/25 text-xs font-mono text-cyan-800 dark:text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.12)] mb-3">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
@@ -101,7 +101,7 @@ export function FeatureMotionCards() {
                     repeatType: "reverse",
                     delay: (idx % 8) * 0.1,
                   }}
-                  className="w-1.5 bg-gradient-to-t from-cyan-500 via-teal-400 to-emerald-400 rounded-full shadow-[0_0_8px_rgba(6,182,212,0.2)]"
+                  className="w-1.5 bg-gradient-to-t from-cyan-600 via-cyan-400 to-cyan-200 rounded-full shadow-[0_0_8px_rgba(6,182,212,0.25)]"
                 />
               ))}
             </div>
@@ -126,8 +126,8 @@ export function FeatureMotionCards() {
                   <div className="flex items-center gap-2 truncate pr-2">
                     <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
                       spk.name === "Clara" 
-                        ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20" 
-                        : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                        ? "bg-cyan-500/10 dark:bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30 dark:border-cyan-500/25" 
+                        : "bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-white/[0.08]"
                     }`}>
                       {spk.name}
                     </span>
@@ -240,12 +240,12 @@ export function FeatureMotionCards() {
                   <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline-block">
                     Interactive
                   </span>
-                  <button
+                    <button
                     type="button"
                     aria-label="Simulate spaced-repetition review step"
                     title="Simulate spaced-repetition review step"
                     onClick={simulateReview}
-                    className="inline-flex items-center gap-1 text-xs font-mono px-3 py-1 rounded-full bg-amber-400 hover:bg-amber-300 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1 text-xs font-mono px-3 py-1 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold shadow-[0_0_15px_rgba(6,182,212,0.25)] transition-all cursor-pointer"
                   >
                     <RotateCcw className="h-3 w-3" /> Simulate Review
                   </button>
@@ -257,35 +257,35 @@ export function FeatureMotionCards() {
             </div>
 
             <div className="grid grid-cols-3 gap-2.5 text-center font-mono text-xs">
-              <div className="p-3 rounded-2xl bg-amber-950/25 border border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.06)]">
-                <span className="text-amber-400/80 block text-xs mb-1 font-semibold">INTERVAL</span>
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.08] shadow-2xs">
+                <span className="text-slate-500 dark:text-muted-foreground block text-xs mb-1 font-semibold">INTERVAL</span>
                 <motion.span
                   key={leitnerInterval}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="font-bold text-amber-300 tabular-nums text-sm block"
+                  className="font-bold text-cyan-700 dark:text-cyan-300 tabular-nums text-sm block"
                 >
                   {leitnerInterval} Days
                 </motion.span>
               </div>
-              <div className="p-3 rounded-2xl bg-emerald-950/25 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.06)]">
-                <span className="text-emerald-400/80 block text-xs mb-1 font-semibold">RETENTION</span>
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.08] shadow-2xs">
+                <span className="text-slate-500 dark:text-muted-foreground block text-xs mb-1 font-semibold">RETENTION</span>
                 <motion.span
                   key={leitnerRetention}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="font-bold text-emerald-300 tabular-nums text-sm block"
+                  className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums text-sm block"
                 >
                   {leitnerRetention}%
                 </motion.span>
               </div>
-              <div className="p-3 rounded-2xl bg-violet-950/25 border border-violet-500/30 shadow-[0_0_12px_rgba(139,92,246,0.06)]">
-                <span className="text-violet-400/80 block text-xs mb-1 font-semibold">DECKS</span>
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.08] shadow-2xs">
+                <span className="text-slate-500 dark:text-muted-foreground block text-xs mb-1 font-semibold">DECKS</span>
                 <motion.span
                   key={leitnerCards}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="font-bold text-violet-300 tabular-nums text-sm block"
+                  className="font-bold text-slate-800 dark:text-zinc-200 tabular-nums text-sm block"
                 >
                   {leitnerCards} Cards
                 </motion.span>

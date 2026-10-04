@@ -26,21 +26,21 @@ export function LandingHeader() {
               <Sparkles className="h-3 w-3" strokeWidth={1.5} />
             </div>
             <span className="font-semibold tracking-tight text-sm font-display text-foreground">
-              Source<span className="text-cyan-400">.io</span>
+              Source<span className="text-cyan-600 dark:text-cyan-400">.io</span>
             </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-muted-foreground">
-            <a href="#workbench" className="hover:text-cyan-300 transition-colors">
+            <a href="#workbench" className="hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors">
               The 5 Views
             </a>
-            <a href="#grounding" className="hover:text-cyan-300 transition-colors">
+            <a href="#grounding" className="hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors">
               Verification Engine
             </a>
-            <a href="#pipeline" className="hover:text-cyan-300 transition-colors">
+            <a href="#pipeline" className="hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors">
               Pipeline
             </a>
-            <a href="#comparison" className="hover:text-cyan-300 transition-colors">
+            <a href="#comparison" className="hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors">
               Comparison
             </a>
           </nav>
