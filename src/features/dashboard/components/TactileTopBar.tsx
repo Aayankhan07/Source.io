@@ -9,15 +9,17 @@ import { useAuth } from "@/features/auth/context/AuthContext";
 import { cn } from "@/lib/utils";
 
 interface TactileTopBarProps {
-  activePill: string;
-  onSelectPill: (pill: string) => void;
+  activePill?: string;
+  onSelectPill?: (pill: string) => void;
   onOpenSearch?: () => void;
+  showPills?: boolean;
 }
 
 export function TactileTopBar({
-  activePill,
+  activePill = "dashboard",
   onSelectPill,
   onOpenSearch,
+  showPills = false,
 }: TactileTopBarProps) {
   const router = useRouter();
   const { user, signOut } = useAuth();
@@ -101,34 +103,36 @@ export function TactileTopBar({
         </div>
       </div>
 
-      {/* Center Segmented Floating Pill Bar */}
-      <div className="flex items-center p-1 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-black/[0.04] dark:border-white/10 shadow-tactile-card overflow-x-auto scrollbar-none max-w-full">
-        {pills.map((pill) => {
-          const isActive = activePill === pill.id;
+      {/* Center Segmented Floating Pill Bar (Only when showPills is true) */}
+      {showPills && onSelectPill && (
+        <div className="flex items-center p-1 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-black/[0.04] dark:border-white/10 shadow-tactile-card overflow-x-auto scrollbar-none max-w-full">
+          {pills.map((pill) => {
+            const isActive = activePill === pill.id;
 
-          return (
-            <button
-              key={pill.id}
-              onClick={() => onSelectPill(pill.id)}
-              className={cn(
-                "relative px-3.5 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-[13px] font-semibold transition-colors duration-200 cursor-pointer z-10 whitespace-nowrap shrink-0",
-                isActive
-                  ? "text-white dark:text-slate-950"
-                  : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
-              )}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="active-tactile-top-pill"
-                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                  className="absolute inset-0 rounded-full bg-[#1E232A] dark:bg-white shadow-tactile-pill -z-10"
-                />
-              )}
-              {pill.label}
-            </button>
-          );
-        })}
-      </div>
+            return (
+              <button
+                key={pill.id}
+                onClick={() => onSelectPill(pill.id)}
+                className={cn(
+                  "relative px-3.5 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-[13px] font-semibold transition-colors duration-200 cursor-pointer z-10 whitespace-nowrap shrink-0",
+                  isActive
+                    ? "text-white dark:text-slate-950"
+                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
+                )}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="active-tactile-top-pill"
+                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    className="absolute inset-0 rounded-full bg-[#1E232A] dark:bg-white shadow-tactile-pill -z-10"
+                  />
+                )}
+                {pill.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Top Right Utilities: Search, Notifications, Profile (NO THEME TOGGLE) */}
       <div className="flex items-center gap-2 sm:gap-2.5">
