@@ -50,7 +50,7 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
       activeView={activeView}
       onSelectView={setActiveView}
     >
-      <div className={cn("luminous-app flex h-screen bg-background text-foreground antialiased font-sans", theme === "dark" && "dark")}>
+      <div className={cn("luminous-app flex h-screen bg-tactile-canvas text-foreground antialiased font-sans", theme === "dark" && "dark")}>
         {/* Unified Tactile Left Dock across ALL pages */}
         <TactileLeftDock 
           onNewSource={() => setUploadOpen(true)}
@@ -63,10 +63,10 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
         {/* Main Content Area */}
         <main 
           className={cn(
-            "flex-1 transition-all duration-300 ease-out",
+            "flex-1 transition-all duration-300 ease-out bg-tactile-canvas",
             isDocWorkspace 
               ? "overflow-hidden flex flex-col h-screen" 
-              : "overflow-y-auto bg-tactile-canvas pb-20 md:pb-6",
+              : "overflow-y-auto pb-20 md:pb-6",
             sidebarExpanded ? "md:pl-[270px]" : "md:pl-24"
           )}
         >
