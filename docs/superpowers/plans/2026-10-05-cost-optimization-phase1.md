@@ -472,9 +472,67 @@
 
 ---
 
+### Task 7: Build Floating `DailyQuotaPill` Component
+
+**Files:**
+- Create: `src/components/common/DailyQuotaPill.tsx`
+
+**Interfaces:**
+- Consumes: `useAuth()`, `useSettings()`, Supabase query on `ai_usage_logs`
+- Produces: `<DailyQuotaPill isCopilotOpen?: boolean />`
+
+- [ ] **Step 1: Write `DailyQuotaPill.tsx`**
+  Implement floating pill with:
+  - React Query hook counting today's chat queries from `ai_usage_logs` (`where user_id = user.id and feature = 'chat' and created_at >= todayUtc`).
+  - Check `settings.apiKeys.groq || settings.apiKeys.gemini || settings.apiKeys.openai` to show "Unlimited (BYOK)" badge if custom key is active.
+  - Live timer calculating time remaining until midnight UTC (`Resets in Xh Ym`).
+  - Dynamic positioning: `bottom-5 right-6` on dashboard/settings/collapsed copilot; smoothly shifts to `bottom-5 left-24` when inside document workspace with Copilot open.
+  - Amber glow for ≤ 3 remaining, Rose glow for 0 remaining.
+  - Popover with full breakdown and button linking to `/app/settings`.
+
+- [ ] **Step 2: Verify typecheck**
+  ```bash
+  npm run typecheck
+  ```
+
+- [ ] **Step 3: Commit component**
+  ```bash
+  git add src/components/common/DailyQuotaPill.tsx
+  git commit -m "feat(ui): create floating DailyQuotaPill with live UTC countdown and dynamic placement"
+  ```
+
+---
+
+### Task 8: Integrate Floating `DailyQuotaPill` Globally into App Shell
+
+**Files:**
+- Modify: `src/features/documents/pages/AppHome.tsx`
+
+**Interfaces:**
+- Mounts `<DailyQuotaPill />` globally inside `AppHome` layout.
+
+- [ ] **Step 1: Import and mount `DailyQuotaPill` in `AppHome.tsx`**
+  Mount `DailyQuotaPill` as a floating global element inside the main app shell container.
+  Pass `isDocWorkspace` and check if copilot is open to manage positioning.
+
+- [ ] **Step 2: Test full build**
+  ```bash
+  npm run typecheck
+  npm run build
+  ```
+
+- [ ] **Step 3: Commit integration**
+  ```bash
+  git add src/features/documents/pages/AppHome.tsx
+  git commit -m "feat(layout): mount floating DailyQuotaPill globally across all pages"
+  ```
+
+---
+
 ## Plan Self-Review Checklist
 
-1. **Spec Coverage**: All Phase 1 deliverables from `docs/cost-optimization-analysis.md` (`max_completion_tokens`, unique idempotency key index, distributed in-flight locks, server-side daily quotas, secure telemetry logs) are covered in Tasks 1–6.
+1. **Spec Coverage**: All Phase 1 deliverables from `docs/cost-optimization-analysis.md` (`max_completion_tokens`, unique idempotency key index, distributed in-flight locks, server-side daily quotas, secure telemetry logs, floating daily quota pill) are covered in Tasks 1–8.
 2. **No Placeholders**: Every task contains exact SQL, TypeScript code blocks, and bash verification commands.
 3. **Type Consistency**: `UsageRecord`, `JobKind`, and `checkDailyQuota` signatures match across all shared modules.
-4. **Review Focus**: Daily reset behavior, error logging, and idempotency conflicts (23505) are handled.
+4. **Review Focus**: Daily reset behavior, error logging, idempotency conflicts, and collision avoidance when Ask Copilot is open are handled.
+
