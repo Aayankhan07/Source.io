@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useSettings } from "@/features/settings/context/SettingsContext";
-import { useAppShell } from "@/features/documents/context/AppShellContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Popover,
@@ -26,7 +26,9 @@ import {
   Cpu,
   ChevronDown,
   ChevronUp,
-  Info
+  Info,
+  GripVertical,
+  RotateCcw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,12 +39,59 @@ export function DailyQuotaPill() {
   const pathname = usePathname();
   const { user } = useAuth();
   const { settings } = useSettings();
-  const { copilotOpen } = useAppShell();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [showAllowanceWhy, setShowAllowanceWhy] = useState(false);
   const [showActivityHistory, setShowActivityHistory] = useState(false);
 
-  const isDocWorkspace = pathname.startsWith("/app/doc/");
+  // Movable draggable position state (Default: top right x=0, y=0)
+  const [pos, setPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const posRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Restore saved position from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("source_quota_pill_pos");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+          const maxX = 20;
+          const minX = -(window.innerWidth - 140);
+          const minY = -10;
+          const maxY = window.innerHeight - 60;
+          const clampedX = Math.max(minX, Math.min(maxX, parsed.x));
+          const clampedY = Math.max(minY, Math.min(maxY, parsed.y));
+          setPos({ x: clampedX, y: clampedY });
+          posRef.current = { x: clampedX, y: clampedY };
+        }
+      }
+    } catch {}
+  }, []);
+
+  const handleResetPosition = () => {
+    setPos({ x: 0, y: 0 });
+    posRef.current = { x: 0, y: 0 };
+    try {
+      localStorage.removeItem("source_quota_pill_pos");
+    } catch {}
+  };
+
+  const handleDragEnd = (_: unknown, info: { offset: { x: number; y: number } }) => {
+    const maxX = 20;
+    const minX = -(window.innerWidth - 140);
+    const minY = -10;
+    const maxY = window.innerHeight - 60;
+    const nextX = Math.max(minX, Math.min(maxX, posRef.current.x + info.offset.x));
+    const nextY = Math.max(minY, Math.min(maxY, posRef.current.y + info.offset.y));
+    const newPos = { x: nextX, y: nextY };
+    setPos(newPos);
+    posRef.current = newPos;
+    try {
+      localStorage.setItem("source_quota_pill_pos", JSON.stringify(newPos));
+    } catch {}
+    setTimeout(() => setIsDragging(false), 120);
+  };
+
 
   // Live countdown to midnight UTC
   const [timeUntilReset, setTimeUntilReset] = useState<string>("");
@@ -240,16 +289,6 @@ export function DailyQuotaPill() {
     return "Constrained";
   }, [tokenPercentRemaining]);
 
-  // Dynamic collision avoidance:
-  // When inside a document workspace AND copilot is open, shift to bottom-5 left-28
-  // (safely clear of both the left dock and the chat input on the right rail).
-  const positionClasses = useMemo(() => {
-    if (isDocWorkspace && copilotOpen) {
-      return "bottom-5 left-[110px] md:left-[116px]";
-    }
-    return "bottom-5 right-6";
-  }, [isDocWorkspace, copilotOpen]);
-
   // Alert glowing state styles
   const glowClasses = useMemo(() => {
     if (hasByok) {
@@ -265,23 +304,43 @@ export function DailyQuotaPill() {
   }, [hasByok, remaining]);
 
   return (
-    <div
-      className={cn(
-        "fixed z-40 transition-all duration-300 ease-out select-none",
-        positionClasses
-      )}
+    <motion.div
+      drag
+      dragMomentum={false}
+      dragElastic={0.06}
+      onDragStart={() => {
+        setIsDragging(true);
+        setPopoverOpen(false);
+      }}
+      onDragEnd={handleDragEnd}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={{ type: "spring", damping: 30, stiffness: 450 }}
+      className="fixed top-3.5 right-4 sm:right-6 z-50 select-none cursor-grab active:cursor-grabbing"
     >
-      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <Popover 
+        open={popoverOpen} 
+        onOpenChange={(open) => {
+          if (isDragging) return;
+          setPopoverOpen(open);
+        }}
+      >
         <PopoverTrigger asChild>
           <button
+            onClick={(e) => {
+              if (isDragging) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
             className={cn(
-              "group h-8 px-3 rounded-full flex items-center gap-2 cursor-pointer",
+              "group h-8 px-3 rounded-full flex items-center gap-1.5 cursor-grab active:cursor-grabbing",
               "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-tactile-pill",
               "hover:scale-105 active:scale-95 transition-all text-xs font-semibold",
               glowClasses
             )}
-            title="Daily AI & Provider Usage Allowance"
+            title="Drag anywhere to reposition • Click to view usage allowance"
           >
+            <GripVertical className="size-3 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 transition-colors shrink-0 -ml-0.5" />
             {hasByok ? (
               <>
                 <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -321,9 +380,10 @@ export function DailyQuotaPill() {
         </PopoverTrigger>
 
         <PopoverContent
-          side="top"
-          align={isDocWorkspace && copilotOpen ? "start" : "end"}
+          side="bottom"
+          align="end"
           sideOffset={8}
+          collisionPadding={12}
           className="w-88 max-w-[calc(100vw-32px)] p-4.5 rounded-3xl bg-white dark:bg-slate-900 border border-black/[0.08] dark:border-white/10 shadow-tactile-card backdrop-blur-md text-foreground"
         >
           <div className="space-y-3.5">
@@ -333,9 +393,20 @@ export function DailyQuotaPill() {
                 <Zap className="size-4 text-purple-600 dark:text-purple-400" />
                 <h4 className="font-bold text-xs font-display">Plan & Quota Dashboard</h4>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold">
-                {hasByok ? "BYOK Active" : "Free Student Plan"}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleResetPosition}
+                  className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex items-center gap-0.5 cursor-pointer transition-colors"
+                  title="Reset pill position to top right default"
+                >
+                  <RotateCcw className="size-2.5" />
+                  <span>Reset pos</span>
+                </button>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold">
+                  {hasByok ? "BYOK Active" : "Free Student Plan"}
+                </span>
+              </div>
             </div>
 
             {/* ========================================================= */}
@@ -577,7 +648,7 @@ export function DailyQuotaPill() {
           </div>
         </PopoverContent>
       </Popover>
-    </div>
+    </motion.div>
   );
 }
 
