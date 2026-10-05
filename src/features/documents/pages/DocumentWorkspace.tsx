@@ -38,7 +38,7 @@ type DocumentAssets = {
   podcast: PodcastRow | null;
 };
 
-type TabId = "notes" | "cards" | "quiz" | "podcast" | "chat";
+type TabId = "notes" | "cards" | "quiz" | "podcast";
 
 export default function DocumentWorkspace() {
   const params = useParams();
@@ -444,7 +444,6 @@ export default function DocumentWorkspace() {
     { id: "cards", label: "Flashcards", count: cards.length },
     { id: "quiz", label: "Quiz" },
     { id: "podcast", label: "Podcast" },
-    { id: "chat", label: "Ask AI Chat" },
   ];
 
   return (
@@ -747,19 +746,6 @@ export default function DocumentWorkspace() {
           </div>
         )}
 
-        {currentTab === "chat" && (
-          <div className="h-full overflow-hidden p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto flex flex-col">
-            <AskPanel
-              documentId={doc.id}
-              noteMarkdown={note?.markdown}
-              headings={headings}
-              onScrollToHeading={(id) => {
-                setActiveHeadingId(id);
-                setCurrentTab("notes");
-              }}
-            />
-          </div>
-        )}
       </div>
 
       {/* 4. Delete Document Confirmation Dialog */}
