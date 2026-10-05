@@ -1,6 +1,7 @@
 // RAG streaming chat for a document. Embeds the question, retrieves top-k chunks,
 // streams Gemini response, persists messages, and returns citations as a leading SSE event.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { checkDailyQuota } from "../_shared/quotas.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -160,6 +161,18 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Document not found" }), {
       status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  }
+
+  // Cost guardrail: check daily free Copilot question quota (25/day, UTC midnight reset)
+  const quota = await checkDailyQuota(admin, userId, "chat", 25);
+  if (!quota.allowed) {
+    return new Response(
+      JSON.stringify({
+        error: "Daily free Copilot question limit reached (25/day). Your quota will reset at midnight UTC.",
+        quotaExceeded: true,
+      }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   try {
