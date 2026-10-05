@@ -446,55 +446,50 @@ export default function DocumentWorkspace() {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-background overflow-hidden">
-      {/* 1. Header (Wireframe clean style, no search) */}
-      <header className="border-b border-border/80 bg-background/95 backdrop-blur-md px-3 sm:px-6 py-2 flex items-center justify-between gap-3 shrink-0 z-20">
-        {/* Left: Sidebar Toggle, Library Back & Document Info */}
+    <div className="h-full flex flex-col bg-tactile-canvas overflow-hidden">
+      {/* 1. Header (Tactile clean style) */}
+      <header className="border-b border-black/[0.04] dark:border-white/10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3 shrink-0 z-20 select-none">
+        {/* Left: Sidebar Toggle, Dashboard Back & Document Info */}
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           {currentTab === "notes" && (
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
               onClick={() => setOutlineRetracted(!outlineRetracted)}
               className={cn(
-                "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex shrink-0",
-                !outlineRetracted && "bg-muted/60 text-foreground"
+                "size-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors hidden lg:inline-flex shrink-0 cursor-pointer",
+                !outlineRetracted ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "hover:bg-slate-100 dark:hover:bg-slate-800"
               )}
               title={outlineRetracted ? "Expand outline" : "Retract outline"}
             >
-              {outlineRetracted ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-            </Button>
+              {outlineRetracted ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+            </button>
           )}
 
           {openMobileNav && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden -ml-1 text-muted-foreground hover:text-foreground shrink-0"
+            <button
+              className="md:hidden size-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
               onClick={openMobileNav}
               aria-label="Open navigation"
             >
-              <Menu className="h-4 w-4" />
-            </Button>
+              <Menu className="size-4" />
+            </button>
           )}
 
-          <div className="flex items-center gap-2 min-w-0">
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className="flex items-center gap-2.5 min-w-0">
+            <button
               onClick={() => router.push("/app")}
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-md hidden sm:inline-flex shrink-0"
+              className="h-8 px-3 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
             >
-              <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Library
-            </Button>
-            <span className="text-muted-foreground/40 hidden sm:inline">/</span>
-            <h1 className="text-xs sm:text-sm font-semibold text-foreground tracking-tight truncate max-w-xs sm:max-w-sm md:max-w-md font-display">
+              <ChevronLeft className="size-3.5" />
+              <span>Dashboard</span>
+            </button>
+            <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
+            <h1 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate max-w-xs sm:max-w-sm md:max-w-md font-display">
               {doc.title}
             </h1>
-            <Badge variant="outline" className="text-[11px] font-mono border-border/80 text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full shrink-0">
+            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-semibold border border-black/[0.04] dark:border-white/10 shrink-0">
               {doc.source_type}
-            </Badge>
-            <span className="text-xs text-muted-foreground hidden md:inline shrink-0 font-mono">
+            </span>
+            <span className="text-xs text-slate-400 dark:text-slate-500 hidden md:inline shrink-0 font-mono">
               {readTimeMinutes} min read
             </span>
           </div>
@@ -504,36 +499,30 @@ export default function DocumentWorkspace() {
         <div className="flex items-center gap-1.5 shrink-0">
           {currentTab === "notes" && (
             <>
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={handleCopyNotes}
-                className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex border-border/80"
+                className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full hidden sm:inline-flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                {copiedNotes ? <Check className="h-3 w-3 mr-1 text-emerald-500" /> : <Copy className="h-3 w-3 mr-1" />}
+                {copiedNotes ? <Check className="size-3 text-emerald-500 stroke-[2.5]" /> : <Copy className="size-3" />}
                 <span>{copiedNotes ? "Copied" : "Copy"}</span>
-              </Button>
+              </button>
 
               {note?.markdown && (
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
                   onClick={generate}
                   disabled={streaming}
-                  className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground rounded-full hidden sm:inline-flex border-border/80"
+                  className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full hidden sm:inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  <RefreshCw className={cn("h-3 w-3 mr-1", streaming && "animate-spin text-primary")} />
+                  <RefreshCw className={cn("size-3", streaming && "animate-spin text-sky-500")} />
                   <span>Regenerate</span>
-                </Button>
+                </button>
               )}
 
               {/* In-Context Notes & Reading Settings Popover */}
               <NotesSettingsPopover />
 
               {/* Focus Mode */}
-              <Button
-                variant="ghost"
-                size="icon"
+              <button
                 onClick={() => {
                   if (!focusMode) {
                     setOutlineOpen(false);
@@ -546,27 +535,24 @@ export default function DocumentWorkspace() {
                   }
                 }}
                 className={cn(
-                  "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hidden lg:inline-flex",
-                  focusMode && "bg-primary/10 text-primary"
+                  "size-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer hidden lg:inline-flex",
+                  focusMode ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950" : "hover:bg-slate-100 dark:hover:bg-slate-800"
                 )}
                 title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
               >
-                {focusMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-              </Button>
-
+                {focusMode ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
+              </button>
             </>
           )}
 
           {/* Delete Document */}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={() => setDeleteOpen(true)}
             title="Delete document"
-            className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full shrink-0"
+            className="size-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
           >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+            <Trash2 className="size-3.5" />
+          </button>
         </div>
       </header>
 
@@ -654,24 +640,24 @@ export default function DocumentWorkspace() {
 
                 {/* Center Stage: Notes Reading Content */}
                 <ResizablePanel defaultSize={outlineRetracted ? (askPanelOpen ? 72 : 96) : (askPanelOpen ? 58 : 82)}>
-                  <main className="h-full overflow-y-auto relative bg-background/50">
+                  <main className="h-full overflow-y-auto relative bg-tactile-canvas">
                     <div className="p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
                       {/* "On this page: ..." Summary Banner (Wireframe Badge 4) */}
                       {headings.length > 0 && notesSettings.showPageSummaryBanner && (
-                        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted/40 border border-border/70 text-xs text-muted-foreground animate-fade-in">
-                          <span className="font-semibold text-foreground shrink-0 font-display">On this page:</span>
+                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-[18px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-black/[0.04] dark:border-white/10 text-xs text-slate-600 dark:text-slate-400 shadow-2xs animate-fade-in">
+                          <span className="font-bold text-slate-900 dark:text-white shrink-0 font-display">On this page:</span>
                           <div className="flex items-center gap-1.5 overflow-x-auto truncate scrollbar-none">
                             {headings.slice(0, 6).map((h, idx) => (
                               <button
                                 key={h.id}
                                 onClick={() => setActiveHeadingId(h.id)}
-                                className="hover:text-foreground hover:underline transition-colors shrink-0 text-left cursor-pointer"
+                                className="hover:text-slate-900 dark:hover:text-white hover:underline transition-colors shrink-0 text-left cursor-pointer"
                               >
                                 {h.text}{idx < Math.min(headings.length, 6) - 1 ? " · " : ""}
                               </button>
                             ))}
                             {headings.length > 6 && (
-                              <span className="shrink-0 text-muted-foreground/60">+{headings.length - 6} more</span>
+                              <span className="shrink-0 text-slate-400">+{headings.length - 6} more</span>
                             )}
                           </div>
                         </div>
@@ -679,34 +665,34 @@ export default function DocumentWorkspace() {
 
                       {assetsQuery.isLoading ? (
                         <div className="flex items-center justify-center py-24">
-                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                          <Loader2 className="size-6 animate-spin text-slate-400" />
                         </div>
                       ) : note?.markdown ? (
                         <div className="space-y-6 animate-fade-in pb-16">
-                          <div className="bg-card p-8 sm:p-12 rounded-3xl border border-border/80 shadow-sm">
+                          <div className="rounded-[32px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-8 sm:p-12">
                             <MarkdownView>{note.markdown}</MarkdownView>
                           </div>
                           {streaming && (
-                            <div className="flex items-center gap-2 text-xs text-primary font-mono bg-primary/10 p-3 rounded-full border border-primary/20 max-w-max">
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" /> Stream compiling notes…
+                            <div className="flex items-center gap-2 text-xs text-sky-600 dark:text-sky-400 font-mono bg-sky-50 dark:bg-sky-950/40 p-3 rounded-full border border-sky-200 dark:border-sky-800 max-w-max">
+                              <Loader2 className="size-3.5 animate-spin" /> Stream compiling notes…
                             </div>
                           )}
                         </div>
                       ) : doc.status === "ready" ? (
-                        <div className="border border-border rounded-2xl p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-card shadow-sm animate-fade-in">
-                          <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
-                            <Sparkles className="h-5 w-5" />
+                        <div className="rounded-[28px] border border-black/[0.04] dark:border-white/10 p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-white dark:bg-slate-900 shadow-tactile-card animate-fade-in">
+                          <div className="size-12 rounded-2xl bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center text-amber-700 dark:text-amber-400 mx-auto">
+                            <Sparkles className="size-6" />
                           </div>
                           <div className="space-y-1">
-                            <h3 className="font-semibold text-foreground font-display text-sm">Generate study notes</h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
+                            <h3 className="font-bold text-slate-900 dark:text-white font-display text-base">Generate study notes</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                               We've indexed your material. Generate structured teaching notes to begin.
                             </p>
                           </div>
-                          <Button onClick={generate} disabled={streaming} className="rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90">
-                            {streaming ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-                            Generate Notes
-                          </Button>
+                          <button onClick={generate} disabled={streaming} className="h-10 px-5 rounded-full text-xs font-bold bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer flex items-center gap-2 mx-auto">
+                            {streaming ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+                            <span>Generate Notes</span>
+                          </button>
                         </div>
                       ) : isProcessing ? (
                         <Placeholder title="Parsing source file..." desc="We're compiling the documents. The study dashboard will start shortly." loading />

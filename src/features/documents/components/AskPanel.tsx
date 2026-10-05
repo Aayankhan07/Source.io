@@ -126,55 +126,50 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-card/60 backdrop-blur-sm shrink-0 overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-l border-black/[0.04] dark:border-white/10 shrink-0 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-border/60 shrink-0 bg-background/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.04] dark:border-white/10 shrink-0 bg-slate-50/50 dark:bg-white/[0.02]">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-foreground tracking-tight font-display">
-            Ask this lecture
+          <div className="size-6 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 flex items-center justify-center shrink-0">
+            <Sparkles className="size-3.5" />
+          </div>
+          <span className="text-xs font-bold text-slate-900 dark:text-white tracking-tight font-display">
+            Ask Copilot
           </span>
         </div>
-        <div className="flex items-center gap-0.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-full"
+        <div className="flex items-center gap-1">
+          <button
+            className="size-7 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center justify-center transition-colors cursor-pointer"
             onClick={() => setSuggestedExpanded(!suggestedExpanded)}
             title={suggestedExpanded ? "Collapse suggestions" : "Expand suggestions"}
             aria-label={suggestedExpanded ? "Collapse suggestions" : "Expand suggestions"}
           >
-            <Sparkles className={cn("h-3.5 w-3.5 transition-transform", suggestedExpanded && "rotate-180")} />
-          </Button>
+            <Sparkles className={cn("size-3.5 transition-transform", suggestedExpanded && "rotate-180")} />
+          </button>
           {onClose && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-full"
+            <button
+              className="size-7 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center justify-center transition-colors cursor-pointer"
               onClick={onClose}
               title="Collapse Ask panel"
               aria-label="Collapse Ask panel"
             >
-              <PanelRightClose className="h-3.5 w-3.5" />
-            </Button>
+              <PanelRightClose className="size-3.5" />
+            </button>
           )}
         </div>
       </div>
 
       {/* Suggested Questions */}
-      <div className={cn("px-3 py-2 border-b border-border/60 transition-all duration-200 overflow-hidden", !suggestedExpanded && "max-h-0 p-0 opacity-0")}>
+      <div className={cn("px-3.5 py-2.5 border-b border-black/[0.04] dark:border-white/10 transition-all duration-200 overflow-hidden", !suggestedExpanded && "max-h-0 p-0 opacity-0")}>
         <div className="flex flex-wrap gap-1.5" role="list" aria-label="Suggested questions">
           {SUGGESTED_QUESTIONS.map((q) => (
-            <Button
+            <button
               key={q}
-              variant="outline"
-              size="sm"
-              className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground border-border/60 hover:border-primary/40 rounded-full"
-              role="listitem"
               onClick={() => void send(q)}
-              disabled={sending}
+              className="h-7 px-3 text-[11px] font-medium rounded-full bg-slate-100/80 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
             >
               {q}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
@@ -257,10 +252,10 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-3 border-t border-border/60 shrink-0 bg-background/40 space-y-2">
+      <div className="p-3.5 border-t border-black/[0.04] dark:border-white/10 shrink-0 bg-slate-50/50 dark:bg-white/[0.02] space-y-2">
         {messages.length === 0 && (
-          <div className="px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/50 text-[11px] text-muted-foreground flex items-center gap-1.5 font-mono">
-            <ArrowUpRight className="h-3 w-3 text-primary shrink-0" />
+          <div className="px-3 py-1.5 rounded-[12px] bg-slate-100/70 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-mono">
+            <ArrowUpRight className="size-3 text-purple-600 dark:text-purple-400 shrink-0" />
             <span>Answer cites ↗ highlights passage in notes</span>
           </div>
         )}
@@ -269,20 +264,19 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask a question…"
-            className="flex-1 min-h-[44px] max-h-32 resize-none text-xs pr-8"
+            placeholder="Ask a question about this lecture…"
+            className="flex-1 min-h-[44px] max-h-32 resize-none text-xs rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 pr-2 py-2.5 focus:ring-1 focus:ring-slate-950 dark:focus:ring-white"
             rows={1}
             disabled={sending}
           />
-          <Button
+          <button
             onClick={() => void send()}
             disabled={!input.trim() || sending}
-            size="icon"
-            className="h-8 w-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
+            className="size-9 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:scale-105 active:scale-95 transition-all shadow-tactile-pill flex items-center justify-center shrink-0 disabled:opacity-40 cursor-pointer"
             aria-label="Send"
           >
-            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          </Button>
+            {sending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+          </button>
         </div>
       </div>
     </div>
