@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
   Bot,
   Headphones,
   Palette,
   Database,
-  ChevronLeft,
+  ArrowLeft,
   Settings as SettingsIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,85 +30,65 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-background overflow-hidden">
-      {/* Header bar */}
-      <header className="border-b border-border/80 bg-background/95 backdrop-blur-md px-4 sm:px-8 py-3.5 flex items-center justify-between shrink-0 z-20">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/app")}
-            className="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground rounded-full flex items-center gap-1.5 cursor-pointer"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            <span>Library</span>
-          </Button>
-          <span className="text-muted-foreground/40">/</span>
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-              <SettingsIcon className="h-3.5 w-3.5" />
-            </div>
-            <h1 className="text-sm font-semibold text-foreground font-display tracking-tight">
-              Settings
-            </h1>
+    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      {/* Top Header */}
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <SettingsIcon className="size-4" />
+            </span>
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-400">
+              Preferences
+            </span>
           </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold font-display text-slate-900 dark:text-white tracking-tight">
+            Platform Settings
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Configure AI reasoning engines, custom provider API keys, audio recap voices, and reading ergonomics.
+          </p>
         </div>
-      </header>
 
-      {/* Main Settings Body */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-10 space-y-8">
-          {/* Header Title & Intro */}
-          <div className="space-y-1.5 border-b border-border/60 pb-6">
-            <h2 className="text-2xl font-bold font-display text-foreground tracking-tight">
-              Platform Settings
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Customize your AI reasoning models, audio recap host profiles, reading speed, and local credentials.
-            </p>
-          </div>
+        <button
+          onClick={() => router.push("/app")}
+          className="self-start sm:self-auto h-9 px-4 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+        >
+          <ArrowLeft className="size-3.5" />
+          <span>Back to Dashboard</span>
+        </button>
+      </div>
 
-          {/* Settings Two-Column Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-            {/* Left Tab Navigation */}
-            <div className="md:col-span-3 space-y-1">
-              <span className="text-[10.5px] font-mono uppercase tracking-wider text-muted-foreground px-2 font-semibold block mb-2">
-                Preferences
-              </span>
-              <nav className="flex md:flex-col gap-1 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={cn(
-                        "w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2.5 shrink-0 cursor-pointer",
-                        isActive
-                          ? "bg-slate-900 text-white dark:bg-white dark:text-zinc-950 font-semibold shadow-xs"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                      )}
-                    >
-                      <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-current" : "text-muted-foreground")} />
-                      <div className="flex flex-col min-w-0">
-                        <span className="truncate">{tab.label}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
+      {/* Floating Capsule Tab Pill Bar */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 sm:mb-8 scrollbar-none select-none">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
 
-            {/* Right Content Pane */}
-            <div className="md:col-span-9 min-w-0 pb-16">
-              {activeTab === "models" && <AIModelSettings />}
-              {activeTab === "audio" && <AudioSettings />}
-              {activeTab === "appearance" && <AppearanceSettings />}
-              {activeTab === "data" && <DataStorageSettings />}
-            </div>
-          </div>
-        </div>
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "h-10 px-4 sm:px-5 rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap shadow-2xs",
+                isActive
+                  ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-tactile-pill scale-[1.02]"
+                  : "bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 border border-black/[0.04] dark:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+              )}
+            >
+              <Icon className="size-4 shrink-0" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Active Tab Settings Panels */}
+      <div className="w-full pb-16">
+        {activeTab === "models" && <AIModelSettings />}
+        {activeTab === "audio" && <AudioSettings />}
+        {activeTab === "appearance" && <AppearanceSettings />}
+        {activeTab === "data" && <DataStorageSettings />}
       </div>
     </div>
   );
