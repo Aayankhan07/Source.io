@@ -10,12 +10,18 @@ import {
   Mic, 
   Video, 
   Youtube, 
-  Maximize2,
   X,
-  ArrowRight
+  ArrowRight,
+  Trash2,
+  Layers,
+  AlertTriangle
 } from "lucide-react";
 import { DocumentRow } from "@/features/documents/types";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface TactileSourceCardsProps {
   documents: DocumentRow[];
@@ -64,12 +70,20 @@ const DEMO_SOURCES = [
   },
 ];
 
-export function TactileSourceCards({ documents, isLoading, onNewSource, onExpandView }: TactileSourceCardsProps) {
+export function TactileSourceCards({ documents, isLoading, onNewSource }: TactileSourceCardsProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const displayList = documents.length > 0
+  const isRealData = documents.length > 0;
+  const activeCount = documents.length;
+  const isFull = activeCount >= 3;
+  const slotsRemaining = Math.max(0, 3 - activeCount);
+
+  const displayList = isRealData
     ? documents.map((doc, idx) => ({
         id: doc.id,
         title: doc.title,
@@ -78,8 +92,9 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, onExpand
         date: new Date(doc.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
         color: idx % 3 === 0 ? "lavender" : idx % 3 === 1 ? "sky" : "mint",
         collaborators: ["S", "AI"],
+        isReal: true,
       }))
-    : DEMO_SOURCES;
+    : DEMO_SOURCES.map((d) => ({ ...d, isReal: false }));
 
   const filteredList = displayList.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -87,6 +102,35 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, onExpand
     const matchesType = filterType === "all" || item.source_type.toLowerCase() === filterType.toLowerCase();
     return matchesSearch && matchesType;
   });
+
+  const handleDelete = async (e: React.MouseEvent, docId: string, title: string) => {
+    e.stopPropagation();
+    if (deletingId) return;
+
+    if (!confirm(`Delete "${title}"? This will free up 1 document slot. All associated notes and flashcards will be removed.`)) {
+      return;
+    }
+
+    setDeletingId(docId);
+    try {
+      const { error } = await supabase.from("documents").delete().eq("id", docId);
+      if (error) throw error;
+      toast({
+        title: "Document deleted",
+        description: "1 document slot has been freed up.",
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.documents });
+      queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count"] });
+    } catch (err: unknown) {
+      toast({
+        title: "Delete failed",
+        description: err instanceof Error ? err.message : "Could not delete document",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const getSourceIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -133,14 +177,31 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, onExpand
 
   return (
     <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-7 border border-black/[0.04] dark:border-white/10 shadow-tactile-card flex flex-col gap-5 select-none w-full">
-      {/* Header with Title and Quick Controls */}
+      {/* Header with Title, Slots Indicator, and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
-            Study Sources
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Click any source to enter its 5 AI study lenses
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
+              Study Sources
+            </h2>
+            {isRealData && (
+              <span className={cn(
+                "text-xs font-mono px-2.5 py-0.5 rounded-full border font-semibold flex items-center gap-1.5",
+                isFull
+                  ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
+                  : "bg-purple-50 text-purple-800 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800"
+              )}>
+                <Layers className="size-3" />
+                <span>{activeCount} / 3 slots used</span>
+              </span>
+            )}
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            {isRealData
+              ? isFull
+                ? "3 of 3 free document slots used. Delete an existing document to replace it."
+                : `${slotsRemaining} document slot${slotsRemaining === 1 ? "" : "s"} available. Click any source to study.`
+              : "Click any source to enter its 5 AI study lenses"}
           </p>
         </div>
 
@@ -173,11 +234,25 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, onExpand
           {onNewSource && (
             <button
               onClick={onNewSource}
-              title="Upload new source"
-              className="h-10 px-4 rounded-[20px] bg-[#1E232A] hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold flex items-center gap-1.5 shadow-tactile-pill hover:scale-[1.02] active:scale-95 transition-all cursor-pointer shrink-0"
+              title={isFull ? "Free limit reached (3/3). Delete a document to add another." : "Upload new study document"}
+              className={cn(
+                "h-10 px-4 rounded-[20px] text-xs font-semibold flex items-center gap-1.5 shadow-tactile-pill hover:scale-[1.02] active:scale-95 transition-all cursor-pointer shrink-0",
+                isFull
+                  ? "bg-amber-600 hover:bg-amber-700 text-white"
+                  : "bg-[#1E232A] hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950"
+              )}
             >
-              <Plus className="size-4 stroke-[2.5]" />
-              <span>Upload</span>
+              {isFull ? (
+                <>
+                  <AlertTriangle className="size-3.5 stroke-[2.5]" />
+                  <span>3/3 Slots Full</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="size-4 stroke-[2.5]" />
+                  <span>Upload</span>
+                </>
+              )}
             </button>
           )}
         </div>
@@ -239,18 +314,32 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, onExpand
                 key={item.id}
                 onClick={() => router.push(`/app/doc/${item.id}`)}
                 className={cn(
-                  "p-4 sm:p-5 rounded-[24px] border transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-tactile-pill active:scale-[0.99] select-none group flex flex-col justify-between min-h-[170px]",
+                  "p-4 sm:p-5 rounded-[24px] border transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-tactile-pill active:scale-[0.99] select-none group flex flex-col justify-between min-h-[170px] relative",
                   style.cardBg
                 )}
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className={cn("text-sm sm:text-base font-bold font-display leading-snug line-clamp-2", style.titleColor)}>
+                    <h3 className={cn("text-sm sm:text-base font-bold font-display leading-snug line-clamp-2 pr-6", style.titleColor)}>
                       {item.title}
                     </h3>
-                    <span className="p-1 rounded-full bg-white/60 dark:bg-white/10 text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                      <ArrowRight className="size-3.5" />
-                    </span>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {/* Delete slot button for real user documents */}
+                      {item.isReal && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleDelete(e, item.id, item.title)}
+                          disabled={deletingId === item.id}
+                          title="Delete document to free up a slot"
+                          className="p-1 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      )}
+                      <span className="p-1 rounded-full bg-white/60 dark:bg-white/10 text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ArrowRight className="size-3.5" />
+                      </span>
+                    </div>
                   </div>
 
                   <p className={cn("text-xs leading-relaxed line-clamp-2 mb-4", style.subColor)}>

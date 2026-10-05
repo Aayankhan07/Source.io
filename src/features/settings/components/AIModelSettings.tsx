@@ -3,11 +3,27 @@
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Bot, Key, Eye, EyeOff, Check, BookOpen, Layers } from "lucide-react";
+import { 
+  Bot, 
+  Key, 
+  Eye, 
+  EyeOff, 
+  Check, 
+  BookOpen, 
+  Layers, 
+  AlertTriangle, 
+  ShieldCheck, 
+  ExternalLink, 
+  HelpCircle, 
+  Loader2, 
+  Trash2,
+  Sparkles
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettings } from "../context/SettingsContext";
 import { NotesDepth, PreferredModel, QuizDifficulty } from "../types";
 import { useToast } from "@/hooks/use-toast";
+import { testProviderApiKey, ByokTestResult } from "@/lib/services/byokTest";
 
 export default function AIModelSettings() {
   const { settings, updateSettings } = useSettings();
@@ -20,6 +36,52 @@ export default function AIModelSettings() {
   const [groqKey, setGroqKey] = useState(settings.apiKeys.groq || "");
   const [geminiKey, setGeminiKey] = useState(settings.apiKeys.gemini || "");
   const [openaiKey, setOpenaiKey] = useState(settings.apiKeys.openai || "");
+
+  const [testingProvider, setTestingProvider] = useState<string | null>(null);
+  const [testResults, setTestResults] = useState<Record<string, ByokTestResult | null>>({});
+  const [showGuide, setShowGuide] = useState(false);
+
+  const handleTestKey = async (provider: "groq" | "gemini" | "openai", key: string) => {
+    if (!key.trim()) {
+      toast({
+        title: "Key missing",
+        description: "Please enter an API key first before testing connection.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setTestingProvider(provider);
+    try {
+      const result = await testProviderApiKey(provider, key);
+      setTestResults((prev) => ({ ...prev, [provider]: result }));
+      toast({
+        title: result.ok ? "Connection Successful" : "Provider Test Failed",
+        description: result.message,
+        variant: result.ok ? "default" : "destructive",
+      });
+    } finally {
+      setTestingProvider(null);
+    }
+  };
+
+  const handleRemoveKey = (provider: "groq" | "gemini" | "openai") => {
+    if (provider === "groq") {
+      setGroqKey("");
+      updateSettings({ apiKeys: { ...settings.apiKeys, groq: undefined } });
+    } else if (provider === "gemini") {
+      setGeminiKey("");
+      updateSettings({ apiKeys: { ...settings.apiKeys, gemini: undefined } });
+    } else if (provider === "openai") {
+      setOpenaiKey("");
+      updateSettings({ apiKeys: { ...settings.apiKeys, openai: undefined } });
+    }
+    setTestResults((prev) => ({ ...prev, [provider]: null }));
+    toast({
+      title: "Key Removed",
+      description: `Your ${provider.toUpperCase()} key was cleared from browser memory.`,
+    });
+  };
 
   const handleSaveKeys = () => {
     updateSettings({
@@ -223,98 +285,307 @@ export default function AIModelSettings() {
         </div>
       </div>
 
-      {/* 4. BYOK API Keys */}
-      <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-4">
-        <div className="flex items-center justify-between">
+      {/* 4. BYOK API Keys & Non-Technical Setup Guide */}
+      <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="p-1 rounded-lg bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300">
                 <Key className="size-4" />
               </span>
               <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
-                Custom API Keys (BYOK)
+                Use Your Own AI Provider (Optional BYOK)
               </h3>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Supply your own provider keys to bypass rate limits. Stored securely in your browser.
+              Supply your own provider keys to bypass daily question limits. Held in your current browser session.
             </p>
           </div>
-          <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-semibold">
-            Optional
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowGuide(!showGuide)}
+              className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <HelpCircle className="size-3.5" />
+              <span>{showGuide ? "Hide Setup Guide" : "View Setup Guide"}</span>
+            </button>
+            <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-semibold">
+              Free Tier Friendly
+            </span>
+          </div>
         </div>
+
+        {/* BYOK Warning Banner */}
+        <div className="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5 leading-relaxed">
+          <AlertTriangle className="size-4 shrink-0 mt-0.5 text-amber-600" />
+          <div className="space-y-1">
+            <p className="font-bold">Provider Billing & Privacy Notice</p>
+            <p className="text-[11px] text-amber-800 dark:text-amber-300">
+              Your provider may have its own usage limits or charges. Source.io does not control your provider billing. 
+              Never share your key publicly. Keys stay only in your local browser session and are never logged or stored in database tables.
+            </p>
+          </div>
+        </div>
+
+        {/* Non-Technical Setup Guide */}
+        {showGuide && (
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-white/5 space-y-3.5 text-xs text-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-2 font-bold font-display text-slate-900 dark:text-white">
+              <Sparkles className="size-4 text-purple-600" />
+              <span>How API Keys Work (Student Plain-Language Guide)</span>
+            </div>
+            
+            <p className="leading-relaxed">
+              An <strong>API key</strong> is like an electronic student ID card for AI services. It gives Source.io permission 
+              to ask the AI provider questions on your behalf.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="font-bold text-slate-900 dark:text-white block">1. Groq Cloud (Recommended)</span>
+                <p className="text-[11px] text-slate-500">100% Free! No credit card needed. Ultra-fast responses.</p>
+                <a 
+                  href="https://console.groq.com/keys" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 pt-1 hover:underline"
+                >
+                  <span>Open console.groq.com</span>
+                  <ExternalLink className="size-3" />
+                </a>
+              </div>
+
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="font-bold text-slate-900 dark:text-white block">2. Google AI Studio</span>
+                <p className="text-[11px] text-slate-500">Free tier for students. Powered by Gemini 2.0 Flash.</p>
+                <a 
+                  href="https://aistudio.google.com/app/apikey" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 pt-1 hover:underline"
+                >
+                  <span>Open aistudio.google.com</span>
+                  <ExternalLink className="size-3" />
+                </a>
+              </div>
+
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="font-bold text-slate-900 dark:text-white block">3. OpenAI</span>
+                <p className="text-[11px] text-slate-500">Requires funded developer account. Powers GPT-4o Mini.</p>
+                <a 
+                  href="https://platform.openai.com/api-keys" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 pt-1 hover:underline"
+                >
+                  <span>Open platform.openai.com</span>
+                  <ExternalLink className="size-3" />
+                </a>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/40 text-[11px] space-y-1 text-purple-900 dark:text-purple-200">
+              <span className="font-bold block">Quick 4-Step Instructions:</span>
+              <p>1. Click the official provider link above and sign in.</p>
+              <p>2. Click <strong>"Create API Key"</strong> and copy it.</p>
+              <p>3. Paste the key into the matching box below.</p>
+              <p>4. Press <strong>"Test connection"</strong> to verify it works without charging a document!</p>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-4 pt-1">
           {/* Groq Key */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
-              <span>Groq API Key (gsk_...)</span>
-              <span className="text-[11px] text-slate-400 font-normal">For Llama 3.3 70B & Whisper</span>
-            </Label>
-            <div className="relative flex items-center">
-              <Input
-                type={showGroq ? "text" : "password"}
-                placeholder="gsk_..."
-                value={groqKey}
-                onChange={(e) => setGroqKey(e.target.value)}
-                className="pr-10 text-xs font-mono rounded-[16px] bg-slate-50/70 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 h-10"
-              />
+          <div className="space-y-1.5 p-3.5 rounded-2xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <span>Groq API Key (gsk_...)</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-semibold">
+                  100% Free
+                </span>
+              </Label>
+              {groqKey && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveKey("groq")}
+                  className="text-[11px] text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer"
+                >
+                  <Trash2 className="size-3" />
+                  <span>Remove key</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 flex items-center">
+                <Input
+                  type={showGroq ? "text" : "password"}
+                  placeholder="gsk_..."
+                  value={groqKey}
+                  onChange={(e) => setGroqKey(e.target.value)}
+                  className="pr-10 text-xs font-mono rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 h-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowGroq(!showGroq)}
+                  className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                >
+                  {showGroq ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setShowGroq(!showGroq)}
-                className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                onClick={() => handleTestKey("groq", groqKey)}
+                disabled={testingProvider === "groq" || !groqKey.trim()}
+                className="h-10 px-3.5 rounded-[16px] text-xs font-semibold bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {showGroq ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {testingProvider === "groq" ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <ShieldCheck className="size-3.5" />
+                )}
+                <span>Test Key</span>
               </button>
             </div>
+
+            {testResults["groq"] && (
+              <p className={cn(
+                "text-[11px] font-medium pt-1",
+                testResults["groq"].ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+              )}>
+                {testResults["groq"].message}
+              </p>
+            )}
           </div>
 
           {/* Gemini Key */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
-              <span>Google Gemini API Key (AIzaSy...)</span>
-              <span className="text-[11px] text-slate-400 font-normal">For Gemini 2.0 Flash</span>
-            </Label>
-            <div className="relative flex items-center">
-              <Input
-                type={showGemini ? "text" : "password"}
-                placeholder="AIzaSy..."
-                value={geminiKey}
-                onChange={(e) => setGeminiKey(e.target.value)}
-                className="pr-10 text-xs font-mono rounded-[16px] bg-slate-50/70 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 h-10"
-              />
+          <div className="space-y-1.5 p-3.5 rounded-2xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <span>Google Gemini API Key (AIzaSy...)</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 font-semibold">
+                  Free Tier
+                </span>
+              </Label>
+              {geminiKey && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveKey("gemini")}
+                  className="text-[11px] text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer"
+                >
+                  <Trash2 className="size-3" />
+                  <span>Remove key</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 flex items-center">
+                <Input
+                  type={showGemini ? "text" : "password"}
+                  placeholder="AIzaSy..."
+                  value={geminiKey}
+                  onChange={(e) => setGeminiKey(e.target.value)}
+                  className="pr-10 text-xs font-mono rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 h-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowGemini(!showGemini)}
+                  className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                >
+                  {showGemini ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setShowGemini(!showGemini)}
-                className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                onClick={() => handleTestKey("gemini", geminiKey)}
+                disabled={testingProvider === "gemini" || !geminiKey.trim()}
+                className="h-10 px-3.5 rounded-[16px] text-xs font-semibold bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {showGemini ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {testingProvider === "gemini" ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <ShieldCheck className="size-3.5" />
+                )}
+                <span>Test Key</span>
               </button>
             </div>
+
+            {testResults["gemini"] && (
+              <p className={cn(
+                "text-[11px] font-medium pt-1",
+                testResults["gemini"].ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+              )}>
+                {testResults["gemini"].message}
+              </p>
+            )}
           </div>
 
           {/* OpenAI Key */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
-              <span>OpenAI API Key (sk-...)</span>
-              <span className="text-[11px] text-slate-400 font-normal">For GPT-4o Mini</span>
-            </Label>
-            <div className="relative flex items-center">
-              <Input
-                type={showOpenAI ? "text" : "password"}
-                placeholder="sk-..."
-                value={openaiKey}
-                onChange={(e) => setOpenaiKey(e.target.value)}
-                className="pr-10 text-xs font-mono rounded-[16px] bg-slate-50/70 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 h-10"
-              />
+          <div className="space-y-1.5 p-3.5 rounded-2xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <span>OpenAI API Key (sk-...)</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+                  Paid Credit
+                </span>
+              </Label>
+              {openaiKey && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveKey("openai")}
+                  className="text-[11px] text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer"
+                >
+                  <Trash2 className="size-3" />
+                  <span>Remove key</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 flex items-center">
+                <Input
+                  type={showOpenAI ? "text" : "password"}
+                  placeholder="sk-..."
+                  value={openaiKey}
+                  onChange={(e) => setOpenaiKey(e.target.value)}
+                  className="pr-10 text-xs font-mono rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 h-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowOpenAI(!showOpenAI)}
+                  className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                >
+                  {showOpenAI ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setShowOpenAI(!showOpenAI)}
-                className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                onClick={() => handleTestKey("openai", openaiKey)}
+                disabled={testingProvider === "openai" || !openaiKey.trim()}
+                className="h-10 px-3.5 rounded-[16px] text-xs font-semibold bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {showOpenAI ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {testingProvider === "openai" ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <ShieldCheck className="size-3.5" />
+                )}
+                <span>Test Key</span>
               </button>
             </div>
+
+            {testResults["openai"] && (
+              <p className={cn(
+                "text-[11px] font-medium pt-1",
+                testResults["openai"].ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+              )}>
+                {testResults["openai"].message}
+              </p>
+            )}
           </div>
 
           <div className="pt-2 flex justify-end">
@@ -322,7 +593,7 @@ export default function AIModelSettings() {
               onClick={handleSaveKeys}
               className="h-10 px-5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 font-bold text-xs shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              Save Credentials
+              Save Credentials to Session
             </button>
           </div>
         </div>

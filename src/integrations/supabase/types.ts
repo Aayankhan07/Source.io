@@ -79,6 +79,95 @@ export type Database = {
           },
         ]
       }
+      ai_feedback: {
+        Row: {
+          created_at: string
+          document_id: string | null
+          feedback_text: string | null
+          feature: string
+          helpful: boolean
+          id: string
+          model: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_id?: string | null
+          feedback_text?: string | null
+          feature: string
+          helpful: boolean
+          id?: string
+          model: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_id?: string | null
+          feedback_text?: string | null
+          feature?: string
+          helpful?: boolean
+          id?: string
+          model?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_feedback_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_usage: {
+        Row: {
+          captured_at: string
+          id: string
+          model: string
+          provider: string
+          raw_reset_requests: string | null
+          raw_reset_tokens: string | null
+          remaining_requests: number | null
+          remaining_tokens: number | null
+          request_limit: number | null
+          reset_requests_at: string | null
+          reset_tokens_at: string | null
+          scope: string
+          token_limit: number | null
+        }
+        Insert: {
+          captured_at?: string
+          id?: string
+          model: string
+          provider: string
+          raw_reset_requests?: string | null
+          raw_reset_tokens?: string | null
+          remaining_requests?: number | null
+          remaining_tokens?: number | null
+          request_limit?: number | null
+          reset_requests_at?: string | null
+          reset_tokens_at?: string | null
+          scope?: string
+          token_limit?: number | null
+        }
+        Update: {
+          captured_at?: string
+          id?: string
+          model?: string
+          provider?: string
+          raw_reset_requests?: string | null
+          raw_reset_tokens?: string | null
+          remaining_requests?: number | null
+          remaining_tokens?: number | null
+          request_limit?: number | null
+          reset_requests_at?: string | null
+          reset_tokens_at?: string | null
+          scope?: string
+          token_limit?: number | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string

@@ -141,6 +141,25 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Enforce server-side 3 active saved documents limit
+  const { count: activeCount } = await admin
+    .from("documents")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .in("status", ["ready", "processing", "pending"])
+    .neq("id", documentId);
+
+  if ((activeCount ?? 0) >= 3) {
+    await admin.from("documents").update({ status: "failed", error_code: "DOCUMENT_LIMIT_REACHED" }).eq("id", documentId);
+    return new Response(
+      JSON.stringify({
+        error: "You have reached the free limit of 3 saved documents. Delete a document to add another one.",
+        code: "DOCUMENT_LIMIT_REACHED",
+      }),
+      { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   const { data: job } = await admin
     .from("jobs")
     .insert({ user_id: userId, document_id: documentId, kind: "ingest", status: "running", progress: 5 })

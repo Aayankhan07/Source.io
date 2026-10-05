@@ -30,6 +30,7 @@ import WorkspaceOutline, { extractHeadings } from "@/features/documents/componen
 import { AskPanel } from "@/features/documents/components/AskPanel";
 import NotesSettingsPopover from "@/features/documents/components/NotesSettingsPopover";
 import { useSettings } from "@/features/settings/context/SettingsContext";
+import { AiFeedbackButtons } from "@/components/common/AiFeedbackButtons";
 
 type DocumentAssets = {
   note: NoteRow | null;
@@ -605,6 +606,18 @@ export default function DocumentWorkspace() {
                             </div>
 
                             <MarkdownView>{note.markdown}</MarkdownView>
+
+                            {/* Product Feedback on generated notes */}
+                            <div className="pt-6 mt-8 border-t border-black/[0.04] dark:border-white/10 flex items-center justify-between">
+                              <AiFeedbackButtons
+                                documentId={doc.id}
+                                feature="notes"
+                                model={settings.preferredModel}
+                              />
+                              <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+                                Source.io Study Engine
+                              </span>
+                            </div>
                           </div>
                           {streaming && (
                             <div className="flex items-center gap-2 text-xs text-sky-600 dark:text-sky-400 font-mono bg-sky-50 dark:bg-sky-950/40 p-3 rounded-full border border-sky-200 dark:border-sky-800 max-w-max">

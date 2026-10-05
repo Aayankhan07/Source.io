@@ -2,7 +2,7 @@
 // streams Gemini response, persists messages, and returns citations as a leading SSE event.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { checkDailyQuota } from "../_shared/quotas.ts";
-import { logAiUsage } from "../_shared/telemetry.ts";
+import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -230,6 +230,9 @@ Deno.serve(async (req) => {
         ],
       }),
     });
+
+    // Capture Groq rate-limit snapshot into provider_usage
+    await captureProviderUsage(admin, "groq", CHAT_MODEL, aiResp.headers);
 
     if (!aiResp.ok || !aiResp.body) {
       const status = aiResp.status;

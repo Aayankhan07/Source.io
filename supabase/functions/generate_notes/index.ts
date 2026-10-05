@@ -2,7 +2,7 @@
 // Frontend reads SSE deltas; this function also persists the final markdown to `notes`.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
-import { logAiUsage } from "../_shared/telemetry.ts";
+import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -293,6 +293,9 @@ Deno.serve(async (req) => {
     try { aiResp.body?.cancel(); } catch { /* noop */ }
     aiResp = await callGroq("openai/gpt-oss-20b");
   }
+
+  // Capture provider quota/health snapshot
+  await captureProviderUsage(admin, "groq", "openai/gpt-oss-120b", aiResp.headers);
 
   // 3) Handle upstream error with immediate CORS response
   if (!aiResp.ok || !aiResp.body) {

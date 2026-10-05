@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { streamChat } from "@/lib/services/pipeline";
 import { useToast } from "@/hooks/use-toast";
 import MarkdownView from "@/components/common/MarkdownView";
+import { AiFeedbackButtons } from "@/components/common/AiFeedbackButtons";
 
 interface AskPanelProps {
   documentId: string;
@@ -226,16 +227,25 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
                   </div>
                 )}
 
-                <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-muted-foreground">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-5 w-5 p-0"
-                    onClick={() => copyToClipboard(msg.content)}
-                    aria-label="Copy message"
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
+                <div className="flex items-center justify-between gap-1.5 text-[11px] text-muted-foreground pt-1">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 p-0"
+                      onClick={() => copyToClipboard(msg.content)}
+                      aria-label="Copy message"
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  {msg.role === "assistant" && !msg.pending && (
+                    <AiFeedbackButtons
+                      documentId={documentId}
+                      feature="chat"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    />
+                  )}
                 </div>
               </div>
 

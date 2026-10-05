@@ -2,7 +2,7 @@
 // Uses Groq API with structured JSON output.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
-import { logAiUsage } from "../_shared/telemetry.ts";
+import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -234,6 +234,9 @@ Deno.serve(async (req) => {
     console.warn("Groq 20B rate limited (429), immediately falling back to openai/gpt-oss-120b...");
     aiResp = await callGroq("openai/gpt-oss-120b");
   }
+
+  // Capture provider quota/health snapshot
+  await captureProviderUsage(admin, "groq", "openai/gpt-oss-20b", aiResp.headers);
 
   if (!aiResp.ok) {
     const status = aiResp.status;
