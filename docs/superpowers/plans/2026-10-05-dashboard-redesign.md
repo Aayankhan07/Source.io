@@ -34,16 +34,16 @@
 - Consumes: `user`, `signOut` from `useAuth()`, `onOpenSearch` prop.
 - Produces: Clean top bar with search, notification dropdown, and profile menu without center pills on the dashboard.
 
-- [ ] **Step 1: Update TactileTopBar props and rendering**
+- [x] **Step 1: Update TactileTopBar props and rendering**
   - Add optional `showPills?: boolean` prop (default `false`).
   - Render center pill navigation only when `showPills === true`.
   - Maintain the global search trigger, notifications dropdown, and user profile avatar with Sign Out and Settings links.
 
-- [ ] **Step 2: Verify TypeScript correctness**
+- [x] **Step 2: Verify TypeScript correctness**
   Run: `npm run typecheck`
   Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit Task 1**
+- [x] **Step 3: Commit Task 1**
   ```bash
   git add src/features/dashboard/components/TactileTopBar.tsx
   git commit -m "feat(dashboard): streamline top bar to minimal search and profile layout"
@@ -60,16 +60,16 @@
 - Consumes: `onSelectTab` callback, `isExpanded`, `onToggleExpand`.
 - Produces: Navigation dock restricted to Dashboard (`/app`), Library (`library`), and Settings (`/app/settings`), plus theme toggle and collapse arrow.
 
-- [ ] **Step 1: Prune placeholder items from `navItems`**
+- [x] **Step 1: Prune placeholder items from `navItems`**
   - Remove "Speaking", "Schedule", "Courses", "Messages".
   - Define `navItems = [{ id: "dashboard", label: "Dashboard", icon: Home, href: "/app" }, { id: "library", label: "Library", icon: Folder, href: "#library" }, { id: "settings", label: "Settings", icon: Settings, href: "/app/settings" }]`.
   - When clicking "library", call `onSelectTab("library")` to toggle library view.
 
-- [ ] **Step 2: Verify TypeScript correctness**
+- [x] **Step 2: Verify TypeScript correctness**
   Run: `npm run typecheck`
   Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit Task 2**
+- [x] **Step 3: Commit Task 2**
   ```bash
   git add src/features/dashboard/components/TactileLeftDock.tsx
   git commit -m "feat(dock): streamline Left Dock to Dashboard, Library, and Settings"
@@ -87,7 +87,7 @@
 - Consumes: None (local state + reactive toast notification).
 - Produces: `<TactileWeeklyGoals />` card displaying target hours, completed documents, and retention targets.
 
-- [ ] **Step 1: Implement `TactileWeeklyGoals.tsx`**
+- [x] **Step 1: Implement `TactileWeeklyGoals.tsx`**
   - Header: "Weekly Goals Progress" with subtitle "Track target hours, document mastery, and retention".
   - Timeframe filter: Day / Week / Month.
   - Interactive goal metrics:
@@ -96,11 +96,11 @@
     - Active Recall Retention (e.g. 88% benchmark — 92% progress bar)
   - Actionable checklist with completion checkboxes and celebratory toast triggers.
 
-- [ ] **Step 2: Verify TypeScript compilation**
+- [x] **Step 2: Verify TypeScript compilation**
   Run: `npm run typecheck`
   Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit Task 3**
+- [x] **Step 3: Commit Task 3**
   ```bash
   git add src/features/dashboard/components/TactileWeeklyGoals.tsx
   git commit -m "feat(dashboard): create TactileWeeklyGoals progress card"
@@ -117,7 +117,7 @@
 - Consumes: `documents: DocumentRow[]`, `isLoading: boolean`, `onNewSource: () => void`.
 - Produces: Full-width responsive grid of source cards with format filters, live search, and click-through navigation to `/app/doc/[id]`.
 
-- [ ] **Step 1: Refactor `TactileSourceCards.tsx` for full-width layout**
+- [x] **Step 1: Refactor `TactileSourceCards.tsx` for full-width layout**
   - Title: "Study Sources" with subtitle "Click any source to enter its 5 AI study lenses".
   - Responsive layout: multi-column grid (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`).
   - Active format pills: "All Formats", "PDF", "AUDIO", "YOUTUBE", "TEXT".
@@ -125,11 +125,11 @@
   - "+ Upload" button connected directly to `onNewSource`.
   - Empty state with a clean card prompting the user to upload their first source.
 
-- [ ] **Step 2: Test type safety and linting**
+- [x] **Step 2: Test type safety and linting**
   Run: `npm run typecheck`
   Expected: PASS.
 
-- [ ] **Step 3: Commit Task 4**
+- [x] **Step 3: Commit Task 4**
   ```bash
   git add src/features/dashboard/components/TactileSourceCards.tsx
   git commit -m "feat(dashboard): expand Study Sources into full-width responsive grid"
@@ -146,7 +146,7 @@
 - Consumes: `documents` query, `openUpload` from `useAppShell()`, `TactileTopBar`, `TactilePerformanceChart`, `TactileWeeklyGoals`, `TactileSourceCards`.
 - Produces: Cohesive 2-section dashboard page and full-screen library view toggle.
 
-- [ ] **Step 1: Refactor `TactileDashboard.tsx` layout**
+- [x] **Step 1: Refactor `TactileDashboard.tsx` layout**
   - Manage `activeView` state: `"overview" | "library"`.
   - Pass `showPills={false}` to `TactileTopBar`.
   - In `"overview"` view:
@@ -156,14 +156,14 @@
     - Full-screen `TactileSourceCards` with expanded filters.
   - Purge dead mock flashcard and quiz tab views from the dashboard page.
 
-- [ ] **Step 2: Connect Left Dock tab switching**
+- [x] **Step 2: Connect Left Dock tab switching**
   - Pass `activeTab={activeView}` and `onSelectTab={(tab) => setActiveView(tab === "library" ? "library" : "overview")}` to `TactileLeftDock` in `AppHome.tsx`.
 
-- [ ] **Step 3: Verify TypeScript correctness**
+- [x] **Step 3: Verify TypeScript correctness**
   Run: `npm run typecheck`
   Expected: PASS with 0 errors.
 
-- [ ] **Step 4: Commit Task 5**
+- [x] **Step 4: Commit Task 5**
   ```bash
   git add src/features/dashboard/components/TactileDashboard.tsx src/features/documents/pages/AppHome.tsx
   git commit -m "feat(dashboard): assemble 2-section layout with Performance Chart and Sources grid"
@@ -180,15 +180,15 @@
 - Consumes: `doc`, `cards`, `qz`, `pod`, `currentTab`, `setCurrentTab`.
 - Produces: Clean tactile floating lens pills in the document header for Notes, Flashcards, Quiz, and Podcast.
 
-- [ ] **Step 1: Align document header tab pills**
+- [x] **Step 1: Align document header tab pills**
   - Ensure the floating pill tab bar (`Notes`, `Cards (N)`, `Quiz`, `Podcast 🎧`) uses the same tactile styling (`rounded-full`, `shadow-xs`, active state highlight) as the dashboard design language.
   - Add clear `← Dashboard` back navigation returning to `/app`.
 
-- [ ] **Step 2: Verify document workspace rendering**
+- [x] **Step 2: Verify document workspace rendering**
   Run: `npm run typecheck`
   Expected: PASS.
 
-- [ ] **Step 3: Commit Task 6**
+- [x] **Step 3: Commit Task 6**
   ```bash
   git add src/features/documents/pages/DocumentWorkspace.tsx
   git commit -m "feat(workspace): align document study lens pill bar with tactile design system"
@@ -201,15 +201,15 @@
 **Files:**
 - All touched files across dashboard and workspace.
 
-- [ ] **Step 1: Run comprehensive type check**
+- [x] **Step 1: Run comprehensive type check**
   Run: `npm run typecheck`
   Expected: 0 errors.
 
-- [ ] **Step 2: Run production Next.js build**
+- [x] **Step 2: Run production Next.js build**
   Run: `npm run build`
   Expected: All routes prerender and compile cleanly with exit code 0.
 
-- [ ] **Step 3: Commit Final Verification**
+- [x] **Step 3: Commit Final Verification**
   ```bash
   git commit --allow-empty -m "chore: complete dashboard realignment verification"
   ```
