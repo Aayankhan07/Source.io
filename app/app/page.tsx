@@ -1,5 +1,5 @@
-import AppEmpty from "@/features/documents/pages/AppEmpty";
+import { TactileDashboard } from "@/features/dashboard/components/TactileDashboard";
 
 export default function AppPage() {
-  return <AppEmpty />;
+  return <TactileDashboard />;
 }
