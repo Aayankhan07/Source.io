@@ -132,142 +132,153 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, onExpand
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-6 border border-black/[0.04] dark:border-white/10 shadow-tactile-card flex flex-col gap-4 select-none">
-      {/* Header with Title and Expand Icon */}
-      <div className="flex items-center justify-between">
+    <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-7 border border-black/[0.04] dark:border-white/10 shadow-tactile-card flex flex-col gap-5 select-none w-full">
+      {/* Header with Title and Quick Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
-            Select a course
+          <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
+            Study Sources
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Click any source to enter its AI study workspace
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            Click any source to enter its 5 AI study lenses
           </p>
         </div>
 
-        <button 
-          onClick={onExpandView}
-          title="View All Sources"
-          className="size-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 transition-colors cursor-pointer"
-        >
-          <Maximize2 className="size-3.5" />
-        </button>
-      </div>
-
-      {/* Search Input Bar + New Source Quick Button */}
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <input
-            type="text"
-            placeholder="Search sources..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 pl-4 pr-16 rounded-[20px] bg-slate-100/80 dark:bg-slate-800/80 border border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none transition-all shadow-tactile-inset"
-          />
-          <div className="absolute right-1.5 top-1.5 flex items-center gap-1">
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery("")}
-                className="size-8 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
-              >
-                <X className="size-3.5" />
-              </button>
-            )}
-            <button 
-              type="button"
-              className="size-8 rounded-[14px] bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 flex items-center justify-center shadow-xs cursor-pointer hover:opacity-90 transition-opacity"
-            >
-              <Search className="size-3.5 stroke-[2.5]" />
-            </button>
+        {/* Search Input Bar + New Source Quick Button */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-72">
+            <input
+              type="text"
+              placeholder="Search sources..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-10 pl-4 pr-16 rounded-[20px] bg-slate-100/80 dark:bg-slate-800/80 border border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none transition-all shadow-tactile-inset"
+            />
+            <div className="absolute right-1.5 top-1.5 flex items-center gap-1">
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="size-7 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
+                >
+                  <X className="size-3" />
+                </button>
+              )}
+              <div className="size-7 rounded-[12px] bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 flex items-center justify-center shadow-xs">
+                <Search className="size-3.5 stroke-[2.5]" />
+              </div>
+            </div>
           </div>
-        </div>
 
-        {onNewSource && (
-          <button
-            onClick={onNewSource}
-            title="Upload new source"
-            className="h-11 px-3 sm:px-4 rounded-[20px] bg-[#1E232A] hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold flex items-center gap-1.5 shadow-tactile-pill hover:scale-[1.02] active:scale-95 transition-all cursor-pointer shrink-0"
-          >
-            <Plus className="size-4 stroke-[2.5]" />
-            <span className="hidden sm:inline">Upload</span>
-          </button>
-        )}
+          {onNewSource && (
+            <button
+              onClick={onNewSource}
+              title="Upload new source"
+              className="h-10 px-4 rounded-[20px] bg-[#1E232A] hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold flex items-center gap-1.5 shadow-tactile-pill hover:scale-[1.02] active:scale-95 transition-all cursor-pointer shrink-0"
+            >
+              <Plus className="size-4 stroke-[2.5]" />
+              <span>Upload</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filter Category Pills */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-        {["all", "pdf", "audio", "youtube"].map((type) => (
+        {[
+          { id: "all", label: "All Formats" },
+          { id: "pdf", label: "PDF Documents" },
+          { id: "audio", label: "Audio Lectures" },
+          { id: "youtube", label: "YouTube" },
+          { id: "text", label: "Text / Markdown" },
+        ].map((tab) => (
           <button
-            key={type}
-            onClick={() => setFilterType(type)}
+            key={tab.id}
+            onClick={() => setFilterType(tab.id)}
             className={cn(
-              "px-3 py-1 rounded-full font-medium transition-all cursor-pointer whitespace-nowrap",
-              filterType === type
+              "px-3.5 py-1.5 rounded-full font-medium transition-all cursor-pointer whitespace-nowrap",
+              filterType === tab.id
                 ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950 font-bold shadow-2xs"
                 : "bg-slate-100/70 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
             )}
           >
-            {type === "all" ? "All Formats" : type.toUpperCase()}
+            {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Pastel Cards Stack */}
-      <div className="flex flex-col gap-3.5 overflow-y-auto max-h-[460px] pr-0.5">
-        {filteredList.map((item) => {
-          const style = getCardStyle(item.color);
-
-          return (
-            <div
-              key={item.id}
-              onClick={() => router.push(`/app/doc/${item.id}`)}
-              className={cn(
-                "p-4 sm:p-4.5 rounded-[24px] border transition-all duration-200 cursor-pointer hover:-translate-y-0.5 hover:shadow-tactile-pill active:scale-[0.99] select-none group",
-                style.cardBg
-              )}
+      {/* Responsive Cards Grid */}
+      {filteredList.length === 0 ? (
+        <div className="w-full py-12 px-4 rounded-[24px] border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-center">
+          <div className="size-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
+            <FileText className="size-6" />
+          </div>
+          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No study sources found</h3>
+          <p className="text-xs text-slate-500 max-w-sm mt-1 mb-4">
+            {searchQuery
+              ? `No sources matched "${searchQuery}". Try a different term or format.`
+              : "Upload your first PDF textbook, audio lecture, or YouTube video to synthesize 5 AI study lenses."}
+          </p>
+          {onNewSource && (
+            <button
+              onClick={onNewSource}
+              className="h-9 px-4 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:scale-105 transition-all cursor-pointer"
             >
-              <div className="flex items-start justify-between gap-2 mb-1.5">
-                <h3 className={cn("text-sm sm:text-base font-bold font-display leading-snug line-clamp-1", style.titleColor)}>
-                  {item.title}
-                </h3>
-                <span className="p-1 rounded-full bg-white/60 dark:bg-white/10 text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                  <ArrowRight className="size-3.5" />
-                </span>
-              </div>
+              <Plus className="size-3.5" />
+              <span>Upload First Source</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredList.map((item) => {
+            const style = getCardStyle(item.color);
 
-              <p className={cn("text-xs leading-relaxed line-clamp-2 mb-3.5", style.subColor)}>
-                {item.summary}
-              </p>
+            return (
+              <div
+                key={item.id}
+                onClick={() => router.push(`/app/doc/${item.id}`)}
+                className={cn(
+                  "p-4 sm:p-5 rounded-[24px] border transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-tactile-pill active:scale-[0.99] select-none group flex flex-col justify-between min-h-[170px]",
+                  style.cardBg
+                )}
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className={cn("text-sm sm:text-base font-bold font-display leading-snug line-clamp-2", style.titleColor)}>
+                      {item.title}
+                    </h3>
+                    <span className="p-1 rounded-full bg-white/60 dark:bg-white/10 text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                      <ArrowRight className="size-3.5" />
+                    </span>
+                  </div>
 
-              {/* Bottom Meta Pill & Collaborators */}
-              <div className="flex items-center justify-between pt-1 text-xs">
-                <div className={cn("px-2.5 py-1 rounded-[14px] border font-medium flex items-center gap-1.5 shadow-2xs", style.tagBg)}>
-                  <Calendar className="size-3" />
-                  <span className="text-[11px] font-mono">{item.date}</span>
+                  <p className={cn("text-xs leading-relaxed line-clamp-2 mb-4", style.subColor)}>
+                    {item.summary}
+                  </p>
                 </div>
 
-                {/* Avatar Stack */}
-                <div className="flex items-center -space-x-1.5">
-                  {item.collaborators.map((initial, i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        "size-6 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-bold shadow-2xs",
-                        i === 0 ? style.avatarBg : "bg-slate-800 text-white"
-                      )}
-                    >
-                      {initial}
+                {/* Bottom Meta Pill & Format Badge */}
+                <div className="flex items-center justify-between pt-2 border-t border-current/10 text-xs">
+                  <div className={cn("px-2.5 py-1 rounded-[14px] border font-medium flex items-center gap-1.5 shadow-2xs", style.tagBg)}>
+                    <Calendar className="size-3" />
+                    <span className="text-[11px] font-mono">{item.date}</span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-mono font-semibold uppercase px-2 py-0.5 rounded-md bg-white/70 dark:bg-black/30 border border-current/10">
+                      {item.source_type}
+                    </span>
+                    <div className="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-amber-400 text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-2xs">
+                      {getSourceIcon(item.source_type)}
                     </div>
-                  ))}
-                  <div className="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-amber-400 text-slate-950 flex items-center justify-center text-[9px] font-bold shadow-2xs">
-                    {getSourceIcon(item.source_type)}
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
