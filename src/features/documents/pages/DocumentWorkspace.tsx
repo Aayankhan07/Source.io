@@ -46,7 +46,7 @@ export default function DocumentWorkspace() {
   const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
-  const { openMobileNav } = useAppShell();
+  const { openMobileNav, setCopilotOpen } = useAppShell();
   const queryClient = useQueryClient();
 
   const [streaming, setStreaming] = useState(false);
@@ -74,6 +74,12 @@ export default function DocumentWorkspace() {
 
   // Active workspace tab state
   const [currentTab, setCurrentTab] = useState<TabId>("notes");
+
+  // Sync Copilot open state to global app shell for collision-free quota pill placement
+  useEffect(() => {
+    setCopilotOpen(currentTab === "notes" && askPanelOpen && !focusMode);
+    return () => setCopilotOpen(false);
+  }, [currentTab, askPanelOpen, focusMode, setCopilotOpen]);
 
   const isDemo = Boolean(docId && DEMO_DOCUMENTS[docId]);
 

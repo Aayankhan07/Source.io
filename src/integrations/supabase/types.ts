@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage_logs: {
+        Row: {
+          cached_input_tokens: number
+          created_at: string
+          document_id: string | null
+          duration_ms: number | null
+          error_message: string | null
+          estimated_cost_usd: number
+          feature: string
+          id: string
+          idempotency_key: string | null
+          input_tokens: number
+          model: string
+          output_tokens: number
+          provider: string
+          request_id: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          cached_input_tokens?: number
+          created_at?: string
+          document_id?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          estimated_cost_usd?: number
+          feature: string
+          id?: string
+          idempotency_key?: string | null
+          input_tokens?: number
+          model: string
+          output_tokens?: number
+          provider: string
+          request_id: string
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          cached_input_tokens?: number
+          created_at?: string
+          document_id?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          estimated_cost_usd?: number
+          feature?: string
+          id?: string
+          idempotency_key?: string | null
+          input_tokens?: number
+          model?: string
+          output_tokens?: number
+          provider?: string
+          request_id?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_logs_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           content: string
@@ -173,6 +238,7 @@ export type Database = {
           document_id: string | null
           error: string | null
           id: string
+          idempotency_key: string | null
           kind: Database["public"]["Enums"]["job_kind"]
           payload: Json | null
           progress: number
@@ -185,6 +251,7 @@ export type Database = {
           document_id?: string | null
           error?: string | null
           id?: string
+          idempotency_key?: string | null
           kind: Database["public"]["Enums"]["job_kind"]
           payload?: Json | null
           progress?: number
@@ -197,6 +264,7 @@ export type Database = {
           document_id?: string | null
           error?: string | null
           id?: string
+          idempotency_key?: string | null
           kind?: Database["public"]["Enums"]["job_kind"]
           payload?: Json | null
           progress?: number

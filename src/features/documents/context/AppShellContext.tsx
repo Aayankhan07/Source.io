@@ -7,6 +7,8 @@ type AppShellContextType = {
   openMobileNav: () => void;
   activeView: "dashboard" | "library";
   setActiveView: (view: "dashboard" | "library") => void;
+  copilotOpen: boolean;
+  setCopilotOpen: (open: boolean) => void;
 };
 
 const AppShellContext = createContext<AppShellContextType>({
@@ -14,6 +16,8 @@ const AppShellContext = createContext<AppShellContextType>({
   openMobileNav: () => {},
   activeView: "dashboard",
   setActiveView: () => {},
+  copilotOpen: false,
+  setCopilotOpen: () => {},
 });
 
 export function AppShellProvider({
@@ -29,6 +33,8 @@ export function AppShellProvider({
   activeView?: "dashboard" | "library";
   onSelectView?: (view: "dashboard" | "library") => void;
 }) {
+  const [copilotOpen, setCopilotOpen] = useState(false);
+
   return (
     <AppShellContext.Provider
       value={{
@@ -36,6 +42,8 @@ export function AppShellProvider({
         openMobileNav: onMobileNav,
         activeView,
         setActiveView: onSelectView,
+        copilotOpen,
+        setCopilotOpen,
       }}
     >
       {children}

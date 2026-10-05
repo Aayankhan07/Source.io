@@ -7,6 +7,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import { AppShellProvider } from "@/features/documents/context/AppShellContext";
 import { TactileLeftDock } from "@/features/dashboard/components/TactileLeftDock";
+import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
 
 export default function AppHome({ children }: { children: React.ReactNode }) {
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -74,6 +75,9 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
         </main>
 
         <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
+
+        {/* Global Floating Daily Quota Bar */}
+        <DailyQuotaPill />
       </div>
     </AppShellProvider>
   );
