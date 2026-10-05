@@ -105,26 +105,39 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const effectiveHierarchy = hierarchy || (!variant ? "secondary" : undefined);
     const effectiveVariant = !hierarchy ? (variant || "default") : undefined;
 
-    const Comp = asChild ? Slot : "button";
+    const classes = cn(
+      buttonVariants({
+        hierarchy: effectiveHierarchy,
+        variant: effectiveVariant,
+        destructive,
+        size,
+        className,
+      }),
+    );
+
+    if (asChild) {
+      return (
+        <Slot
+          className={classes}
+          ref={ref}
+          aria-disabled={disabled || isLoading ? true : undefined}
+          {...props}
+        >
+          {children}
+        </Slot>
+      );
+    }
 
     return (
-      <Comp
-        className={cn(
-          buttonVariants({
-            hierarchy: effectiveHierarchy,
-            variant: effectiveVariant,
-            destructive,
-            size,
-            className,
-          }),
-        )}
+      <button
+        className={classes}
         ref={ref}
         disabled={disabled || isLoading}
         {...props}
       >
         {isLoading && <Loader2 className="animate-spin text-current" />}
         {children}
-      </Comp>
+      </button>
     );
   },
 );
