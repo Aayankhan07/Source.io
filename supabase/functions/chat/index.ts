@@ -205,6 +205,7 @@ Deno.serve(async (req) => {
         model: CHAT_MODEL,
         stream: true,
         temperature: 0.3,
+        max_tokens: 800,
         messages: [
           { role: "system", content: systemPrompt },
           ...recent.map((m) => ({ role: m.role, content: m.content })),
