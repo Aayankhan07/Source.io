@@ -99,7 +99,7 @@ export function CredibilityAndComparison() {
       <section className="py-6 relative z-10 mx-auto w-full">
         <SectionHeading
           badge="Guarantees"
-          badgeTone="cyan"
+          badgeTone="blue"
           line1="Built on provable verification,"
           line2="not claims."
           description="How Source.io guarantees high-fidelity comprehension across long documents."
@@ -252,7 +252,7 @@ export function CredibilityAndComparison() {
       <section className="mx-auto text-left w-full">
         <SectionHeading
           badge="Comparison"
-          badgeTone="cyan"
+          badgeTone="blue"
           line1="How Source.io compares,"
           line2="feature by feature."
           description="Why single-prompt chat windows struggle with long-form academic and technical sources."
@@ -356,7 +356,7 @@ export function CredibilityAndComparison() {
             <AccordionItem 
               key={idx} 
               value={`item-${idx}`}
-              className="border border-border/80 rounded-[26px] bg-card/95 backdrop-blur-xl px-6 shadow-xs data-[state=open]:border-cyan-500/50 data-[state=open]:shadow-[0_12px_28px_-10px_rgba(6,182,212,0.15)] transition-all"
+              className="border border-border/80 rounded-[26px] bg-card/95 backdrop-blur-xl px-6 shadow-xs data-[state=open]:border-blue-900/30 dark:data-[state=open]:border-blue-500/50 data-[state=open]:shadow-[0_12px_28px_-10px_rgba(15,23,42,0.12)] transition-all"
             >
               <AccordionTrigger className="text-left font-bold text-sm text-foreground py-4.5 hover:no-underline font-display cursor-pointer">
                 {faq.q}

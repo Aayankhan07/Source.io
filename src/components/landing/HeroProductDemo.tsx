@@ -275,7 +275,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                 </span>
               </div>
 
-              {/* 5 Lens Switcher Pills with Unified Electric Cyan Identity */}
+              {/* 5 Lens Switcher Pills with Unified Dark Blue Identity */}
               <div className="flex items-center gap-1 p-1 bg-slate-100/80 dark:bg-accent/40 rounded-xl border border-slate-200/80 dark:border-border/60 overflow-x-auto">
                 {[
                   { id: "notes", label: "Notes", icon: FileText },
@@ -293,7 +293,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                       onClick={() => setActiveLens(tab.id as LensMode)}
                       className={`flex-1 min-w-[56px] py-1.5 px-2 rounded-lg text-xs font-medium inline-flex items-center justify-center gap-1 transition-all active:scale-[0.98] cursor-pointer ${
                         isActive
-                          ? "bg-cyan-500/10 dark:bg-cyan-500/15 text-cyan-900 dark:text-cyan-200 border-cyan-500/30 dark:border-cyan-500/40 shadow-[0_0_10px_rgba(6,182,212,0.12)] font-semibold border"
+                          ? "bg-blue-950/10 dark:bg-blue-950/50 text-blue-950 dark:text-blue-200 border-blue-900/30 dark:border-blue-700/50 shadow-[0_0_10px_rgba(30,58,138,0.15)] font-semibold border"
                           : "text-muted-foreground hover:text-foreground hover:bg-white/60 dark:hover:bg-card/50 border border-transparent"
                       }`}
                     >
@@ -310,23 +310,23 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                   <div className="space-y-2.5">
                     <p className="text-xs text-foreground leading-relaxed font-sans min-h-[48px]">
                       A quantum state vector exists in{" "}
-                      <span className="bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-950 dark:text-cyan-200 px-1.5 py-0.5 rounded font-mono font-medium border border-cyan-500/30">
+                      <span className="bg-blue-950/10 dark:bg-blue-950/30 text-blue-950 dark:text-blue-200 px-1.5 py-0.5 rounded font-mono font-medium border border-blue-900/25">
                         normalized Hilbert space |ψ⟩ = α|0⟩ + β|1⟩
                       </span>
                       . Unlike classical bits constrained to discrete values,{" "}
-                      <span className="bg-cyan-500/10 dark:bg-cyan-500/15 text-cyan-900 dark:text-cyan-300 px-1.5 py-0.5 rounded font-medium border border-cyan-500/20 dark:border-cyan-500/25">
+                      <span className="bg-blue-950/10 dark:bg-blue-950/20 text-blue-950 dark:text-blue-300 px-1.5 py-0.5 rounded font-medium border border-blue-900/20 dark:border-blue-800/40">
                         quantum superposition
                       </span>{" "}
                       allows simultaneous computation until measurement triggers collapse.
                     </p>
                     <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-xs">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-cyan-500/10 dark:bg-cyan-950/40 border border-cyan-500/30 text-cyan-800 dark:text-cyan-300 shadow-xs">
-                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-950/10 dark:bg-blue-950/40 border border-blue-900/30 text-blue-950 dark:text-blue-200 shadow-xs">
+                        <span className="h-1.5 w-1.5 rounded-full bg-blue-900 dark:bg-blue-400 animate-pulse" />
                         <span>Passage §1.2 [p. 3]</span>
-                        <span className="text-cyan-600 dark:text-cyan-400 font-bold">0.98</span>
+                        <span className="text-blue-900 dark:text-blue-400 font-bold">0.98</span>
                       </span>
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-zinc-300 shadow-xs">
-                        <Clock className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
+                        <Clock className="h-3 w-3 text-blue-900 dark:text-blue-400" />
                         <span>Lecture [01:14]</span>
                       </span>
                     </div>
@@ -338,23 +338,23 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                     onClick={() => setCardFlipped(!cardFlipped)}
                     className={`p-3.5 rounded-lg border transition-all duration-300 cursor-pointer select-none space-y-2 shadow-xs ${
                       cardFlipped
-                        ? "bg-cyan-500/5 dark:bg-cyan-950/30 border-cyan-500/30 dark:border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.12)]"
-                        : "bg-white dark:bg-card border-slate-200 dark:border-border hover:border-cyan-500/30"
+                        ? "bg-blue-950/5 dark:bg-blue-950/40 border-blue-900/30 dark:border-blue-700/50 shadow-[0_0_15px_rgba(30,58,138,0.12)]"
+                        : "bg-white dark:bg-card border-slate-200 dark:border-border hover:border-blue-900/30"
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-                      <span className="inline-flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-medium">
-                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400" />
+                      <span className="inline-flex items-center gap-1.5 text-blue-950 dark:text-blue-300 font-medium">
+                        <span className="h-1.5 w-1.5 rounded-full bg-blue-900 dark:bg-blue-400" />
                         Leitner Deck • Box 3
                       </span>
-                      <span className="text-cyan-700 dark:text-cyan-400 font-medium hover:underline">
+                      <span className="text-blue-900 dark:text-blue-400 font-medium hover:underline">
                         {cardFlipped ? "Click to view question" : "Click to flip answer"}
                       </span>
                     </div>
                     <p className="text-xs font-medium text-foreground leading-relaxed">
                       {cardFlipped ? (
                         <span>
-                          Linear superposition: <code className="text-cyan-800 dark:text-cyan-300 bg-cyan-500/10 dark:bg-cyan-950/40 px-1 py-0.5 rounded border border-cyan-500/20 font-mono">|ψ⟩ = α|0⟩ + β|1⟩</code> evaluates all multi-path algorithms simultaneously until measurement triggers wave-function collapse.
+                          Linear superposition: <code className="text-blue-950 dark:text-blue-200 bg-blue-950/10 dark:bg-blue-950/50 px-1 py-0.5 rounded border border-blue-900/25 font-mono">|ψ⟩ = α|0⟩ + β|1⟩</code> evaluates all multi-path algorithms simultaneously until measurement triggers wave-function collapse.
                         </span>
                       ) : (
                         "What mathematical property allows quantum systems to evaluate multiple states simultaneously before measurement?"
@@ -413,18 +413,18 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                 {activeLens === "podcast" && (
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-                      <span className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400">
-                        <span className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse" />
+                      <span className="flex items-center gap-1.5 text-blue-950 dark:text-blue-300">
+                        <span className="h-2 w-2 rounded-full bg-blue-900 animate-pulse" />
                         2-Host Dialogue (Julian &amp; Clara)
                       </span>
                       <span className="text-muted-foreground">01:14 / 04:30</span>
                     </div>
-                    {/* Visual Waveform bars with Unified Cyan Gradient */}
+                    {/* Visual Waveform bars with Unified Dark Blue Gradient */}
                     <div className="flex items-center gap-1 h-8 py-1 px-2.5 bg-white dark:bg-card/80 rounded-lg border border-slate-200 dark:border-border">
                       {[40, 70, 95, 30, 85, 60, 100, 45, 80, 55, 90, 65, 35, 75, 50].map((h, i) => (
                         <span
                           key={i}
-                          className="flex-1 bg-gradient-to-t from-cyan-600 to-cyan-400 dark:from-cyan-500 dark:to-cyan-300 rounded-full transition-all duration-300 opacity-80 hover:opacity-100"
+                          className="flex-1 bg-gradient-to-t from-blue-900 to-blue-700 dark:from-blue-600 dark:to-blue-400 rounded-full transition-all duration-300 opacity-80 hover:opacity-100"
                           style={{ height: `${h}%` }}
                         />
                       ))}
@@ -440,12 +440,12 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                     <div className="bg-white dark:bg-card p-2.5 rounded-lg border border-slate-200 dark:border-border text-foreground font-mono">
                       Q: What is the formal equation for qubit superposition?
                     </div>
-                    <div className="bg-cyan-500/10 dark:bg-cyan-950/30 p-2.5 rounded-lg border border-cyan-500/25 dark:border-cyan-500/30 text-slate-900 dark:text-cyan-100">
+                    <div className="bg-blue-950/10 dark:bg-blue-950/40 p-2.5 rounded-lg border border-blue-900/25 dark:border-blue-700/40 text-slate-900 dark:text-blue-100">
                       <p className="leading-relaxed font-sans">
                         |ψ⟩ = α|0⟩ + β|1⟩ where |α|² + |β|² = 1.
                       </p>
-                      <span className="inline-flex items-center gap-1.5 font-mono text-cyan-700 dark:text-cyan-400 mt-1.5 text-xs font-medium">
-                        <Check className="h-3 w-3 text-cyan-600 dark:text-cyan-300" /> Cited from Chapter 1, p. 3 (§1.2)
+                      <span className="inline-flex items-center gap-1.5 font-mono text-blue-900 dark:text-blue-400 mt-1.5 text-xs font-medium">
+                        <Check className="h-3 w-3 text-blue-900 dark:text-blue-300" /> Cited from Chapter 1, p. 3 (§1.2)
                       </span>
                     </div>
                   </div>

@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { reveal, revealStagger, VIEWPORT } from "./motion";
 
-export type BadgeTone = "cyan" | "amber" | "slate";
+export type BadgeTone = "blue" | "darkBlue" | "cyan" | "amber" | "slate";
 
 interface SectionHeadingProps {
   badge?: string;
@@ -20,16 +20,18 @@ interface SectionHeadingProps {
 }
 
 const badgeToneStyles: Record<string, string> = {
-  cyan: "bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border-cyan-500/20",
-  amber: "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20",
-  slate: "bg-slate-100 text-slate-800 dark:bg-white/[0.06] dark:text-slate-200 border-slate-200 dark:border-white/10",
-  emerald: "bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border-cyan-500/20",
-  violet: "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20",
+  blue: "bg-blue-950/10 text-blue-950 dark:bg-blue-950/70 dark:text-blue-200 border-blue-900/25 dark:border-blue-700/50 font-semibold",
+  darkBlue: "bg-blue-950/10 text-blue-950 dark:bg-blue-950/70 dark:text-blue-200 border-blue-900/25 dark:border-blue-700/50 font-semibold",
+  cyan: "bg-blue-950/10 text-blue-950 dark:bg-blue-950/70 dark:text-blue-200 border-blue-900/25 dark:border-blue-700/50 font-semibold",
+  amber: "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20 font-medium",
+  slate: "bg-slate-100 text-slate-800 dark:bg-white/[0.06] dark:text-slate-200 border-slate-200 dark:border-white/10 font-medium",
+  emerald: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/20 font-medium",
+  violet: "bg-violet-500/10 text-violet-800 dark:text-violet-300 border-violet-500/20 font-medium",
 };
 
 export function SectionHeading({
   badge,
-  badgeTone = "cyan",
+  badgeTone = "blue",
   badgeIcon,
   line1,
   line2,

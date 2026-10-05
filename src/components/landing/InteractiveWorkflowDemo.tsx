@@ -190,7 +190,7 @@ export function InteractiveWorkflowDemo({
     <section id="workbench" data-alias="simulator" className="py-8 md:py-12 relative z-10 w-full scroll-mt-24">
       <SectionHeading
         badge="Interactive Workbench"
-        badgeTone="cyan"
+        badgeTone="blue"
         line1="Experience the study workflow."
         line2="Five derived, verified modalities."
         description="Inspect how Source.io converts raw sources into structured study assets with exact mathematical and textual citations."
@@ -570,7 +570,7 @@ export function InteractiveWorkflowDemo({
                                 description: `Retention updated to ${item.ret} via Leitner algorithm`,
                               });
                             }}
-                            className="text-xs px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent hover:bg-cyan-500/10 hover:text-cyan-800 dark:hover:text-cyan-300 text-foreground font-medium transition-colors border border-transparent hover:border-cyan-500/30 cursor-pointer"
+                            className="text-xs px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent hover:bg-blue-950/10 hover:text-blue-950 dark:hover:text-blue-200 text-foreground font-medium transition-colors border border-transparent hover:border-blue-900/30 cursor-pointer"
                           >
                             {item.label}
                           </button>

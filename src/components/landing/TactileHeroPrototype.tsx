@@ -91,7 +91,7 @@ export function TactileHeroPrototype() {
       <div
         className="absolute top-0 right-0 w-full lg:w-[65%] h-[85%] -z-10 pointer-events-none opacity-80 dark:opacity-40"
         style={{
-          background: "radial-gradient(ellipse 90% 70% at 75% 25%, rgba(6,182,212,0.12) 0%, rgba(245,158,11,0.08) 45%, transparent 75%)",
+          background: "radial-gradient(ellipse 90% 70% at 75% 25%, rgba(30,58,138,0.1) 0%, rgba(245,158,11,0.08) 45%, transparent 75%)",
           filter: "blur(40px)",
         }}
         aria-hidden="true"
@@ -168,7 +168,7 @@ export function TactileHeroPrototype() {
             <div
               className="absolute inset-8 rounded-full opacity-90"
               style={{
-                background: "radial-gradient(circle at 40% 40%, rgba(6,182,212,0.25) 0%, rgba(245,158,11,0.18) 55%, transparent 85%)",
+                background: "radial-gradient(circle at 40% 40%, rgba(30,58,138,0.2) 0%, rgba(245,158,11,0.18) 55%, transparent 85%)",
               }}
             />
 
@@ -311,7 +311,7 @@ export function TactileHeroPrototype() {
                         <div
                           className={cn(
                             "text-[10px] truncate",
-                            isActive ? "text-zinc-600" : "text-cyan-200/70"
+                            isActive ? "text-zinc-600" : "text-blue-200/70"
                           )}
                         >
                           {lens.name}

@@ -40,15 +40,15 @@ export function KnowledgePipeline() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
         {STAGES.map((stage, idx) => {
           const auraColors = [
-            "bg-cyan-500/10 dark:bg-cyan-500/15",
+            "bg-blue-950/10 dark:bg-blue-950/20",
             "bg-amber-500/10 dark:bg-amber-500/15",
-            "bg-cyan-500/10 dark:bg-cyan-500/15",
+            "bg-blue-950/10 dark:bg-blue-950/20",
             "bg-amber-500/10 dark:bg-amber-500/15",
           ];
           return (
             <div 
               key={stage.title}
-              className="bg-card/95 dark:bg-card/85 backdrop-blur-xl rounded-[30px] sm:rounded-[34px] border border-border/80 hover:border-cyan-500/40 p-6 sm:p-7 flex flex-col justify-between shadow-[0_16px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.45)] hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden group"
+              className="bg-card/95 dark:bg-card/85 backdrop-blur-xl rounded-[30px] sm:rounded-[34px] border border-border/80 hover:border-blue-900/30 dark:hover:border-blue-700/40 p-6 sm:p-7 flex flex-col justify-between shadow-[0_16px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.45)] hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden group"
             >
               {/* Subtle luminous halo */}
               <div 
@@ -71,7 +71,7 @@ export function KnowledgePipeline() {
 
               <div className="pt-4 mt-6 border-t border-border/60 text-xs font-mono text-muted-foreground flex items-center justify-between relative z-10">
                 <span className="px-2.5 py-0.5 rounded-full bg-muted/50 border border-border/60 text-[11px] font-medium">{stage.metric}</span>
-                <span className="size-2 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]" aria-hidden="true" />
+                <span className="size-2 rounded-full bg-blue-900 dark:bg-blue-400 animate-pulse shadow-[0_0_8px_rgba(30,58,138,0.5)]" aria-hidden="true" />
               </div>
             </div>
           );

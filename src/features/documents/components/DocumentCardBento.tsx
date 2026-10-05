@@ -152,7 +152,7 @@ export default function DocumentCardBento({
           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors"
           title="Open Notes"
         >
-          <FileText className="size-3 text-cyan-600 dark:text-cyan-400" />
+          <FileText className="size-3 text-blue-900 dark:text-blue-400" />
           <span>Notes</span>
         </button>
 

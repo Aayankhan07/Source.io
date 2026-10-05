@@ -45,8 +45,8 @@ export function LandingHero() {
           >
             {/* 1. Tinted Eyebrow Badge (Sentence case, no uppercase tracking wide) */}
             <motion.div variants={reveal} className="mb-4">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border border-cyan-500/20 text-[12px] font-medium leading-[18px] shadow-xs">
-                <span className="size-2 rounded-full bg-cyan-500 shrink-0" />
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/10 text-blue-950 dark:bg-blue-950/70 dark:text-blue-200 border border-blue-900/25 dark:border-blue-700/50 text-[12px] font-semibold leading-[18px] shadow-xs">
+                <span className="size-2 rounded-full bg-blue-950 dark:bg-blue-400 shrink-0" />
                 <span>One source, five study lenses</span>
               </span>
             </motion.div>
@@ -78,7 +78,7 @@ export function LandingHero() {
                 className="bg-primary text-primary-foreground font-medium rounded-md px-5 py-2.5 text-sm shadow-xs hover:opacity-95 active:scale-[0.99] transition-all inline-flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>{mounted && user ? "Open workspace" : "Start free"}</span>
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 text-cyan-400" />
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 text-blue-950 dark:text-blue-400" />
               </Link>
               <button
                 type="button"
@@ -96,17 +96,17 @@ export function LandingHero() {
               className="mt-6 flex flex-wrap items-center gap-3 text-[11px] font-medium text-muted-foreground select-none"
             >
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-cyan-600 dark:bg-cyan-400" />
+                <span className="size-1.5 rounded-full bg-blue-900 dark:bg-blue-400" />
                 <span>8 ingest formats</span>
               </span>
               <span className="text-border">·</span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-cyan-600 dark:bg-cyan-400" />
+                <span className="size-1.5 rounded-full bg-blue-900 dark:bg-blue-400" />
                 <span>Sentence-level citations</span>
               </span>
               <span className="text-border">·</span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-cyan-600 dark:bg-cyan-400" />
+                <span className="size-1.5 rounded-full bg-blue-900 dark:bg-blue-400" />
                 <span>100% grounded facts</span>
               </span>
             </motion.div>
