@@ -37,7 +37,7 @@ type DocumentAssets = {
   podcast: PodcastRow | null;
 };
 
-type TabId = "notes" | "podcast" | "cards" | "quiz";
+type TabId = "notes" | "cards" | "quiz" | "podcast" | "chat";
 
 export default function DocumentWorkspace() {
   const params = useParams();
@@ -443,30 +443,17 @@ export default function DocumentWorkspace() {
     { id: "cards", label: "Flashcards", count: cards.length },
     { id: "quiz", label: "Quiz" },
     { id: "podcast", label: "Podcast" },
+    { id: "chat", label: "Ask AI Chat" },
   ];
 
   return (
     <div className="h-full flex flex-col bg-tactile-canvas overflow-hidden">
-      {/* 1. Header (Tactile clean style) */}
-      <header className="border-b border-black/[0.04] dark:border-white/10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3 shrink-0 z-20 select-none">
-        {/* Left: Sidebar Toggle, Dashboard Back & Document Info */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          {currentTab === "notes" && (
-            <button
-              onClick={() => setOutlineRetracted(!outlineRetracted)}
-              className={cn(
-                "size-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors hidden lg:inline-flex shrink-0 cursor-pointer",
-                !outlineRetracted ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "hover:bg-slate-100 dark:hover:bg-slate-800"
-              )}
-              title={outlineRetracted ? "Expand outline" : "Retract outline"}
-            >
-              {outlineRetracted ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
-            </button>
-          )}
-
+      {/* Workspace Floating Tactile Capsule Bar (Matches sc 3) */}
+      <div className="px-4 sm:px-8 pt-3.5 pb-2 flex items-center justify-between gap-3 shrink-0 z-10 select-none">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none max-w-full">
           {openMobileNav && (
             <button
-              className="md:hidden size-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+              className="md:hidden size-9 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white bg-white/90 dark:bg-slate-900/90 border border-black/[0.06] dark:border-white/10 shrink-0 cursor-pointer shadow-xs"
               onClick={openMobileNav}
               aria-label="Open navigation"
             >
@@ -474,142 +461,73 @@ export default function DocumentWorkspace() {
             </button>
           )}
 
-          <div className="flex items-center gap-2.5 min-w-0">
-            <button
-              onClick={() => router.push("/app")}
-              className="h-8 px-3 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
-            >
-              <ChevronLeft className="size-3.5" />
-              <span>Dashboard</span>
-            </button>
-            <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
-            <h1 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate max-w-xs sm:max-w-sm md:max-w-md font-display">
-              {doc.title}
-            </h1>
-            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-semibold border border-black/[0.04] dark:border-white/10 shrink-0">
-              {doc.source_type}
-            </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500 hidden md:inline shrink-0 font-mono">
-              {readTimeMinutes} min read
-            </span>
+          <div className="inline-flex items-center gap-1 p-1 sm:p-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 shadow-[0_2px_14px_rgba(0,0,0,0.04)] overflow-x-auto scrollbar-none">
+            {tabs.map((t) => {
+              const isActive = currentTab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setCurrentTab(t.id)}
+                  className={cn(
+                    "h-8 sm:h-9 px-3.5 sm:px-5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 flex items-center gap-2 cursor-pointer select-none",
+                    isActive
+                      ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-xs scale-[1.01]"
+                      : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60"
+                  )}
+                >
+                  <span>{t.label}</span>
+                  {t.count !== undefined && t.count > 0 && (
+                    <span
+                      className={cn(
+                        "text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none",
+                        isActive
+                          ? "bg-white/20 text-white dark:bg-slate-950/20 dark:text-slate-950"
+                          : "bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300"
+                      )}
+                    >
+                      {t.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Right: Actions */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {currentTab === "notes" && (
-            <>
-              <button
-                onClick={handleCopyNotes}
-                className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full hidden sm:inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                {copiedNotes ? <Check className="size-3 text-emerald-500 stroke-[2.5]" /> : <Copy className="size-3" />}
-                <span>{copiedNotes ? "Copied" : "Copy"}</span>
-              </button>
-
-              {note?.markdown && (
-                <button
-                  onClick={generate}
-                  disabled={streaming}
-                  className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full hidden sm:inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
-                >
-                  <RefreshCw className={cn("size-3", streaming && "animate-spin text-sky-500")} />
-                  <span>Regenerate</span>
-                </button>
+        {/* Quick Outline Toggle & Side Copilot Toggle on Notes View */}
+        {currentTab === "notes" && (
+          <div className="hidden lg:flex items-center gap-1.5">
+            <button
+              onClick={() => setOutlineRetracted(!outlineRetracted)}
+              className={cn(
+                "h-8 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border",
+                !outlineRetracted
+                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-black/[0.06] dark:border-white/10 shadow-xs"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border-transparent hover:bg-white/80 dark:hover:bg-slate-900/80"
               )}
+              title={outlineRetracted ? "Expand outline" : "Retract outline"}
+            >
+              {outlineRetracted ? <PanelLeftOpen className="size-3.5" /> : <PanelLeftClose className="size-3.5" />}
+              <span>Outline</span>
+            </button>
 
-              {/* In-Context Notes & Reading Settings Popover */}
-              <NotesSettingsPopover />
-
-              {/* Focus Mode */}
-              <button
-                onClick={() => {
-                  if (!focusMode) {
-                    setOutlineOpen(false);
-                    setAskPanelOpen(false);
-                    setFocusMode(true);
-                  } else {
-                    setOutlineOpen(true);
-                    setAskPanelOpen(true);
-                    setFocusMode(false);
-                  }
-                }}
-                className={cn(
-                  "size-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer hidden lg:inline-flex",
-                  focusMode ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950" : "hover:bg-slate-100 dark:hover:bg-slate-800"
-                )}
-                title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
-              >
-                {focusMode ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
-              </button>
-            </>
-          )}
-
-          {/* Delete Document */}
-          <button
-            onClick={() => setDeleteOpen(true)}
-            title="Delete document"
-            className="size-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
-          >
-            <Trash2 className="size-3.5" />
-          </button>
-        </div>
-      </header>
-
-      {/* 2. Workspace Floating Tactile Lens Pills (Notes, Flashcards, Quiz, Podcast, Ask AI) */}
-      <div className="border-b border-border/60 bg-background/90 backdrop-blur-md px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 shrink-0 z-10">
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-          {tabs.map((t) => {
-            const isActive = currentTab === t.id;
-            return (
-              <button
-                key={t.id}
-                onClick={() => setCurrentTab(t.id)}
-                className={cn(
-                  "h-8 sm:h-9 px-3.5 sm:px-4 rounded-full text-xs font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer shadow-2xs select-none",
-                  isActive
-                    ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-tactile-pill scale-[1.02]"
-                    : "bg-slate-100/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
-                )}
-              >
-                <span>{t.label}</span>
-                {t.count !== undefined && t.count > 0 && (
-                  <span
-                    className={cn(
-                      "text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold",
-                      isActive
-                        ? "bg-white/20 text-white dark:bg-slate-950/20 dark:text-slate-950"
-                        : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
-                    )}
-                  >
-                    {t.count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* 5th Lens: Ask AI Copilot Panel Toggle */}
-        <button
-          onClick={() => {
-            setAskPanelOpen((prev) => !prev);
-            if (currentTab !== "notes") {
-              setCurrentTab("notes");
-            }
-          }}
-          className={cn(
-            "h-8 sm:h-9 px-3.5 sm:px-4 rounded-full text-xs font-semibold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer shadow-2xs select-none border",
-            askPanelOpen
-              ? "bg-purple-100 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 border-purple-300 dark:border-purple-800 font-bold"
-              : "bg-slate-100/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
-          )}
-        >
-          <Sparkles className="size-3.5 text-purple-600 dark:text-purple-400" />
-          <span className="hidden sm:inline">Ask AI Chat</span>
-          <span className="sm:hidden">Ask AI</span>
-        </button>
+            <button
+              onClick={() => setAskPanelOpen(!askPanelOpen)}
+              className={cn(
+                "h-8 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border",
+                askPanelOpen
+                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-black/[0.06] dark:border-white/10 shadow-xs"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border-transparent hover:bg-white/80 dark:hover:bg-slate-900/80"
+              )}
+              title={askPanelOpen ? "Close side copilot" : "Open side copilot"}
+            >
+              <Sparkles className="size-3.5 text-purple-600 dark:text-purple-400" />
+              <span>Side Copilot</span>
+            </button>
+          </div>
+        )}
       </div>
+
 
       {/* 3. Main Workspace Content */}
       <div className="flex-1 overflow-hidden relative">
@@ -669,7 +587,50 @@ export default function DocumentWorkspace() {
                         </div>
                       ) : note?.markdown ? (
                         <div className="space-y-6 animate-fade-in pb-16">
-                          <div className="rounded-[32px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-8 sm:p-12">
+                          <div className="rounded-[32px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-10 lg:p-12">
+                            {/* Document metadata & Action Bar */}
+                            <div className="flex flex-wrap items-center justify-between gap-3 pb-6 mb-8 border-b border-black/[0.04] dark:border-white/10">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 font-bold border border-black/[0.04] dark:border-white/10 shrink-0">
+                                  {doc.source_type}
+                                </span>
+                                <span className="text-xs text-slate-400 dark:text-slate-500 font-mono shrink-0">
+                                  {readTimeMinutes} min read
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                  onClick={handleCopyNotes}
+                                  className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                                >
+                                  {copiedNotes ? <Check className="size-3 text-emerald-500 stroke-[2.5]" /> : <Copy className="size-3" />}
+                                  <span>{copiedNotes ? "Copied" : "Copy"}</span>
+                                </button>
+
+                                {note?.markdown && (
+                                  <button
+                                    onClick={generate}
+                                    disabled={streaming}
+                                    className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                                  >
+                                    <RefreshCw className={cn("size-3", streaming && "animate-spin text-sky-500")} />
+                                    <span>Regenerate</span>
+                                  </button>
+                                )}
+
+                                <NotesSettingsPopover />
+
+                                <button
+                                  onClick={() => setDeleteOpen(true)}
+                                  title="Delete document"
+                                  className="size-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
                             <MarkdownView>{note.markdown}</MarkdownView>
                           </div>
                           {streaming && (
@@ -796,6 +757,22 @@ export default function DocumentWorkspace() {
         {currentTab === "podcast" && (
           <div className="h-full overflow-y-auto p-4 sm:p-8 max-w-4xl mx-auto">
             <PodcastPlayer documentId={doc.id} podcast={pod} onGenerate={runPodcast} loading={podcastLoading} />
+          </div>
+        )}
+
+        {currentTab === "chat" && (
+          <div className="h-full overflow-hidden p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto flex flex-col">
+            <div className="flex-1 rounded-[32px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card overflow-hidden flex flex-col">
+              <AskPanel
+                documentId={doc.id}
+                noteMarkdown={note?.markdown}
+                headings={headings}
+                onScrollToHeading={(id) => {
+                  setActiveHeadingId(id);
+                  setCurrentTab("notes");
+                }}
+              />
+            </div>
           </div>
         )}
       </div>
