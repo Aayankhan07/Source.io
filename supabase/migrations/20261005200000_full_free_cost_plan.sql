@@ -109,7 +109,54 @@ BEGIN
   END IF;
 END $$;
 
--- 4. Create daily_ai_usage view for unified daily action accounting
+-- 4. Ensure ai_usage_logs and jobs idempotency exist before creating view
+ALTER TABLE public.jobs 
+ADD COLUMN IF NOT EXISTS idempotency_key TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ai_jobs_idempotency_key_idx 
+ON public.jobs (idempotency_key) 
+WHERE idempotency_key IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS public.ai_usage_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  document_id UUID REFERENCES public.documents(id) ON DELETE CASCADE,
+  request_id TEXT NOT NULL,
+  idempotency_key TEXT,
+  feature TEXT NOT NULL,               -- 'notes' | 'derivatives' | 'chat' | 'podcast' | 'transcribe'
+  provider TEXT NOT NULL,              -- 'groq' | 'gemini' | 'openai' | 'edge-tts'
+  model TEXT NOT NULL,
+  input_tokens INT DEFAULT 0,
+  output_tokens INT DEFAULT 0,
+  cached_input_tokens INT DEFAULT 0,
+  estimated_cost_usd NUMERIC(12,8) DEFAULT 0,
+  status TEXT NOT NULL,                -- 'succeeded' | 'failed' | 'rate_limited'
+  duration_ms INT,
+  error_message TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_usage_logs_user_daily 
+ON public.ai_usage_logs (user_id, feature, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_ai_usage_logs_document 
+ON public.ai_usage_logs (document_id, created_at);
+
+ALTER TABLE public.ai_usage_logs ENABLE ROW LEVEL SECURITY;
+
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'ai_usage_logs' AND policyname = 'Users view own ai usage logs'
+  ) THEN
+    CREATE POLICY "Users view own ai usage logs"
+      ON public.ai_usage_logs FOR SELECT
+      USING (auth.uid() = user_id);
+  END IF;
+END $$;
+
+-- 5. Create daily_ai_usage view for unified daily action accounting
 CREATE OR REPLACE VIEW public.daily_ai_usage AS
 SELECT 
   user_id,
