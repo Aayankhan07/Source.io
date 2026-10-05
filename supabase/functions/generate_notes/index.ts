@@ -2,6 +2,7 @@
 // Frontend reads SSE deltas; this function also persists the final markdown to `notes`.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
+import { logAiUsage } from "../_shared/telemetry.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -239,6 +240,9 @@ Deno.serve(async (req) => {
     );
   }
 
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+
   // Groq llama-3.3-70b-versatile free-tier rate limit: 12k TPM. Keep source under 35k chars (~8-9k tokens) to prevent TPM errors.
   const MAX_CHARS = 35_000;
   const source = doc.raw_text.length > MAX_CHARS ? doc.raw_text.slice(0, MAX_CHARS) : doc.raw_text;
@@ -308,6 +312,19 @@ Deno.serve(async (req) => {
     }
 
     await completeJob(admin, lock.jobId, false, errorDetail);
+
+    await logAiUsage(admin, {
+      userId,
+      documentId,
+      requestId,
+      idempotencyKey: body.idempotency_key,
+      feature: "notes",
+      provider: "groq",
+      model: "openai/gpt-oss-120b",
+      status: isRateLimit ? "rate_limited" : "failed",
+      durationMs: Date.now() - startTime,
+      errorMessage: errorDetail,
+    });
 
     const isRateLimit = status === 429 || errorDetail.includes("TPM") || errorDetail.includes("rate limit");
     return new Response(
@@ -390,6 +407,23 @@ Deno.serve(async (req) => {
                 .insert({ document_id: documentId, user_id: userId, markdown: fullMarkdown });
             }
             await completeJob(admin, lock.jobId, true);
+
+            const inputTokensEst = Math.round((source.length + userPrompt.length) / 4);
+            const outputTokensEst = Math.round(fullMarkdown.length / 4);
+            await logAiUsage(admin, {
+              userId,
+              documentId,
+              requestId,
+              idempotencyKey: body.idempotency_key,
+              feature: "notes",
+              provider: "groq",
+              model: "openai/gpt-oss-120b",
+              inputTokens: inputTokensEst,
+              outputTokens: outputTokensEst,
+              estimatedCostUsd: Number(((inputTokensEst * 0.15 + outputTokensEst * 0.60) / 1_000_000).toFixed(6)),
+              status: "succeeded",
+              durationMs: Date.now() - startTime,
+            });
           } else {
             await completeJob(admin, lock.jobId, false, "Empty response generated");
           }

@@ -2,6 +2,7 @@
 // streams Gemini response, persists messages, and returns citations as a leading SSE event.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { checkDailyQuota } from "../_shared/quotas.ts";
+import { logAiUsage } from "../_shared/telemetry.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -175,6 +176,9 @@ Deno.serve(async (req) => {
     );
   }
 
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+
   try {
     // 1) Embed query and retrieve top-k chunks via RPC.
     const queryEmbedding = embedQuery(message);
@@ -231,6 +235,19 @@ Deno.serve(async (req) => {
       const status = aiResp.status;
       const t = await aiResp.text().catch(() => "");
       console.error("groq error", status, t);
+
+      await logAiUsage(admin, {
+        userId,
+        documentId: document_id,
+        requestId,
+        feature: "chat",
+        provider: "groq",
+        model: CHAT_MODEL,
+        status: status === 429 ? "rate_limited" : "failed",
+        durationMs: Date.now() - startTime,
+        errorMessage: t || `Groq API error (${status})`,
+      });
+
       const code = status === 429 ? 429 : 500;
       const errMsg = status === 429
         ? "Rate limit reached on Groq's free tier — please wait a moment and try again."
@@ -289,6 +306,22 @@ Deno.serve(async (req) => {
           if (assistantText.trim()) {
             await admin.from("chat_messages").insert({
               user_id: userId, document_id, role: "assistant", content: assistantText,
+            });
+
+            const inputTokensEst = Math.round((contextBlock.length + message.length) / 4);
+            const outputTokensEst = Math.round(assistantText.length / 4);
+            await logAiUsage(admin, {
+              userId,
+              documentId: document_id,
+              requestId,
+              feature: "chat",
+              provider: "groq",
+              model: CHAT_MODEL,
+              inputTokens: inputTokensEst,
+              outputTokens: outputTokensEst,
+              estimatedCostUsd: Number(((inputTokensEst * 0.05 + outputTokensEst * 0.08) / 1_000_000).toFixed(6)),
+              status: "succeeded",
+              durationMs: Date.now() - startTime,
             });
           }
           controller.close();

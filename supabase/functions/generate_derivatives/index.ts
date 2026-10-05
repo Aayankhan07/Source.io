@@ -2,6 +2,7 @@
 // Uses Groq API with structured JSON output.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
+import { logAiUsage } from "../_shared/telemetry.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -191,6 +192,9 @@ Deno.serve(async (req) => {
     );
   }
 
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+
   // Keep source under 35k chars to fit within Groq's 12k TPM limit
   const MAX = 35_000;
   const trimmed = source.length > MAX ? source.slice(0, MAX) : source;
@@ -249,6 +253,20 @@ Deno.serve(async (req) => {
     await completeJob(admin, lock.jobId, false, errorDetail);
 
     const isRateLimit = status === 429 || errorDetail.includes("TPM") || errorDetail.includes("rate limit");
+
+    await logAiUsage(admin, {
+      userId,
+      documentId,
+      requestId,
+      idempotencyKey: body.idempotency_key,
+      feature: "derivatives",
+      provider: "groq",
+      model: "openai/gpt-oss-20b",
+      status: isRateLimit ? "rate_limited" : "failed",
+      durationMs: Date.now() - startTime,
+      errorMessage: errorDetail,
+    });
+
     return new Response(
       JSON.stringify({
         error: isRateLimit
@@ -393,6 +411,23 @@ Deno.serve(async (req) => {
   }
 
   await completeJob(admin, lock.jobId, true);
+
+  const inputTokensEst = Math.round((trimmed.length + (doc.title?.length || 0)) / 4);
+  const outputTokensEst = Math.round((content?.length || 0) / 4);
+  await logAiUsage(admin, {
+    userId,
+    documentId,
+    requestId,
+    idempotencyKey: body.idempotency_key,
+    feature: "derivatives",
+    provider: "groq",
+    model: "openai/gpt-oss-20b",
+    inputTokens: inputTokensEst,
+    outputTokens: outputTokensEst,
+    estimatedCostUsd: Number(((inputTokensEst * 0.05 + outputTokensEst * 0.08) / 1_000_000).toFixed(6)),
+    status: "succeeded",
+    durationMs: Date.now() - startTime,
+  });
 
   return new Response(JSON.stringify({
     ok: true,
