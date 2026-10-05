@@ -384,252 +384,130 @@ export function DailyQuotaPill() {
           align="end"
           sideOffset={8}
           collisionPadding={12}
-          className="w-88 max-w-[calc(100vw-32px)] p-4.5 rounded-3xl bg-white dark:bg-slate-900 border border-black/[0.08] dark:border-white/10 shadow-tactile-card backdrop-blur-md text-foreground"
+          className="w-[320px] p-4 rounded-[26px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-black/[0.08] dark:border-white/10 shadow-tactile-card text-foreground select-none"
         >
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {/* Header */}
-            <div className="flex items-center justify-between pb-1 border-b border-border/60">
+            <div className="flex items-center justify-between pb-0.5">
               <div className="flex items-center gap-1.5">
-                <Zap className="size-4 text-purple-600 dark:text-purple-400" />
-                <h4 className="font-bold text-xs font-display">Plan & Quota Dashboard</h4>
+                <Sparkles className="size-4 text-purple-600 dark:text-purple-400" />
+                <h4 className="font-bold text-xs font-display text-slate-900 dark:text-white">AI Allowance</h4>
               </div>
               <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={handleResetPosition}
-                  className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex items-center gap-0.5 cursor-pointer transition-colors"
-                  title="Reset pill position to top right default"
-                >
-                  <RotateCcw className="size-2.5" />
-                  <span>Reset pos</span>
-                </button>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold">
-                  {hasByok ? "BYOK Active" : "Free Student Plan"}
+                  {hasByok ? "BYOK Active" : "Free Student Tier"}
                 </span>
-              </div>
-            </div>
-
-            {/* ========================================================= */}
-            {/* BAR A: Source.io Student Allowance                        */}
-            {/* ========================================================= */}
-            <div className="space-y-2 rounded-2xl p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-white/5">
-              <div className="flex items-center justify-between text-xs font-semibold">
-                <span className="text-slate-700 dark:text-slate-200">Source.io Allowance</span>
-                <span className="text-purple-600 dark:text-purple-400 font-mono text-[11px]">
-                  {hasByok ? "Unlimited (0 charge)" : `${percentAllowanceRemaining}% remaining`}
-                </span>
-              </div>
-
-              {!hasByok && (
-                <>
-                  <Progress value={percentUsed} className="h-2 rounded-full bg-slate-200 dark:bg-slate-700" />
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
-                    <span>AI usage today: {usageCount} / {DAILY_FREE_LIMIT} actions</span>
-                    <span className="font-mono text-[10px] font-bold">{remaining} left</span>
-                  </div>
-                </>
-              )}
-
-              {hasByok && (
-                <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">
-                  <ShieldCheck className="size-3.5" />
-                  <span>Your custom {activeByokProvider} key bypasses daily quotas.</span>
-                </div>
-              )}
-
-              <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
-                <Clock className="size-3 text-slate-400 shrink-0" />
-                <span>Resets in {timeUntilReset || "midnight UTC"}</span>
-              </div>
-
-              {/* "Why did my allowance change?" explanation toggle */}
-              <div className="pt-1.5 border-t border-slate-200/60 dark:border-white/5">
-                <button
-                  type="button"
-                  onClick={() => setShowAllowanceWhy(!showAllowanceWhy)}
-                  className="w-full flex items-center justify-between text-[10.5px] text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
-                >
-                  <span className="flex items-center gap-1 font-medium">
-                    <HelpCircle className="size-3 text-purple-500" />
-                    Why did my allowance change?
-                  </span>
-                  {showAllowanceWhy ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
-                </button>
-                {showAllowanceWhy && (
-                  <div className="mt-1.5 p-2 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 text-[10.5px] text-purple-950 dark:text-purple-200 leading-normal space-y-1">
-                    <p>
-                      Notes, flashcards, quizzes, and long questions use different amounts of AI processing. Source.io allowance accounts for action weights:
-                    </p>
-                    <div className="grid grid-cols-3 gap-1 pt-1 text-[10px] font-mono">
-                      <span className="bg-white/80 dark:bg-slate-900/80 p-1 rounded text-center border border-purple-100 dark:border-purple-900">Chat: 1 unit</span>
-                      <span className="bg-white/80 dark:bg-slate-900/80 p-1 rounded text-center border border-purple-100 dark:border-purple-900">Quizzes: 4 units</span>
-                      <span className="bg-white/80 dark:bg-slate-900/80 p-1 rounded text-center border border-purple-100 dark:border-purple-900">Notes: 5 units</span>
-                    </div>
-                  </div>
+                {(pos.x !== 0 || pos.y !== 0) && (
+                  <button
+                    type="button"
+                    onClick={handleResetPosition}
+                    className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Reset position to top right"
+                  >
+                    <RotateCcw className="size-3" />
+                  </button>
                 )}
               </div>
             </div>
 
-            {/* ========================================================= */}
-            {/* BAR B: Provider Quota / Health (Informational Snapshot)    */}
-            {/* ========================================================= */}
-            <div className="space-y-2 rounded-2xl p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-white/5">
-              <div className="flex items-center justify-between text-xs font-semibold">
-                <div className="flex items-center gap-1.5">
-                  <Cpu className="size-3.5 text-slate-600 dark:text-slate-400" />
-                  <span className="text-slate-700 dark:text-slate-200">
-                    {hasByok ? `${activeByokProvider} Quota` : "Groq Provider Capacity"}
+            {/* Main Hero Allowance Card */}
+            <div className="rounded-[20px] p-3.5 bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/5 space-y-2.5">
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <span className="text-2xl font-black font-display tracking-tight text-slate-900 dark:text-white">
+                    {hasByok ? "∞" : remaining}
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5 font-medium">
+                    {hasByok ? "actions (unmetered)" : `/ ${DAILY_FREE_LIMIT} actions left`}
                   </span>
                 </div>
-                
-                <div className="flex items-center gap-1.5">
-                  {/* Data Freshness Indicator */}
-                  <span
-                    className={cn(
-                      "text-[9px] font-mono px-1.5 py-0.5 rounded-full flex items-center gap-1 font-semibold",
-                      providerFreshness.status === "live" && "bg-emerald-100/80 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300",
-                      providerFreshness.status === "recent" && "bg-sky-100/80 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300",
-                      providerFreshness.status === "stale" && "bg-amber-100/80 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300",
-                      providerFreshness.status === "unknown" && "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                    )}
-                    title={`Captured ${providerFreshness.detail}`}
-                  >
-                    {providerFreshness.status === "live" && (
-                      <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    )}
-                    {providerFreshness.label}
-                  </span>
-
-                  <span
-                    className={cn(
-                      "text-[10px] font-mono px-1.5 py-0.5 rounded-full font-bold",
-                      providerHealthStatus === "Good"
-                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                        : providerHealthStatus === "Moderate"
-                        ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
-                        : "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
-                    )}
-                  >
-                    {providerHealthStatus}
-                  </span>
-                </div>
+                <span className="text-[11px] font-mono font-bold text-purple-600 dark:text-purple-400">
+                  {hasByok ? "BYOK" : `${percentAllowanceRemaining}%`}
+                </span>
               </div>
 
-              {/* State 1: Exact Groq Quota */}
-              {providerQuotaState === "exact" && (
-                <div className="space-y-1.5 pt-1 text-xs">
-                  {requestPercentRemaining != null && (
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500 dark:text-slate-400">Requests remaining:</span>
-                      <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
-                        {requestPercentRemaining}%
-                      </span>
-                    </div>
-                  )}
+              {/* Progress Bar showing remaining allowance */}
+              {!hasByok && (
+                <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                  <div
+                    className={cn(
+                      "h-full rounded-full transition-all duration-500",
+                      remaining <= 3 ? "bg-amber-500" : "bg-gradient-to-r from-purple-600 to-indigo-500"
+                    )}
+                    style={{ width: `${Math.max(4, percentAllowanceRemaining)}%` }}
+                  />
+                </div>
+              )}
 
-                  {tokenPercentRemaining != null && (
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-slate-500 dark:text-slate-400">Tokens remaining:</span>
-                        <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
-                          {tokenPercentRemaining}%
-                        </span>
-                      </div>
-                      <Progress
-                        value={100 - tokenPercentRemaining}
-                        className="h-1.5 rounded-full bg-slate-200 dark:bg-slate-700"
-                      />
-                    </div>
-                  )}
+              {/* Reset Timer & Action Cost toggle */}
+              <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
+                <span className="flex items-center gap-1">
+                  <Clock className="size-3 text-slate-400 shrink-0" />
+                  Resets in {timeUntilReset || "midnight UTC"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAllowanceWhy(!showAllowanceWhy)}
+                  className="text-[10.5px] text-purple-600 dark:text-purple-400 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>Cost rules</span>
+                  {showAllowanceWhy ? <ChevronUp className="size-2.5" /> : <ChevronDown className="size-2.5" />}
+                </button>
+              </div>
 
-                  <div className="flex items-center justify-between text-[10.5px] text-slate-400 dark:text-slate-500 pt-0.5">
-                    <span>Captured: {providerFreshness.detail}</span>
-                    <span>Resets in: {providerSnapshot?.raw_reset_tokens || providerSnapshot?.raw_reset_requests || "rolling window"}</span>
+              {showAllowanceWhy && (
+                <div className="pt-2 border-t border-slate-200/60 dark:border-white/5 text-[10.5px] text-slate-600 dark:text-slate-300 space-y-1">
+                  <p className="leading-snug text-slate-500 dark:text-slate-400">Compute weight per action:</p>
+                  <div className="grid grid-cols-3 gap-1 pt-0.5 font-mono text-[10px]">
+                    <span className="p-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-center font-bold text-slate-800 dark:text-slate-200">Chat: 1</span>
+                    <span className="p-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-center font-bold text-slate-800 dark:text-slate-200">Quiz: 4</span>
+                    <span className="p-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-center font-bold text-slate-800 dark:text-slate-200">Notes: 5</span>
                   </div>
                 </div>
               )}
-
-              {/* State 2: Estimated */}
-              {providerQuotaState === "estimated" && (
-                <div className="py-1 text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span>Estimated Provider Usage:</span>
-                    <span className="font-mono font-bold">~60% capacity remaining</span>
-                  </div>
-                  <Progress value={40} className="h-1.5 rounded-full" />
-                </div>
-              )}
-
-              {/* State 3: Unknown Provider Quota */}
-              {providerQuotaState === "unknown" && (
-                <div className="py-1 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                  {hasByok ? (
-                    <span>
-                      {activeByokProvider} does not expose exact real-time header counters. Source.io tracks your requests directly.
-                    </span>
-                  ) : (
-                    <span>
-                      Provider availability: <strong className="text-emerald-600 dark:text-emerald-400">Operational</strong>. High-speed inference available.
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Stale Data Warning */}
-              {providerFreshness.isStale && (
-                <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 text-[10.5px] text-amber-800 dark:text-amber-300">
-                  Provider quota information may be outdated ({providerFreshness.detail}). Updated on next AI action.
-                </div>
-              )}
-
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 italic pt-0.5">
-                *Informational shared capacity. Student allowance is strictly enforced by Source.io.
-              </p>
             </div>
 
-            {/* ========================================================= */}
-            {/* TODAY'S ACTIVITY BREAKDOWN                                */}
-            {/* ========================================================= */}
-            <div className="rounded-2xl p-2.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-white/5">
-              <button
-                type="button"
-                onClick={() => setShowActivityHistory(!showActivityHistory)}
-                className="w-full flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
-              >
-                <span className="flex items-center gap-1.5">
-                  <Activity className="size-3.5 text-slate-500" />
-                  <span>Today's Activity Breakdown</span>
-                </span>
-                <span className="text-[11px] font-mono text-slate-500 flex items-center gap-1">
-                  {usageStats.total} actions {showActivityHistory ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
-                </span>
-              </button>
-
-              {showActivityHistory && (
-                <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-white/5 space-y-1.5 text-[11px]">
-                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
-                    <span>Copilot Questions</span>
-                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{usageStats.chat}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
-                    <span>Notes Generations</span>
-                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{usageStats.notes}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
-                    <span>Flashcards & Quizzes</span>
-                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{usageStats.derivatives}</span>
-                  </div>
-                  <div className="pt-1.5 border-t border-slate-200/40 dark:border-white/5 flex items-center justify-between font-semibold text-slate-800 dark:text-slate-100 text-xs">
-                    <span>Total Actions Used</span>
-                    <span className="font-mono">{usageStats.total} / {hasByok ? "Unlimited" : DAILY_FREE_LIMIT}</span>
-                  </div>
+            {/* Today's Activity Summary (Compact 3 chips) */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-400 px-0.5">
+                <span>Today's Activity</span>
+                <span className="font-mono text-[10px] text-slate-500">{usageStats.total} used today</span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5 text-center">
+                <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5">
+                  <span className="block text-xs font-bold font-mono text-slate-800 dark:text-slate-200">{usageStats.chat}</span>
+                  <span className="text-[10px] text-slate-400">Questions</span>
                 </div>
-              )}
+                <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5">
+                  <span className="block text-xs font-bold font-mono text-slate-800 dark:text-slate-200">{usageStats.notes}</span>
+                  <span className="text-[10px] text-slate-400">Notes</span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5">
+                  <span className="block text-xs font-bold font-mono text-slate-800 dark:text-slate-200">{usageStats.derivatives}</span>
+                  <span className="text-[10px] text-slate-400">Quizzes</span>
+                </div>
+              </div>
+            </div>
+
+            {/* AI Network Status Row (Clean single row) */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50/70 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 text-xs">
+              <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                <Cpu className="size-3.5 text-slate-400 shrink-0" />
+                <span className="text-[11px] font-medium">{hasByok ? `${activeByokProvider} Key` : "Groq AI Engine"}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  {providerQuotaState === "exact" && tokenPercentRemaining != null
+                    ? `${tokenPercentRemaining}% capacity`
+                    : "Operational"}
+                </span>
+              </div>
             </div>
 
             {/* Quota Exhausted Warning */}
             {remaining === 0 && !hasByok && (
-              <div className="p-2.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-[11px] text-rose-800 dark:text-rose-300 font-medium leading-relaxed">
+              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-[11px] text-rose-800 dark:text-rose-300 font-medium leading-relaxed">
                 Daily free allowance exhausted. Add a personal free Groq or Gemini API key in Settings to continue without interruptions.
               </div>
             )}
@@ -640,10 +518,10 @@ export function DailyQuotaPill() {
                 setPopoverOpen(false);
                 router.push("/app/settings");
               }}
-              className="w-full h-8 px-3 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              className="w-full h-8 px-3 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
               <Key className="size-3 text-slate-500" />
-              <span>{hasByok ? "Manage Custom Provider Keys" : "Use Your Own AI Provider (BYOK)"}</span>
+              <span>{hasByok ? "Manage Custom Provider Keys" : "Use Your Own API Key (BYOK)"}</span>
             </button>
           </div>
         </PopoverContent>
