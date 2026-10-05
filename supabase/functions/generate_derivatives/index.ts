@@ -1,6 +1,7 @@
 // Generates flashcards + quiz from a document's notes (or raw_text fallback).
 // Uses Groq API with structured JSON output.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -131,7 +132,12 @@ Deno.serve(async (req) => {
   }
   const userId = claimsData.claims.sub as string;
 
-  let body: { document_id?: string; flashcard_count?: number; quiz_difficulty?: string };
+  let body: {
+    document_id?: string;
+    flashcard_count?: number;
+    quiz_difficulty?: string;
+    idempotency_key?: string;
+  };
   try { body = await req.json(); } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -166,10 +172,30 @@ Deno.serve(async (req) => {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  // Cost guardrail: acquire concurrency lock to prevent duplicate runs
+  const lock = await acquireJobLock(admin, {
+    userId,
+    documentId,
+    kind: "generate_derivatives",
+    idempotencyKey: body.idempotency_key,
+  });
+
+  if (!lock.acquired) {
+    return new Response(
+      JSON.stringify({ error: lock.message || "Job already in progress or completed" }),
+      {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+
   // Keep source under 35k chars to fit within Groq's 12k TPM limit
   const MAX = 35_000;
   const trimmed = source.length > MAX ? source.slice(0, MAX) : source;
 
+  const callGroq = (model: string) => {
     const customPromptInstructions = [
       body.flashcard_count ? `Generate approximately ${body.flashcard_count} flashcards.` : null,
       body.quiz_difficulty ? `Cognitive difficulty level: ${body.quiz_difficulty}.` : null,
@@ -220,6 +246,8 @@ Deno.serve(async (req) => {
       if (t) errorDetail = t.slice(0, 200);
     }
 
+    await completeJob(admin, lock.jobId, false, errorDetail);
+
     const isRateLimit = status === 429 || errorDetail.includes("TPM") || errorDetail.includes("rate limit");
     return new Response(
       JSON.stringify({
@@ -239,6 +267,7 @@ Deno.serve(async (req) => {
   const content: string | undefined = aiJson.choices?.[0]?.message?.content;
   if (!content) {
     console.error("No content in response", JSON.stringify(aiJson).slice(0, 500));
+    await completeJob(admin, lock.jobId, false, "AI did not return output");
     return new Response(JSON.stringify({ error: "AI did not return output" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -263,6 +292,7 @@ Deno.serve(async (req) => {
     parsed = JSON.parse(start >= 0 && end > start ? jsonText.slice(start, end + 1) : jsonText);
   } catch (e) {
     console.error("JSON parse error", e, content.slice(0, 500));
+    await completeJob(admin, lock.jobId, false, "Invalid AI output");
     return new Response(JSON.stringify({ error: "Invalid AI output" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -310,6 +340,7 @@ Deno.serve(async (req) => {
     }>;
 
   if (flashcards.length === 0 && questions.length === 0) {
+    await completeJob(admin, lock.jobId, false, "AI returned empty output");
     return new Response(JSON.stringify({ error: "AI returned empty output" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -360,6 +391,8 @@ Deno.serve(async (req) => {
       if (qqErr) console.error("quiz_questions insert", qqErr);
     }
   }
+
+  await completeJob(admin, lock.jobId, true);
 
   return new Response(JSON.stringify({
     ok: true,

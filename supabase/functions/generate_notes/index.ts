@@ -1,6 +1,7 @@
 // Streams structured study notes (Markdown) from Gemini 2.5 Pro for a given document.
 // Frontend reads SSE deltas; this function also persists the final markdown to `notes`.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -184,6 +185,7 @@ Deno.serve(async (req) => {
     notes_depth?: string;
     model?: string;
     api_key?: string;
+    idempotency_key?: string;
   };
   try {
     body = await req.json();
@@ -217,6 +219,24 @@ Deno.serve(async (req) => {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  }
+
+  // Cost guardrail: acquire concurrency lock to prevent duplicate runs
+  const lock = await acquireJobLock(admin, {
+    userId,
+    documentId,
+    kind: "generate_notes",
+    idempotencyKey: body.idempotency_key,
+  });
+
+  if (!lock.acquired) {
+    return new Response(
+      JSON.stringify({ error: lock.message || "Job already in progress or completed" }),
+      {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   }
 
   // Groq llama-3.3-70b-versatile free-tier rate limit: 12k TPM. Keep source under 35k chars (~8-9k tokens) to prevent TPM errors.
@@ -287,6 +307,8 @@ Deno.serve(async (req) => {
       if (t) errorDetail = t.slice(0, 200);
     }
 
+    await completeJob(admin, lock.jobId, false, errorDetail);
+
     const isRateLimit = status === 429 || errorDetail.includes("TPM") || errorDetail.includes("rate limit");
     return new Response(
       JSON.stringify({
@@ -348,6 +370,7 @@ Deno.serve(async (req) => {
         }
       } catch (e) {
         console.error("stream error", e);
+        await completeJob(admin, lock.jobId, false, e instanceof Error ? e.message : "Stream error");
       } finally {
         try {
           if (fullMarkdown.trim().length > 0) {
@@ -366,9 +389,13 @@ Deno.serve(async (req) => {
                 .from("notes")
                 .insert({ document_id: documentId, user_id: userId, markdown: fullMarkdown });
             }
+            await completeJob(admin, lock.jobId, true);
+          } else {
+            await completeJob(admin, lock.jobId, false, "Empty response generated");
           }
         } catch (e) {
           console.error("note persist error", e);
+          await completeJob(admin, lock.jobId, false, e instanceof Error ? e.message : "Note persist error");
         } finally {
           safeClose();
         }
