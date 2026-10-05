@@ -2,116 +2,87 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useTheme } from "@/hooks/use-theme";
 import {
   ArrowRight,
+  Sparkles,
+  FileText,
+  Layers,
+  ListChecks,
+  Headphones,
+  MessagesSquare,
   Play,
   Pause,
-  Plus,
-  MessageSquare,
-  Star,
-  ChevronDown,
-  Volume2,
   CheckCircle2,
-  Layers,
-  FileText,
-  Headphones,
-  Check,
+  ExternalLink,
+  ShieldCheck,
+  ChevronRight,
+  BookOpen,
+  Volume2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface StudyLensData {
-  id: string;
-  name: string;
-  role: string;
-  subject: string;
-  avatar: string;
-  rating: number;
-  highlightTag: string;
-  description: string;
-  previewType: "notes" | "audio" | "flashcards";
+type HeroMode = "notes" | "cards" | "quiz" | "podcast" | "chat";
+
+interface ModeTab {
+  id: HeroMode;
+  label: string;
+  icon: React.ElementType;
+  badge: string;
 }
 
-const LENSES: StudyLensData[] = [
-  {
-    id: "notes",
-    name: "Dr. Elena Vance",
-    role: "Quantum Physics · Lecture 04",
-    subject: "Structured Notes",
-    avatar: "/assets/avatar_elena.jpg",
-    rating: 5,
-    highlightTag: "Sentence-level citations",
-    description: "Derives hierarchical Cornell notes with LaTeX formulas and interactive proof margins.",
-    previewType: "notes",
-  },
-  {
-    id: "audio",
-    name: "Alex Chen",
-    role: "2-Host Studio Audio",
-    subject: "Audio Walkthrough",
-    avatar: "/assets/avatar_alex.jpg",
-    rating: 5,
-    highlightTag: "Conversational recap",
-    description: "Listen to an engaging Socratic dialogue breaking down dense textbook chapters.",
-    previewType: "audio",
-  },
-  {
-    id: "flashcards",
-    name: "Maya Lin",
-    role: "Cognitive Science & Recall",
-    subject: "Spaced Flashcards",
-    avatar: "/assets/avatar_maya.jpg",
-    rating: 5,
-    highlightTag: "Leitner spaced repetition",
-    description: "Automatically formats diagnostic card decks with active recall triggers and mastery scoring.",
-    previewType: "flashcards",
-  },
+const MODES: ModeTab[] = [
+  { id: "notes", label: "Structured Notes", icon: FileText, badge: "LaTeX & Outlines" },
+  { id: "cards", label: "Spaced Cards", icon: Layers, badge: "Leitner Repetition" },
+  { id: "quiz", label: "Practice Quiz", icon: ListChecks, badge: "Instant Proofs" },
+  { id: "podcast", label: "Audio Recap", icon: Headphones, badge: "2-Host Studio" },
+  { id: "chat", label: "Cited Copilot", icon: MessagesSquare, badge: "Passage Anchors" },
 ];
 
 export function TactileHeroPrototype() {
   const { user } = useAuth();
   const { mounted } = useTheme();
-  const [activeLensIndex, setActiveLensIndex] = useState(0);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [activeMode, setActiveMode] = useState<HeroMode>("notes");
 
-  const activeLens = LENSES[activeLensIndex];
+  // Interactive Card Flip state
+  const [cardFlipped, setCardFlipped] = useState(false);
 
-  const scrollToWorkbench = () => {
-    const el = document.getElementById("workbench");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  // Interactive Quiz state
+  const [quizSelected, setQuizSelected] = useState<number | null>(null);
+
+  // Audio Podcast playback state
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   return (
-    <section className="relative w-full pt-6 pb-12 md:pt-10 md:pb-16 overflow-hidden select-none">
-      {/* 1. Organic Warm/Luminous Curved Backdrop (Echoes the sand/cream sweeping boundary) */}
+    <section className="relative w-full pt-20 sm:pt-24 pb-12 sm:pb-16 select-none overflow-hidden">
+      {/* Ambient Atmospheric Glow (Subtle Sand/Sky Halos) */}
       <div
-        className="absolute top-0 right-0 w-full lg:w-[65%] h-[85%] -z-10 pointer-events-none opacity-80 dark:opacity-40"
+        className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-70 dark:opacity-30"
         style={{
-          background: "radial-gradient(ellipse 90% 70% at 75% 25%, rgba(30,58,138,0.1) 0%, rgba(245,158,11,0.08) 45%, transparent 75%)",
-          filter: "blur(40px)",
+          background: "radial-gradient(ellipse 85% 65% at 70% 30%, rgba(14,165,233,0.12) 0%, rgba(245,158,11,0.08) 45%, transparent 75%)",
+          filter: "blur(60px)",
         }}
         aria-hidden="true"
       />
 
-      {/* Main Grid: Left Column Copy + Right Hero Synthesis Orb */}
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-8 sm:mb-12">
-        {/* Left Column: Focused Copy Stack & Tactile CTA */}
+      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* Left Column: Copy & Value Proposition */}
         <div className="lg:col-span-6 flex flex-col items-start text-left space-y-5">
           {/* Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/10 border border-slate-900/15 dark:border-white/15 text-slate-900 dark:text-white text-xs font-semibold shadow-xs">
-            <span className="size-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_#f59e0b]" />
-            <span>Interactive Study Architecture</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/10 border border-slate-900/10 dark:border-white/15 text-slate-900 dark:text-white text-xs font-semibold shadow-xs">
+            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Multimodal Study Workspace</span>
+            <span className="text-slate-300 dark:text-slate-600">•</span>
+            <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">1 Source → 5 Modes</span>
           </div>
 
-          {/* Chunky, Expressive Headline */}
-          <h1 className="text-[clamp(34px,4.2vw,56px)] font-bold tracking-tight leading-[1.08] text-foreground font-display text-balance">
-            Master Complex Knowledge In{" "}
+          {/* Headline */}
+          <h1 className="text-[clamp(34px,4.4vw,56px)] font-extrabold tracking-tight leading-[1.08] text-slate-900 dark:text-white font-display text-balance">
+            Turn Any Dense Source Into{" "}
             <span className="text-primary relative inline-block">
-              Any Source
+              5 Verified Study Modes.
               <svg
                 className="absolute -bottom-1.5 left-0 w-full h-2 text-primary/40"
                 viewBox="0 0 100 20"
@@ -119,237 +90,347 @@ export function TactileHeroPrototype() {
               >
                 <path d="M0 15 Q 50 2 100 15" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
               </svg>
-            </span>{" "}
-            With AI Study Lenses.
+            </span>
           </h1>
 
-          {/* Description */}
-          <p className="text-base sm:text-lg leading-relaxed text-muted-foreground max-w-[500px]">
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300 max-w-[520px]">
             Ingest dense textbooks, 2-hour lecture recordings, or research papers. Source.io derivers
-            five interactive study modes with sentence-level citations.
+            streamed Markdown notes with LaTeX, Leitner flashcards, interactive quizzes, 2-host audio recaps,
+            and sentence-level cited chat.
           </p>
 
-          {/* Tactile Pill Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3.5 pt-2 w-full sm:w-auto">
+          {/* Action CTAs: Direct Demo & Signup */}
+          <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
             <Link
               href={mounted && user ? "/app" : "/auth"}
-              className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 active:scale-98 text-white dark:text-slate-950 font-semibold text-sm shadow-[0_12px_24px_-6px_rgba(15,23,42,0.4)] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 active:scale-98 text-white dark:text-slate-950 font-semibold text-sm shadow-tactile-pill transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
               <span>{mounted && user ? "Open study workspace" : "Get started free"}</span>
               <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
 
-            <button
-              type="button"
-              onClick={scrollToWorkbench}
-              className="px-5 py-3 rounded-full bg-card hover:bg-muted/60 active:scale-98 text-foreground font-semibold text-sm border border-border/80 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            <Link
+              href="/app/doc/demo-quantum"
+              className="px-5 py-3 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-98 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-black/[0.08] dark:border-white/10 shadow-tactile-pill transition-all flex items-center justify-center gap-2 cursor-pointer group"
             >
-              <span>Explore 5 views</span>
-              <ChevronDown className="size-4 text-muted-foreground" />
-            </button>
+              <Sparkles className="size-4 text-amber-500" />
+              <span>Explore live demo</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-slate-500">
+                No sign up
+              </span>
+            </Link>
           </div>
 
-          {/* Scroll Explore Cue */}
-          <div className="pt-2 flex items-center gap-2 text-xs text-muted-foreground font-medium">
-            <span className="animate-bounce">↓</span>
-            <span>Scroll explore interactive studio</span>
+          {/* Trust Guarantees */}
+          <div className="pt-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="size-3.5 text-emerald-500" />
+              <span>25 free AI actions / day</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="size-3.5 text-emerald-500" />
+              <span>3 saved document slots</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="size-3.5 text-emerald-500" />
+              <span>Zero credit card required</span>
+            </div>
           </div>
         </div>
 
-        {/* Right Column: The Sculptural Synthesis Orb & Floating Pills */}
-        <div className="lg:col-span-6 flex items-center justify-center relative py-6">
-          {/* Layer 1: Ambient Circular Orb Backdrop with Concentric Halo */}
-          <div className="relative w-[340px] h-[340px] sm:w-[420px] sm:h-[420px] rounded-full flex items-center justify-center">
-            {/* Outer Concentric Orbital Ring */}
-            <div className="absolute inset-0 rounded-full border border-primary/20 dark:border-primary/15 animate-[spin_60s_linear_infinite]" />
-            <div className="absolute inset-4 rounded-full border border-amber-500/20 dark:border-amber-400/10" />
-
-            {/* Glowing Orb Gradient Disk */}
-            <div
-              className="absolute inset-8 rounded-full opacity-90"
-              style={{
-                background: "radial-gradient(circle at 40% 40%, rgba(30,58,138,0.2) 0%, rgba(245,158,11,0.18) 55%, transparent 85%)",
-              }}
-            />
-
-            {/* Playful Floating 3D Geometric Confetti Accents (like reference) */}
-            <div className="absolute -top-2 right-12 size-4 rotate-45 bg-amber-400/80 rounded-sm shadow-sm" />
-            <div className="absolute bottom-14 -left-3 size-3 rounded-full bg-primary/70 shadow-sm" />
-            <div className="absolute top-24 -right-2 size-3.5 rotate-12 bg-primary/60 rounded-xs shadow-sm" />
-
-            {/* Layer 2: Central Squircle Card with Editorial Avatar */}
-            <motion.div
-              key={activeLens.id}
-              initial={{ scale: 0.94, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="w-[260px] h-[260px] sm:w-[310px] sm:h-[310px] rounded-[36px] p-2 bg-gradient-to-b from-white/90 via-white/40 to-white/10 dark:from-white/15 dark:to-white/5 border-2 border-white/80 dark:border-white/15 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] relative overflow-hidden flex flex-col justify-between"
-            >
-              {/* Avatar Background */}
-              <div className="absolute inset-2 rounded-[30px] overflow-hidden">
-                <img
-                  src={activeLens.avatar}
-                  alt={activeLens.name}
-                  className="w-full h-full object-cover object-center"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        {/* Right Column: Interactive Tactile Workspace Stage */}
+        <div className="lg:col-span-6 w-full">
+          <div className="rounded-[32px] sm:rounded-[36px] bg-white dark:bg-slate-900/90 border border-black/[0.06] dark:border-white/10 p-4 sm:p-6 shadow-tactile-dock relative overflow-hidden flex flex-col justify-between">
+            {/* Stage Header: Ingested Source Badge & Real-Time Coordinates */}
+            <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-white/10 pb-3 mb-4">
+              <div className="flex items-center gap-2.5 truncate">
+                <div className="size-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                  <FileText className="size-4" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate font-display">
+                    Introduction to Quantum Computing
+                  </h4>
+                  <p className="text-[10px] font-mono text-slate-400">PDF • 38 pages • 48 vector coordinates</p>
+                </div>
               </div>
 
-              {/* Top Tag Inside Card */}
-              <div className="relative z-10 p-2 flex justify-end">
-                <span className="px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md text-white text-[11px] font-medium border border-white/20">
-                  {activeLens.highlightTag}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Ready
                 </span>
               </div>
-
-              {/* Layer 3: Frosted Translucent Glass Overlay Pill */}
-              <div className="relative z-10 m-2 p-3 rounded-[22px] bg-white/80 dark:bg-zinc-900/85 backdrop-blur-xl border border-white/90 dark:border-white/20 shadow-md flex items-center justify-between">
-                <div className="min-w-0 pr-2">
-                  <h4 className="text-xs sm:text-sm font-bold text-foreground font-display truncate">
-                    {activeLens.name}
-                  </h4>
-                  <p className="text-[11px] text-muted-foreground truncate">{activeLens.role}</p>
-                </div>
-                <div className="size-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.6)] shrink-0" />
-              </div>
-            </motion.div>
-
-            {/* Layer 4: Floating Tactile Satellite Action Buttons (Directly nestled at bottom edge) */}
-            <div className="absolute -bottom-5 sm:-bottom-6 flex items-center gap-3 z-20">
-              {/* Satellite 1: New Source / Plus */}
-              <button
-                type="button"
-                onClick={() => {
-                  const nextIndex = (activeLensIndex + 1) % LENSES.length;
-                  setActiveLensIndex(nextIndex);
-                }}
-                title="Next Study Lens"
-                className="size-11 sm:size-12 rounded-full bg-card hover:bg-muted/80 text-foreground border border-border shadow-[0_8px_16px_-4px_rgba(0,0,0,0.12)] flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
-              >
-                <Plus className="size-5 text-muted-foreground" />
-              </button>
-
-              {/* Satellite 2 (Primary Center): Play Podcast or Audio recap */}
-              <button
-                type="button"
-                onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                title={isPlayingAudio ? "Pause Audio Recap" : "Play Audio Recap"}
-                className="size-13 sm:size-14 rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-[0_12px_24px_-4px_rgba(15,23,42,0.5)] border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                {isPlayingAudio ? (
-                  <Pause className="size-6 text-white" />
-                ) : (
-                  <Play className="size-6 text-white translate-x-0.5" />
-                )}
-              </button>
-
-              {/* Satellite 3: Chat / Ask Question */}
-              <button
-                type="button"
-                onClick={scrollToWorkbench}
-                title="Ask AI this document"
-                className="size-11 sm:size-12 rounded-full bg-card hover:bg-muted/80 text-foreground border border-border shadow-[0_8px_16px_-4px_rgba(0,0,0,0.12)] flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
-              >
-                <MessageSquare className="size-5 text-primary" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. The Floating Anchored Study Dock */}
-      <div className="w-full mt-4">
-        <div className="relative rounded-[32px] sm:rounded-[40px] bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 dark:from-zinc-950 dark:via-zinc-900 dark:to-blue-950/70 p-4 sm:p-6 text-white shadow-[0_20px_40px_-15px_rgba(15,23,42,0.4)] border border-blue-900/30">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            {/* Dock Brand / Metric Left Pod */}
-            <div className="flex items-center gap-4 shrink-0">
-              <div className="size-12 sm:size-14 rounded-full bg-white text-slate-950 flex items-center justify-center font-display font-black text-xl shadow-md shrink-0 border border-white/20 select-none">
-                <span>5</span>
-                <span className="text-amber-500 text-xs font-sans font-bold ml-0.5">★</span>
-              </div>
-              <div>
-                <div className="text-xl sm:text-2xl font-bold font-display tracking-tight text-white">
-                  5 Study Views
-                </div>
-                <div className="text-xs sm:text-sm text-slate-300 font-medium">
-                  Instant Synthesis. Any Material.
-                </div>
-              </div>
             </div>
 
-            {/* Popping Lens Cards (Poking out of the capsule!) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1 lg:max-w-2xl">
-              {LENSES.map((lens, idx) => {
-                const isActive = activeLensIndex === idx;
+            {/* 5 Modality Tabs Navigation */}
+            <div className="grid grid-cols-5 gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-white/[0.04] mb-4">
+              {MODES.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeMode === tab.id;
                 return (
                   <button
-                    key={lens.id}
+                    key={tab.id}
+                    onClick={() => setActiveMode(tab.id)}
                     type="button"
-                    onClick={() => setActiveLensIndex(idx)}
                     className={cn(
-                      "group p-3 rounded-[24px] text-left transition-all duration-200 cursor-pointer flex flex-col justify-between relative overflow-hidden",
+                      "py-2 px-1 rounded-xl text-center flex flex-col items-center justify-center gap-1 transition-all cursor-pointer relative",
                       isActive
-                        ? "bg-white text-zinc-950 shadow-xl -translate-y-2 ring-2 ring-primary"
-                        : "bg-white/10 hover:bg-white/15 text-white/90 hover:-translate-y-1"
+                        ? "bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-tactile-pill font-bold"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium"
                     )}
                   >
-                    <div className="flex items-center gap-2.5 mb-2">
-                      <img
-                        src={lens.avatar}
-                        alt={lens.name}
-                        className="size-9 rounded-[14px] object-cover shrink-0 border border-white/20"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div
-                          className={cn(
-                            "text-xs font-bold font-display truncate",
-                            isActive ? "text-zinc-950" : "text-white"
-                          )}
-                        >
-                          {lens.subject}
-                        </div>
-                        <div
-                          className={cn(
-                            "text-[10px] truncate",
-                            isActive ? "text-zinc-600" : "text-blue-200/70"
-                          )}
-                        >
-                          {lens.name}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Star Rating Row */}
-                    <div className="flex items-center justify-between pt-1 border-t border-current/10">
-                      <div className="flex items-center gap-0.5 text-amber-400">
-                        {Array.from({ length: lens.rating }).map((_, i) => (
-                          <Star key={i} className="size-2.5 fill-amber-400 text-amber-400" />
-                        ))}
-                      </div>
-                      <span
-                        className={cn(
-                          "text-[10px] font-mono",
-                          isActive ? "text-primary font-bold" : "text-white/60"
-                        )}
-                      >
-                        {isActive ? "Active" : "Select"}
-                      </span>
-                    </div>
+                    <Icon className="size-3.5" />
+                    <span className="text-[10px] truncate max-w-full leading-none">
+                      {tab.label.split(" ")[0]}
+                    </span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Next Action Arrow */}
-            <div className="hidden lg:flex items-center justify-center">
-              <button
-                type="button"
-                onClick={() => setActiveLensIndex((activeLensIndex + 1) % LENSES.length)}
-                className="size-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
-                title="Next Lens"
+            {/* Interactive Dynamic Stage Body */}
+            <div className="min-h-[260px] flex flex-col justify-between">
+              <AnimatePresence mode="wait">
+                {/* 1. Structured Notes View */}
+                {activeMode === "notes" && (
+                  <motion.div
+                    key="notes"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-white">§ 1. Fundamental Quantum Mechanics</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                        p. 2 • §1.1 • 98% match
+                      </span>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Quantum Computing leverages linear superpositions of physical states. A qubit state is expressed mathematically as:
+                    </p>
+
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 text-center font-mono text-xs sm:text-sm text-slate-900 dark:text-white">
+                      |ψ⟩ = α|0⟩ + β|1⟩ &nbsp;&nbsp;where |α|² + |β|² = 1
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-amber-500/5 dark:bg-amber-400/5 border border-amber-500/20 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-2">
+                      <Sparkles className="size-3.5 text-amber-500 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Key Insight:</strong> Algorithms use quantum interference to cancel incorrect candidate states and amplify probability amplitudes.
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 2. Spaced Repetition Flashcards */}
+                {activeMode === "cards" && (
+                  <motion.div
+                    key="cards"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-white">Card 1 of 4 • Spaced Repetition</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                        Leitner Interval: 4 Days
+                      </span>
+                    </div>
+
+                    <div
+                      onClick={() => setCardFlipped(!cardFlipped)}
+                      className="p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/10 hover:border-primary/40 transition-all cursor-pointer min-h-[140px] flex flex-col justify-between shadow-tactile-inset"
+                    >
+                      <div className="text-[10px] uppercase font-mono text-slate-400 tracking-wider">
+                        {cardFlipped ? "Answer / Definition" : "Prompt / Question (Click to flip)"}
+                      </div>
+
+                      <div className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white text-center py-2">
+                        {cardFlipped
+                          ? "The principle allowing a qubit to exist as a linear combination of |0⟩ and |1⟩ until physical measurement forces a state collapse."
+                          : "What is Quantum Superposition?"}
+                      </div>
+
+                      <div className="text-[10px] text-center text-slate-400">
+                        {cardFlipped ? "Tap to show prompt" : "Tap card to flip"}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-slate-500">
+                      <span>Retention Score: <strong className="text-emerald-500">94.2%</strong></span>
+                      <span className="text-[11px] font-mono text-slate-400">Source: §1.1 • p. 2</span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 3. Practice Quiz */}
+                {activeMode === "quiz" && (
+                  <motion.div
+                    key="quiz"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-white">Question 1 • Mastery Verification</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                        Multiple Choice
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                      Which physical phenomenon describes a qubit losing its quantum state due to thermal noise?
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      {["Quantum Entanglement", "Environmental Decoherence", "Superposition Collapse", "Phase Inversion"].map(
+                        (choice, idx) => {
+                          const isCorrect = choice === "Environmental Decoherence";
+                          const isSelected = quizSelected === idx;
+
+                          return (
+                            <button
+                              key={choice}
+                              onClick={() => setQuizSelected(idx)}
+                              className={cn(
+                                "p-2 rounded-xl text-left text-[11px] font-medium transition-all border cursor-pointer",
+                                isSelected
+                                  ? isCorrect
+                                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-200"
+                                    : "bg-red-50 dark:bg-red-950/40 border-red-500 text-red-800 dark:text-red-200"
+                                  : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/10 hover:bg-slate-100 text-slate-700 dark:text-slate-300"
+                              )}
+                            >
+                              {choice}
+                            </button>
+                          );
+                        }
+                      )}
+                    </div>
+
+                    {quizSelected !== null && (
+                      <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-[10px] text-emerald-800 dark:text-emerald-300 flex items-center justify-between">
+                        <span>✓ Verified from Section §1.3 (p. 4) of ingested PDF</span>
+                        <button onClick={() => setQuizSelected(null)} className="underline cursor-pointer">Reset</button>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* 4. Podcast Audio Recap */}
+                {activeMode === "podcast" && (
+                  <motion.div
+                    key="podcast"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-white">2-Host Conversational Audio Recap</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                        Hosts: Clara & Julian
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-slate-950 text-white flex items-center justify-between gap-4 shadow-tactile-pill">
+                      <button
+                        onClick={() => setAudioPlaying(!audioPlaying)}
+                        className="size-11 rounded-full bg-white text-slate-950 flex items-center justify-center shrink-0 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                      >
+                        {audioPlaying ? <Pause className="size-5" /> : <Play className="size-5 translate-x-0.5" />}
+                      </button>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between text-xs mb-1.5">
+                          <span className="font-bold truncate">Episode 01: The Qubit Paradox</span>
+                          <span className="font-mono text-[10px] text-slate-400">03:42 / 12:15</span>
+                        </div>
+
+                        {/* Animated Equalizer Waveform Bars */}
+                        <div className="flex items-center gap-1 h-5">
+                          {Array.from({ length: 24 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className={cn(
+                                "flex-1 rounded-full bg-primary transition-all",
+                                audioPlaying
+                                  ? "animate-pulse"
+                                  : "opacity-40"
+                              )}
+                              style={{
+                                height: `${Math.max(15, (Math.sin(i * 0.7) + 1.2) * 45)}%`,
+                                animationDelay: `${i * 60}ms`,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 text-[11px] text-slate-600 dark:text-slate-300">
+                      <strong className="text-slate-900 dark:text-white">Clara:</strong> &quot;Think of classical bits as a coin lying flat on a table, heads or tails. Superposition is spinning that coin in mid-air...&quot;
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 5. Grounded Cited Chat Copilot */}
+                {activeMode === "chat" && (
+                  <motion.div
+                    key="chat"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-white">Document Ask Copilot</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                        Grounded Search
+                      </span>
+                    </div>
+
+                    {/* Question Bubble */}
+                    <div className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/[0.06] text-xs text-slate-800 dark:text-slate-200 max-w-[85%] self-end ml-auto">
+                      &quot;How does Grover&apos;s algorithm improve upon classical search?&quot;
+                    </div>
+
+                    {/* Answer Bubble with Coordinates */}
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 space-y-2">
+                      <p>
+                        It delivers a <strong>quadratic speedup</strong>: searching an unsorted database of N items requires O(√N) queries instead of classical O(N).
+                      </p>
+                      <div className="pt-1.5 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between text-[10px] font-mono">
+                        <span className="text-primary font-bold">Passage §2.4 (Page 7)</span>
+                        <span className="text-emerald-500 font-semibold">Cosine 0.96</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Stage Footer: Direct Launch Link */}
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs">
+              <span className="text-slate-400 text-[11px]">Click any mode above to preview interactive synthesis</span>
+              <Link
+                href="/app/doc/demo-quantum"
+                className="font-semibold text-primary hover:underline flex items-center gap-1 text-[11px]"
               >
-                <ArrowRight className="size-4" />
-              </button>
+                <span>Full workspace demo</span>
+                <ChevronRight className="size-3" />
+              </Link>
             </div>
           </div>
         </div>

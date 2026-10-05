@@ -1,97 +1,142 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useTheme } from "@/hooks/use-theme";
-import { ArrowRight, Menu, X, Sun, Moon } from "lucide-react";
+import { ArrowRight, Menu, X, Sun, Moon, Sparkles, BookOpen } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export function LandingHeader() {
   const { user } = useAuth();
   const { theme, toggleTheme, mounted } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[68px] sm:h-[76px] flex items-center justify-between">
-        {/* Brand Logo - Pure Text, No Icon */}
-        <Link 
-          href="/" 
-          className="font-bold text-xl sm:text-2xl tracking-tight text-foreground select-none hover:opacity-90 transition-opacity"
+    <header className="fixed top-3.5 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] sm:w-[calc(100%-3rem)] max-w-5xl select-none transition-all duration-300">
+      <div
+        className={cn(
+          "w-full rounded-full px-3 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between transition-all duration-300",
+          "bg-white/90 dark:bg-[#151A22]/90 backdrop-blur-xl",
+          "border border-black/[0.06] dark:border-white/10",
+          scrolled ? "shadow-tactile-dock" : "shadow-tactile-pill"
+        )}
+      >
+        {/* Brand Logo with App's Geometric Box Emblem */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 group cursor-pointer"
+          title="Source.io: AI Study Workspace"
         >
-          Source<span className="text-primary font-medium">.io</span>
+          <div className="size-8 sm:size-9 rounded-[12px] bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 flex items-center justify-center shadow-xs group-hover:scale-105 active:scale-95 transition-transform duration-200">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" stroke="currentColor" strokeWidth="2.2" />
+              <rect x="8" y="8" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.9" />
+            </svg>
+          </div>
+          <span className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white font-display">
+            Source<span className="text-primary font-medium">.io</span>
+          </span>
         </Link>
 
-        {/* Center Navigation Links (Matching Reference UI) */}
-        <nav className="hidden md:flex items-center gap-8 lg:gap-10 text-[14px]">
-          <a 
-            href="#workbench" 
-            className="relative font-semibold text-foreground hover:text-foreground transition-colors after:content-[''] after:absolute after:-bottom-1.5 after:left-0 after:right-0 after:h-[2px] after:bg-foreground after:rounded-full"
+        {/* Center Floating Navigation Links */}
+        <nav className="hidden md:flex items-center gap-1 lg:gap-2 text-[13px] font-medium text-slate-600 dark:text-slate-300">
+          <a
+            href="#workbench"
+            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
           >
-            Why Source?
+            5 Study Modes
           </a>
-          <a 
-            href="#workbench" 
-            className="font-medium text-muted-foreground hover:text-foreground transition-colors"
+          <a
+            href="#dashboard"
+            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
           >
-            Study Lenses
+            Command Center
           </a>
-          <a 
-            href="#grounding" 
-            className="font-medium text-muted-foreground hover:text-foreground transition-colors"
+          <a
+            href="#grounding"
+            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             Verification
           </a>
-          <a 
-            href="#pipeline" 
-            className="font-medium text-muted-foreground hover:text-foreground transition-colors"
+          <a
+            href="#pricing"
+            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
           >
-            Pipeline
+            <span>Free Plan</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+              25/day
+            </span>
+          </a>
+          <a
+            href="#faq"
+            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            FAQ
           </a>
         </nav>
 
-        {/* Action Controls: Sign In, Sign Up Pill & Theme Toggle */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Right Action Controls: Direct Demo CTA, Sign In / Sign Up & Theme Toggle */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Instant Demo Pill (No login needed) */}
+          <Link
+            href="/app/doc/demo-quantum"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100/80 hover:bg-slate-200/80 dark:bg-white/[0.08] dark:hover:bg-white/[0.12] transition-colors"
+            title="Instant Live Demo with Quantum Computing Notes"
+          >
+            <Sparkles className="size-3 text-amber-500" />
+            <span>Try Demo</span>
+          </Link>
+
           {/* Authentication & CTA */}
           {mounted && user ? (
             <Link
               href="/app"
-              className="bg-primary text-primary-foreground font-medium rounded-full px-5 py-2 text-sm shadow-sm hover:opacity-95 active:scale-95 transition-all inline-flex items-center gap-1.5"
+              className="h-8 sm:h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center gap-1.5 cursor-pointer"
             >
-              Workspace
-              <ArrowRight className="h-3.5 w-3.5" />
+              <span>Workspace</span>
+              <ArrowRight className="size-3.5" />
             </Link>
           ) : (
-            <>
+            <div className="flex items-center gap-1.5">
               <Link
                 href="/auth"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground px-3.5 py-1.5 rounded-full hover:bg-muted/40 transition-colors hidden sm:inline-block"
+                className="text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 href="/auth"
-                className="bg-primary text-primary-foreground font-semibold rounded-full px-5 py-2 text-sm shadow-sm hover:opacity-95 active:scale-95 transition-all inline-flex items-center justify-center"
+                className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center justify-center cursor-pointer"
               >
-                Sign Up
+                Get Started
               </Link>
-            </>
+            </div>
           )}
 
-          {/* Theme Toggle */}
+          {/* Tactile Theme Toggle Pill */}
           <TooltipProvider delayDuration={150}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="size-9 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="size-8 sm:size-9 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
                   aria-label={!mounted || theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
                 >
                   {!mounted || theme === "dark" ? (
@@ -103,7 +148,7 @@ export function LandingHeader() {
               </TooltipTrigger>
               <TooltipContent side="bottom">
                 <p className="text-xs">
-                  {!mounted || theme === "dark" ? "Luminous Light" : "Obsidian Studio"}
+                  {!mounted || theme === "dark" ? "Light theme" : "Dark theme"}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -113,7 +158,7 @@ export function LandingHeader() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden size-9 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="md:hidden size-8 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -122,54 +167,57 @@ export function LandingHeader() {
         </div>
       </div>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Floating Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <nav className="md:hidden border-t border-border/50 px-6 py-4 bg-background/95 backdrop-blur-md flex flex-col gap-3 text-sm font-medium text-muted-foreground animate-in fade-in-50 duration-150">
+        <div className="md:hidden mt-2 p-4 rounded-[28px] bg-white/95 dark:bg-[#151A22]/95 backdrop-blur-xl border border-black/[0.08] dark:border-white/10 shadow-tactile-dock flex flex-col gap-2.5 animate-in fade-in-50 slide-in-from-top-2 duration-150">
           <a
             href="#workbench"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-foreground font-semibold py-1 transition-colors"
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
           >
-            Why Source?
+            5 Study Modes
           </a>
           <a
-            href="#workbench"
+            href="#dashboard"
             onClick={() => setMobileMenuOpen(false)}
-            className="hover:text-foreground py-1 transition-colors"
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
           >
-            Study Lenses
+            Command Center
           </a>
           <a
             href="#grounding"
             onClick={() => setMobileMenuOpen(false)}
-            className="hover:text-foreground py-1 transition-colors"
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
           >
             Verification Engine
           </a>
           <a
-            href="#pipeline"
+            href="#pricing"
             onClick={() => setMobileMenuOpen(false)}
-            className="hover:text-foreground py-1 transition-colors"
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] flex items-center justify-between transition-colors"
           >
-            Pipeline
+            <span>Free Plan</span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
+              25/day
+            </span>
           </a>
-          <div className="pt-2 border-t border-border/50 flex items-center gap-3">
+          <a
+            href="#faq"
+            onClick={() => setMobileMenuOpen(false)}
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
+          >
+            FAQ
+          </a>
+          <div className="pt-2 border-t border-slate-100 dark:border-white/10 flex items-center gap-2">
             <Link
-              href="/auth"
+              href="/app/doc/demo-quantum"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200"
             >
-              Sign In
-            </Link>
-            <Link
-              href="/auth"
-              onClick={() => setMobileMenuOpen(false)}
-              className="bg-primary text-primary-foreground font-semibold rounded-full px-4 py-1.5 text-sm shadow-xs"
-            >
-              Sign Up
+              Try Instant Demo
             </Link>
           </div>
-        </nav>
+        </div>
       )}
     </header>
   );

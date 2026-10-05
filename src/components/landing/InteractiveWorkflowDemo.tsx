@@ -240,7 +240,7 @@ export function InteractiveWorkflowDemo({
         </div>
 
         {/* Console Shell (Hero-style Tactile Squircle Shell) */}
-        <div className="bg-card/95 backdrop-blur-xl rounded-[36px] sm:rounded-[40px] border border-border/80 shadow-[0_28px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_28px_60px_-15px_rgba(0,0,0,0.55)] overflow-hidden relative">
+        <div className="bg-white dark:bg-slate-900/90 rounded-[32px] sm:rounded-[40px] border border-black/[0.06] dark:border-white/10 shadow-tactile-dock overflow-hidden relative">
           {/* Header Bar */}
           <div className="bg-muted/30 border-b border-border/70 px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-1.5">
