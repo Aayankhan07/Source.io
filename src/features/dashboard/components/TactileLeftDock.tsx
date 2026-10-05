@@ -2,13 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   Home, 
-  Compass, 
-  Calendar, 
   Folder, 
-  MessageSquare, 
   Settings, 
   ChevronRight, 
   ChevronLeft,
@@ -34,6 +31,7 @@ export function TactileLeftDock({
   isExpanded: controlledExpanded,
   onToggleExpand: controlledToggleExpand
 }: TactileLeftDockProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
@@ -44,15 +42,20 @@ export function TactileLeftDock({
 
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, href: "/app" },
-    { id: "speaking", label: "Speaking", icon: Compass, href: "#speaking" },
-    { id: "schedule", label: "Schedule", icon: Calendar, href: "#schedule" },
-    { id: "courses", label: "Courses", icon: Folder, href: "#courses" },
-    { id: "messages", label: "Messages", icon: MessageSquare, href: "#messages" },
+    { id: "library", label: "Library", icon: Folder, href: "#library" },
     { id: "settings", label: "Settings", icon: Settings, href: "/app/settings" },
   ];
 
   const handleItemClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
-    if (onSelectTab && item.id !== "settings") {
+    if (item.id === "settings") {
+      router.push("/app/settings");
+      return;
+    }
+    if (pathname !== "/app") {
+      router.push("/app");
+      return;
+    }
+    if (onSelectTab) {
       e.preventDefault();
       onSelectTab(item.id);
     }
