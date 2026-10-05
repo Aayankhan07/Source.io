@@ -14,6 +14,7 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [activeView, setActiveView] = useState<"dashboard" | "library">("dashboard");
   const { theme } = useTheme();
   const pathname = usePathname();
 
@@ -23,6 +24,8 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
     <AppShellProvider
       onUpload={() => setUploadOpen(true)}
       onMobileNav={() => setMobileNavOpen(true)}
+      activeView={activeView}
+      onSelectView={setActiveView}
     >
       <div className={cn("luminous-app flex h-screen bg-background text-foreground antialiased font-sans", theme === "dark" && "dark")}>
         {isDashboard ? (
@@ -32,6 +35,12 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
               onNewSource={() => setUploadOpen(true)}
               isExpanded={sidebarExpanded}
               onToggleExpand={() => setSidebarExpanded((prev) => !prev)}
+              activeTab={activeView}
+              onSelectTab={(tab) => {
+                if (tab === "dashboard" || tab === "library") {
+                  setActiveView(tab);
+                }
+              }}
             />
 
             {/* Main Tactile Dashboard Surface with porcelain canvas */}
