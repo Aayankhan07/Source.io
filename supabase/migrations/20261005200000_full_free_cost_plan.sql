@@ -1,18 +1,24 @@
 -- ============================================================================
 -- Migration: 20261005200000_full_free_cost_plan.sql
 -- Purpose: 
---   1. Enforce 3 active saved documents limit at database level.
---   2. Create provider_usage table for live provider health/capacity snapshots.
+--   1. Enforce 3 active saved documents limit at database level with transaction-level advisory lock.
+--   2. Create provider_usage table for live provider health/capacity snapshots with freshness metadata.
 --   3. Create ai_feedback table for user ratings on generated notes and answers.
 --   4. Create daily_ai_usage view for aggregated student daily action/credit tracking.
+--   5. Create system_circuit_breakers table for emergency admin kill switches.
 -- ============================================================================
 
--- 1. Database-level 3-document limit enforcement
+-- 1. Database-level 3-document limit enforcement with strict serialization
 CREATE OR REPLACE FUNCTION public.check_user_active_document_limit()
 RETURNS TRIGGER AS $$
 DECLARE
   active_count INT;
 BEGIN
+  -- Acquire an exclusive transaction-level advisory lock on the user's ID.
+  -- This serializes concurrent uploads across multiple browser tabs/requests,
+  -- ensuring two simultaneous inserts cannot both observe "2 of 3" and create a 4th document.
+  PERFORM pg_advisory_xact_lock(hashtext(NEW.user_id::text));
+
   -- Only count active documents ('ready', 'processing', 'pending')
   IF NEW.status IN ('ready', 'processing', 'pending') THEN
     SELECT COUNT(*) INTO active_count
@@ -35,12 +41,13 @@ CREATE TRIGGER trigger_check_user_active_document_limit
   FOR EACH ROW
   EXECUTE FUNCTION public.check_user_active_document_limit();
 
--- 2. Create provider_usage table
+-- 2. Create provider_usage table with freshness and source metadata
 CREATE TABLE IF NOT EXISTS public.provider_usage (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   provider TEXT NOT NULL,                     -- 'groq' | 'gemini' | 'openai'
   model TEXT NOT NULL,
   scope TEXT NOT NULL DEFAULT 'organization', -- 'organization' | 'shared' | 'byok'
+  source_type TEXT NOT NULL DEFAULT 'response_header', -- 'response_header' | 'estimate' | 'unknown'
   remaining_requests INT,
   request_limit INT,
   remaining_tokens INT,
@@ -119,3 +126,34 @@ SELECT
 FROM public.ai_usage_logs
 WHERE status != 'failed'
 GROUP BY user_id, (created_at AT TIME ZONE 'UTC')::date;
+
+-- 5. Create system_circuit_breakers table
+CREATE TABLE IF NOT EXISTS public.system_circuit_breakers (
+  key TEXT PRIMARY KEY,
+  enabled BOOLEAN NOT NULL DEFAULT true,
+  description TEXT,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Default system controls
+INSERT INTO public.system_circuit_breakers (key, enabled, description)
+VALUES 
+  ('ai_requests_enabled', true, 'Global emergency switch for all LLM calls'),
+  ('uploads_enabled', true, 'Global switch for new document ingests'),
+  ('podcasts_enabled', false, 'Podcasts disabled in free plan circuit breaker')
+ON CONFLICT (key) DO NOTHING;
+
+ALTER TABLE public.system_circuit_breakers ENABLE ROW LEVEL SECURITY;
+
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'system_circuit_breakers' AND policyname = 'Anyone authenticated can view circuit breakers'
+  ) THEN
+    CREATE POLICY "Anyone authenticated can view circuit breakers"
+      ON public.system_circuit_breakers FOR SELECT
+      TO authenticated
+      USING (true);
+  END IF;
+END $$;

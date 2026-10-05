@@ -3,6 +3,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { checkDailyQuota } from "../_shared/quotas.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
+import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -139,6 +140,14 @@ Deno.serve(async (req) => {
     });
   }
   const userId = claimsData.claims.sub as string;
+
+  // Emergency circuit breaker check
+  const breaker = await checkCircuitBreaker(admin, "ai_requests_enabled");
+  if (!breaker.allowed) {
+    return new Response(JSON.stringify({ error: breaker.message }), {
+      status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   let body: { document_id?: string; message?: string };
   try { body = await req.json(); } catch {

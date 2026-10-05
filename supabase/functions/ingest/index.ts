@@ -2,6 +2,7 @@
 // Supports: text/pdf/docx (raw_text already provided by client), youtube (timed-text),
 // audio/video (Groq Whisper v3 transcription). PDF/DOCX parsing happens in the browser.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -115,6 +116,14 @@ Deno.serve(async (req) => {
     });
   }
   const userId = claimsData.claims.sub as string;
+
+  // Emergency circuit breaker check
+  const breaker = await checkCircuitBreaker(admin, "uploads_enabled");
+  if (!breaker.allowed) {
+    return new Response(JSON.stringify({ error: breaker.message }), {
+      status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   let body: { document_id?: string };
   try { body = await req.json(); } catch {

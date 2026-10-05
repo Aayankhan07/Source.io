@@ -134,6 +134,7 @@ export type Database = {
           reset_requests_at: string | null
           reset_tokens_at: string | null
           scope: string
+          source_type: string
           token_limit: number | null
         }
         Insert: {
@@ -149,6 +150,7 @@ export type Database = {
           reset_requests_at?: string | null
           reset_tokens_at?: string | null
           scope?: string
+          source_type?: string
           token_limit?: number | null
         }
         Update: {
@@ -164,7 +166,29 @@ export type Database = {
           reset_requests_at?: string | null
           reset_tokens_at?: string | null
           scope?: string
+          source_type?: string
           token_limit?: number | null
+        }
+        Relationships: []
+      }
+      system_circuit_breakers: {
+        Row: {
+          description: string | null
+          enabled: boolean
+          key: string
+          updated_at: string
+        }
+        Insert: {
+          description?: string | null
+          enabled?: boolean
+          key: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string | null
+          enabled?: boolean
+          key?: string
+          updated_at?: string
         }
         Relationships: []
       }

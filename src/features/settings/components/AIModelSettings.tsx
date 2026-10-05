@@ -298,7 +298,7 @@ export default function AIModelSettings() {
               </h3>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Supply your own provider keys to bypass daily question limits. Held in your current browser session.
+              Supply your own provider keys to bypass daily question limits. Held strictly in your current browser session.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -310,22 +310,27 @@ export default function AIModelSettings() {
               <HelpCircle className="size-3.5" />
               <span>{showGuide ? "Hide Setup Guide" : "View Setup Guide"}</span>
             </button>
-            <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-semibold">
-              Free Tier Friendly
+            <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 font-semibold">
+              Advanced Mode (Self-Managed)
             </span>
           </div>
         </div>
 
-        {/* BYOK Warning Banner */}
-        <div className="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5 leading-relaxed">
-          <AlertTriangle className="size-4 shrink-0 mt-0.5 text-amber-600" />
-          <div className="space-y-1">
-            <p className="font-bold">Provider Billing & Privacy Notice</p>
-            <p className="text-[11px] text-amber-800 dark:text-amber-300">
-              Your provider may have its own usage limits or charges. Source.io does not control your provider billing. 
-              Never share your key publicly. Keys stay only in your local browser session and are never logged or stored in database tables.
-            </p>
+        {/* BYOK Warning & Security Notice Banner */}
+        <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 space-y-2 leading-relaxed">
+          <div className="flex items-center gap-2 font-bold">
+            <AlertTriangle className="size-4 text-amber-600 shrink-0" />
+            <span>Important BYOK Billing & Security Precautions</span>
           </div>
+          <p className="text-[11px] text-amber-800 dark:text-amber-300">
+            • <strong>No Billing Control:</strong> Source.io does not control provider billing, pricing, quotas, or rate limits. Adding billing or paid models to your provider account may incur charges from that provider.
+          </p>
+          <p className="text-[11px] text-amber-800 dark:text-amber-300">
+            • <strong>Browser Environment Disclosure:</strong> Keys are kept only in your local browser memory for this session and disappear on refresh or logout. However, browser extensions, compromised devices, or scripts can inspect browser memory. Never paste a production or unrestricted key.
+          </p>
+          <p className="text-[11px] text-amber-800 dark:text-amber-300">
+            • <strong>Revoking Leaked Keys:</strong> If you ever suspect a key was exposed, open your provider dashboard immediately and revoke/delete it.
+          </p>
         </div>
 
         {/* Non-Technical Setup Guide */}
@@ -337,60 +342,78 @@ export default function AIModelSettings() {
             </div>
             
             <p className="leading-relaxed">
-              An <strong>API key</strong> is like an electronic student ID card for AI services. It gives Source.io permission 
-              to ask the AI provider questions on your behalf.
+              An <strong>API key</strong> is a digital access pass for an AI company. When you provide your own key, Source.io sends requests directly using your personal allowance instead of Source.io's shared daily quota.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="font-bold text-slate-900 dark:text-white block">1. Groq Cloud (Recommended)</span>
-                <p className="text-[11px] text-slate-500">100% Free! No credit card needed. Ultra-fast responses.</p>
-                <a 
-                  href="https://console.groq.com/keys" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 pt-1 hover:underline"
-                >
-                  <span>Open console.groq.com</span>
-                  <ExternalLink className="size-3" />
-                </a>
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1.5 flex flex-col justify-between">
+                <div>
+                  <span className="font-bold text-slate-900 dark:text-white block">1. Groq Cloud</span>
+                  <p className="text-[11px] text-slate-500 leading-normal">
+                    Groq may provide free, rate-limited API access for eligible accounts. Check current terms before use.
+                  </p>
+                </div>
+                <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
+                  <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 hover:underline">
+                    <span>Create key: console.groq.com</span>
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                  <a href="https://groq.com/pricing" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
+                    <span>Groq Pricing</span>
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                  <a href="https://console.groq.com/docs/rate-limits" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
+                    <span>Groq Rate Limits & Quotas</span>
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="font-bold text-slate-900 dark:text-white block">2. Google AI Studio</span>
-                <p className="text-[11px] text-slate-500">Free tier for students. Powered by Gemini 2.0 Flash.</p>
-                <a 
-                  href="https://aistudio.google.com/app/apikey" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 pt-1 hover:underline"
-                >
-                  <span>Open aistudio.google.com</span>
-                  <ExternalLink className="size-3" />
-                </a>
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1.5 flex flex-col justify-between">
+                <div>
+                  <span className="font-bold text-slate-900 dark:text-white block">2. Google AI Studio</span>
+                  <p className="text-[11px] text-slate-500 leading-normal">
+                    Google may offer free rate-limited developer access for Gemini models. Check eligibility.
+                  </p>
+                </div>
+                <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
+                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 hover:underline">
+                    <span>Create key: aistudio.google.com</span>
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                  <a href="https://ai.google.dev/pricing" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
+                    <span>Gemini Pricing & Limits</span>
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1">
-                <span className="font-bold text-slate-900 dark:text-white block">3. OpenAI</span>
-                <p className="text-[11px] text-slate-500">Requires funded developer account. Powers GPT-4o Mini.</p>
-                <a 
-                  href="https://platform.openai.com/api-keys" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 pt-1 hover:underline"
-                >
-                  <span>Open platform.openai.com</span>
-                  <ExternalLink className="size-3" />
-                </a>
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1.5 flex flex-col justify-between">
+                <div>
+                  <span className="font-bold text-slate-900 dark:text-white block">3. OpenAI</span>
+                  <p className="text-[11px] text-slate-500 leading-normal">
+                    Requires a paid account with credit. Powers GPT-4o Mini and other OpenAI models.
+                  </p>
+                </div>
+                <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
+                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 hover:underline">
+                    <span>Create key: platform.openai.com</span>
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                  <a href="https://openai.com/pricing" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
+                    <span>OpenAI Pricing & Usage</span>
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                </div>
               </div>
             </div>
 
             <div className="p-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/40 text-[11px] space-y-1 text-purple-900 dark:text-purple-200">
               <span className="font-bold block">Quick 4-Step Instructions:</span>
-              <p>1. Click the official provider link above and sign in.</p>
-              <p>2. Click <strong>"Create API Key"</strong> and copy it.</p>
+              <p>1. Open the provider's official console link above and sign in.</p>
+              <p>2. Create a restricted API key and copy it.</p>
               <p>3. Paste the key into the matching box below.</p>
-              <p>4. Press <strong>"Test connection"</strong> to verify it works without charging a document!</p>
+              <p>4. Press <strong>"Test Key"</strong> to verify connectivity with a minimal 5-token check (no document cost).</p>
             </div>
           </div>
         )}
@@ -401,8 +424,8 @@ export default function AIModelSettings() {
             <div className="flex items-center justify-between">
               <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                 <span>Groq API Key (gsk_...)</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-semibold">
-                  100% Free
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+                  Open Models
                 </span>
               </Label>
               {groqKey && (
