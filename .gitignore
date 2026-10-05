@@ -74,6 +74,7 @@ playwright-report/
 .eslintcache
 .cache/
 .turbo/
+*.tsbuildinfo
 
 # Credentials & local keys
 *.pem
