@@ -117,14 +117,18 @@ export async function streamChat({
 /** Trigger flashcards + quiz generation. Returns counts. */
 export async function generateDerivatives(
   documentId: string,
-  options?: { flashcardCount?: number; quizDifficulty?: string }
+  options?: { flashcardCount?: number; quizDifficulty?: string; idempotencyKey?: string }
 ): Promise<{
   flashcards_count: number; questions_count: number; quiz_id: string | null;
 }> {
+  const idempotencyKey =
+    options?.idempotencyKey ||
+    `${documentId}:derivatives:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
   const resp = await callFunction("generate_derivatives", {
     document_id: documentId,
     flashcard_count: options?.flashcardCount,
     quiz_difficulty: options?.quizDifficulty,
+    idempotency_key: idempotencyKey,
   });
   if (!resp.ok) throw await functionError(resp, "Generation failed");
   return await resp.json();
@@ -141,6 +145,7 @@ export async function streamNotes({
   notesDepth,
   model,
   apiKey,
+  idempotencyKey,
   onDelta,
   signal,
 }: {
@@ -149,9 +154,13 @@ export async function streamNotes({
   notesDepth?: string;
   model?: string;
   apiKey?: string;
+  idempotencyKey?: string;
   onDelta: (chunk: string) => void;
   signal?: AbortSignal;
 }): Promise<string> {
+  const reqIdempotencyKey =
+    idempotencyKey ||
+    `${documentId}:notes:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
   let resp: Response | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     resp = await callFunction(
@@ -162,6 +171,7 @@ export async function streamNotes({
         notes_depth: notesDepth,
         model,
         api_key: apiKey,
+        idempotency_key: reqIdempotencyKey,
       },
       { signal }
     );
