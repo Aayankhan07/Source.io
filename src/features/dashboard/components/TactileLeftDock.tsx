@@ -47,18 +47,16 @@ export function TactileLeftDock({
   ];
 
   const handleItemClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
+    if (onSelectTab) {
+      e.preventDefault();
+      onSelectTab(item.id);
+      return;
+    }
     if (item.id === "settings") {
       router.push("/app/settings");
       return;
     }
-    if (pathname !== "/app") {
-      router.push("/app");
-      return;
-    }
-    if (onSelectTab) {
-      e.preventDefault();
-      onSelectTab(item.id);
-    }
+    router.push("/app");
   };
 
   return (

@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
-import AppSidebar from "@/features/documents/components/AppSidebar";
+import { usePathname, useRouter } from "next/navigation";
 import UploadDialog from "@/features/documents/components/UploadDialog";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import { AppShellProvider } from "@/features/documents/context/AppShellContext";
@@ -17,8 +15,33 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
   const [activeView, setActiveView] = useState<"dashboard" | "library">("dashboard");
   const { theme } = useTheme();
   const pathname = usePathname();
+  const router = useRouter();
 
-  const isDashboard = pathname === "/app";
+  const isDocWorkspace = pathname.startsWith("/app/doc/");
+  const isSettings = pathname.startsWith("/app/settings");
+
+  // Determine active dock tab based on current route
+  const currentDockTab = isSettings
+    ? "settings"
+    : isDocWorkspace
+    ? "library"
+    : activeView;
+
+  const handleDockSelectTab = (tab: string) => {
+    if (tab === "settings") {
+      router.push("/app/settings");
+    } else if (tab === "library") {
+      setActiveView("library");
+      if (pathname !== "/app") {
+        router.push("/app");
+      }
+    } else if (tab === "dashboard") {
+      setActiveView("dashboard");
+      if (pathname !== "/app") {
+        router.push("/app");
+      }
+    }
+  };
 
   return (
     <AppShellProvider
@@ -28,56 +51,27 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
       onSelectView={setActiveView}
     >
       <div className={cn("luminous-app flex h-screen bg-background text-foreground antialiased font-sans", theme === "dark" && "dark")}>
-        {isDashboard ? (
-          <>
-            {/* Tactile Left Dock for Dashboard (Expandable) */}
-            <TactileLeftDock 
-              onNewSource={() => setUploadOpen(true)}
-              isExpanded={sidebarExpanded}
-              onToggleExpand={() => setSidebarExpanded((prev) => !prev)}
-              activeTab={activeView}
-              onSelectTab={(tab) => {
-                if (tab === "dashboard" || tab === "library") {
-                  setActiveView(tab);
-                }
-              }}
-            />
+        {/* Unified Tactile Left Dock across ALL pages */}
+        <TactileLeftDock 
+          onNewSource={() => setUploadOpen(true)}
+          isExpanded={sidebarExpanded}
+          onToggleExpand={() => setSidebarExpanded((prev) => !prev)}
+          activeTab={currentDockTab}
+          onSelectTab={handleDockSelectTab}
+        />
 
-            {/* Main Tactile Dashboard Surface with porcelain canvas */}
-            <main 
-              className={cn(
-                "flex-1 overflow-y-auto bg-tactile-canvas pb-20 md:pb-6 transition-all duration-300 ease-out",
-                sidebarExpanded ? "md:pl-[270px]" : "md:pl-24"
-              )}
-            >
-              {children}
-            </main>
-          </>
-        ) : (
-          <>
-            {/* Legacy Desktop sidebar for document workspace */}
-            <div className="hidden md:flex">
-              <AppSidebar onNew={() => setUploadOpen(true)} />
-            </div>
-
-            {/* Mobile drawer sidebar */}
-            <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-              <SheetContent side="left" className="p-0 w-[18rem] border-sidebar-border bg-sidebar">
-                <AppSidebar
-                  onNew={() => {
-                    setMobileNavOpen(false);
-                    setUploadOpen(true);
-                  }}
-                  onNavigate={() => setMobileNavOpen(false)}
-                />
-              </SheetContent>
-            </Sheet>
-
-            <div className="flex-1 overflow-hidden">
-              {children}
-            </div>
-          </>
-        )}
+        {/* Main Content Area */}
+        <main 
+          className={cn(
+            "flex-1 transition-all duration-300 ease-out",
+            isDocWorkspace 
+              ? "overflow-hidden flex flex-col h-screen" 
+              : "overflow-y-auto bg-tactile-canvas pb-20 md:pb-6",
+            sidebarExpanded ? "md:pl-[270px]" : "md:pl-24"
+          )}
+        >
+          {children}
+        </main>
 
         <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
       </div>
