@@ -285,8 +285,8 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
       {/* Responsive Cards Grid */}
       {filteredList.length === 0 ? (
         <div className="w-full py-12 px-4 rounded-[24px] border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-center">
-          <div className="size-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
-            <FileText className="size-6" />
+          <div className="size-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3 shadow-tactile-pill">
+            <FileText className="size-6 text-slate-400" />
           </div>
           <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No study sources found</h3>
           <p className="text-xs text-slate-500 max-w-sm mt-1 mb-4">

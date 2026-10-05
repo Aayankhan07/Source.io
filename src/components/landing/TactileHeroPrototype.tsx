@@ -167,21 +167,28 @@ export function TactileHeroPrototype() {
             {/* 5 Modality Tabs Navigation */}
             <div className="grid grid-cols-5 gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-white/[0.04] mb-4">
               {MODES.map((tab) => {
-                const Icon = tab.icon;
                 const isActive = activeMode === tab.id;
+                const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveMode(tab.id)}
                     type="button"
                     className={cn(
-                      "py-2 px-1 rounded-xl text-center flex flex-col items-center justify-center gap-1 transition-all cursor-pointer relative",
+                      "py-2 px-1 rounded-xl text-center flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer relative group",
                       isActive
                         ? "bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-tactile-pill font-bold"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium"
                     )}
                   >
-                    <Icon className="size-3.5" />
+                    <div
+                      className={cn(
+                        "size-6 sm:size-7 rounded-lg flex items-center justify-center transition-transform",
+                        isActive ? "scale-105 bg-primary/10 text-primary" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200"
+                      )}
+                    >
+                      <Icon className="size-4 shrink-0" />
+                    </div>
                     <span className="text-[10px] truncate max-w-full leading-none">
                       {tab.label.split(" ")[0]}
                     </span>
@@ -203,18 +210,28 @@ export function TactileHeroPrototype() {
                     transition={{ duration: 0.2 }}
                     className="space-y-3"
                   >
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-900 dark:text-white">§ 1. Fundamental Quantum Mechanics</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                        p. 2 • §1.1 • 98% match
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center shrink-0 shadow-xs">
+                        <FileText className="size-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                            § 1. Fundamental Quantum Mechanics
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0">
+                            p. 2 • §1.1 • 98% match
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-mono">Cornell hierarchical notes with KaTeX equations</p>
+                      </div>
                     </div>
 
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       Quantum Computing leverages linear superpositions of physical states. A qubit state is expressed mathematically as:
                     </p>
 
-                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 text-center font-mono text-xs sm:text-sm text-slate-900 dark:text-white">
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 text-center font-mono text-xs sm:text-sm text-slate-900 dark:text-white shadow-tactile-inset">
                       |ψ⟩ = α|0⟩ + β|1⟩ &nbsp;&nbsp;where |α|² + |β|² = 1
                     </div>
 
@@ -237,16 +254,26 @@ export function TactileHeroPrototype() {
                     transition={{ duration: 0.2 }}
                     className="space-y-3"
                   >
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-900 dark:text-white">Card 1 of 4 • Spaced Repetition</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                        Leitner Interval: 4 Days
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center shrink-0 shadow-xs">
+                        <Layers className="size-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                            Card 1 of 4 • Spaced Repetition
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 shrink-0">
+                            Leitner: 4 Days
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-mono">Active recall testing with memory decay intervals</p>
+                      </div>
                     </div>
 
                     <div
                       onClick={() => setCardFlipped(!cardFlipped)}
-                      className="p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/10 hover:border-primary/40 transition-all cursor-pointer min-h-[140px] flex flex-col justify-between shadow-tactile-inset"
+                      className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/10 hover:border-primary/40 transition-all cursor-pointer min-h-[130px] flex flex-col justify-between shadow-tactile-inset"
                     >
                       <div className="text-[10px] uppercase font-mono text-slate-400 tracking-wider">
                         {cardFlipped ? "Answer / Definition" : "Prompt / Question (Click to flip)"}
@@ -280,11 +307,21 @@ export function TactileHeroPrototype() {
                     transition={{ duration: 0.2 }}
                     className="space-y-2.5"
                   >
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-900 dark:text-white">Question 1 • Mastery Verification</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                        Multiple Choice
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0 shadow-xs">
+                        <ListChecks className="size-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                            Question 1 • Diagnostic Mastery
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">
+                            Multiple Choice
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-mono">Instant verification anchored to source proofs</p>
+                      </div>
                     </div>
 
                     <p className="text-xs text-slate-700 dark:text-slate-300 font-medium">
@@ -336,11 +373,21 @@ export function TactileHeroPrototype() {
                     transition={{ duration: 0.2 }}
                     className="space-y-3"
                   >
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-900 dark:text-white">2-Host Conversational Audio Recap</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                        Hosts: Clara & Julian
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0 shadow-xs">
+                        <Headphones className="size-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                            2-Host Conversational Audio Recap
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0">
+                            Clara & Julian
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-mono">Conversational Socratic recap synthesized from text</p>
+                      </div>
                     </div>
 
                     <div className="p-4 rounded-2xl bg-slate-950 text-white flex items-center justify-between gap-4 shadow-tactile-pill">
@@ -394,11 +441,21 @@ export function TactileHeroPrototype() {
                     transition={{ duration: 0.2 }}
                     className="space-y-3"
                   >
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-900 dark:text-white">Document Ask Copilot</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
-                        Grounded Search
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0 shadow-xs">
+                        <MessagesSquare className="size-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                            Document Ask Copilot
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 font-semibold">
+                            Grounded Search
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-mono">Every statement anchored to immutable page & line coordinates</p>
+                      </div>
                     </div>
 
                     {/* Question Bubble */}

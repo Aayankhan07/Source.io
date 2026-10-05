@@ -200,40 +200,40 @@ export function InteractiveWorkflowDemo({
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         {/* Tab Switcher */}
         <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <TabsList className="bg-card/80 backdrop-blur-md border border-border/80 p-1.5 rounded-full h-auto gap-1.5 inline-flex shrink-0 shadow-sm">
+          <TabsList className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-black/[0.06] dark:border-white/10 p-1.5 rounded-full h-auto gap-1.5 inline-flex shrink-0 shadow-tactile-pill">
             <TabsTrigger 
               value="notes" 
-              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
+              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
             >
-              <FileText className="h-3.5 w-3.5 transition-colors" />
+              <FileText className="size-4 shrink-0" />
               <span>Study Notes</span>
             </TabsTrigger>
             <TabsTrigger 
               value="flashcards" 
-              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
+              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
             >
-              <Layers className="h-3.5 w-3.5 transition-colors" />
+              <Layers className="size-4 shrink-0" />
               <span>Flashcards</span>
             </TabsTrigger>
             <TabsTrigger 
               value="quiz" 
-              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
+              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
             >
-              <ListChecks className="h-3.5 w-3.5 transition-colors" />
+              <ListChecks className="size-4 shrink-0" />
               <span>Practice Quiz</span>
             </TabsTrigger>
             <TabsTrigger 
               value="podcast" 
-              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
+              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
             >
-              <Headphones className="h-3.5 w-3.5 transition-colors" />
+              <Headphones className="size-4 shrink-0" />
               <span>Audio Recap</span>
             </TabsTrigger>
             <TabsTrigger 
               value="chat" 
-              className="rounded-full text-[12px] font-semibold gap-1.5 px-4 py-2 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none group cursor-pointer"
+              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
             >
-              <MessagesSquare className="h-3.5 w-3.5 transition-colors" />
+              <MessagesSquare className="size-4 shrink-0" />
               <span>Grounded Chat</span>
             </TabsTrigger>
           </TabsList>

@@ -829,13 +829,17 @@ function PodcastPlayer({
       {podcast?.status === "ready" && podcast.audio_url ? (
         <CustomAudioPlayer audioUrl={podcast.audio_url} script={podcast.script} title={podcast.title} />
       ) : (
-        <div className="bg-card p-8 rounded-2xl border border-border text-center space-y-4">
-          <Headphones className="h-10 w-10 text-muted-foreground mx-auto" />
-          <h3 className="font-semibold text-foreground">No podcast yet</h3>
-          <p className="text-xs text-muted-foreground">Generate an audio recap of this document</p>
-          <Button onClick={onGenerate} disabled={loading} className="rounded-full text-xs">
+        <div className="bg-card p-8 rounded-3xl border border-border text-center space-y-4 shadow-tactile-card">
+          <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto mb-2 shadow-tactile-pill">
+            <Headphones className="size-6 text-muted-foreground" />
+          </div>
+          <h3 className="font-semibold text-foreground font-display text-base">No podcast yet</h3>
+          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+            Generate an engaging 2-host audio walkthrough grounded directly in your notes and formulas.
+          </p>
+          <Button onClick={onGenerate} disabled={loading} className="rounded-full text-xs h-9 px-4">
             {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-            Generate Podcast
+            Generate Socratic Podcast
           </Button>
         </div>
       )}
@@ -857,13 +861,17 @@ function FlashcardsDeck({
 }) {
   if (cards.length === 0) {
     return (
-      <div className="bg-card p-8 rounded-2xl border border-border text-center space-y-4">
-        <Layers className="h-10 w-10 text-muted-foreground mx-auto" />
-        <h3 className="font-semibold text-foreground">No flashcards yet</h3>
-        <p className="text-xs text-muted-foreground">Generate flashcards from your notes</p>
-        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs">
+      <div className="bg-card p-8 rounded-3xl border border-border text-center space-y-4 shadow-tactile-card">
+        <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto mb-2 shadow-tactile-pill">
+          <Layers className="size-6 text-muted-foreground" />
+        </div>
+        <h3 className="font-semibold text-foreground font-display text-base">No flashcards yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+          Generate an active spaced-repetition card deck mapped directly to key definitions and proof steps.
+        </p>
+        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs h-9 px-4">
           {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-          Generate Flashcards
+          Generate Flashcard Deck
         </Button>
       </div>
     );
@@ -897,13 +905,17 @@ function QuizPlayer({
 }) {
   if (!quiz) {
     return (
-      <div className="bg-card p-8 rounded-2xl border border-border text-center space-y-4">
-        <ListChecks className="h-10 w-10 text-muted-foreground mx-auto" />
-        <h3 className="font-semibold text-foreground">No quiz yet</h3>
-        <p className="text-xs text-muted-foreground">Generate a practice quiz from your notes</p>
-        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs">
+      <div className="bg-card p-8 rounded-3xl border border-border text-center space-y-4 shadow-tactile-card">
+        <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto mb-2 shadow-tactile-pill">
+          <ListChecks className="size-6 text-muted-foreground" />
+        </div>
+        <h3 className="font-semibold text-foreground font-display text-base">No quiz yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+          Generate a retrieval-practice quiz with proof references and diagnostic explanations.
+        </p>
+        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs h-9 px-4">
           {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-          Generate Quiz
+          Generate Practice Quiz
         </Button>
       </div>
     );

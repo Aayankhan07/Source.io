@@ -195,6 +195,26 @@ export function TactileWeeklyGoals() {
             </span>
           </button>
         ))}
+
+        {tasks.every((t) => t.completed) && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 flex items-center gap-3 mt-2 shadow-2xs"
+          >
+            <div className="size-9 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-base shrink-0 border border-emerald-500/30">
+              🏆
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-emerald-800 dark:text-emerald-200">
+                Targets Mastered!
+              </div>
+              <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80 leading-tight mt-0.5">
+                All study milestones reached. Memory retention probability peaked at 92%.
+              </p>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

@@ -12,7 +12,12 @@ export const metadata: Metadata = {
     description:
       "Turn PDFs, videos, audio, YouTube and notes into AI-generated study notes, flashcards, quizzes, podcasts and chat.",
     images: [
-      "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d4536bf5-0950-46b4-a3a9-668a58eecb92",
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Source.io — Turn any source into 5 verified study modes",
+      },
     ],
     type: "website",
   },
@@ -21,9 +26,7 @@ export const metadata: Metadata = {
     title: "Source.io: AI study workspace for any content",
     description:
       "Turn PDFs, videos, audio, YouTube and notes into AI-generated study notes, flashcards, quizzes, podcasts and chat.",
-    images: [
-      "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d4536bf5-0950-46b4-a3a9-668a58eecb92",
-    ],
+    images: ["/og-image.png"],
   },
   icons: { icon: "/favicon.png" },
 };

@@ -373,7 +373,9 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
                 </div>
               ) : (
                 <div className="space-y-2 py-3">
-                  <Upload className="h-7 w-7 mx-auto text-muted-foreground mb-2" />
+                  <div className="size-12 rounded-2xl bg-muted/80 dark:bg-zinc-800/80 border border-border/80 flex items-center justify-center text-foreground mx-auto mb-2 shadow-tactile-pill">
+                    <Upload className="size-6 text-muted-foreground" />
+                  </div>
                   <p className="text-xs text-foreground font-semibold">
                     {isSlotLimitReached
                       ? "Limit reached — delete a document first"
