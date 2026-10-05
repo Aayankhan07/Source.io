@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Sparkles, Loader2, ArrowUpRight, Copy, Check, PanelRightClose } from "lucide-react";
+import { Send, Sparkles, Loader2, ArrowUpRight, Copy, Check, PanelRightClose, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,6 +16,7 @@ interface AskPanelProps {
   headings?: { id: string; text: string; level: number }[];
   onScrollToHeading?: (id: string) => void;
   onClose?: () => void;
+  className?: string;
 }
 
 interface ChatMessage {
@@ -34,7 +35,7 @@ const SUGGESTED_QUESTIONS = [
   "Real-world example",
 ];
 
-export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHeading, onClose }: AskPanelProps) {
+export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHeading, onClose, className }: AskPanelProps) {
   const { toast } = useToast();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -126,7 +127,7 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-l border-black/[0.04] dark:border-white/10 shrink-0 overflow-hidden">
+    <div className={cn("flex flex-col h-full w-full rounded-[28px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card overflow-hidden", className)}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.04] dark:border-white/10 shrink-0 bg-slate-50/50 dark:bg-white/[0.02]">
         <div className="flex items-center gap-2">
@@ -148,12 +149,12 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
           </button>
           {onClose && (
             <button
-              className="size-7 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center justify-center transition-colors cursor-pointer"
+              className="size-7 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center transition-colors cursor-pointer"
               onClick={onClose}
-              title="Collapse Ask panel"
-              aria-label="Collapse Ask panel"
+              title="Close Ask Copilot"
+              aria-label="Close Ask Copilot"
             >
-              <PanelRightClose className="size-3.5" />
+              <X className="size-3.5" />
             </button>
           )}
         </div>

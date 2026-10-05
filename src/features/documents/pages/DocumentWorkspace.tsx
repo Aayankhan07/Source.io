@@ -16,7 +16,8 @@ import { useToast } from "@/hooks/use-toast";
 import MarkdownView from "@/components/common/MarkdownView";
 import {
   AlertCircle, FileText, Layers, ListChecks, Headphones, Loader2, Trash2, ChevronLeft, Sparkles, RefreshCw, Menu,
-  Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Search, Copy, Check, Share2
+  Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Search, Copy, Check, Share2,
+  ListTree, X
 } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { streamNotes, generateDerivatives } from "@/lib/services/pipeline";
@@ -448,118 +449,85 @@ export default function DocumentWorkspace() {
 
   return (
     <div className="h-full flex flex-col bg-tactile-canvas overflow-hidden">
-      {/* Workspace Floating Tactile Capsule Bar (Matches sc 3) */}
-      <div className="px-4 sm:px-8 pt-3.5 pb-2 flex items-center justify-between gap-3 shrink-0 z-10 select-none">
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none max-w-full">
-          {openMobileNav && (
-            <button
-              className="md:hidden size-9 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white bg-white/90 dark:bg-slate-900/90 border border-black/[0.06] dark:border-white/10 shrink-0 cursor-pointer shadow-xs"
-              onClick={openMobileNav}
-              aria-label="Open navigation"
-            >
-              <Menu className="size-4" />
-            </button>
-          )}
-
-          <div className="inline-flex items-center gap-1 p-1 sm:p-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 shadow-[0_2px_14px_rgba(0,0,0,0.04)] overflow-x-auto scrollbar-none">
-            {tabs.map((t) => {
-              const isActive = currentTab === t.id;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => setCurrentTab(t.id)}
-                  className={cn(
-                    "h-8 sm:h-9 px-3.5 sm:px-5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 flex items-center gap-2 cursor-pointer select-none",
-                    isActive
-                      ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-xs scale-[1.01]"
-                      : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60"
-                  )}
-                >
-                  <span>{t.label}</span>
-                  {t.count !== undefined && t.count > 0 && (
-                    <span
-                      className={cn(
-                        "text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none",
-                        isActive
-                          ? "bg-white/20 text-white dark:bg-slate-950/20 dark:text-slate-950"
-                          : "bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300"
-                      )}
-                    >
-                      {t.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Quick Outline Toggle & Side Copilot Toggle on Notes View */}
-        {currentTab === "notes" && (
-          <div className="hidden lg:flex items-center gap-1.5">
-            <button
-              onClick={() => setOutlineRetracted(!outlineRetracted)}
-              className={cn(
-                "h-8 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border",
-                !outlineRetracted
-                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-black/[0.06] dark:border-white/10 shadow-xs"
-                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border-transparent hover:bg-white/80 dark:hover:bg-slate-900/80"
-              )}
-              title={outlineRetracted ? "Expand outline" : "Retract outline"}
-            >
-              {outlineRetracted ? <PanelLeftOpen className="size-3.5" /> : <PanelLeftClose className="size-3.5" />}
-              <span>Outline</span>
-            </button>
-
-            <button
-              onClick={() => setAskPanelOpen(!askPanelOpen)}
-              className={cn(
-                "h-8 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border",
-                askPanelOpen
-                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-black/[0.06] dark:border-white/10 shadow-xs"
-                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border-transparent hover:bg-white/80 dark:hover:bg-slate-900/80"
-              )}
-              title={askPanelOpen ? "Close side copilot" : "Open side copilot"}
-            >
-              <Sparkles className="size-3.5 text-purple-600 dark:text-purple-400" />
-              <span>Side Copilot</span>
-            </button>
-          </div>
+      {/* Workspace Floating Tactile Capsule Bar (Centered, Matches sc 3) */}
+      <div className="px-4 sm:px-8 pt-4 pb-2.5 flex items-center justify-center relative shrink-0 z-10 select-none">
+        {openMobileNav && (
+          <button
+            className="md:hidden absolute left-4 size-9 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white bg-white/90 dark:bg-slate-900/90 border border-black/[0.06] dark:border-white/10 shrink-0 cursor-pointer shadow-xs"
+            onClick={openMobileNav}
+            aria-label="Open navigation"
+          >
+            <Menu className="size-4" />
+          </button>
         )}
-      </div>
 
+        <div className="inline-flex items-center gap-1 p-1 sm:p-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-x-auto scrollbar-none max-w-full">
+          {tabs.map((t) => {
+            const isActive = currentTab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setCurrentTab(t.id)}
+                className={cn(
+                  "h-8 sm:h-9 px-3.5 sm:px-5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 flex items-center gap-2 cursor-pointer select-none",
+                  isActive
+                    ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-xs scale-[1.01]"
+                    : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60"
+                )}
+              >
+                <span>{t.label}</span>
+                {t.count !== undefined && t.count > 0 && (
+                  <span
+                    className={cn(
+                      "text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none",
+                      isActive
+                        ? "bg-white/20 text-white dark:bg-slate-950/20 dark:text-slate-950"
+                        : "bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300"
+                    )}
+                  >
+                    {t.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* 3. Main Workspace Content */}
       <div className="flex-1 overflow-hidden relative">
         {currentTab === "notes" && (
           <>
             {/* Desktop View (>= 1024px) */}
-            <div className="hidden lg:block h-full w-full">
+            <div className="hidden lg:block h-full w-full relative">
               <ResizablePanelGroup direction="horizontal" className="h-full w-full">
                 {/* Left Rail: Retractable Document Outline */}
                 {outlineOpen && !focusMode && (
                   <>
                     <ResizablePanel
-                      defaultSize={outlineRetracted ? 4 : 18}
+                      defaultSize={outlineRetracted ? 4 : 20}
                       minSize={outlineRetracted ? 4 : 14}
                       maxSize={outlineRetracted ? 5 : 28}
                     >
-                      <WorkspaceOutline
-                        markdown={note?.markdown}
-                        activeHeadingId={activeHeadingId}
-                        onSelectHeading={(id) => setActiveHeadingId(id)}
-                        isRetracted={outlineRetracted}
-                        onToggleRetract={() => setOutlineRetracted(!outlineRetracted)}
-                      />
+                      <div className="h-full p-2.5 pl-3 pr-1">
+                        <WorkspaceOutline
+                          markdown={note?.markdown}
+                          activeHeadingId={activeHeadingId}
+                          onSelectHeading={(id) => setActiveHeadingId(id)}
+                          isRetracted={outlineRetracted}
+                          onToggleRetract={() => setOutlineRetracted(!outlineRetracted)}
+                          onClose={() => setOutlineOpen(false)}
+                        />
+                      </div>
                     </ResizablePanel>
-                    <ResizableHandle withHandle />
+                    <ResizableHandle className="w-1.5 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-col-resize" />
                   </>
                 )}
 
                 {/* Center Stage: Notes Reading Content */}
-                <ResizablePanel defaultSize={outlineRetracted ? (askPanelOpen ? 72 : 96) : (askPanelOpen ? 58 : 82)}>
-                  <main className="h-full overflow-y-auto relative bg-tactile-canvas">
-                    <div className="p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
+                <ResizablePanel defaultSize={outlineOpen ? (outlineRetracted ? (askPanelOpen ? 72 : 96) : (askPanelOpen ? 56 : 80)) : (askPanelOpen ? 76 : 100)}>
+                  <main className="h-full overflow-y-auto relative bg-tactile-canvas p-2.5 px-2">
+                    <div className="max-w-4xl mx-auto space-y-6 pb-16">
                       {/* "On this page: ..." Summary Banner (Wireframe Badge 4) */}
                       {headings.length > 0 && notesSettings.showPageSummaryBanner && (
                         <div className="flex items-center gap-2 px-4 py-2.5 rounded-[18px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-black/[0.04] dark:border-white/10 text-xs text-slate-600 dark:text-slate-400 shadow-2xs animate-fade-in">
@@ -669,34 +637,53 @@ export default function DocumentWorkspace() {
                 {/* Right Rail: Ask Panel */}
                 {askPanelOpen && !focusMode && (
                   <>
-                    <ResizableHandle withHandle />
+                    <ResizableHandle className="w-1.5 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-col-resize" />
                     <ResizablePanel defaultSize={24} minSize={18} maxSize={35}>
-                      <AskPanel
-                        documentId={doc.id}
-                        noteMarkdown={note?.markdown}
-                        headings={headings}
-                        onScrollToHeading={(id) => setActiveHeadingId(id)}
-                        onClose={() => setAskPanelOpen(false)}
-                      />
+                      <div className="h-full p-2.5 pr-3 pl-1">
+                        <AskPanel
+                          documentId={doc.id}
+                          noteMarkdown={note?.markdown}
+                          headings={headings}
+                          onScrollToHeading={(id) => setActiveHeadingId(id)}
+                          onClose={() => setAskPanelOpen(false)}
+                        />
+                      </div>
                     </ResizablePanel>
                   </>
                 )}
               </ResizablePanelGroup>
 
-              {/* Floating Ask Button when panel is collapsed */}
-              {!askPanelOpen && !focusMode && (
-                <div className="absolute right-4 bottom-6 z-30 animate-fade-in">
-                  <Button
-                    onClick={() => setAskPanelOpen(true)}
-                    className="h-8 px-3 rounded-lg shadow-md bg-card border border-border text-foreground hover:bg-muted text-xs font-medium flex items-center gap-1.5 transition-all hover:-translate-y-px hover:border-primary/40 cursor-pointer"
-                    title="Open Ask this lecture"
+              {/* Floating Re-open Triggers when collapsed */}
+              {!outlineOpen && !focusMode && (
+                <div className="absolute left-4 top-4 z-30 animate-fade-in">
+                  <button
+                    onClick={() => {
+                      setOutlineOpen(true);
+                      setOutlineRetracted(false);
+                    }}
+                    className="h-9 px-3.5 rounded-full shadow-tactile-pill bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    title="Open Outline"
                   >
-                    <Sparkles className="h-3.5 w-3.5 text-primary" />
-                    <span>Ask</span>
-                  </Button>
+                    <ListTree className="size-3.5 text-sky-600 dark:text-sky-400" />
+                    <span>Outline</span>
+                  </button>
+                </div>
+              )}
+
+              {!askPanelOpen && !focusMode && (
+                <div className="absolute right-4 top-4 z-30 animate-fade-in">
+                  <button
+                    onClick={() => setAskPanelOpen(true)}
+                    className="h-9 px-3.5 rounded-full shadow-tactile-pill bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    title="Open Ask Copilot"
+                  >
+                    <Sparkles className="size-3.5 text-purple-600 dark:text-purple-400" />
+                    <span>Ask Copilot</span>
+                  </button>
                 </div>
               )}
             </div>
+
 
             {/* Mobile Viewport (< 1024px) */}
             <div className="lg:hidden h-full overflow-y-auto">
@@ -762,17 +749,15 @@ export default function DocumentWorkspace() {
 
         {currentTab === "chat" && (
           <div className="h-full overflow-hidden p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto flex flex-col">
-            <div className="flex-1 rounded-[32px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card overflow-hidden flex flex-col">
-              <AskPanel
-                documentId={doc.id}
-                noteMarkdown={note?.markdown}
-                headings={headings}
-                onScrollToHeading={(id) => {
-                  setActiveHeadingId(id);
-                  setCurrentTab("notes");
-                }}
-              />
-            </div>
+            <AskPanel
+              documentId={doc.id}
+              noteMarkdown={note?.markdown}
+              headings={headings}
+              onScrollToHeading={(id) => {
+                setActiveHeadingId(id);
+                setCurrentTab("notes");
+              }}
+            />
           </div>
         )}
       </div>

@@ -109,6 +109,8 @@ interface WorkspaceOutlineProps {
   isRetracted?: boolean;
   /** Toggle retracted / expanded state */
   onToggleRetract?: () => void;
+  /** Close / hide outline panel */
+  onClose?: () => void;
   /** Max chips to show before overflow (default: all level 1-2 headings) */
   maxChips?: number;
 }
@@ -122,6 +124,7 @@ export default function WorkspaceOutline({
   slimRail = false,
   isRetracted = false,
   onToggleRetract,
+  onClose,
   maxChips = 8,
 }: WorkspaceOutlineProps) {
   const rawHeadings = useMemo(() => extractHeadings(markdown), [markdown]);
@@ -343,7 +346,7 @@ export default function WorkspaceOutline({
       <TooltipProvider delayDuration={150}>
         <aside
           className={cn(
-            "flex flex-col h-full w-12 bg-card/60 backdrop-blur-md border-r border-border/70 text-foreground items-center shrink-0 select-none py-2.5",
+            "flex flex-col h-full w-full rounded-[24px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card text-foreground items-center shrink-0 select-none py-2.5 overflow-hidden",
             className
           )}
         >
@@ -447,12 +450,12 @@ export default function WorkspaceOutline({
   return (
     <aside
       className={cn(
-        "flex flex-col h-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-r border-black/[0.04] dark:border-white/10 text-foreground overflow-hidden select-none",
+        "flex flex-col h-full w-full rounded-[28px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card text-foreground overflow-hidden select-none",
         className
       )}
     >
       {/* 3.1 Sleek Header Bar */}
-      <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/10 flex items-center justify-between shrink-0 gap-2">
+      <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/10 flex items-center justify-between shrink-0 gap-2 bg-slate-50/50 dark:bg-white/[0.02]">
         <div className="flex items-center gap-2 min-w-0">
           <div className="size-6 rounded-lg bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 flex items-center justify-center shrink-0">
             <ListTree className="size-3.5" />
@@ -508,6 +511,18 @@ export default function WorkspaceOutline({
               aria-label="Retract outline"
             >
               <PanelLeftClose className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          {/* Close/Hide outline */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+              title="Close outline"
+              aria-label="Close outline"
+            >
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
