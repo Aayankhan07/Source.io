@@ -440,7 +440,7 @@ export default function DocumentWorkspace() {
 
   const tabs: { id: TabId; label: string; count?: number }[] = [
     { id: "notes", label: "Notes" },
-    { id: "cards", label: "Cards", count: cards.length },
+    { id: "cards", label: "Flashcards", count: cards.length },
     { id: "quiz", label: "Quiz" },
     { id: "podcast", label: "Podcast" },
   ];
@@ -570,35 +570,59 @@ export default function DocumentWorkspace() {
         </div>
       </header>
 
-      {/* 2. Workspace Horizontal Tab Bar (Wireframe Style) */}
-      <div className="border-b border-border/80 bg-background/95 backdrop-blur-md px-3 sm:px-6 flex items-center gap-1 sm:gap-2 overflow-x-auto shrink-0 z-10">
-        {tabs.map((t) => {
-          const isActive = currentTab === t.id;
-          return (
-            <button
-              key={t.id}
-              onClick={() => setCurrentTab(t.id)}
-              className={cn(
-                "px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors shrink-0 relative flex items-center gap-1.5 cursor-pointer",
-                isActive
-                  ? "text-foreground font-semibold border-b-2 border-foreground"
-                  : "text-muted-foreground hover:text-foreground border-b-2 border-transparent"
-              )}
-            >
-              <span>{t.label}</span>
-              {t.count !== undefined && t.count > 0 && (
-                <span
-                  className={cn(
-                    "text-[11px] px-1.5 py-0.5 rounded-full font-mono",
-                    isActive ? "bg-primary/10 text-primary font-medium" : "bg-muted text-muted-foreground"
-                  )}
-                >
-                  {t.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
+      {/* 2. Workspace Floating Tactile Lens Pills (Notes, Flashcards, Quiz, Podcast, Ask AI) */}
+      <div className="border-b border-border/60 bg-background/90 backdrop-blur-md px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 shrink-0 z-10">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          {tabs.map((t) => {
+            const isActive = currentTab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setCurrentTab(t.id)}
+                className={cn(
+                  "h-8 sm:h-9 px-3.5 sm:px-4 rounded-full text-xs font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer shadow-2xs select-none",
+                  isActive
+                    ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-tactile-pill scale-[1.02]"
+                    : "bg-slate-100/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
+                )}
+              >
+                <span>{t.label}</span>
+                {t.count !== undefined && t.count > 0 && (
+                  <span
+                    className={cn(
+                      "text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold",
+                      isActive
+                        ? "bg-white/20 text-white dark:bg-slate-950/20 dark:text-slate-950"
+                        : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                    )}
+                  >
+                    {t.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 5th Lens: Ask AI Copilot Panel Toggle */}
+        <button
+          onClick={() => {
+            setAskPanelOpen((prev) => !prev);
+            if (currentTab !== "notes") {
+              setCurrentTab("notes");
+            }
+          }}
+          className={cn(
+            "h-8 sm:h-9 px-3.5 sm:px-4 rounded-full text-xs font-semibold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer shadow-2xs select-none border",
+            askPanelOpen
+              ? "bg-purple-100 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 border-purple-300 dark:border-purple-800 font-bold"
+              : "bg-slate-100/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
+          )}
+        >
+          <Sparkles className="size-3.5 text-purple-600 dark:text-purple-400" />
+          <span className="hidden sm:inline">Ask AI Chat</span>
+          <span className="sm:hidden">Ask AI</span>
+        </button>
       </div>
 
       {/* 3. Main Workspace Content */}
