@@ -80,32 +80,32 @@ export function TactileDashboardShowcase() {
   ];
 
   return (
-    <section id="dashboard" className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24">
+    <section id="retention" className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24">
       {/* Section Header */}
       <SectionHeading
-        badge="Command Center"
+        badge="Long-Term Retention"
         badgeTone="blue"
-        line1="Long-term retention,"
-        line2="visually measured."
-        description="Source.io doesn't just synthesize documents—it actively tracks your memory decay, study goals, and source library inside a tactile personal dashboard."
+        line1="Do not just read it."
+        line2="Remember it."
+        description="Active recall and spaced repetition track your memory decay over time, recommending daily reviews before you forget."
         align="left"
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-8">
         {/* Left Column: Interactive Performance Retention Chart */}
-        <div className="lg:col-span-7 bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-7 border border-black/[0.06] dark:border-white/10 shadow-tactile-card flex flex-col justify-between select-none">
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-7 border border-slate-200 dark:border-white/10 shadow-tactile-card flex flex-col justify-between select-none">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">
-                  Tactile Performance Chart
+                  Spaced Repetition & Recall Progress
                 </h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold">
-                  Live Telemetry
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                  Leitner Active
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Multi-curve synthesis tracking your retention over time
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+                See what you remember and what needs review across days
               </p>
             </div>
 
@@ -230,7 +230,7 @@ export function TactileDashboardShowcase() {
         {/* Right Column: Weekly Goals & Sources Library Stack */}
         <div className="lg:col-span-5 flex flex-col gap-6 w-full">
           {/* 1. Weekly Goals Capsule */}
-          <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-6 border border-black/[0.06] dark:border-white/10 shadow-tactile-card select-none">
+          <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-6 border border-slate-200 dark:border-white/10 shadow-tactile-card select-none">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Target className="size-4 text-purple-500" />
@@ -276,7 +276,7 @@ export function TactileDashboardShowcase() {
           </div>
 
           {/* 2. Study Library Grid Preview */}
-          <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-6 border border-black/[0.06] dark:border-white/10 shadow-tactile-card select-none">
+          <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-6 border border-slate-200 dark:border-white/10 shadow-tactile-card select-none">
             <div className="flex items-center justify-between mb-3.5">
               <div className="flex items-center gap-2">
                 <BookOpen className="size-4 text-primary" />
