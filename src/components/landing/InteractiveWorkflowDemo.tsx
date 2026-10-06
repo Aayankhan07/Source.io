@@ -187,30 +187,32 @@ export function InteractiveWorkflowDemo({
   };
 
   return (
-    <section id="workbench" data-alias="simulator" className="py-8 md:py-12 relative z-10 w-full scroll-mt-24">
+    <section id="modes" data-alias="simulator" className="py-8 md:py-14 relative z-10 w-full scroll-mt-24">
       <SectionHeading
-        badge="Interactive Workbench"
+        badge="5 Study Modes"
         badgeTone="blue"
-        line1="Experience the study workflow."
-        line2="Five derived, verified modalities."
-        description="Inspect how Source.io converts raw sources into structured study assets with exact mathematical and textual citations."
+        line1="One source."
+        line2="Five ways to learn."
+        description="Convert one source document into five coordinated study modes, each tailored to a different stage of learning."
         align="center"
       />
 
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         {/* Tab Switcher */}
         <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <TabsList className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-black/[0.06] dark:border-white/10 p-1.5 rounded-full h-auto gap-1.5 inline-flex shrink-0 shadow-tactile-pill">
+          <TabsList className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-white/10 p-1.5 rounded-full h-auto gap-1.5 inline-flex shrink-0 shadow-tactile-pill">
             <TabsTrigger 
               value="notes" 
               className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
+              title="Understand main ideas quickly"
             >
               <FileText className="size-4 shrink-0" />
-              <span>Study Notes</span>
+              <span>Structured Notes</span>
             </TabsTrigger>
             <TabsTrigger 
               value="flashcards" 
               className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
+              title="Retain concepts over time"
             >
               <Layers className="size-4 shrink-0" />
               <span>Flashcards</span>
@@ -218,6 +220,7 @@ export function InteractiveWorkflowDemo({
             <TabsTrigger 
               value="quiz" 
               className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
+              title="Test whether you actually understand"
             >
               <ListChecks className="size-4 shrink-0" />
               <span>Practice Quiz</span>
@@ -225,6 +228,7 @@ export function InteractiveWorkflowDemo({
             <TabsTrigger 
               value="podcast" 
               className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
+              title="Review while walking or commuting"
             >
               <Headphones className="size-4 shrink-0" />
               <span>Audio Recap</span>
@@ -232,6 +236,7 @@ export function InteractiveWorkflowDemo({
             <TabsTrigger 
               value="chat" 
               className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
+              title="Ask questions with source-backed answers"
             >
               <MessagesSquare className="size-4 shrink-0" />
               <span>Grounded Chat</span>
@@ -446,18 +451,25 @@ export function InteractiveWorkflowDemo({
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-border mt-4 flex items-center justify-between">
+                  <div className="pt-3 border-t border-border mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
                     <button
                       type="button"
                       onClick={() => handleCopyCitation(sourcePassages[highlightedPassage - 1].section, sourcePassages[highlightedPassage - 1].similarity)}
-                      className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-muted/60 hover:bg-muted text-foreground border border-border/70 transition-colors cursor-pointer"
+                      className="inline-flex items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
                     >
                       <Copy className="h-3 w-3" /> Copy Coordinate
                     </button>
-                    <span className="text-xs font-mono text-muted-foreground flex items-center gap-1.5 font-medium">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                      Verified Exact Match
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleTabChange("quiz");
+                        toast.success("Practice Quiz loaded from highlighted passage");
+                      }}
+                      className="inline-flex items-center justify-center gap-1.5 text-xs px-3.5 py-1.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-semibold shadow-xs hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <ListChecks className="size-3.5" />
+                      <span>Generate quiz from passage</span>
+                    </button>
                   </div>
                 </div>
               </div>
