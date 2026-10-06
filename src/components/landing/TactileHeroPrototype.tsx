@@ -34,11 +34,11 @@ interface ModeTab {
 }
 
 const MODES: ModeTab[] = [
-  { id: "notes", label: "Structured Notes", icon: FileText, badge: "LaTeX & Outlines" },
-  { id: "cards", label: "Spaced Cards", icon: Layers, badge: "Leitner Repetition" },
-  { id: "quiz", label: "Practice Quiz", icon: ListChecks, badge: "Instant Proofs" },
-  { id: "podcast", label: "Audio Recap", icon: Headphones, badge: "2-Host Studio" },
-  { id: "chat", label: "Cited Copilot", icon: MessagesSquare, badge: "Passage Anchors" },
+  { id: "notes", label: "Structured Notes", icon: FileText, badge: "Understand ideas quickly" },
+  { id: "cards", label: "Flashcards", icon: Layers, badge: "Retain concepts over time" },
+  { id: "quiz", label: "Practice Quiz", icon: ListChecks, badge: "Test comprehension" },
+  { id: "podcast", label: "Audio Recap", icon: Headphones, badge: "Review on the commute" },
+  { id: "chat", label: "Grounded Chat", icon: MessagesSquare, badge: "Source-backed answers" },
 ];
 
 export function TactileHeroPrototype() {
@@ -73,16 +73,14 @@ export function TactileHeroPrototype() {
           {/* Eyebrow Pill */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/10 border border-slate-900/10 dark:border-white/15 text-slate-900 dark:text-white text-xs font-semibold shadow-xs">
             <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Multimodal Study Workspace</span>
-            <span className="text-slate-300 dark:text-slate-600">•</span>
-            <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">1 Source → 5 Modes</span>
+            <span>AI study workspace for serious learning</span>
           </div>
 
           {/* Headline */}
           <h1 className="text-[clamp(34px,4.4vw,56px)] font-extrabold tracking-tight leading-[1.08] text-slate-900 dark:text-white font-display text-balance">
-            Turn Any Dense Source Into{" "}
+            Turn textbooks, lectures, and research papers into{" "}
             <span className="text-primary relative inline-block">
-              5 Verified Study Modes.
+              verified study materials.
               <svg
                 className="absolute -bottom-1.5 left-0 w-full h-2 text-primary/40"
                 viewBox="0 0 100 20"
@@ -94,19 +92,17 @@ export function TactileHeroPrototype() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300 max-w-[520px]">
-            Ingest dense textbooks, 2-hour lecture recordings, or research papers. Source.io derivers
-            streamed Markdown notes with LaTeX, Leitner flashcards, interactive quizzes, 2-host audio recaps,
-            and sentence-level cited chat.
+          <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300 max-w-[540px]">
+            Source.io converts dense documents and recordings into structured notes, flashcards, practice quizzes, audio recaps, and citation-grounded chat—with every answer linked back to its source.
           </p>
 
-          {/* Action CTAs: Direct Demo & Signup */}
+          {/* Action CTAs: Consistent Start free & See a live demo */}
           <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
             <Link
               href={mounted && user ? "/app" : "/auth"}
               className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 active:scale-98 text-white dark:text-slate-950 font-semibold text-sm shadow-tactile-pill transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
-              <span>{mounted && user ? "Open study workspace" : "Get started free"}</span>
+              <span>{mounted && user ? "Open workspace" : "Start free"}</span>
               <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
 
@@ -115,26 +111,23 @@ export function TactileHeroPrototype() {
               className="px-5 py-3 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-98 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-black/[0.08] dark:border-white/10 shadow-tactile-pill transition-all flex items-center justify-center gap-2 cursor-pointer group"
             >
               <Sparkles className="size-4 text-amber-500" />
-              <span>Explore live demo</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-slate-500">
-                No sign up
-              </span>
+              <span>See a live demo</span>
             </Link>
           </div>
 
           {/* Trust Guarantees */}
-          <div className="pt-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
+          <div className="pt-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-emerald-500" />
-              <span>25 free AI actions / day</span>
+              <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-emerald-500" />
-              <span>3 saved document slots</span>
+              <span>25 free actions daily</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-emerald-500" />
-              <span>Zero credit card required</span>
+              <span>Zero-data retention</span>
             </div>
           </div>
         </div>
@@ -152,7 +145,7 @@ export function TactileHeroPrototype() {
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate font-display">
                     Introduction to Quantum Computing
                   </h4>
-                  <p className="text-[10px] font-mono text-slate-400">PDF • 38 pages • 48 vector coordinates</p>
+                  <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400">PDF • 38 pages • Grounded study materials</p>
                 </div>
               </div>
 
