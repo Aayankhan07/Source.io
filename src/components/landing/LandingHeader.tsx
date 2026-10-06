@@ -57,19 +57,19 @@ export function LandingHeader() {
         {/* Center Floating Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 lg:gap-2 text-[13px] font-medium text-slate-600 dark:text-slate-300">
           <a
-            href="#workbench"
+            href="#modes"
             className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
           >
-            5 Study Modes
+            Product
           </a>
           <a
-            href="#dashboard"
+            href="#how-it-works"
             className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
           >
-            Command Center
+            How it works
           </a>
           <a
-            href="#grounding"
+            href="#verification"
             className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             Verification
@@ -78,7 +78,7 @@ export function LandingHeader() {
             href="#pricing"
             className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
           >
-            <span>Free Plan</span>
+            <span>Free plan</span>
             <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
               25/day
             </span>
@@ -91,25 +91,15 @@ export function LandingHeader() {
           </a>
         </nav>
 
-        {/* Right Action Controls: Direct Demo CTA, Sign In / Sign Up & Theme Toggle */}
+        {/* Right Action Controls: Sign In / Start Free & Theme Toggle */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
-          {/* Instant Demo Pill (No login needed) */}
-          <Link
-            href="/app/doc/demo-quantum"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100/80 hover:bg-slate-200/80 dark:bg-white/[0.08] dark:hover:bg-white/[0.12] transition-colors"
-            title="Instant Live Demo with Quantum Computing Notes"
-          >
-            <Sparkles className="size-3 text-amber-500" />
-            <span>Try Demo</span>
-          </Link>
-
           {/* Authentication & CTA */}
           {mounted && user ? (
             <Link
               href="/app"
               className="h-8 sm:h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <span>Workspace</span>
+              <span>Open workspace</span>
               <ArrowRight className="size-3.5" />
             </Link>
           ) : (
@@ -118,13 +108,13 @@ export function LandingHeader() {
                 href="/auth"
                 className="text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
               >
-                Sign In
+                Sign in
               </Link>
               <Link
                 href="/auth"
                 className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center justify-center cursor-pointer"
               >
-                Get Started
+                Start free
               </Link>
             </div>
           )}
@@ -169,34 +159,34 @@ export function LandingHeader() {
 
       {/* Floating Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 p-4 rounded-[28px] bg-white/95 dark:bg-[#151A22]/95 backdrop-blur-xl border border-black/[0.08] dark:border-white/10 shadow-tactile-dock flex flex-col gap-2.5 animate-in fade-in-50 slide-in-from-top-2 duration-150">
+        <div className="md:hidden mt-2 p-4 rounded-[28px] bg-white/95 dark:bg-[#151A22]/95 backdrop-blur-xl border border-black/[0.08] dark:border-white/10 shadow-tactile-dock flex flex-col gap-2 animate-in fade-in-50 slide-in-from-top-2 duration-150">
           <a
-            href="#workbench"
+            href="#modes"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
           >
-            5 Study Modes
+            Product
           </a>
           <a
-            href="#dashboard"
+            href="#how-it-works"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
           >
-            Command Center
+            How it works
           </a>
           <a
-            href="#grounding"
+            href="#verification"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
           >
-            Verification Engine
+            Verification
           </a>
           <a
             href="#pricing"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] flex items-center justify-between transition-colors"
           >
-            <span>Free Plan</span>
+            <span>Free plan</span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
               25/day
             </span>
@@ -209,13 +199,32 @@ export function LandingHeader() {
             FAQ
           </a>
           <div className="pt-2 border-t border-slate-100 dark:border-white/10 flex items-center gap-2">
-            <Link
-              href="/app/doc/demo-quantum"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200"
-            >
-              Try Instant Demo
-            </Link>
+            {mounted && user ? (
+              <Link
+                href="/app"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2.5 text-center rounded-full text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-950"
+              >
+                Open workspace
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/auth"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/auth"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-950"
+                >
+                  Start free
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
