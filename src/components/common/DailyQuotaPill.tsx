@@ -298,15 +298,15 @@ export function DailyQuotaPill() {
   // Alert glowing state styles
   const glowClasses = useMemo(() => {
     if (hasByok) {
-      return "border-emerald-500/40 text-emerald-950 dark:text-emerald-100 hover:border-emerald-500/60 shadow-[0_4px_16px_rgba(16,185,129,0.15)]";
+      return "!border-emerald-500/50 text-emerald-950 dark:text-emerald-100 hover:!border-emerald-500/70 shadow-[0_4px_16px_rgba(16,185,129,0.2)]";
     }
     if (remaining === 0) {
-      return "border-rose-500/60 shadow-[0_0_16px_rgba(244,63,94,0.35)] text-rose-900 dark:text-rose-200 animate-pulse";
+      return "!border-rose-500/60 shadow-[0_0_16px_rgba(244,63,94,0.35)] text-rose-900 dark:text-rose-200 animate-pulse";
     }
     if (remaining <= 3) {
-      return "border-amber-400/60 shadow-[0_0_14px_rgba(251,191,36,0.35)] text-amber-900 dark:text-amber-200";
+      return "!border-amber-400/60 shadow-[0_0_14px_rgba(251,191,36,0.35)] text-amber-900 dark:text-amber-200";
     }
-    return "border-white/80 dark:border-white/15 text-slate-800 dark:text-slate-100 hover:border-white dark:hover:border-white/30 shadow-[0_6px_24px_-2px_rgba(15,23,42,0.08),inset_0_1px_1.5px_rgba(255,255,255,0.95)] dark:shadow-[0_8px_24px_-2px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)]";
+    return "text-slate-800 dark:text-slate-100";
   }, [hasByok, remaining]);
 
   return (
@@ -340,8 +340,7 @@ export function DailyQuotaPill() {
             }}
             className={cn(
               "group h-8 px-3 rounded-full flex items-center gap-1.5 cursor-grab active:cursor-grabbing",
-              "bg-white/50 hover:bg-white/70 dark:bg-slate-900/40 dark:hover:bg-slate-900/60",
-              "backdrop-blur-xl backdrop-saturate-150 border",
+              "glass-tactile-pill",
               "hover:scale-105 active:scale-95 transition-all text-xs font-semibold",
               glowClasses
             )}
