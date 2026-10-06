@@ -3,10 +3,10 @@
 import { LandingHeader } from "./LandingHeader";
 import { TactileHeroPrototype } from "./TactileHeroPrototype";
 import { IngestionRibbon } from "./IngestionRibbon";
-import { InteractiveWorkflowDemo } from "./InteractiveWorkflowDemo";
-import { TactileDashboardShowcase } from "./TactileDashboardShowcase";
-import { FeatureMotionCards } from "./FeatureMotionCards";
 import { KnowledgePipeline } from "./KnowledgePipeline";
+import { InteractiveWorkflowDemo } from "./InteractiveWorkflowDemo";
+import { FeatureMotionCards } from "./FeatureMotionCards";
+import { TactileDashboardShowcase } from "./TactileDashboardShowcase";
 import { FreeTierTransparency } from "./FreeTierTransparency";
 import { CredibilityAndComparison } from "./CredibilityAndComparison";
 import { LandingFooter } from "./LandingFooter";
@@ -14,27 +14,27 @@ import { LandingFooter } from "./LandingFooter";
 export function LandingPage() {
   return (
     <div className="min-h-[100dvh] bg-tactile-canvas text-foreground font-sans relative overflow-x-clip transition-colors duration-200">
-      {/* Ambient Continuous Atmospheric Halos (Luminous, subtle sky and warm amber tones) */}
+      {/* Ambient Continuous Atmospheric Halos (Soft, subtle sky and warm amber accents) */}
       <div
-        className="absolute top-0 right-0 w-full lg:w-[65%] h-[800px] -z-10 pointer-events-none opacity-60 dark:opacity-30"
+        className="absolute top-0 right-0 w-full lg:w-[65%] h-[700px] -z-10 pointer-events-none opacity-50 dark:opacity-20"
         style={{
-          background: "radial-gradient(ellipse 90% 70% at 75% 25%, rgba(14,165,233,0.12) 0%, rgba(245,158,11,0.08) 45%, transparent 75%)",
+          background: "radial-gradient(ellipse 90% 70% at 75% 25%, rgba(14,165,233,0.1) 0%, rgba(245,158,11,0.06) 45%, transparent 75%)",
           filter: "blur(60px)",
         }}
         aria-hidden="true"
       />
       <div
-        className="absolute top-[1600px] left-0 w-full lg:w-[55%] h-[750px] -z-10 pointer-events-none opacity-50 dark:opacity-20"
+        className="absolute top-[1400px] left-0 w-full lg:w-[55%] h-[650px] -z-10 pointer-events-none opacity-40 dark:opacity-15"
         style={{
-          background: "radial-gradient(ellipse 80% 60% at 20% 50%, rgba(245,158,11,0.08) 0%, rgba(14,165,233,0.07) 50%, transparent 75%)",
+          background: "radial-gradient(ellipse 80% 60% at 20% 50%, rgba(245,158,11,0.06) 0%, rgba(14,165,233,0.05) 50%, transparent 75%)",
           filter: "blur(70px)",
         }}
         aria-hidden="true"
       />
       <div
-        className="absolute top-[3200px] right-0 w-full lg:w-[60%] h-[800px] -z-10 pointer-events-none opacity-50 dark:opacity-25"
+        className="absolute top-[2800px] right-0 w-full lg:w-[60%] h-[700px] -z-10 pointer-events-none opacity-40 dark:opacity-20"
         style={{
-          background: "radial-gradient(ellipse 85% 65% at 80% 50%, rgba(139,92,246,0.08) 0%, rgba(14,165,233,0.06) 50%, transparent 80%)",
+          background: "radial-gradient(ellipse 85% 65% at 80% 50%, rgba(14,165,233,0.07) 0%, rgba(245,158,11,0.05) 50%, transparent 80%)",
           filter: "blur(70px)",
         }}
         aria-hidden="true"
@@ -43,33 +43,33 @@ export function LandingPage() {
       {/* 1. Floating Capsule App-Style Navigation Header */}
       <LandingHeader />
 
-      {/* Main Fluid Container */}
+      {/* Main Fluid Container (Linear 9-Section Flow) */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 pb-16 pt-4">
-        {/* 2. Hero Section: Authentic 5-Mode Synthesis & Live Demo CTAs */}
+        {/* Section 1: Hero Section with clear promise, CTAs, trust line & quantum computing preview */}
         <TactileHeroPrototype />
 
-        {/* 3. Ingestion Formats Floating Ribbon */}
+        {/* Section 2: Supported Ingestion Formats */}
         <IngestionRibbon />
 
-        {/* 4. Interactive Study Workbench (The 5 Modalities Deep Dive) */}
-        <InteractiveWorkflowDemo />
-
-        {/* 5. Study Command Center (Performance Curves, Weekly Goals & Library) */}
-        <TactileDashboardShowcase />
-
-        {/* 6. Verification & Grounding Engine Bento */}
-        <FeatureMotionCards />
-
-        {/* 7. Continuous 4-Stage Knowledge Pipeline */}
+        {/* Section 3: How It Works (4-Step Workflow) */}
         <KnowledgePipeline />
 
-        {/* 8. 100% Free Architecture & Daily Quota Transparency */}
+        {/* Section 4: Product Demo (5 Benefit-Driven Study Modes) */}
+        <InteractiveWorkflowDemo />
+
+        {/* Section 5: Verification & Grounding (Page coordinates, audio timestamps, zero retention) */}
+        <FeatureMotionCards />
+
+        {/* Section 6: Retention & Command Center (Spaced repetition curves + study recommendations) */}
+        <TactileDashboardShowcase />
+
+        {/* Section 7: Pricing & Free Plan Transparency (3 core pillars + daily reset) */}
         <FreeTierTransparency />
 
-        {/* 9. Guarantees, Domain Comparison & FAQ */}
+        {/* Section 8: Use Cases, Capability Comparison, 5 Core FAQs & Final CTA */}
         <CredibilityAndComparison />
 
-        {/* 10. Modern Tactile Footer */}
+        {/* Section 9: Modern Tactile Footer */}
         <LandingFooter />
       </main>
     </div>
