@@ -29,13 +29,11 @@ export const VIEWPORT = {
 export const reveal: Variants = {
   hidden: {
     opacity: 0,
-    y: 10,
-    filter: "blur(4px)",
+    y: 8,
   },
   show: {
     opacity: 1,
     y: 0,
-    filter: "none", // CRITICAL: Never blur(0px) to prevent subpixel font blur
     transition: ENTER,
   },
 };
