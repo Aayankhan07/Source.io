@@ -3,20 +3,15 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
-  Sparkles, 
-  Key, 
-  Clock, 
   Zap, 
+  Database, 
   ShieldCheck, 
+  Clock, 
   Check, 
-  Layers, 
   ArrowRight,
-  Database,
-  Cpu,
-  Infinity as InfinityIcon
+  Key
 } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
-import { cn } from "@/lib/utils";
 
 export function FreeTierTransparency() {
   // Live calculation of time until 00:00 UTC
@@ -44,30 +39,24 @@ export function FreeTierTransparency() {
     return () => clearInterval(interval);
   }, []);
 
-  const features = [
+  const coreBenefits = [
     {
-      title: "25 Free Actions Every 24h",
-      desc: "Enough daily allowance to ingest a full textbook chapter, stream notes, derive flashcards, generate a quiz, and run cited chat.",
+      title: "25 free AI actions every day",
+      desc: "Enough daily allowance to ingest textbooks, generate notes, derive flashcards, take quizzes, and run cited chat.",
       metric: "25 / day",
       icon: Zap,
     },
     {
-      title: "3 Active Workspace Slots",
+      title: "3 active source workspaces",
       desc: "Maintain up to 3 dense source documents concurrently with real-time vector embeddings and instant switching.",
       metric: "3 Sources",
       icon: Database,
     },
     {
-      title: "Sub-Second Groq Llama 3.3",
-      desc: "Notes and derivations stream at 300+ tokens per second. No waiting minutes for complex study assets to generate.",
-      metric: "70B Model",
-      icon: Cpu,
-    },
-    {
-      title: "Optional Unlimited BYOK",
-      desc: "Power learners can input their own free Groq API key in Settings to bypass all daily quota limits forever.",
-      metric: "Unlimited",
-      icon: InfinityIcon,
+      title: "Zero-data retention guarantee",
+      desc: "Your research papers and personal notes are never stored or used to train third-party AI models.",
+      metric: "100% Private",
+      icon: ShieldCheck,
     },
   ];
 
@@ -75,48 +64,57 @@ export function FreeTierTransparency() {
     <section id="pricing" className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24">
       {/* Section Header */}
       <SectionHeading
-        badge="Zero Paywall Games"
+        badge="Free Plan"
         badgeTone="amber"
-        line1="A genuinely generous"
-        line2="free study architecture."
-        description="Source.io is designed for students, researchers, and professionals who need high-velocity study tools without predatory paywalls or bait-and-switch trials."
+        line1="Start free."
+        line2="No credit card required."
+        description="Everything you need to master your current coursework, with generous daily allowances that refresh every 24 hours."
         align="left"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-8">
-        {/* Left Column: Feature Highlights */}
-        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {features.map((feat) => {
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-8">
+        {/* Left Column: 3 Core Benefits */}
+        <div className="lg:col-span-7 flex flex-col justify-between gap-4">
+          {coreBenefits.map((feat) => {
             const Icon = feat.icon;
             return (
               <div
                 key={feat.title}
-                className="p-5 sm:p-6 rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.06] dark:border-white/10 shadow-tactile-card flex flex-col justify-between select-none hover:-translate-y-1 transition-transform duration-200"
+                className="p-5 sm:p-6 rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 shadow-tactile-card flex items-start justify-between gap-4 select-none hover:-translate-y-0.5 transition-transform duration-200"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="size-10 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                      <Icon className="size-5" />
-                    </div>
-                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200">
-                      {feat.metric}
-                    </span>
+                <div className="flex items-start gap-4">
+                  <div className="size-11 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <Icon className="size-5" />
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white font-display mb-1.5">
-                    {feat.title}
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    {feat.desc}
-                  </p>
+                  <div>
+                    <h4 className="text-base font-bold text-slate-900 dark:text-white font-display mb-1">
+                      {feat.title}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {feat.desc}
+                    </p>
+                  </div>
                 </div>
+                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200 shrink-0">
+                  {feat.metric}
+                </span>
               </div>
             );
           })}
+
+          {/* Optional BYOK Pill for Technical Learners */}
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
+            <div className="flex items-center gap-2">
+              <Key className="size-4 text-slate-500" />
+              <span>Need unlimited volume? Bring your own Groq API key in Settings.</span>
+            </div>
+            <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Optional BYOK</span>
+          </div>
         </div>
 
         {/* Right Column: In-App Tactile Quota Pill Showcase */}
-        <div className="lg:col-span-5 w-full">
-          <div className="p-6 sm:p-7 rounded-[36px] bg-gradient-to-b from-slate-900 to-slate-950 text-white border border-white/10 shadow-tactile-dock flex flex-col justify-between relative overflow-hidden select-none">
+        <div className="lg:col-span-5 w-full flex flex-col">
+          <div className="h-full p-6 sm:p-7 rounded-[32px] sm:rounded-[36px] bg-slate-950 text-white border border-slate-800 shadow-2xl flex flex-col justify-between relative overflow-hidden select-none">
             {/* Ambient Corner Flare */}
             <div className="absolute top-0 right-0 size-48 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
@@ -126,7 +124,7 @@ export function FreeTierTransparency() {
                   <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Daily Quota System</span>
                 </div>
-                <span className="text-xs font-mono text-amber-400">100% Free Forever</span>
+                <span className="text-xs font-mono text-emerald-400 font-semibold">Refreshes Daily</span>
               </div>
 
               <div>
@@ -134,7 +132,7 @@ export function FreeTierTransparency() {
                   Transparent Daily Refresh
                 </h3>
                 <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  Your 25 study generations reset automatically every day at midnight UTC.
+                  Your 25 study actions reset automatically every day at midnight UTC.
                 </p>
               </div>
 
@@ -170,23 +168,23 @@ export function FreeTierTransparency() {
                   <div className="size-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
                     <Check className="size-2.5" />
                   </div>
-                  <span>Instant guest mode with preloaded quantum notes</span>
+                  <span>Full access to all 5 study modes</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="size-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
                     <Check className="size-2.5" />
                   </div>
-                  <span>Bring your own Groq key for unlimited power use</span>
+                  <span>Instant guest demo with quantum notes</span>
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Action Button: Consistent Start free */}
               <div className="pt-2">
                 <Link
                   href="/auth"
-                  className="w-full py-3 px-4 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer"
+                  className="w-full py-3.5 px-4 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer"
                 >
-                  <span>Start studying now</span>
+                  <span>Start free</span>
                   <ArrowRight className="size-4" />
                 </Link>
               </div>
