@@ -12,8 +12,10 @@ import {
   Key
 } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
+import { motion, useReducedMotion } from "framer-motion";
 
 export function FreeTierTransparency() {
+  const shouldReduceMotion = useReducedMotion();
   // Live calculation of time until 00:00 UTC
   const [timeUntilReset, setTimeUntilReset] = useState<string>("");
 
@@ -61,7 +63,14 @@ export function FreeTierTransparency() {
   ];
 
   return (
-    <section id="pricing" className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24">
+    <motion.section 
+      id="pricing" 
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24"
+    >
       {/* Section Header */}
       <SectionHeading
         badge="Free Plan"
@@ -192,6 +201,6 @@ export function FreeTierTransparency() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

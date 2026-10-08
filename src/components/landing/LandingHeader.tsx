@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export function LandingHeader() {
   const { user } = useAuth();
@@ -84,13 +85,19 @@ export function LandingHeader() {
         <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Authentication & CTA */}
           {user ? (
-            <Link
-              href="/app"
-              className="h-8 sm:h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+            <motion.div
+              whileHover={{ scale: 1.025, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
-              <span>Open workspace</span>
-              <ArrowRight className="size-3.5" />
-            </Link>
+              <Link
+                href="/app"
+                className="h-8 sm:h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>Open workspace</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </motion.div>
           ) : (
             <div className="flex items-center gap-1.5">
               <Link
@@ -99,12 +106,18 @@ export function LandingHeader() {
               >
                 Sign in
               </Link>
-              <Link
-                href="/auth"
-                className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center justify-center cursor-pointer"
+              <motion.div
+                whileHover={{ scale: 1.025, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
-                Start free
-              </Link>
+                <Link
+                  href="/auth"
+                  className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill transition-colors inline-flex items-center justify-center cursor-pointer"
+                >
+                  Start free
+                </Link>
+              </motion.div>
             </div>
           )}
 

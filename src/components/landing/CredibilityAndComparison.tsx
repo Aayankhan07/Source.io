@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Check, X, ArrowRight, BookOpen, GraduationCap, Microscope, Briefcase, Users } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SectionHeading } from "./SectionHeading";
+import { motion, useReducedMotion } from "framer-motion";
 
 export function CredibilityAndComparison() {
+  const shouldReduceMotion = useReducedMotion();
   const [activePersona, setActivePersona] = useState<"students" | "researchers" | "professionals" | "teams">("students");
 
   const personas = {
@@ -303,7 +305,14 @@ export function CredibilityAndComparison() {
       </section>
 
       {/* 3. Frequently Asked Questions */}
-      <section id="faq" className="max-w-3xl mx-auto text-left w-full scroll-mt-24">
+      <motion.section 
+        id="faq" 
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.12 }}
+        transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="max-w-3xl mx-auto text-left w-full scroll-mt-24"
+      >
         <SectionHeading
           badge="FAQ"
           badgeTone="slate"
@@ -328,10 +337,16 @@ export function CredibilityAndComparison() {
             </AccordionItem>
           ))}
         </Accordion>
-      </section>
+      </motion.section>
 
       {/* 4. Final CTA Banner */}
-      <section className="text-center pb-6 w-full relative">
+      <motion.section 
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.12 }}
+        transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center pb-6 w-full relative"
+      >
         <div className="relative rounded-[36px] sm:rounded-[44px] bg-slate-950 text-white p-8 sm:p-16 shadow-2xl border border-slate-800 overflow-hidden">
           {/* Subtle Ambient Glow */}
           <div
@@ -353,23 +368,35 @@ export function CredibilityAndComparison() {
             </p>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <Link
-                href="/auth"
-                className="w-full sm:w-auto bg-white text-slate-950 font-bold text-sm px-8 py-3.5 rounded-full shadow-xl hover:bg-slate-100 active:scale-95 transition-all inline-flex items-center justify-center gap-2 cursor-pointer"
+              <motion.div
+                whileHover={{ scale: 1.025, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
-                <span>Start free</span>
-                <ArrowRight className="size-4" />
-              </Link>
-              <Link
-                href="/app/doc/demo-quantum"
-                className="w-full sm:w-auto border border-white/20 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-md active:scale-95 transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                <Link
+                  href="/auth"
+                  className="w-full sm:w-auto bg-white text-slate-950 font-bold text-sm px-8 py-3.5 rounded-full shadow-xl hover:bg-slate-100 transition-all inline-flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Start free</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.025, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
-                <span>See a live demo</span>
-              </Link>
+                <Link
+                  href="/app/doc/demo-quantum"
+                  className="w-full sm:w-auto border border-white/20 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-md transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>See a live demo</span>
+                </Link>
+              </motion.div>
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

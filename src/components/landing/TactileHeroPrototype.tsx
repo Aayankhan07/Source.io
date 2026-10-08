@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useTheme } from "@/hooks/use-theme";
 import {
@@ -43,7 +43,34 @@ const MODES: ModeTab[] = [
 export function TactileHeroPrototype() {
   const { user } = useAuth();
   const { mounted } = useTheme();
+  const shouldReduceMotion = useReducedMotion();
   const [activeMode, setActiveMode] = useState<HeroMode>("notes");
+
+  // Interactive 3D Tilt / Parallax Physics for Preview Card
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Smooth springs for rotation
+  const smoothMouseX = useSpring(mouseX, { stiffness: 220, damping: 25 });
+  const smoothMouseY = useSpring(mouseY, { stiffness: 220, damping: 25 });
+
+  // Map to subtle ±3deg tilt
+  const rotateX = useTransform(smoothMouseY, [-0.5, 0.5], [3, -3]);
+  const rotateY = useTransform(smoothMouseX, [-0.5, 0.5], [-3, 3]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (shouldReduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(xPct);
+    mouseY.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   // Interactive Card Flip state
   const [cardFlipped, setCardFlipped] = useState(false);
@@ -68,7 +95,12 @@ export function TactileHeroPrototype() {
 
       <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center w-full my-auto">
         {/* Left Column: Copy & Value Proposition */}
-        <div className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-left space-y-6 sm:space-y-8">
+        <motion.div 
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: shouldReduceMotion ? 0.3 : 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-left space-y-6 sm:space-y-8"
+        >
 
           {/* Headline */}
           <h1 className="text-[clamp(32px,3.8vw,50px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 dark:text-white font-display text-balance">
@@ -90,22 +122,34 @@ export function TactileHeroPrototype() {
             Extract notes, test comprehension, and cite every fact. Source.io converts dense documents and recordings into structured notes, flashcards, quizzes, audio recaps, and grounded chat—with every answer linked back to its source.
           </p>
 
-          {/* Action CTAs: Consistent Start free & See a live demo */}
+          {/* Action CTAs: Consistent Start free & See a live demo with Tactile Button Physics */}
           <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
-            <Link
-              href={mounted && user ? "/app" : "/auth"}
-              className="px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 active:scale-98 text-white dark:text-slate-950 font-semibold text-sm shadow-tactile-pill transition-all flex items-center justify-center gap-2 group cursor-pointer"
+            <motion.div
+              whileHover={{ scale: 1.025, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
-              <span>{mounted && user ? "Open workspace" : "Start free"}</span>
-              <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+              <Link
+                href={mounted && user ? "/app" : "/auth"}
+                className="px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-sm shadow-tactile-pill flex items-center justify-center gap-2 group cursor-pointer"
+              >
+                <span>{mounted && user ? "Open workspace" : "Start free"}</span>
+                <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </motion.div>
 
-            <Link
-              href="/app/doc/demo-quantum"
-              className="px-5 py-3.5 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-98 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-black/[0.08] dark:border-white/10 shadow-tactile-pill transition-all flex items-center justify-center gap-2 cursor-pointer group"
+            <motion.div
+              whileHover={{ scale: 1.025, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
-              <span>See a live demo</span>
-            </Link>
+              <Link
+                href="/app/doc/demo-quantum"
+                className="px-5 py-3.5 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-black/[0.08] dark:border-white/10 shadow-tactile-pill flex items-center justify-center gap-2 cursor-pointer group"
+              >
+                <span>See a live demo</span>
+              </Link>
+            </motion.div>
           </div>
 
           {/* Trust Guarantees */}
@@ -123,18 +167,32 @@ export function TactileHeroPrototype() {
               <span>Zero-data retention</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Right Column: Balanced preview frame */}
-        <div className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end">
-          <div className="w-full max-w-[620px] rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.08] dark:border-white/10 shadow-tactile-dock bg-white dark:bg-slate-900/90 p-2 sm:p-2.5 transition-all">
+        {/* Right Column: Balanced preview frame with directional slide and subtle 3D tilt parallax */}
+        <motion.div 
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: shouldReduceMotion ? 0.3 : 0.85, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end [perspective:1000px]"
+        >
+          <motion.div 
+            style={{
+              rotateX: shouldReduceMotion ? 0 : rotateX,
+              rotateY: shouldReduceMotion ? 0 : rotateY,
+              transformStyle: "preserve-3d",
+            }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className="w-full max-w-[620px] rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.08] dark:border-white/10 shadow-tactile-dock bg-white dark:bg-slate-900/90 p-2 sm:p-2.5 transition-shadow hover:shadow-2xl cursor-default"
+          >
             <img
               src="/hero-image-2.jpg"
               alt="Source.io study workspace preview"
-              className="w-full h-auto aspect-[16/11] rounded-[20px] sm:rounded-[28px] object-cover"
+              className="w-full h-auto aspect-[16/11] rounded-[20px] sm:rounded-[28px] object-cover pointer-events-none select-none"
             />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

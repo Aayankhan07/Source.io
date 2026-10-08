@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { 
   FileText, Headphones, MessagesSquare, ListChecks, Layers,
   Play, Pause, Check, X, RotateCcw, Send, BookmarkCheck,
@@ -187,8 +187,28 @@ export function InteractiveWorkflowDemo({
     });
   };
 
+  const shouldReduceMotion = useReducedMotion();
+
+  const tabsList = [
+    { value: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Performance chart, goals & study sources" },
+    { value: "library", label: "Library", icon: Library, title: "Study sources and library overview" },
+    { value: "notes", label: "Structured Notes", icon: FileText, title: "Understand main ideas quickly" },
+    { value: "flashcards", label: "Flashcards", icon: Layers, title: "Retain concepts over time" },
+    { value: "quiz", label: "Practice Quiz", icon: ListChecks, title: "Test whether you actually understand" },
+    { value: "podcast", label: "Audio Recap", icon: Headphones, title: "Review while walking or commuting" },
+    { value: "chat", label: "Grounded Chat", icon: MessagesSquare, title: "Ask questions with source-backed answers" },
+  ];
+
   return (
-    <section id="modes" data-alias="simulator" className="py-8 md:py-14 relative z-10 w-full scroll-mt-24">
+    <motion.section 
+      id="modes" 
+      data-alias="simulator" 
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="py-8 md:py-14 relative z-10 w-full scroll-mt-24"
+    >
       <SectionHeading
         badge="5 Study Modes"
         badgeTone="blue"
@@ -201,63 +221,35 @@ export function InteractiveWorkflowDemo({
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         {/* Tab Switcher */}
         <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <TabsList className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-white/10 p-1.5 rounded-full h-auto gap-1.5 inline-flex shrink-0 shadow-tactile-pill">
-            <TabsTrigger 
-              value="dashboard" 
-              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
-              title="Performance chart, goals & study sources"
-            >
-              <LayoutDashboard className="size-4 shrink-0" />
-              <span>Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="library" 
-              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
-              title="Study sources and library overview"
-            >
-              <Library className="size-4 shrink-0" />
-              <span>Library</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="notes" 
-              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
-              title="Understand main ideas quickly"
-            >
-              <FileText className="size-4 shrink-0" />
-              <span>Structured Notes</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="flashcards" 
-              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
-              title="Retain concepts over time"
-            >
-              <Layers className="size-4 shrink-0" />
-              <span>Flashcards</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="quiz" 
-              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
-              title="Test whether you actually understand"
-            >
-              <ListChecks className="size-4 shrink-0" />
-              <span>Practice Quiz</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="podcast" 
-              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
-              title="Review while walking or commuting"
-            >
-              <Headphones className="size-4 shrink-0" />
-              <span>Audio Recap</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="chat" 
-              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
-              title="Ask questions with source-backed answers"
-            >
-              <MessagesSquare className="size-4 shrink-0" />
-              <span>Grounded Chat</span>
-            </TabsTrigger>
+          <TabsList className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-white/10 p-1.5 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-tactile-pill relative">
+            {tabsList.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = currentTab === tab.value;
+              return (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="relative rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-colors focus-visible:outline-none group cursor-pointer data-[state=active]:bg-transparent data-[state=active]:text-primary-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground"
+                  title={tab.title}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeTabPill"
+                      className="absolute inset-0 rounded-full bg-primary shadow-tactile-pill -z-0"
+                      transition={
+                        shouldReduceMotion
+                          ? { duration: 0 }
+                          : { type: "spring", stiffness: 450, damping: 32 }
+                      }
+                    />
+                  )}
+                  <span className="relative z-10 inline-flex items-center gap-2">
+                    <Icon className="size-4 shrink-0" />
+                    <span>{tab.label}</span>
+                  </span>
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
         </div>
 
@@ -547,6 +539,6 @@ export function InteractiveWorkflowDemo({
           </div>
         </div>
       </Tabs>
-    </section>
+    </motion.section>
   );
 }

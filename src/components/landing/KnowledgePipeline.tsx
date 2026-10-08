@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 
 const STAGES = [
@@ -30,6 +31,30 @@ const STAGES = [
 ];
 
 export function KnowledgePipeline() {
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 22 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { 
+        duration: shouldReduceMotion ? 0.25 : 0.6, 
+        ease: [0.16, 1, 0.3, 1] as [number, number, number, number] 
+      },
+    },
+  };
   return (
     <section id="how-it-works" className="py-12 md:py-16 relative z-10 mx-auto scroll-mt-24 w-full">
       <SectionHeading
@@ -41,11 +66,18 @@ export function KnowledgePipeline() {
         align="center"
       />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 text-left"
+      >
         {STAGES.map((stage) => {
           return (
-            <div 
+            <motion.div 
               key={stage.title}
+              variants={cardVariants}
               className="bg-white dark:bg-slate-900/90 rounded-[28px] sm:rounded-[32px] border border-black/[0.06] dark:border-white/10 p-6 sm:p-7 flex flex-col justify-between shadow-tactile-card hover:shadow-tactile-dock hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden group"
             >
               <div className="relative z-10">
@@ -67,10 +99,10 @@ export function KnowledgePipeline() {
                   {stage.metric}
                 </span>
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </section>
   );
 }
