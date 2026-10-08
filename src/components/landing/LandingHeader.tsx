@@ -5,12 +5,15 @@ import Link from "next/link";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 export function LandingHeader() {
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 280, damping: 30, restDelta: 0.001 });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,12 +27,17 @@ export function LandingHeader() {
     <header className="fixed top-3.5 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] sm:w-[calc(100%-3rem)] max-w-5xl select-none transition-all duration-300">
       <div
         className={cn(
-          "w-full rounded-full px-3 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between transition-all duration-300",
+          "w-full rounded-full px-3 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between transition-all duration-300 relative overflow-hidden",
           "bg-white/90 dark:bg-[#151A22]/90 backdrop-blur-xl",
           "border border-black/[0.06] dark:border-white/10",
           scrolled ? "shadow-tactile-dock" : "shadow-tactile-pill"
         )}
       >
+        {/* Subtle Spring-Damped Scroll Progress Bar along header bottom */}
+        <motion.div
+          style={{ scaleX }}
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary origin-left pointer-events-none opacity-85 z-20"
+        />
         {/* Brand Logo with App's Geometric Box Emblem */}
         <Link
           href="/"

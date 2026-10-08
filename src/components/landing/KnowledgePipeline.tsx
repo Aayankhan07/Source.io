@@ -78,8 +78,24 @@ export function KnowledgePipeline() {
             <motion.div 
               key={stage.title}
               variants={cardVariants}
-              className="bg-white dark:bg-slate-900/90 rounded-[28px] sm:rounded-[32px] border border-black/[0.06] dark:border-white/10 p-6 sm:p-7 flex flex-col justify-between shadow-tactile-card hover:shadow-tactile-dock hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden group"
+              onMouseMove={(e) => {
+                if (shouldReduceMotion) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
+                e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
+              }}
+              className="bg-white dark:bg-slate-900/90 rounded-[28px] sm:rounded-[32px] border border-black/[0.06] dark:border-white/10 p-6 sm:p-7 flex flex-col justify-between shadow-tactile-card hover:shadow-tactile-dock hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden group cursor-default"
             >
+              {/* Interactive Spotlight Hover Glow */}
+              <div 
+                className="pointer-events-none absolute -inset-px rounded-[28px] sm:rounded-[32px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+                style={{
+                  background: "radial-gradient(400px circle at var(--mouse-x, 100px) var(--mouse-y, 100px), rgba(14, 165, 233, 0.08), transparent 70%)"
+                }}
+              />
+
               <div className="relative z-10">
                 <div className="mb-4">
                   <span className="inline-block text-lg sm:text-xl font-extrabold font-display text-slate-900 dark:text-white tracking-tight">

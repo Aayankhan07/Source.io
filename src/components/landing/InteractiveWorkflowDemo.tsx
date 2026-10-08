@@ -315,142 +315,284 @@ export function InteractiveWorkflowDemo({
             </div>
           </div>
 
-          {/* Interactive Workspace Body */}
+          {/* Interactive Workspace Body with silky tab cross-fade */}
           <div className="p-5 sm:p-8 min-h-[380px]">
-            {/* TAB: DASHBOARD PREVIEW */}
-            <TabsContent value="dashboard" className="mt-0 focus-visible:outline-none">
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                      <LayoutDashboard className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Central Workspace Dashboard
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">Performance charts, weekly goals progress, and quick source access</p>
-                  </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
-                    Live UI Preview
-                  </span>
-                </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTab}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10, filter: shouldReduceMotion ? "none" : "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -8, filter: shouldReduceMotion ? "none" : "blur(4px)" }}
+                transition={{ duration: shouldReduceMotion ? 0.15 : 0.28, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {/* TAB: DASHBOARD PREVIEW */}
+                <TabsContent value="dashboard" forceMount={currentTab === "dashboard" ? true : undefined} className="mt-0 focus-visible:outline-none">
+                  {currentTab === "dashboard" && (
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                            <LayoutDashboard className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Central Workspace Dashboard
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">Performance charts, weekly goals progress, and quick source access</p>
+                        </div>
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
+                          Live UI Preview
+                        </span>
+                      </div>
 
-                <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
-                  <img
-                    src="/dashboard-preview.png"
-                    alt="Source.io Dashboard Preview"
-                    className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
-                  />
-                </div>
-              </div>
-            </TabsContent>
+                      <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
+                        <img
+                          src="/dashboard-preview.png"
+                          alt="Source.io Dashboard Preview"
+                          className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
 
-            {/* TAB: LIBRARY PREVIEW */}
-            <TabsContent value="library" className="mt-0 focus-visible:outline-none">
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                      <Library className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Study Sources &amp; Library
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">All uploaded textbooks, lecture recordings, papers, and YouTube videos</p>
-                  </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
-                    Multi-Format Index
-                  </span>
-                </div>
+                {/* TAB: LIBRARY PREVIEW */}
+                <TabsContent value="library" forceMount={currentTab === "library" ? true : undefined} className="mt-0 focus-visible:outline-none">
+                  {currentTab === "library" && (
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                            <Library className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Study Sources &amp; Library
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">All uploaded textbooks, lecture recordings, papers, and YouTube videos</p>
+                        </div>
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
+                          Multi-Format Index
+                        </span>
+                      </div>
 
-                <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
-                  <img
-                    src="/library-preview.png"
-                    alt="Source.io Study Sources and Library Preview"
-                    className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
-                  />
-                </div>
-              </div>
-            </TabsContent>
+                      <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
+                        <img
+                          src="/library-preview.png"
+                          alt="Source.io Study Sources and Library Preview"
+                          className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
 
-            {/* TAB: STRUCTURED NOTES */}
-            <TabsContent value="notes" className="mt-0 focus-visible:outline-none">
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Structured Notes &amp; Copilot
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">AI-synthesized lecture outlines, quantum mechanics notes, and verified Copilot</p>
-                  </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
-                    Verified Notes
-                  </span>
-                </div>
+                {/* TAB: STRUCTURED NOTES */}
+                <TabsContent value="notes" forceMount={currentTab === "notes" ? true : undefined} className="mt-0 focus-visible:outline-none">
+                  {currentTab === "notes" && (
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Structured Notes &amp; Copilot
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">AI-synthesized lecture outlines, quantum mechanics notes, and verified Copilot</p>
+                        </div>
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
+                          Verified Notes
+                        </span>
+                      </div>
 
-                <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
-                  <img
-                    src="/notes-preview.png"
-                    alt="Source.io Structured Notes Preview"
-                    className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
-                  />
-                </div>
-              </div>
-            </TabsContent>
+                      <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
+                        <img
+                          src="/notes-preview.png"
+                          alt="Source.io Structured Notes Preview"
+                          className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
 
-            {/* TAB 2: FLASHCARDS (PLACEHOLDER) */}
-            <TabsContent value="flashcards" className="mt-0 focus-visible:outline-none">
-              <div className="max-w-xl mx-auto py-12 px-4 text-center space-y-4">
-                <div className="size-16 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mx-auto shadow-xs">
-                  <Layers className="size-8" />
-                </div>
-                <h4 className="text-lg font-bold text-foreground">Interactive Flashcard Deck</h4>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Spaced repetition and active recall flashcards derived automatically from your uploaded notes and textbooks.
-                </p>
-                <div className="pt-2">
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
-                    <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
-                    Flashcards Module Placeholder
-                  </span>
-                </div>
-              </div>
-            </TabsContent>
+                {/* TAB 2: FLASHCARDS (3D TACTILE SPRING FLIP) */}
+                <TabsContent value="flashcards" forceMount={currentTab === "flashcards" ? true : undefined} className="mt-0 focus-visible:outline-none">
+                  {currentTab === "flashcards" && (
+                    <div className="max-w-xl mx-auto py-6 sm:py-8 px-2 text-center space-y-6">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
+                        <span>Card {cardIdx + 1} of {flashcardsData.length}</span>
+                        <div className="flex items-center gap-2">
+                          <span>Interval: {activeInterval}</span>
+                          <span>•</span>
+                          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{activeRetention} Retention</span>
+                        </div>
+                      </div>
 
-            {/* TAB 3: PRACTICE QUIZ (PLACEHOLDER) */}
-            <TabsContent value="quiz" className="mt-0 focus-visible:outline-none">
-              <div className="max-w-xl mx-auto py-12 px-4 text-center space-y-4">
-                <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto shadow-xs">
-                  <ListChecks className="size-8" />
-                </div>
-                <h4 className="text-lg font-bold text-foreground">Self-Grading Practice Quizzes</h4>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  AI-generated multiple choice and diagnostic quiz questions with instant verification and direct passage coordinates.
-                </p>
-                <div className="pt-2">
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
-                    <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
-                    Quiz Module Placeholder
-                  </span>
-                </div>
-              </div>
-            </TabsContent>
+                      {/* 3D Flip Card Container */}
+                      <div 
+                        className="w-full h-64 [perspective:1000px] cursor-pointer"
+                        onClick={() => setCardFlipped(!cardFlipped)}
+                      >
+                        <motion.div
+                          animate={{ rotateY: cardFlipped ? 180 : 0 }}
+                          transition={
+                            shouldReduceMotion 
+                              ? { duration: 0.15 } 
+                              : { type: "spring", stiffness: 280, damping: 24 }
+                          }
+                          className="w-full h-full relative [transform-style:preserve-3d] shadow-tactile-card rounded-[28px]"
+                        >
+                          {/* Front of Card */}
+                          <div className="absolute inset-0 [backface-visibility:hidden] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[28px] p-8 flex flex-col justify-between text-left">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                Question (Click to flip)
+                              </span>
+                              <Layers className="size-4 text-muted-foreground" />
+                            </div>
+                            <p className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white leading-relaxed">
+                              {flashcardsData[cardIdx].front}
+                            </p>
+                            <span className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
+                              <RotateCcw className="size-3.5 text-primary" /> Click card to reveal answer & formula
+                            </span>
+                          </div>
 
-            {/* TAB 4: AUDIO RECAP (PLACEHOLDER) */}
-            <TabsContent value="podcast" className="mt-0 focus-visible:outline-none">
-              <div className="max-w-xl mx-auto py-12 px-4 text-center space-y-4">
-                <div className="size-16 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center mx-auto shadow-xs">
-                  <Headphones className="size-8" />
-                </div>
-                <h4 className="text-lg font-bold text-foreground">2-Host Audio Recap &amp; Podcasts</h4>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Studio-quality audio walkthroughs breaking down complicated concepts into conversational, easy-to-digest podcast dialogues.
-                </p>
-                <div className="pt-2">
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
-                    <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
-                    Audio Recap Module Placeholder
-                  </span>
-                </div>
-              </div>
-            </TabsContent>
+                          {/* Back of Card */}
+                          <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-slate-950 text-white border border-slate-800 rounded-[28px] p-8 flex flex-col justify-between text-left shadow-2xl">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                Answer & Coordinate
+                              </span>
+                              <BookmarkCheck className="size-4 text-emerald-400" />
+                            </div>
+                            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-mono">
+                              {flashcardsData[cardIdx].back}
+                            </p>
+                            <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800 font-mono">
+                              <span>Page 4 • §1.3 • 97% Match</span>
+                              <span className="text-emerald-400 font-bold">Space Repetition Sync</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </div>
 
-            {/* TAB 5: GROUNDED CHAT */}
-            <TabsContent value="chat" className="mt-0 focus-visible:outline-none">
+                      {/* Card Switch Controls */}
+                      <div className="flex items-center justify-center gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCardFlipped(false);
+                            setCardIdx((prev) => (prev > 0 ? prev - 1 : flashcardsData.length - 1));
+                          }}
+                          className="px-4 py-2 rounded-full border border-border bg-white dark:bg-slate-900 hover:bg-slate-100 text-xs font-semibold cursor-pointer transition-all active:scale-95"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCardFlipped(!cardFlipped);
+                          }}
+                          className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-xs cursor-pointer transition-all active:scale-95"
+                        >
+                          {cardFlipped ? "Show Prompt" : "Flip Answer"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCardFlipped(false);
+                            setCardIdx((prev) => (prev < flashcardsData.length - 1 ? prev + 1 : 0));
+                          }}
+                          className="px-4 py-2 rounded-full border border-border bg-white dark:bg-slate-900 hover:bg-slate-100 text-xs font-semibold cursor-pointer transition-all active:scale-95"
+                        >
+                          Next Card
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* TAB 3: PRACTICE QUIZ */}
+                <TabsContent value="quiz" forceMount={currentTab === "quiz" ? true : undefined} className="mt-0 focus-visible:outline-none">
+                  {currentTab === "quiz" && (
+                    <div className="max-w-xl mx-auto py-8 px-4 text-center space-y-4">
+                      <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto shadow-xs">
+                        <ListChecks className="size-8" />
+                      </div>
+                      <h4 className="text-lg font-bold text-foreground font-display">Self-Grading Practice Quizzes</h4>
+                      <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                        AI-generated multiple choice and diagnostic quiz questions with instant verification and direct passage coordinates.
+                      </p>
+                      <div className="pt-2">
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
+                          <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                          Diagnostic Exam Mode Ready
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* TAB 4: AUDIO RECAP WITH ANIMATED WAVEFORM BARS */}
+                <TabsContent value="podcast" forceMount={currentTab === "podcast" ? true : undefined} className="mt-0 focus-visible:outline-none">
+                  {currentTab === "podcast" && (
+                    <div className="max-w-xl mx-auto py-6 sm:py-8 px-4 space-y-6 text-center">
+                      <div className="p-6 rounded-[28px] bg-slate-950 text-white border border-slate-800 shadow-tactile-dock space-y-5">
+                        <div className="flex items-center justify-between text-xs font-mono text-slate-400 border-b border-slate-800 pb-3">
+                          <span className="flex items-center gap-1.5 text-primary">
+                            <Headphones className="size-3.5" /> 2-Host Dialogue Recap
+                          </span>
+                          <span>Speaker: {currentSpeaker}</span>
+                        </div>
+
+                        {/* Animated Live Frequency Waveform */}
+                        <div className="h-16 flex items-center justify-center gap-1 px-4">
+                          {[32, 48, 64, 40, 56, 72, 80, 50, 68, 76, 44, 60, 52, 65, 38, 45].map((baseHeight, i) => (
+                            <motion.span
+                              key={i}
+                              animate={
+                                podcastPlaying
+                                  ? {
+                                      scaleY: [0.35, 1.25, 0.45, 1.1, 0.3],
+                                      opacity: [0.6, 1, 0.7, 1, 0.6],
+                                    }
+                                  : { scaleY: 0.25, opacity: 0.4 }
+                              }
+                              transition={
+                                shouldReduceMotion
+                                  ? { duration: 0 }
+                                  : {
+                                      repeat: Infinity,
+                                      duration: 1.1,
+                                      delay: (i % 8) * 0.08,
+                                      ease: "easeInOut",
+                                    }
+                              }
+                              style={{ height: `${baseHeight}%`, width: "4px" }}
+                              className="rounded-full bg-primary origin-center"
+                            />
+                          ))}
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs font-mono text-slate-400 pt-1">
+                          <span>{formatAudioTime(audioSeconds)}</span>
+                          <span className="text-slate-300 font-medium">Topic: §3.4 Thermal Phase Decoherence</span>
+                          <span>4:12</span>
+                        </div>
+
+                        {/* Player Controls */}
+                        <div className="pt-2 flex items-center justify-center gap-4">
+                          <button
+                            type="button"
+                            onClick={() => setPodcastPlaying(!podcastPlaying)}
+                            className="size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                          >
+                            {podcastPlaying ? <Pause className="size-5 fill-current" /> : <Play className="size-5 fill-current ml-0.5" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* TAB 5: GROUNDED CHAT */}
+                <TabsContent value="chat" forceMount={currentTab === "chat" ? true : undefined} className="mt-0 focus-visible:outline-none">
+                  {currentTab === "chat" && (
               <div className="max-w-xl mx-auto flex flex-col h-[380px] justify-between text-left">
                 <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
                   {chatMessages.map((m, idx) => {
@@ -535,10 +677,13 @@ export function InteractiveWorkflowDemo({
                   </div>
                 </div>
               </div>
-            </TabsContent>
+                    )}
+                  </TabsContent>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
-      </Tabs>
-    </motion.section>
-  );
-}
+        </Tabs>
+      </motion.section>
+    );
+  }
