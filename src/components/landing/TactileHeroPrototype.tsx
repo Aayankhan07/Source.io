@@ -55,7 +55,7 @@ export function TactileHeroPrototype() {
   const [audioPlaying, setAudioPlaying] = useState(false);
 
   return (
-    <section className="relative w-full pt-20 sm:pt-24 pb-12 sm:pb-16 select-none overflow-hidden">
+    <section className="relative w-full min-h-[calc(100dvh-4.5rem)] flex flex-col justify-center pt-24 sm:pt-28 lg:pt-32 pb-8 sm:pb-12 select-none">
       {/* Ambient Atmospheric Glow (Subtle Sand/Sky Halos) */}
       <div
         className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-70 dark:opacity-30"
@@ -66,22 +66,17 @@ export function TactileHeroPrototype() {
         aria-hidden="true"
       />
 
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center w-full my-auto">
         {/* Left Column: Copy & Value Proposition */}
-        <div className="lg:col-span-6 flex flex-col items-start text-left space-y-5">
-          {/* Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/10 border border-slate-900/10 dark:border-white/15 text-slate-900 dark:text-white text-xs font-semibold shadow-xs">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>AI study workspace for serious learning</span>
-          </div>
+        <div className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-left space-y-6 sm:space-y-8">
 
           {/* Headline */}
-          <h1 className="text-[clamp(34px,4.4vw,56px)] font-extrabold tracking-tight leading-[1.08] text-slate-900 dark:text-white font-display text-balance">
+          <h1 className="text-[clamp(32px,3.8vw,50px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 dark:text-white font-display text-balance">
             Turn textbooks, lectures, and research papers into{" "}
-            <span className="text-primary relative inline-block">
+            <span className="text-primary relative inline-block pb-1">
               verified study materials.
               <svg
-                className="absolute -bottom-1.5 left-0 w-full h-2 text-primary/40"
+                className="absolute -bottom-1 left-0 w-full h-2 text-primary/40"
                 viewBox="0 0 100 20"
                 preserveAspectRatio="none"
               >
@@ -91,15 +86,15 @@ export function TactileHeroPrototype() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300 max-w-[540px]">
-            Source.io converts dense documents and recordings into structured notes, flashcards, practice quizzes, audio recaps, and citation-grounded chat—with every answer linked back to its source.
+          <p className="text-base sm:text-lg leading-[1.7] text-slate-600 dark:text-slate-300 max-w-[520px]">
+            Extract notes, test comprehension, and cite every fact. Source.io converts dense documents and recordings into structured notes, flashcards, quizzes, audio recaps, and grounded chat—with every answer linked back to its source.
           </p>
 
           {/* Action CTAs: Consistent Start free & See a live demo */}
           <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
             <Link
               href={mounted && user ? "/app" : "/auth"}
-              className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 active:scale-98 text-white dark:text-slate-950 font-semibold text-sm shadow-tactile-pill transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              className="px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 active:scale-98 text-white dark:text-slate-950 font-semibold text-sm shadow-tactile-pill transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
               <span>{mounted && user ? "Open workspace" : "Start free"}</span>
               <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
@@ -107,14 +102,14 @@ export function TactileHeroPrototype() {
 
             <Link
               href="/app/doc/demo-quantum"
-              className="px-5 py-3 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-98 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-black/[0.08] dark:border-white/10 shadow-tactile-pill transition-all flex items-center justify-center gap-2 cursor-pointer group"
+              className="px-5 py-3.5 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-98 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-black/[0.08] dark:border-white/10 shadow-tactile-pill transition-all flex items-center justify-center gap-2 cursor-pointer group"
             >
               <span>See a live demo</span>
             </Link>
           </div>
 
           {/* Trust Guarantees */}
-          <div className="pt-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+          <div className="pt-3 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-emerald-500" />
               <span>No credit card required</span>
@@ -130,13 +125,13 @@ export function TactileHeroPrototype() {
           </div>
         </div>
 
-        {/* Right Column: In place of demo, display image 2.jpg */}
-        <div className="lg:col-span-6 w-full flex items-center justify-center">
-          <div className="w-full rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.08] dark:border-white/10 shadow-tactile-dock bg-white dark:bg-slate-900/90 p-2 sm:p-3">
+        {/* Right Column: Balanced preview frame */}
+        <div className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end">
+          <div className="w-full max-w-[620px] rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.08] dark:border-white/10 shadow-tactile-dock bg-white dark:bg-slate-900/90 p-2 sm:p-2.5 transition-all">
             <img
               src="/hero-image-2.jpg"
               alt="Source.io study workspace preview"
-              className="w-full h-auto rounded-[20px] sm:rounded-[28px] object-cover"
+              className="w-full h-auto aspect-[16/11] rounded-[20px] sm:rounded-[28px] object-cover"
             />
           </div>
         </div>

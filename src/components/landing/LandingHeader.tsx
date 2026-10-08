@@ -68,12 +68,9 @@ export function LandingHeader() {
           </a>
           <a
             href="#pricing"
-            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
           >
-            <span>Free plan</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
-              25/day
-            </span>
+            Free plan
           </a>
           <a
             href="#faq"
@@ -151,12 +148,9 @@ export function LandingHeader() {
           <a
             href="#pricing"
             onClick={() => setMobileMenuOpen(false)}
-            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] flex items-center justify-between transition-colors"
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
           >
-            <span>Free plan</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
-              25/day
-            </span>
+            Free plan
           </a>
           <a
             href="#faq"
