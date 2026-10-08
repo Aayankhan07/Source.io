@@ -32,19 +32,19 @@ export function TactileWeeklyGoals() {
   // Targets by timeframe
   const targetsByFilter: Record<string, GoalTarget[]> = {
     Day: [
-      { id: "t-1", title: "Daily Focus", metric: "Study Time", current: 2.5, target: 3.0, unit: "h", color: "bg-blue-600", icon: Clock },
-      { id: "t-2", title: "Card Reviews", metric: "Flashcards", current: 18, target: 20, unit: " cards", color: "bg-purple-600", icon: Layers },
-      { id: "t-3", title: "Day Retention", metric: "Recall", current: 85, target: 90, unit: "%", color: "bg-emerald-600", icon: Sparkles },
+      { id: "t-1", title: "Daily Focus", metric: "Study Time", current: 2.5, target: 3.0, unit: "h", color: "bg-cyan-500", icon: Clock },
+      { id: "t-2", title: "Card Reviews", metric: "Flashcards", current: 18, target: 20, unit: " cards", color: "bg-indigo-500", icon: Layers },
+      { id: "t-3", title: "Day Retention", metric: "Recall", current: 85, target: 90, unit: "%", color: "bg-emerald-500", icon: Sparkles },
     ],
     Week: [
-      { id: "t-1", title: "Target Hours", metric: "Hours Studied", current: 9.5, target: 12.0, unit: "h", color: "bg-blue-600", icon: Clock },
-      { id: "t-2", title: "Sources Covered", metric: "Synthesized", current: 4, target: 5, unit: " docs", color: "bg-purple-600", icon: BookOpen },
-      { id: "t-3", title: "Target Retention", metric: "Comprehension", current: 88, target: 90, unit: "%", color: "bg-emerald-600", icon: Sparkles },
+      { id: "t-1", title: "Target Hours", metric: "Hours Studied", current: 9.5, target: 12.0, unit: "h", color: "bg-cyan-500", icon: Clock },
+      { id: "t-2", title: "Sources Covered", metric: "Synthesized", current: 4, target: 5, unit: " docs", color: "bg-indigo-500", icon: BookOpen },
+      { id: "t-3", title: "Target Retention", metric: "Comprehension", current: 88, target: 90, unit: "%", color: "bg-emerald-500", icon: Sparkles },
     ],
     Month: [
-      { id: "t-1", title: "Monthly Hours", metric: "Total Hours", current: 38, target: 45, unit: "h", color: "bg-blue-600", icon: Clock },
-      { id: "t-2", title: "Curriculum Sets", metric: "Mastered", current: 14, target: 18, unit: " docs", color: "bg-purple-600", icon: BookOpen },
-      { id: "t-3", title: "Overall Retention", metric: "Long-term Recall", current: 89, target: 92, unit: "%", color: "bg-emerald-600", icon: Sparkles },
+      { id: "t-1", title: "Monthly Hours", metric: "Total Hours", current: 38, target: 45, unit: "h", color: "bg-cyan-500", icon: Clock },
+      { id: "t-2", title: "Curriculum Sets", metric: "Mastered", current: 14, target: 18, unit: " docs", color: "bg-indigo-500", icon: BookOpen },
+      { id: "t-3", title: "Overall Retention", metric: "Long-term Recall", current: 89, target: 92, unit: "%", color: "bg-emerald-500", icon: Sparkles },
     ],
   };
 

@@ -74,13 +74,13 @@ export function TactilePerformanceChart() {
             {/* Metric Legend Pills */}
             <div className="flex items-center gap-4 mt-2.5 text-xs font-medium">
               <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
-                <span className="size-2 rounded-full bg-[#0284C7]" /> Theory
+                <span className="size-2 rounded-full bg-[#06B6D4]" /> Theory
               </span>
               <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
-                <span className="size-2 rounded-full bg-[#4F35D2]" /> Practice
+                <span className="size-2 rounded-full bg-[#6366F1]" /> Practice
               </span>
               <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
-                <span className="size-2 rounded-full bg-[#F43F5E]" /> Lexicon
+                <span className="size-2 rounded-full bg-[#F59E0B]" /> Lexicon
               </span>
             </div>
           </div>
@@ -159,12 +159,12 @@ export function TactilePerformanceChart() {
             <svg className="w-full h-44 overflow-visible relative pointer-events-none" viewBox="0 0 600 200" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="theoryGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0284C7" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="#0284C7" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#06B6D4" stopOpacity="0" />
                 </linearGradient>
                 <linearGradient id="practiceGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#4F35D2" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="#4F35D2" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#6366F1" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="#6366F1" stopOpacity="0" />
                 </linearGradient>
               </defs>
 
@@ -174,21 +174,21 @@ export function TactilePerformanceChart() {
               <path
                 d={lexiconPath}
                 fill="none"
-                stroke="#F43F5E"
+                stroke="#F59E0B"
                 strokeWidth="2.5"
                 strokeDasharray="4 3"
-                className="opacity-70"
+                className="opacity-80"
               />
               <path
                 d={practicePath}
                 fill="none"
-                stroke="#4F35D2"
+                stroke="#6366F1"
                 strokeWidth="3"
               />
               <path
                 d={theoryPath}
                 fill="none"
-                stroke="#0284C7"
+                stroke="#06B6D4"
                 strokeWidth="3.5"
               />
             </svg>
@@ -257,16 +257,16 @@ export function TactilePerformanceChart() {
               </div>
 
               <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="p-4 rounded-[22px] bg-sky-50 dark:bg-sky-950/30 border border-sky-100 dark:border-sky-900/40">
-                  <span className="text-xs text-sky-700 dark:text-sky-300 font-semibold">Theory Retention</span>
+                <div className="p-4 rounded-[22px] bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-100 dark:border-cyan-900/40">
+                  <span className="text-xs text-cyan-700 dark:text-cyan-300 font-semibold">Theory Retention</span>
                   <span className="text-2xl font-bold block mt-1 text-slate-900 dark:text-white font-mono">88%</span>
                 </div>
-                <div className="p-4 rounded-[22px] bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40">
-                  <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">Practice Accuracy</span>
+                <div className="p-4 rounded-[22px] bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40">
+                  <span className="text-xs text-indigo-700 dark:text-indigo-300 font-semibold">Practice Accuracy</span>
                   <span className="text-2xl font-bold block mt-1 text-slate-900 dark:text-white font-mono">78%</span>
                 </div>
-                <div className="p-4 rounded-[22px] bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/40">
-                  <span className="text-xs text-rose-700 dark:text-rose-300 font-semibold">Lexicon Recall</span>
+                <div className="p-4 rounded-[22px] bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40">
+                  <span className="text-xs text-amber-700 dark:text-amber-300 font-semibold">Lexicon Recall</span>
                   <span className="text-2xl font-bold block mt-1 text-slate-900 dark:text-white font-mono">65%</span>
                 </div>
               </div>

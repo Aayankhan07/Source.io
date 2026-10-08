@@ -156,7 +156,7 @@ export function TactileTopBar({
             )}
           >
             <Bell className="size-4.5 stroke-[2]" />
-            <span className="absolute top-2 right-2 size-2 rounded-full bg-amber-400 border border-white dark:border-slate-900" />
+            <span className="absolute top-2 right-2 size-2 rounded-full bg-cyan-500 border border-white dark:border-slate-900" />
           </button>
 
           {/* Interactive Notifications Popover */}
@@ -171,7 +171,7 @@ export function TactileTopBar({
               >
                 <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-white/10">
                   <h4 className="text-sm font-bold font-display text-slate-900 dark:text-white">Notifications</h4>
-                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-700 dark:text-amber-300 font-semibold">
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-semibold">
                     2 new
                   </span>
                 </div>
@@ -224,7 +224,7 @@ export function TactileTopBar({
             )}
             title={userDisplayName}
           >
-            <div className="size-7 rounded-[12px] bg-gradient-to-tr from-amber-400 to-amber-200 text-slate-950 font-bold text-xs flex items-center justify-center shadow-xs">
+            <div className="size-7 rounded-[12px] bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold text-xs flex items-center justify-center shadow-xs">
               {userInitial}
             </div>
             <span className="hidden sm:inline-block text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[90px] truncate">
@@ -244,7 +244,7 @@ export function TactileTopBar({
               >
                 {/* User Card */}
                 <div className="p-2.5 rounded-[18px] bg-slate-50 dark:bg-white/[0.04] mb-2 flex items-center gap-2.5">
-                  <div className="size-10 rounded-[14px] bg-amber-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-xs">
+                  <div className="size-10 rounded-[14px] bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold text-sm flex items-center justify-center shadow-xs">
                     {userInitial}
                   </div>
                   <div className="min-w-0">

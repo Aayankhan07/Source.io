@@ -362,7 +362,7 @@ export function DailyQuotaPill() {
                 <Sparkles
                   className={cn(
                     "size-3.5",
-                    remaining <= 3 ? "text-amber-500" : "text-purple-600 dark:text-purple-400"
+                    remaining <= 3 ? "text-amber-500" : "text-cyan-500 dark:text-cyan-400"
                   )}
                 />
                 <span className="tabular-nums font-medium">
@@ -375,7 +375,7 @@ export function DailyQuotaPill() {
                       "h-full rounded-full transition-all duration-300",
                       remaining <= 3
                         ? "bg-amber-500"
-                        : "bg-purple-600 dark:bg-purple-400"
+                        : "bg-cyan-500 dark:bg-cyan-400"
                     )}
                     style={{ width: `${Math.max(6, percentAllowanceRemaining)}%` }}
                   />
@@ -396,7 +396,7 @@ export function DailyQuotaPill() {
             {/* Header */}
             <div className="flex items-center justify-between pb-0.5">
               <div className="flex items-center gap-1.5">
-                <Sparkles className="size-4 text-purple-600 dark:text-purple-400" />
+                <Sparkles className="size-4 text-cyan-500 dark:text-cyan-400" />
                 <h4 className="font-bold text-xs font-display text-slate-900 dark:text-white">AI Allowance</h4>
               </div>
               <div className="flex items-center gap-1.5">

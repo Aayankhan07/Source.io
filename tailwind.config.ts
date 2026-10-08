@@ -12,16 +12,9 @@ export default {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
     extend: {
       fontFamily: {
-        // `sans` and `display` mirror the faces index.css already applies to body
-        // and headings; declaring them here makes `font-sans`/`font-display` real
-        // utilities instead of relying on bare CSS selectors.
-        sans: ["Outfit", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["Outfit", "Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
-        // Fira Code is loaded in index.html but was never mapped, so every
-        // `font-mono` fell back to the browser default.
+        sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+        display: ["Plus Jakarta Sans", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["Fira Code", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
-        // Long-form reading face for generated study material. Literata carries an
-        // optical-size axis, so it holds up from body copy to headings.
         reading: ["Literata", "Georgia", "ui-serif", "serif"],
       },
       colors: {

@@ -149,19 +149,19 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
     switch (color) {
       case "lavender":
         return {
-          cardBg: "bg-[#EEECFC] dark:bg-purple-950/35 border-[#DDD8FA] dark:border-purple-800/30",
-          titleColor: "text-slate-900 dark:text-purple-100",
-          subColor: "text-slate-600 dark:text-purple-300/80",
-          tagBg: "bg-white/80 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 border-purple-200 dark:border-purple-700/50",
-          avatarBg: "bg-[#7C3AED] text-white",
+          cardBg: "bg-[#EEECFC] dark:bg-indigo-950/35 border-[#DDD8FA] dark:border-indigo-800/30",
+          titleColor: "text-slate-900 dark:text-indigo-100",
+          subColor: "text-slate-600 dark:text-indigo-300/80",
+          tagBg: "bg-white/80 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 border-indigo-200 dark:border-indigo-700/50",
+          avatarBg: "bg-indigo-600 text-white",
         };
       case "sky":
         return {
-          cardBg: "bg-[#E7F3FE] dark:bg-sky-950/35 border-[#CDE5FC] dark:border-sky-800/30",
-          titleColor: "text-slate-900 dark:text-sky-100",
-          subColor: "text-slate-600 dark:text-sky-300/80",
-          tagBg: "bg-white/80 dark:bg-sky-900/60 text-sky-900 dark:text-sky-200 border-sky-200 dark:border-sky-700/50",
-          avatarBg: "bg-[#0284C7] text-white",
+          cardBg: "bg-[#E6F8FB] dark:bg-cyan-950/35 border-[#CEF0F6] dark:border-cyan-800/30",
+          titleColor: "text-slate-900 dark:text-cyan-100",
+          subColor: "text-slate-600 dark:text-cyan-300/80",
+          tagBg: "bg-white/80 dark:bg-cyan-900/60 text-cyan-900 dark:text-cyan-200 border-cyan-200 dark:border-cyan-700/50",
+          avatarBg: "bg-cyan-600 text-white",
         };
       case "mint":
       default:
@@ -170,7 +170,7 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
           titleColor: "text-slate-900 dark:text-emerald-100",
           subColor: "text-slate-600 dark:text-emerald-300/80",
           tagBg: "bg-white/80 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 border-emerald-200 dark:border-emerald-700/50",
-          avatarBg: "bg-[#16A34A] text-white",
+          avatarBg: "bg-emerald-600 text-white",
         };
     }
   };
@@ -358,7 +358,7 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
                     <span className="text-[11px] font-mono font-semibold uppercase px-2 py-0.5 rounded-md bg-white/70 dark:bg-black/30 border border-current/10">
                       {item.source_type}
                     </span>
-                    <div className="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-amber-400 text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-2xs">
+                    <div className="size-6 rounded-full border border-black/[0.06] dark:border-white/10 bg-slate-900 text-white dark:bg-white dark:text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-2xs">
                       {getSourceIcon(item.source_type)}
                     </div>
                   </div>
