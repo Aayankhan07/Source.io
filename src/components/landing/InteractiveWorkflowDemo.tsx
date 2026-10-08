@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   FileText, Headphones, MessagesSquare, ListChecks, Layers,
   Play, Pause, Check, X, RotateCcw, Send, BookmarkCheck,
-  Copy, Terminal, ExternalLink, ShieldCheck, ChevronRight
+  Copy, Terminal, ExternalLink, ShieldCheck, ChevronRight,
+  LayoutDashboard, Library
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -28,7 +29,7 @@ interface InteractiveWorkflowDemoProps {
 }
 
 export function InteractiveWorkflowDemo({ 
-  activeTab = "notes", 
+  activeTab = "dashboard", 
   onTabChange 
 }: InteractiveWorkflowDemoProps) {
   const [currentTab, setCurrentTab] = useState<string>(activeTab);
@@ -202,6 +203,22 @@ export function InteractiveWorkflowDemo({
         <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
           <TabsList className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-white/10 p-1.5 rounded-full h-auto gap-1.5 inline-flex shrink-0 shadow-tactile-pill">
             <TabsTrigger 
+              value="dashboard" 
+              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
+              title="Performance chart, goals & study sources"
+            >
+              <LayoutDashboard className="size-4 shrink-0" />
+              <span>Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="library" 
+              className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
+              title="Study sources and library overview"
+            >
+              <Library className="size-4 shrink-0" />
+              <span>Library</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="notes" 
               className="rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-tactile-pill focus-visible:outline-none group cursor-pointer"
               title="Understand main ideas quickly"
@@ -308,484 +325,134 @@ export function InteractiveWorkflowDemo({
 
           {/* Interactive Workspace Body */}
           <div className="p-5 sm:p-8 min-h-[380px]">
-            {/* TAB 1: STUDY NOTES WITH SPLIT SOURCE INSPECTOR */}
-            <TabsContent value="notes" className="mt-0 focus-visible:outline-none">
-              <div className="grid lg:grid-cols-12 gap-6 items-start text-left">
-                {/* Left: Synthesized Study Notes */}
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="flex items-center justify-between border-b border-border pb-3">
-                    <div>
-                      <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Introduction to Quantum Computing
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">Click or hover citation tags to inspect verified source passages</p>
-                    </div>
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
-                      3 min read
-                    </span>
-                  </div>
-
-                  <div className="text-xs sm:text-sm text-foreground/90 leading-relaxed space-y-3">
-                    <p>
-                      Quantum computation is fundamentally distinguished by its exploitation of <strong>superposition</strong> and <strong>quantum entanglement</strong>.
-                    </p>
-
-                    {/* Interactive Citation Cards (Minimal, understated active state) */}
-                    <div className="space-y-2.5">
-                      <div 
-                        onMouseEnter={() => setHighlightedPassage(1)}
-                        onClick={() => setHighlightedPassage(1)}
-                        className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                          highlightedPassage === 1 
-                            ? "bg-card border-foreground/30 dark:border-white/30 shadow-xs ring-1 ring-border" 
-                            : "bg-muted/30 border-border/70 hover:bg-muted/50"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold font-mono text-foreground">
-                            Principle 1: Superposition
-                          </span>
-                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-md border transition-colors ${
-                            highlightedPassage === 1 
-                              ? "bg-foreground text-background font-semibold border-foreground" 
-                              : "bg-card border-border text-muted-foreground"
-                          }`}>
-                            §1.1 [p. 2]
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground leading-normal">
-                          A qubit exists in a normalized linear superposition |ψ⟩ = α|0⟩ + β|1⟩, evaluating multi-path algorithms simultaneously until measurement.
-                        </p>
-                      </div>
-
-                      <div 
-                        onMouseEnter={() => setHighlightedPassage(2)}
-                        onClick={() => setHighlightedPassage(2)}
-                        className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                          highlightedPassage === 2 
-                            ? "bg-card border-foreground/30 dark:border-white/30 shadow-xs ring-1 ring-border" 
-                            : "bg-muted/30 border-border/70 hover:bg-muted/50"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold font-mono text-foreground">
-                            Principle 2: Entanglement
-                          </span>
-                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-md border transition-colors ${
-                            highlightedPassage === 2 
-                              ? "bg-foreground text-background font-semibold border-foreground" 
-                              : "bg-card border-border text-muted-foreground"
-                          }`}>
-                            §1.3 [p. 4]
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground leading-normal">
-                          Entangled Bell pairs establish instant state correlations across spatial separations, enabling dense coding and cryptographic key distribution.
-                        </p>
-                      </div>
-
-                      <div 
-                        onMouseEnter={() => setHighlightedPassage(3)}
-                        onClick={() => setHighlightedPassage(3)}
-                        className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                          highlightedPassage === 3 
-                            ? "bg-card border-foreground/30 dark:border-white/30 shadow-xs ring-1 ring-border" 
-                            : "bg-muted/30 border-border/70 hover:bg-muted/50"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold font-mono text-foreground">
-                            Decoherence Decay
-                          </span>
-                          <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-md border transition-colors ${
-                            highlightedPassage === 3 
-                              ? "bg-foreground text-background font-semibold border-foreground" 
-                              : "bg-card border-border text-muted-foreground"
-                          }`}>
-                            §3.4 [p. 11]
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground leading-normal">
-                          Thermal fluctuations induce environmental phase drift, collapsing quantum linear state vectors into classical probabilities.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right: Real-time Split Source PDF Inspector (Minimal, refined aesthetic) */}
-                <div className="lg:col-span-5 bg-card border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between min-h-[340px]">
+            {/* TAB: DASHBOARD PREVIEW */}
+            <TabsContent value="dashboard" className="mt-0 focus-visible:outline-none">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                   <div>
-                    <div className="flex items-center justify-between pb-2.5 border-b border-border text-xs mb-3 font-mono">
-                      <span className="font-semibold text-foreground flex items-center gap-1.5">
-                        <BookmarkCheck className="h-3.5 w-3.5 text-foreground/80" /> Source Passage View
-                      </span>
-                      <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold border border-primary/20 font-mono">
-                        {Math.round(sourcePassages[highlightedPassage - 1].similarity * 100)}% Match
-                      </span>
-                    </div>
-
-                    <div className="text-xs font-mono text-muted-foreground mb-3 flex items-center justify-between">
-                      <span className="text-foreground font-semibold">{sourcePassages[highlightedPassage - 1].section}</span>
-                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-muted/60 border border-border/60">Page {sourcePassages[highlightedPassage - 1].page}</span>
-                    </div>
-
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={highlightedPassage}
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="p-4 rounded-xl bg-muted/40 dark:bg-muted/20 border border-border text-xs text-foreground/90 leading-relaxed font-serif relative"
-                      >
-                        <span className="absolute -top-2.5 right-3 text-[10px] font-mono font-medium tracking-wide bg-background text-foreground px-2 py-0.5 rounded-full border border-border shadow-2xs">
-                          VERIFIED HIGHLIGHT
-                        </span>
-                        "{sourcePassages[highlightedPassage - 1].text}"
-                      </motion.div>
-                    </AnimatePresence>
-
-                    <p className="text-xs font-mono text-muted-foreground mt-3">
-                      Coordinate: {sourcePassages[highlightedPassage - 1].sourceCoordinates}
-                    </p>
+                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Central Workspace Dashboard
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Performance charts, weekly goals progress, and quick source access</p>
                   </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
+                    Live UI Preview
+                  </span>
+                </div>
 
-                  <div className="pt-3 border-t border-border mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => handleCopyCitation(sourcePassages[highlightedPassage - 1].section, sourcePassages[highlightedPassage - 1].similarity)}
-                      className="inline-flex items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
-                    >
-                      <Copy className="h-3 w-3" /> Copy Coordinate
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleTabChange("quiz");
-                        toast.success("Practice Quiz loaded from highlighted passage");
-                      }}
-                      className="inline-flex items-center justify-center gap-1.5 text-xs px-3.5 py-1.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-semibold shadow-xs hover:opacity-90 active:scale-95 transition-all cursor-pointer"
-                    >
-                      <ListChecks className="size-3.5" />
-                      <span>Generate quiz from passage</span>
-                    </button>
-                  </div>
+                <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
+                  <img
+                    src="/dashboard-preview.png"
+                    alt="Source.io Dashboard Preview"
+                    className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
+                  />
                 </div>
               </div>
             </TabsContent>
 
-            {/* TAB 2: LEITNER FLASHCARDS */}
+            {/* TAB: LIBRARY PREVIEW */}
+            <TabsContent value="library" className="mt-0 focus-visible:outline-none">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                      <Library className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Study Sources &amp; Library
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">All uploaded textbooks, lecture recordings, papers, and YouTube videos</p>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
+                    Multi-Format Index
+                  </span>
+                </div>
+
+                <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
+                  <img
+                    src="/library-preview.png"
+                    alt="Source.io Study Sources and Library Preview"
+                    className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* TAB: STRUCTURED NOTES */}
+            <TabsContent value="notes" className="mt-0 focus-visible:outline-none">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Structured Notes &amp; Copilot
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">AI-synthesized lecture outlines, quantum mechanics notes, and verified Copilot</p>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
+                    Verified Notes
+                  </span>
+                </div>
+
+                <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
+                  <img
+                    src="/notes-preview.png"
+                    alt="Source.io Structured Notes Preview"
+                    className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* TAB 2: FLASHCARDS (PLACEHOLDER) */}
             <TabsContent value="flashcards" className="mt-0 focus-visible:outline-none">
-              <div className="max-w-md mx-auto space-y-4 text-center py-2">
-                <div className="flex justify-between items-center text-xs text-muted-foreground font-mono">
-                  <span>Card {cardIdx + 1} of {flashcardsData.length}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs bg-accent px-2 py-0.5 rounded text-foreground">
-                      Interval: {activeInterval}
-                    </span>
-                    <button 
-                      type="button"
-                      onClick={() => { 
-                        setCardIdx(0); 
-                        setCardFlipped(false);
-                        setActiveInterval("4 Days");
-                        toast.info("Flashcards deck reset to beginning");
-                      }}
-                      className="px-2.5 py-1 rounded-full bg-accent hover:opacity-80 text-foreground text-xs transition-colors"
-                    >
-                      Reset
-                    </button>
-                  </div>
+              <div className="max-w-xl mx-auto py-12 px-4 text-center space-y-4">
+                <div className="size-16 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mx-auto shadow-xs">
+                  <Layers className="size-8" />
                 </div>
-
-                {/* 3D Flip Card */}
-                <div
-                  className="relative w-full min-h-[14rem] h-52 cursor-pointer select-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  style={{ perspective: "1000px" }}
-                  onClick={() => setCardFlipped(!cardFlipped)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setCardFlipped(prev => !prev);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={cardFlipped}
-                  aria-label={cardFlipped ? "Answer revealed. Click to show question" : "Question shown. Click to reveal answer"}
-                >
-                  <div
-                    className="absolute inset-0 transition-transform duration-500 motion-reduce:transition-none"
-                    style={{
-                      transformStyle: "preserve-3d",
-                      transform: cardFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
-                    }}
-                  >
-                    {/* Front */}
-                    <div 
-                      className="absolute inset-0 rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-xs"
-                      style={{ backfaceVisibility: "hidden" }}
-                    >
-                      <span className="px-2.5 py-0.5 rounded-full bg-accent text-foreground text-xs font-mono font-semibold mb-3">
-                        QUESTION
-                      </span>
-                      <p className="text-base font-semibold text-foreground leading-snug">
-                        {flashcardsData[cardIdx].front}
-                      </p>
-                      <p className="absolute bottom-4 text-xs text-muted-foreground">Click or press Space to reveal answer</p>
-                    </div>
-
-                    {/* Back */}
-                    <div 
-                      className="absolute inset-0 rounded-2xl border border-border bg-accent/40 p-6 flex flex-col items-center justify-center text-center shadow-xs"
-                      style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-                    >
-                      <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-mono font-semibold mb-3 border border-primary/20">
-                        EXPLANATION
-                      </span>
-                      <p className="text-xs sm:text-sm text-foreground leading-relaxed">
-                        {flashcardsData[cardIdx].back}
-                      </p>
-                      <p className="absolute bottom-4 text-xs text-muted-foreground">Click or press Space to flip back</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Leitner Confidence Buttons */}
-                <div className="flex items-center justify-between gap-2 pt-1">
-                  <button 
-                    type="button"
-                    onClick={() => { setCardFlipped(false); setCardIdx(i => Math.max(0, i - 1)); }}
-                    disabled={cardIdx === 0}
-                    className="px-3.5 py-1.5 min-h-[36px] rounded-full border border-border text-xs text-muted-foreground disabled:opacity-40 hover:bg-accent hover:text-foreground transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <div className="flex gap-1.5" role="group" aria-label="Leitner confidence rating">
-                    {[
-                      { label: "Again", days: "1 day", ret: "72.0%" },
-                      { label: "Hard", days: "2 days", ret: "84.5%" },
-                      { label: "Good", days: "4 days", ret: "94.2%" },
-                      { label: "Easy", days: "7 days", ret: "98.8%" },
-                    ].map((item) => (
-                      <Tooltip key={item.label}>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setCardFlipped(false);
-                              setActiveInterval(item.days);
-                              setActiveRetention(item.ret);
-                              setCardIdx((i) => (i + 1) % flashcardsData.length);
-                              toast.success(`Scheduled for review in ${item.days}`, {
-                                description: `Retention updated to ${item.ret} via Leitner algorithm`,
-                              });
-                            }}
-                            className="text-xs px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent hover:bg-blue-950/10 hover:text-blue-950 dark:hover:text-blue-200 text-foreground font-medium transition-colors border border-transparent hover:border-blue-900/30 cursor-pointer"
-                          >
-                            {item.label}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                          <p className="text-xs">Next interval: {item.days} ({item.ret} retention)</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
-                  </div>
-                  <button 
-                    type="button"
-                    onClick={() => { setCardFlipped(false); setCardIdx(i => Math.min(flashcardsData.length - 1, i + 1)); }}
-                    disabled={cardIdx === flashcardsData.length - 1}
-                    className="px-3.5 py-1.5 min-h-[36px] rounded-full border border-border text-xs text-muted-foreground disabled:opacity-40 hover:bg-accent hover:text-foreground transition-colors"
-                  >
-                    Next
-                  </button>
+                <h4 className="text-lg font-bold text-foreground">Interactive Flashcard Deck</h4>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  Spaced repetition and active recall flashcards derived automatically from your uploaded notes and textbooks.
+                </p>
+                <div className="pt-2">
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
+                    <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                    Flashcards Module Placeholder
+                  </span>
                 </div>
               </div>
             </TabsContent>
 
-            {/* TAB 3: PRACTICE QUIZ */}
+            {/* TAB 3: PRACTICE QUIZ (PLACEHOLDER) */}
             <TabsContent value="quiz" className="mt-0 focus-visible:outline-none">
-              <div className="max-w-xl mx-auto space-y-4 text-left">
-                <div className="border border-border bg-card rounded-2xl p-5 sm:p-6 space-y-4 shadow-xs">
-                  <div className="flex items-start gap-2.5">
-                    <span className="px-2 py-0.5 rounded bg-primary text-primary-foreground text-xs font-mono font-bold mt-0.5">Q1</span>
-                    <div>
-                      <h4 className="text-sm sm:text-base font-semibold text-foreground">
-                        Which decay mechanism transforms a qubit's quantum superposition into classical probability?
-                      </h4>
-                      <p className="text-xs text-muted-foreground mt-0.5 font-mono">Single choice • Vector verified against Chapter 1</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 pt-1" role="radiogroup">
-                    {[
-                      { idx: 0, text: "Quantum Teleportation Protocol" },
-                      { idx: 1, text: "Quantum Decoherence (Thermal Vibration)", correct: true },
-                      { idx: 2, text: "Phase Gate Inversion Matrix" },
-                      { idx: 3, text: "Qubit Entanglement Hyper-Collapse" }
-                    ].map((opt) => {
-                      const isSelected = selectedChoice === opt.idx;
-                      const isCorrect = opt.correct;
-                      
-                      let btnStyle = "border-border hover:bg-accent/60 bg-card text-foreground";
-                      if (isSelected) {
-                        if (quizSubmitted) {
-                          btnStyle = isCorrect 
-                            ? "border-primary bg-primary/10 text-primary font-semibold shadow-xs" 
-                            : "border-border bg-muted/50 text-muted-foreground";
-                        } else {
-                          btnStyle = "border-primary bg-accent text-foreground ring-1 ring-ring";
-                        }
-                      } else if (quizSubmitted && isCorrect) {
-                        btnStyle = "border-primary bg-primary/10 text-primary font-semibold shadow-xs";
-                      }
-
-                      return (
-                        <button
-                          key={opt.idx}
-                          type="button"
-                          role="radio"
-                          aria-checked={isSelected}
-                          disabled={quizSubmitted}
-                          onClick={() => setSelectedChoice(opt.idx)}
-                          className={`w-full text-left p-3.5 rounded-xl border transition-all text-xs sm:text-sm font-medium flex items-center justify-between cursor-pointer ${btnStyle}`}
-                        >
-                          <span>{opt.text}</span>
-                          {quizSubmitted && isCorrect && <Check className="h-4 w-4 text-primary" />}
-                          {quizSubmitted && isSelected && !isCorrect && <X className="h-4 w-4 text-muted-foreground" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-border">
-                    <span className="text-xs text-muted-foreground">Select an option to test your comprehension</span>
-                    {quizSubmitted ? (
-                      <button 
-                        type="button"
-                        onClick={() => { setSelectedChoice(null); setQuizSubmitted(false); }}
-                        className="px-3.5 py-1.5 min-h-[36px] rounded-full bg-accent hover:opacity-80 text-foreground text-xs font-semibold inline-flex items-center gap-1 transition-colors"
-                      >
-                        <RotateCcw className="h-3 w-3" /> Retry
-                      </button>
-                    ) : (
-                      <button 
-                        type="button"
-                        disabled={selectedChoice === null}
-                        onClick={() => {
-                          setQuizSubmitted(true);
-                          if (selectedChoice === 1) {
-                            toast.success("Correct Answer!", { description: "Verified against Passage §3.4 [p. 11]" });
-                          } else {
-                            toast.error("Incorrect Choice", { description: "Decoherence is the primary physical decay mechanism." });
-                          }
-                        }}
-                        className="px-4 py-1.5 min-h-[36px] rounded-full bg-primary hover:opacity-90 text-primary-foreground text-xs font-semibold disabled:opacity-40 transition-colors cursor-pointer"
-                      >
-                        Submit Answer
-                      </button>
-                    )}
-                  </div>
-
-                  {quizSubmitted && (
-                    <div className="text-xs text-foreground bg-accent/60 p-3.5 rounded-xl border border-border leading-relaxed">
-                      <div className="flex items-center justify-between mb-1">
-                        <strong className="text-foreground font-semibold">Verified Passage Citation:</strong>
-                        <span className="font-mono text-primary text-xs font-bold">Passage §3.4 [p. 11]</span>
-                      </div>
-                      Decoherence occurs when environmental thermal vibrations or electromagnetic fields interact with qubits, inducing rapid loss of phase coherence within characteristic time T₂.
-                    </div>
-                  )}
+              <div className="max-w-xl mx-auto py-12 px-4 text-center space-y-4">
+                <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto shadow-xs">
+                  <ListChecks className="size-8" />
+                </div>
+                <h4 className="text-lg font-bold text-foreground">Self-Grading Practice Quizzes</h4>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  AI-generated multiple choice and diagnostic quiz questions with instant verification and direct passage coordinates.
+                </p>
+                <div className="pt-2">
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
+                    <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                    Quiz Module Placeholder
+                  </span>
                 </div>
               </div>
             </TabsContent>
 
-            {/* TAB 4: AUDIO RECAP WITH ANIMATED WAVEFORM */}
+            {/* TAB 4: AUDIO RECAP (PLACEHOLDER) */}
             <TabsContent value="podcast" className="mt-0 focus-visible:outline-none">
-              <div className="max-w-lg mx-auto space-y-4 text-center py-2">
-                <div className="w-full bg-card rounded-2xl p-6 text-left border border-border shadow-xs">
-                  <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground font-mono">
-                    <span>SYNTHESIZED EPISODE</span>
-                    <span className="px-2 py-0.5 rounded-full bg-accent text-foreground border border-border">
-                      2 AI Hosts (Clara & Julian)
-                    </span>
-                  </div>
-
-                  <h4 className="text-base font-semibold text-foreground mb-1">
-                    Demystifying Superposition and Entanglement
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-5">Generated dialogue from Chapter 1</p>
-
-                  {/* Playback Controls & Animated Waveform */}
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const nextState = !podcastPlaying;
-                        setPodcastPlaying(nextState);
-                        if (nextState) {
-                          toast.info("Playing audio recap preview", { description: "Synchronized transcript highlights below" });
-                        }
-                      }}
-                      aria-label={podcastPlaying ? "Pause audio preview" : "Play audio preview"}
-                      className="h-11 w-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center transition-all shrink-0 active:scale-95 shadow-sm cursor-pointer"
-                    >
-                      {podcastPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
-                    </button>
-
-                    <div className="flex-1 space-y-2">
-                      {/* Animated SVG Waveform Equalizer */}
-                      <div className="h-8 flex items-end gap-1 px-1 justify-between">
-                        {[40, 65, 30, 85, 55, 95, 45, 75, 60, 90, 35, 70, 50, 80, 45, 60, 90, 40].map((h, i) => (
-                          <motion.div
-                            key={i}
-                            animate={podcastPlaying ? { height: [`${Math.max(20, h * 0.4)}%`, `${h}%`, `${Math.max(15, h * 0.3)}%`] } : { height: `${h * 0.35}%` }}
-                            transition={{
-                              duration: 0.6,
-                              repeat: Infinity,
-                              repeatType: "reverse",
-                              delay: (i % 6) * 0.1,
-                            }}
-                            className={`w-1 rounded-full ${podcastPlaying ? "bg-primary" : "bg-muted-foreground/30"}`}
-                          />
-                        ))}
-                      </div>
-
-                      <div className="flex justify-between text-xs text-muted-foreground font-mono tabular-nums">
-                        <span>{formatAudioTime(audioSeconds)}</span>
-                        <span>4:12</span>
-                      </div>
-                    </div>
-                  </div>
+              <div className="max-w-xl mx-auto py-12 px-4 text-center space-y-4">
+                <div className="size-16 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center mx-auto shadow-xs">
+                  <Headphones className="size-8" />
                 </div>
-
-                {/* Synchronized Transcript Highlight */}
-                <div className="text-left w-full space-y-2.5 text-xs bg-accent/40 border border-border p-4 rounded-xl">
-                  <div className={`p-2.5 rounded-lg transition-all ${currentSpeaker === "Clara" ? "bg-card border border-primary/40 shadow-xs" : "opacity-70"}`}>
-                    <div className="flex items-center justify-between mb-0.5">
-                      <span className="font-semibold text-foreground font-mono text-xs">Host A (Clara):</span>
-                      {currentSpeaker === "Clara" && podcastPlaying && (
-                        <span className="text-xs text-primary font-mono flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> Speaking
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-foreground">"So when a qubit is in superposition, it is not merely alternating between zero and one, correct?"</p>
-                  </div>
-
-                  <div className={`p-2.5 rounded-lg transition-all ${currentSpeaker === "Julian" ? "bg-card border border-primary/40 shadow-xs" : "opacity-70"}`}>
-                    <div className="flex items-center justify-between mb-0.5">
-                      <span className="font-semibold text-foreground font-mono text-xs">Host B (Julian):</span>
-                      {currentSpeaker === "Julian" && podcastPlaying && (
-                        <span className="text-xs text-primary font-mono flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> Speaking
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-foreground">"Precisely. It occupies a normalized vector space until physical measurement prompts state reduction."</p>
-                  </div>
+                <h4 className="text-lg font-bold text-foreground">2-Host Audio Recap &amp; Podcasts</h4>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  Studio-quality audio walkthroughs breaking down complicated concepts into conversational, easy-to-digest podcast dialogues.
+                </p>
+                <div className="pt-2">
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
+                    <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                    Audio Recap Module Placeholder
+                  </span>
                 </div>
               </div>
             </TabsContent>

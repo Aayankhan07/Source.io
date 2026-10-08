@@ -61,9 +61,16 @@ desktop.ini
 .roo/
 skills-lock.json
 
-# Temporary screenshots & inspection artifacts
+# Temporary screenshots, user assets & inspection artifacts
 /public/screenshot*.png
 screenshot*.png
+*.PNG
+*.png
+*.jpg
+*.jpeg
+*.mp4
+!/public/**
+strip-dark.js
 
 # Testing & coverage artifacts
 test-results/

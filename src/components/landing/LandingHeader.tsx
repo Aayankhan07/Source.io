@@ -3,19 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { useTheme } from "@/hooks/use-theme";
-import { ArrowRight, Menu, X, Sun, Moon, Sparkles, BookOpen } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function LandingHeader() {
   const { user } = useAuth();
-  const { theme, toggleTheme, mounted } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -94,10 +86,10 @@ export function LandingHeader() {
         {/* Right Action Controls: Sign In / Start Free & Theme Toggle */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Authentication & CTA */}
-          {mounted && user ? (
+          {user ? (
             <Link
               href="/app"
-              className="h-8 sm:h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+              className="h-8 sm:h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center gap-1.5 cursor-pointer"
             >
               <span>Open workspace</span>
               <ArrowRight className="size-3.5" />
@@ -106,43 +98,18 @@ export function LandingHeader() {
             <div className="flex items-center gap-1.5">
               <Link
                 href="/auth"
-                className="text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-colors"
               >
                 Sign in
               </Link>
               <Link
                 href="/auth"
-                className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center justify-center cursor-pointer"
+                className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill active:scale-95 transition-all inline-flex items-center justify-center cursor-pointer"
               >
                 Start free
               </Link>
             </div>
           )}
-
-          {/* Tactile Theme Toggle Pill */}
-          <TooltipProvider delayDuration={150}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="size-8 sm:size-9 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
-                  aria-label={!mounted || theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-                >
-                  {!mounted || theme === "dark" ? (
-                    <Sun className="size-4" />
-                  ) : (
-                    <Moon className="size-4" />
-                  )}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="text-xs">
-                  {!mounted || theme === "dark" ? "Light theme" : "Dark theme"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
           {/* Mobile Menu Trigger */}
           <button
@@ -198,12 +165,12 @@ export function LandingHeader() {
           >
             FAQ
           </a>
-          <div className="pt-2 border-t border-slate-100 dark:border-white/10 flex items-center gap-2">
-            {mounted && user ? (
+          <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+            {user ? (
               <Link
                 href="/app"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 text-center rounded-full text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-950"
+                className="w-full py-2.5 text-center rounded-full text-xs font-semibold bg-slate-900 text-white"
               >
                 Open workspace
               </Link>
@@ -212,14 +179,14 @@ export function LandingHeader() {
                 <Link
                   href="/auth"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200"
+                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-100 text-slate-800"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/auth"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-950"
+                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-900 text-white"
                 >
                   Start free
                 </Link>

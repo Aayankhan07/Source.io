@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, X, ArrowRight, Sparkles, BookOpen, GraduationCap, Microscope, Briefcase, Users } from "lucide-react";
+import { Check, X, ArrowRight, BookOpen, GraduationCap, Microscope, Briefcase, Users } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SectionHeading } from "./SectionHeading";
 
@@ -317,10 +317,10 @@ export function CredibilityAndComparison() {
             <AccordionItem 
               key={idx} 
               value={`item-${idx}`}
-              className="border border-slate-200 dark:border-white/10 rounded-[24px] bg-white dark:bg-slate-900/90 px-6 shadow-xs transition-all"
+              className="border border-slate-200/90 dark:border-white/10 rounded-full bg-white dark:bg-slate-900/90 px-6 sm:px-8 shadow-xs transition-all hover:border-slate-300 dark:hover:border-white/20"
             >
-              <AccordionTrigger className="text-left font-bold text-sm text-slate-900 dark:text-white py-4.5 hover:no-underline font-display cursor-pointer">
-                {faq.q}
+              <AccordionTrigger className="min-h-[58px] sm:min-h-[64px] text-left font-bold text-sm sm:text-[15px] leading-normal text-slate-900 dark:text-white py-4 sm:py-5 hover:no-underline font-display cursor-pointer flex items-center justify-between gap-4">
+                <span className="flex-1 py-0.5">{faq.q}</span>
               </AccordionTrigger>
               <AccordionContent className="text-[13.5px] leading-relaxed text-slate-600 dark:text-slate-300 pb-5 pt-1">
                 {faq.a}
@@ -364,7 +364,6 @@ export function CredibilityAndComparison() {
                 href="/app/doc/demo-quantum"
                 className="w-full sm:w-auto border border-white/20 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-md active:scale-95 transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <Sparkles className="size-4 text-amber-400" />
                 <span>See a live demo</span>
               </Link>
             </div>

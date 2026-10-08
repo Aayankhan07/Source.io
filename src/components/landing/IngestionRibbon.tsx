@@ -16,31 +16,55 @@ const INGESTION_FORMATS = [
 
 export function IngestionRibbon() {
   return (
-    <section className="py-6 px-2 relative z-10 w-full flex flex-col items-center justify-center">
-      <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-3.5 text-center">
+    <section className="py-6 px-0 relative z-10 w-full flex flex-col items-center justify-center overflow-hidden">
+      <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-3.5 text-center px-4">
         Upload PDFs, documents, web articles, lecture recordings, audio, or LaTeX files.
       </p>
 
-      {/* Formats Container with Mobile Scroll and Desktop Flex */}
-      <div className="w-full max-w-5xl overflow-x-auto no-scrollbar py-1">
-        <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-2.5 min-w-max mx-auto px-2">
-          {INGESTION_FORMATS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.label}
-                className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-sm transition-all select-none cursor-default"
-              >
-                <div className="size-5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Icon className="size-3" />
+      {/* Moving Ribbon Track with Edge Fade Masks */}
+      <div className="w-full relative overflow-hidden py-1 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+        <div className="flex w-max animate-marquee hover:[animation-play-state:paused] gap-2 sm:gap-2.5">
+          {/* First set of items */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            {INGESTION_FORMATS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={`track-1-${item.label}`}
+                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-slate-200 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-sm transition-all select-none cursor-default"
+                >
+                  <div className="size-5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-900 dark:white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Icon className="size-3" />
+                  </div>
+                  <span className="whitespace-nowrap">{item.label}</span>
+                  <span className="text-[10px] font-mono text-slate-400 dark:text-slate-400 whitespace-nowrap">
+                    {item.tag}
+                  </span>
                 </div>
-                <span>{item.label}</span>
-                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-400">
-                  {item.tag}
-                </span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {/* Duplicate set of items for seamless loop */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-hidden="true">
+            {INGESTION_FORMATS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={`track-2-${item.label}`}
+                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-slate-200 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-sm transition-all select-none cursor-default"
+                >
+                  <div className="size-5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-900 dark:white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Icon className="size-3" />
+                  </div>
+                  <span className="whitespace-nowrap">{item.label}</span>
+                  <span className="text-[10px] font-mono text-slate-400 dark:text-slate-400 whitespace-nowrap">
+                    {item.tag}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
