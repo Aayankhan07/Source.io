@@ -3,13 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
-  Zap, 
-  Database, 
-  ShieldCheck, 
   Clock, 
   Check, 
-  ArrowRight,
-  Key
+  ArrowRight, 
+  Key 
 } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { motion, useReducedMotion } from "framer-motion";
@@ -46,19 +43,16 @@ export function FreeTierTransparency() {
       title: "25 free AI actions every day",
       desc: "Enough daily allowance to ingest textbooks, generate notes, derive flashcards, take quizzes, and run cited chat.",
       metric: "25 / day",
-      icon: Zap,
     },
     {
       title: "3 active source workspaces",
       desc: "Maintain up to 3 dense source documents concurrently with real-time vector embeddings and instant switching.",
       metric: "3 Sources",
-      icon: Database,
     },
     {
       title: "Zero-data retention guarantee",
       desc: "Your research papers and personal notes are never stored or used to train third-party AI models.",
       metric: "100% Private",
-      icon: ShieldCheck,
     },
   ];
 
@@ -85,24 +79,18 @@ export function FreeTierTransparency() {
         {/* Left Column: 3 Core Benefits */}
         <div className="lg:col-span-7 flex flex-col justify-between gap-4">
           {coreBenefits.map((feat) => {
-            const Icon = feat.icon;
             return (
               <div
                 key={feat.title}
                 className="p-5 sm:p-6 rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 shadow-tactile-card flex items-start justify-between gap-4 select-none hover:-translate-y-0.5 transition-transform duration-200"
               >
-                <div className="flex items-start gap-4">
-                  <div className="size-11 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                    <Icon className="size-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-slate-900 dark:text-white font-display mb-1">
-                      {feat.title}
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                      {feat.desc}
-                    </p>
-                  </div>
+                <div>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white font-display mb-1">
+                    {feat.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {feat.desc}
+                  </p>
                 </div>
                 <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200 shrink-0">
                   {feat.metric}
