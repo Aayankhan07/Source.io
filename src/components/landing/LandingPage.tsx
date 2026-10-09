@@ -7,6 +7,7 @@ import { IngestionRibbon } from "./IngestionRibbon";
 import { KnowledgePipeline } from "./KnowledgePipeline";
 import { InteractiveWorkflowDemo } from "./InteractiveWorkflowDemo";
 import { FreeTierTransparency } from "./FreeTierTransparency";
+import { PricingComparisonSection } from "./PricingComparisonSection";
 import { CredibilityAndComparison } from "./CredibilityAndComparison";
 import { LandingFooter } from "./LandingFooter";
 
@@ -61,10 +62,13 @@ export function LandingPage() {
         {/* Section 4: Product Demo (5 Benefit-Driven Study Modes with sc switcher & placeholders) */}
         <InteractiveWorkflowDemo />
 
-        {/* Section 7: Pricing & Free Plan Transparency (3 core pillars + daily reset) */}
+        {/* Section 5: Pricing & Free Plan Transparency (3 core pillars + daily reset) */}
         <FreeTierTransparency />
 
-        {/* Section 8: Use Cases, Capability Comparison, 5 Core FAQs & Final CTA */}
+        {/* Section 6: Full 3-Tier Pricing & BYOK Comparison */}
+        <PricingComparisonSection />
+
+        {/* Section 7: Use Cases, Capability Comparison, 5 Core FAQs & Final CTA */}
         <CredibilityAndComparison />
 
         {/* Section 9: Modern Tactile Footer */}
