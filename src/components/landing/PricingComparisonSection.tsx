@@ -38,7 +38,7 @@ export function PricingComparisonSection() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.12 }}
       transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="py-12 sm:py-16 relative z-10 w-full scroll-mt-24"
+      className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24"
     >
       {/* Section Header */}
       <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
@@ -64,13 +64,29 @@ export function PricingComparisonSection() {
       {/* 3 Pricing Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch max-w-6xl mx-auto">
         {/* Plan 1: Free Forever */}
-        <div className="relative rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 p-7 sm:p-8 flex flex-col justify-between shadow-tactile-card hover:-translate-y-1 transition-transform duration-200">
-          <div>
+        <div 
+          onMouseMove={(e) => {
+            if (shouldReduceMotion) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty("--card-x", `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty("--card-y", `${e.clientY - rect.top}px`);
+          }}
+          className="group relative rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200/90 hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20 p-7 sm:p-8 flex flex-col justify-between shadow-tactile-card hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
+        >
+          {/* Spotlight Cursor Glow */}
+          <div 
+            className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+            style={{
+              background: "radial-gradient(400px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(14, 165, 233, 0.08), transparent 70%)"
+            }}
+          />
+
+          <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
               <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
                 FREE FOREVER
               </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 group-hover:scale-105 transition-transform">
                 Daily Refill
               </span>
             </div>
@@ -114,30 +130,52 @@ export function PricingComparisonSection() {
             </ul>
           </div>
 
-          <div className="pt-8">
-            <Link
-              href="/auth"
-              className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-900 dark:text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          <div className="pt-8 relative z-10">
+            <motion.div
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.965, y: 0.5 }}
+              transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
-              <span>Start free without credit card</span>
-              <ArrowRight className="size-3.5" />
-            </Link>
+              <Link
+                href="/auth"
+                className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-900 dark:text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs hover:shadow-sm"
+              >
+                <span>Start free without credit card</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </motion.div>
           </div>
         </div>
 
         {/* Plan 2: Scholar Pass (Highlighted Card) */}
-        <div className="relative rounded-[28px] bg-white dark:bg-slate-900/90 border-2 border-slate-900 dark:border-white p-7 sm:p-8 flex flex-col justify-between shadow-2xl hover:-translate-y-1 transition-transform duration-200">
+        <div 
+          onMouseMove={(e) => {
+            if (shouldReduceMotion) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty("--card-x", `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty("--card-y", `${e.clientY - rect.top}px`);
+          }}
+          className="group relative rounded-[28px] bg-white dark:bg-slate-900/90 border-2 border-slate-900 dark:border-white p-7 sm:p-8 flex flex-col justify-between shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] hover:-translate-y-2 transition-all duration-300 overflow-hidden"
+        >
+          {/* Spotlight Cursor Glow */}
+          <div 
+            className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+            style={{
+              background: "radial-gradient(450px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(245, 158, 11, 0.09), transparent 70%)"
+            }}
+          />
+
           {/* Top Floating Badge */}
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-black text-white dark:bg-white dark:text-black text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-black text-white dark:bg-white dark:text-black text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap z-20 group-hover:scale-105 transition-transform">
             Most Popular for Full-Time Students
           </div>
 
-          <div>
+          <div className="relative z-10">
             <div className="flex items-center justify-between mb-4 mt-1">
               <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-900 dark:text-white">
                 SCHOLAR PASS
               </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-sky-500/40 bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400">
+              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-sky-500/40 bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400 group-hover:scale-105 transition-transform">
                 Unlimited
               </span>
             </div>
@@ -184,25 +222,47 @@ export function PricingComparisonSection() {
             </ul>
           </div>
 
-          <div className="pt-8">
-            <Link
-              href="/auth"
-              className="w-full py-3 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors shadow-lg cursor-pointer"
+          <div className="pt-8 relative z-10">
+            <motion.div
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.965, y: 0.5 }}
+              transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
-              <span>Get Scholar Pass</span>
-              <ArrowRight className="size-3.5" />
-            </Link>
+              <Link
+                href="/auth"
+                className="relative w-full py-3.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-xl border-t border-white/20 cursor-pointer"
+              >
+                <span>Get Scholar Pass</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </motion.div>
           </div>
         </div>
 
         {/* Plan 3: Campus & Research Lab */}
-        <div className="relative rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 p-7 sm:p-8 flex flex-col justify-between shadow-tactile-card hover:-translate-y-1 transition-transform duration-200">
-          <div>
+        <div 
+          onMouseMove={(e) => {
+            if (shouldReduceMotion) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty("--card-x", `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty("--card-y", `${e.clientY - rect.top}px`);
+          }}
+          className="group relative rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200/90 hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20 p-7 sm:p-8 flex flex-col justify-between shadow-tactile-card hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
+        >
+          {/* Spotlight Cursor Glow */}
+          <div 
+            className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+            style={{
+              background: "radial-gradient(400px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(14, 165, 233, 0.08), transparent 70%)"
+            }}
+          />
+
+          <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
               <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
                 CAMPUS & RESEARCH LAB
               </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300">
+              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300 group-hover:scale-105 transition-transform">
                 Team License
               </span>
             </div>
@@ -245,14 +305,20 @@ export function PricingComparisonSection() {
             </ul>
           </div>
 
-          <div className="pt-8">
-            <Link
-              href="/auth"
-              className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-900 dark:text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          <div className="pt-8 relative z-10">
+            <motion.div
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.965, y: 0.5 }}
+              transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
-              <span>Contact Academic Licensing</span>
-              <ArrowRight className="size-3.5" />
-            </Link>
+              <Link
+                href="/auth"
+                className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-900 dark:text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs hover:shadow-sm"
+              >
+                <span>Contact Academic Licensing</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </motion.div>
           </div>
         </div>
       </div>

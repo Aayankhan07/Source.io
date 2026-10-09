@@ -82,17 +82,31 @@ export function FreeTierTransparency() {
             return (
               <div
                 key={feat.title}
-                className="p-5 sm:p-6 rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 shadow-tactile-card flex items-start justify-between gap-4 select-none hover:-translate-y-0.5 transition-transform duration-200"
+                onMouseMove={(e) => {
+                  if (shouldReduceMotion) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  e.currentTarget.style.setProperty("--feat-x", `${e.clientX - rect.left}px`);
+                  e.currentTarget.style.setProperty("--feat-y", `${e.clientY - rect.top}px`);
+                }}
+                className="group relative p-5 sm:p-6 rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200/90 hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20 shadow-tactile-card hover:shadow-lg flex items-start justify-between gap-4 select-none hover:-translate-y-1 transition-all duration-300 overflow-hidden"
               >
-                <div>
-                  <h4 className="text-base font-bold text-slate-900 dark:text-white font-display mb-1">
+                {/* Spotlight cursor glow */}
+                <div 
+                  className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+                  style={{
+                    background: "radial-gradient(350px circle at var(--feat-x, 100px) var(--feat-y, 100px), rgba(245, 158, 11, 0.08), transparent 70%)"
+                  }}
+                />
+
+                <div className="relative z-10">
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white font-display mb-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                     {feat.title}
                   </h4>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     {feat.desc}
                   </p>
                 </div>
-                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200 shrink-0">
+                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 group-hover:bg-amber-50 group-hover:text-amber-700 dark:bg-white/10 dark:group-hover:bg-amber-950/40 dark:group-hover:text-amber-400 text-slate-800 dark:text-slate-200 shrink-0 transition-colors relative z-10">
                   {feat.metric}
                 </span>
               </div>
@@ -100,7 +114,7 @@ export function FreeTierTransparency() {
           })}
 
           {/* Optional BYOK Pill for Technical Learners */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 hover:border-slate-300 dark:border-white/10 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300 transition-colors hover:shadow-xs">
             <div className="flex items-center gap-2">
               <Key className="size-4 text-slate-500" />
               <span>Need unlimited volume? Bring your own Groq API key in Settings.</span>
@@ -111,7 +125,7 @@ export function FreeTierTransparency() {
 
         {/* Right Column: In-App Tactile Quota Pill Showcase */}
         <div className="lg:col-span-5 w-full flex flex-col">
-          <div className="h-full p-6 sm:p-7 rounded-[32px] sm:rounded-[36px] bg-slate-950 text-white border border-slate-800 shadow-2xl flex flex-col justify-between relative overflow-hidden select-none">
+          <div className="h-full p-6 sm:p-7 rounded-[32px] sm:rounded-[36px] bg-slate-950 text-white border border-slate-800 shadow-2xl flex flex-col justify-between relative overflow-hidden select-none hover:border-slate-700 transition-colors duration-300">
             {/* Ambient Corner Flare */}
             <div className="absolute top-0 right-0 size-48 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
@@ -134,7 +148,7 @@ export function FreeTierTransparency() {
               </div>
 
               {/* Live Quota Bar Mockup */}
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3 hover:border-white/20 transition-colors">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-slate-300">Daily Balance</span>
                   <span className="font-bold text-emerald-400">22 / 25 Available</span>
@@ -177,13 +191,19 @@ export function FreeTierTransparency() {
 
               {/* Action Button: Consistent Start free */}
               <div className="pt-2">
-                <Link
-                  href="/auth"
-                  className="w-full py-3.5 px-4 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer"
+                <motion.div
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.965, y: 0.5 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 25 }}
                 >
-                  <span>Start free</span>
-                  <ArrowRight className="size-4" />
-                </Link>
+                  <Link
+                    href="/auth"
+                    className="w-full py-3.5 px-4 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer"
+                  >
+                    <span>Start free</span>
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </motion.div>
               </div>
             </div>
           </div>

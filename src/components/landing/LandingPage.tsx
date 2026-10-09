@@ -48,8 +48,8 @@ export function LandingPage() {
       {/* 1. Floating Capsule App-Style Navigation Header */}
       <LandingHeader />
 
-      {/* Main Fluid Container (Linear 9-Section Flow) */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 pb-16 pt-4">
+      {/* Main Fluid Container (Clean rhythmic vertical spacing) */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-2">
         {/* Section 1: Hero Section with clear promise, CTAs, trust line & quantum computing preview */}
         <TactileHeroPrototype />
 

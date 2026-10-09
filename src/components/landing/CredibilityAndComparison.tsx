@@ -115,7 +115,7 @@ export function CredibilityAndComparison() {
   ];
 
   return (
-    <div className="space-y-16 md:space-y-24 scroll-mt-20">
+    <div className="py-12 sm:py-20 space-y-16 md:space-y-24 scroll-mt-20">
       {/* 1. Use Cases Across Disciplines */}
       <section className="mx-auto text-left w-full">
         <SectionHeading
@@ -326,9 +326,9 @@ export function CredibilityAndComparison() {
             <AccordionItem 
               key={idx} 
               value={`item-${idx}`}
-              className="border border-slate-200/90 dark:border-white/10 rounded-full bg-white dark:bg-slate-900/90 px-6 sm:px-8 shadow-xs transition-all hover:border-slate-300 dark:hover:border-white/20"
+              className="group border border-slate-200/90 hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20 rounded-full bg-white dark:bg-slate-900/90 px-6 sm:px-8 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
-              <AccordionTrigger className="min-h-[58px] sm:min-h-[64px] text-left font-bold text-sm sm:text-[15px] leading-normal text-slate-900 dark:text-white py-4 sm:py-5 hover:no-underline font-display cursor-pointer flex items-center justify-between gap-4">
+              <AccordionTrigger className="min-h-[58px] sm:min-h-[64px] text-left font-bold text-sm sm:text-[15px] leading-normal text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 py-4 sm:py-5 hover:no-underline font-display cursor-pointer flex items-center justify-between gap-4 transition-colors">
                 <span className="flex-1 py-0.5">{faq.q}</span>
               </AccordionTrigger>
               <AccordionContent className="text-[13.5px] leading-relaxed text-slate-600 dark:text-slate-300 pb-5 pt-1">
@@ -347,7 +347,7 @@ export function CredibilityAndComparison() {
         transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="text-center pb-6 w-full relative"
       >
-        <div className="relative rounded-[36px] sm:rounded-[44px] bg-slate-950 text-white p-8 sm:p-16 shadow-2xl border border-slate-800 overflow-hidden">
+        <div className="relative rounded-[36px] sm:rounded-[44px] bg-slate-950 text-white p-8 sm:p-16 shadow-2xl border border-slate-800 overflow-hidden hover:border-slate-700 transition-colors duration-300">
           {/* Subtle Ambient Glow */}
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] pointer-events-none opacity-30"
@@ -369,26 +369,26 @@ export function CredibilityAndComparison() {
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5">
               <motion.div
-                whileHover={{ scale: 1.025, y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.965, y: 0.5 }}
+                transition={{ type: "spring", stiffness: 450, damping: 25 }}
               >
                 <Link
                   href="/auth"
-                  className="w-full sm:w-auto bg-white text-slate-950 font-bold text-sm px-8 py-3.5 rounded-full shadow-xl hover:bg-slate-100 transition-all inline-flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto bg-white text-slate-950 font-bold text-sm px-8 py-3.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.2),0_16px_32px_-8px_rgba(0,0,0,0.25)] hover:bg-slate-100 transition-all inline-flex items-center justify-center gap-2 cursor-pointer border-t border-white/40"
                 >
                   <span>Start free</span>
                   <ArrowRight className="size-4" />
                 </Link>
               </motion.div>
               <motion.div
-                whileHover={{ scale: 1.025, y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.965, y: 0.5 }}
+                transition={{ type: "spring", stiffness: 450, damping: 25 }}
               >
                 <Link
                   href="/app/doc/demo-quantum"
-                  className="w-full sm:w-auto border border-white/20 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-md transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full sm:w-auto border border-white/20 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-md transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:shadow-md"
                 >
                   <span>See a live demo</span>
                 </Link>

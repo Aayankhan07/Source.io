@@ -207,7 +207,7 @@ export function InteractiveWorkflowDemo({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.12 }}
       transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="py-8 md:py-14 relative z-10 w-full scroll-mt-24"
+      className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24"
     >
       <SectionHeading
         badge="5 Study Modes"
@@ -229,7 +229,7 @@ export function InteractiveWorkflowDemo({
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="relative rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-colors focus-visible:outline-none group cursor-pointer data-[state=active]:bg-transparent data-[state=active]:text-primary-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground"
+                  className="relative rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all focus-visible:outline-none group cursor-pointer data-[state=active]:bg-transparent data-[state=active]:text-primary-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground hover:bg-black/[0.03] dark:hover:bg-white/[0.05]"
                   title={tab.title}
                 >
                   {isActive && (
@@ -244,7 +244,7 @@ export function InteractiveWorkflowDemo({
                     />
                   )}
                   <span className="relative z-10 inline-flex items-center gap-2">
-                    <Icon className="size-4 shrink-0" />
+                    <Icon className="size-4 shrink-0 group-hover:scale-110 transition-transform duration-200" />
                     <span>{tab.label}</span>
                   </span>
                 </TabsTrigger>

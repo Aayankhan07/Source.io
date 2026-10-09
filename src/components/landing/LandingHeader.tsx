@@ -115,13 +115,13 @@ export function LandingHeader() {
                 Sign in
               </Link>
               <motion.div
-                whileHover={{ scale: 1.025, y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                whileHover={{ scale: 1.02, y: -0.5 }}
+                whileTap={{ scale: 0.965, y: 0.5 }}
+                transition={{ type: "spring", stiffness: 450, damping: 25 }}
               >
                 <Link
                   href="/auth"
-                  className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill transition-colors inline-flex items-center justify-center cursor-pointer"
+                  className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill hover:shadow-md border-t border-white/20 transition-all inline-flex items-center justify-center cursor-pointer"
                 >
                   Start free
                 </Link>

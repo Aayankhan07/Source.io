@@ -56,7 +56,7 @@ export function KnowledgePipeline() {
     },
   };
   return (
-    <section id="how-it-works" className="py-12 md:py-16 relative z-10 mx-auto scroll-mt-24 w-full">
+    <section id="how-it-works" className="py-12 sm:py-20 relative z-10 mx-auto scroll-mt-24 w-full">
       <SectionHeading
         badge="How It Works"
         badgeTone="blue"

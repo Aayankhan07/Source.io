@@ -82,7 +82,7 @@ export function TactileHeroPrototype() {
   const [audioPlaying, setAudioPlaying] = useState(false);
 
   return (
-    <section className="relative w-full min-h-[calc(100dvh-4.5rem)] flex flex-col justify-center pt-24 sm:pt-28 lg:pt-32 pb-8 sm:pb-12 select-none">
+    <section className="relative w-full min-h-[100dvh] flex flex-col justify-center pt-20 sm:pt-24 lg:pt-20 pb-8 sm:pb-12 select-none">
       {/* Ambient Atmospheric Glow (Subtle Sand/Sky Halos) */}
       <div
         className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-70 dark:opacity-30"
@@ -125,13 +125,13 @@ export function TactileHeroPrototype() {
           {/* Action CTAs: Consistent Start free & See a live demo with Tactile Button Physics */}
           <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
             <motion.div
-              whileHover={{ scale: 1.025, y: -1 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.965, y: 0.5 }}
+              transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
               <Link
                 href={mounted && user ? "/app" : "/auth"}
-                className="px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 font-semibold text-sm shadow-tactile-pill flex items-center justify-center gap-2 group cursor-pointer"
+                className="relative px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 font-semibold text-sm shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18),0_16px_32px_-8px_rgba(0,0,0,0.22)] border-t border-white/20 dark:border-black/10 flex items-center justify-center gap-2 group cursor-pointer transition-all duration-200"
               >
                 <span>{mounted && user ? "Open workspace" : "Start free"}</span>
                 <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
@@ -139,13 +139,13 @@ export function TactileHeroPrototype() {
             </motion.div>
 
             <motion.div
-              whileHover={{ scale: 1.025, y: -1 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.965, y: 0.5 }}
+              transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
               <Link
                 href="/app/doc/demo-quantum"
-                className="px-5 py-3.5 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-black/[0.08] dark:border-white/10 shadow-tactile-pill flex items-center justify-center gap-2 cursor-pointer group"
+                className="px-5 py-3.5 rounded-full bg-white/90 hover:bg-white dark:bg-slate-900/90 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-slate-200/90 hover:border-slate-300 dark:border-white/10 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer group transition-all duration-200"
               >
                 <span>See a live demo</span>
               </Link>
