@@ -31,6 +31,8 @@ import { AskPanel } from "@/features/documents/components/AskPanel";
 import NotesSettingsPopover from "@/features/documents/components/NotesSettingsPopover";
 import { useSettings } from "@/features/settings/context/SettingsContext";
 import { AiFeedbackButtons } from "@/components/common/AiFeedbackButtons";
+import { FlashcardsDeck } from "@/features/documents/components/FlashcardsDeck";
+import { QuizPlayer } from "@/features/documents/components/QuizPlayer";
 
 type DocumentAssets = {
   note: NoteRow | null;
@@ -314,6 +316,20 @@ export default function DocumentWorkspace() {
     if (!docId || derivLoading) return;
     setDerivLoading(true);
     try {
+      if (isDemo && DEMO_DOCUMENTS[docId]) {
+        // Realistic instantaneous synthesis for demo documents
+        const demoData = DEMO_DOCUMENTS[docId];
+        await new Promise((res) => setTimeout(res, 600)); // Smooth tactile delay
+        queryClient.setQueryData<DocumentAssets>(queryKeys.assets(docId), (prev) => ({
+          note: prev?.note ?? demoData.note,
+          cards: demoData.cards,
+          quiz: demoData.quiz,
+          podcast: prev?.podcast ?? demoData.podcast,
+        }));
+        toast({ title: "Flashcards & quiz ready", description: "Synthesized interactive practice set." });
+        return;
+      }
+
       await generateDerivatives(docId, {
         flashcardCount: settings.flashcardBatchSize,
         quizDifficulty: settings.quizDifficulty,
@@ -871,7 +887,13 @@ function PodcastPlayer({
   return (
     <div className="space-y-4">
       {podcast?.status === "ready" && podcast.audio_url ? (
-        <CustomAudioPlayer audioUrl={podcast.audio_url} script={podcast.script} title={podcast.title} />
+        <CustomAudioPlayer
+          audioUrl={podcast.audio_url}
+          script={podcast.script}
+          title={podcast.title}
+          onRegenerate={onGenerate}
+          loading={loading}
+        />
       ) : (
         <div className="bg-card p-8 rounded-3xl border border-border text-center space-y-4 shadow-tactile-card">
           <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto mb-2 shadow-tactile-pill">
@@ -891,129 +913,58 @@ function PodcastPlayer({
   );
 }
 
-// Flashcards Deck Component (simplified)
-function FlashcardsDeck({
-  documentId,
-  cards,
-  onRegenerate,
-  loading,
-}: {
-  documentId: string;
-  cards: FlashcardRow[];
-  onRegenerate: () => void;
-  loading: boolean;
-}) {
-  if (cards.length === 0) {
-    return (
-      <div className="bg-card p-8 rounded-3xl border border-border text-center space-y-4 shadow-tactile-card">
-        <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto mb-2 shadow-tactile-pill">
-          <Layers className="size-6 text-muted-foreground" />
-        </div>
-        <h3 className="font-semibold text-foreground font-display text-base">No flashcards yet</h3>
-        <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-          Generate an active spaced-repetition card deck mapped directly to key definitions and proof steps.
-        </p>
-        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs h-9 px-4">
-          {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-          Generate Flashcard Deck
-        </Button>
-      </div>
-    );
-  }
-  return (
-    <div className="p-4">
-      <p className="text-sm text-muted-foreground mb-4">{cards.length} cards generated</p>
-      <div className="grid gap-4 md:grid-cols-2">
-        {cards.slice(0, 6).map((card) => (
-          <div key={card.id} className="bg-card p-4 rounded-xl border border-border">
-            <p className="font-medium text-sm">{card.front}</p>
-            <p className="text-xs text-muted-foreground mt-2">{card.back}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-// Quiz Player Component (simplified)
-function QuizPlayer({
-  documentId,
-  quiz,
-  onRegenerate,
-  loading,
-}: {
-  documentId: string;
-  quiz: QuizRow | null;
-  onRegenerate: () => void;
-  loading: boolean;
-}) {
-  if (!quiz) {
-    return (
-      <div className="bg-card p-8 rounded-3xl border border-border text-center space-y-4 shadow-tactile-card">
-        <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto mb-2 shadow-tactile-pill">
-          <ListChecks className="size-6 text-muted-foreground" />
-        </div>
-        <h3 className="font-semibold text-foreground font-display text-base">No quiz yet</h3>
-        <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-          Generate a retrieval-practice quiz with proof references and diagnostic explanations.
-        </p>
-        <Button onClick={onRegenerate} disabled={loading} className="rounded-full text-xs h-9 px-4">
-          {loading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-          Generate Practice Quiz
-        </Button>
-      </div>
-    );
-  }
-  return (
-    <div className="p-4 space-y-4">
-      <h3 className="font-semibold">{quiz.title}</h3>
-      <p className="text-xs text-muted-foreground">{quiz.questions.length} questions</p>
-      <div className="space-y-3">
-        {quiz.questions.slice(0, 3).map((q) => (
-          <div key={q.id} className="bg-card p-4 rounded-xl border border-border">
-            <p className="text-sm font-medium">{q.question}</p>
-            {q.type === "mcq" && q.choices && (
-              <div className="mt-2 space-y-1">
-                {q.choices.map((c, i) => (
-                  <label key={i} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                    <input type="radio" name={q.id} className="h-3 w-3" />
-                    {c}
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-// Custom Audio Player (inline version)
+// Custom Audio Player (inline version with rich 2-host transcript)
 function CustomAudioPlayer({
   audioUrl,
   script,
   title,
+  onRegenerate,
+  loading,
 }: {
   audioUrl: string;
   script: string | null;
   title: string;
+  onRegenerate?: () => void;
+  loading?: boolean;
 }) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const audio = new Audio(audioUrl);
     audioRef.current = audio;
-    const onTimeUpdate = () => setProgress(audio.currentTime / audio.duration);
-    const onEnded = () => setPlaying(false);
+
+    const onLoadedMetadata = () => {
+      setDuration(audio.duration || 0);
+    };
+
+    const onTimeUpdate = () => {
+      if (audio.duration) {
+        setProgress(audio.currentTime / audio.duration);
+        setCurrentTime(audio.currentTime);
+      }
+    };
+
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(0);
+    };
+
+    audio.addEventListener("loadedmetadata", onLoadedMetadata);
     audio.addEventListener("timeupdate", onTimeUpdate);
     audio.addEventListener("ended", onEnded);
+
     return () => {
+      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
       audio.removeEventListener("timeupdate", onTimeUpdate);
       audio.removeEventListener("ended", onEnded);
       audio.pause();
+      audioRef.current = null;
     };
   }, [audioUrl]);
 
@@ -1037,24 +988,135 @@ function CustomAudioPlayer({
     }
   };
 
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !audioRef.current.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    const newTime = pos * audioRef.current.duration;
+    audioRef.current.currentTime = newTime;
+    setProgress(pos);
+  };
+
+  const formatSecs = (sec: number) => {
+    if (!sec || isNaN(sec)) return "0:00";
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
+  // Parse structured script if available
+  const parsedScript = useMemo(() => {
+    if (!script) return null;
+    try {
+      const parsed = JSON.parse(script);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // Return raw string format
+    }
+    return null;
+  }, [script]);
+
   return (
-    <div className="bg-card p-6 rounded-2xl border border-border space-y-4">
-      <div className="flex items-center gap-2">
-        <Headphones className="h-5 w-5 text-primary" />
-        <span className="font-medium text-sm">{title}</span>
+    <div className="bg-card p-6 sm:p-8 rounded-[28px] border border-border shadow-tactile-card space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="size-10 rounded-2xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 shadow-tactile-pill">
+            <Headphones className="size-5" />
+          </div>
+          <div className="min-w-0">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-bold">
+              Socratic Audio Recap
+            </span>
+            <h3 className="font-bold text-foreground font-display text-base truncate">{title}</h3>
+          </div>
+        </div>
+
+        {onRegenerate && (
+          <Button
+            onClick={onRegenerate}
+            disabled={loading}
+            variant="outline"
+            size="sm"
+            className="rounded-full text-xs h-8 px-3 gap-1.5"
+          >
+            {loading ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5 text-purple-500" />}
+            <span>Regenerate</span>
+          </Button>
+        )}
       </div>
-      <button onClick={togglePlay} className="w-full h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors">
-        {playing ? <span>⏸ Pause</span> : <span>▶ Play</span>}
-      </button>
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
-        <div className="h-full bg-primary rounded-full transition-all duration-100" style={{ width: `${progress * 100}%` }} />
+
+      {/* Main Play Bar & Waveform Tracker */}
+      <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={togglePlay}
+            className="size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-medium hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer shrink-0"
+            aria-label={playing ? "Pause" : "Play"}
+          >
+            {playing ? <span className="text-base font-bold">⏸</span> : <span className="text-base font-bold ml-0.5">▶</span>}
+          </button>
+          <div className="flex-1 space-y-1.5">
+            <div
+              onClick={handleSeek}
+              className="h-2.5 bg-muted rounded-full overflow-hidden cursor-pointer relative group"
+            >
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-100 group-hover:bg-primary/80"
+                style={{ width: `${Math.max(0, Math.min(100, progress * 100))}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+              <span>{formatSecs(currentTime)}</span>
+              <span>{formatSecs(duration || 180)}</span>
+            </div>
+          </div>
+        </div>
       </div>
-      {script && (
-        <details className="text-xs text-muted-foreground">
-          <summary className="cursor-pointer mb-1">Show transcript</summary>
-          <pre className="whitespace-pre-wrap text-left p-2 bg-muted/50 rounded">{script}</pre>
+
+      {/* Structured 2-Host Dialogue Transcript */}
+      {parsedScript && parsedScript.length > 0 ? (
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-foreground font-display">Dialogue Script</span>
+            <span className="text-[10px] font-mono text-muted-foreground">Dr. Sarah Chen · Marcus</span>
+          </div>
+          <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+            {parsedScript.map((turn: { speaker: string; text: string; timestamp?: string }, idx: number) => {
+              const isHostA = turn.speaker.includes("Sarah") || turn.speaker.includes("Host A");
+              return (
+                <div
+                  key={idx}
+                  className={cn(
+                    "p-3 rounded-2xl border text-xs leading-relaxed space-y-1",
+                    isHostA
+                      ? "bg-purple-500/5 border-purple-500/20 text-foreground"
+                      : "bg-muted/40 border-border text-foreground"
+                  )}
+                >
+                  <div className="flex items-center justify-between text-[11px] font-medium">
+                    <span className={cn("font-bold", isHostA ? "text-purple-600 dark:text-purple-400" : "text-sky-600 dark:text-sky-400")}>
+                      {turn.speaker}
+                    </span>
+                    {turn.timestamp && (
+                      <span className="text-[10px] font-mono text-muted-foreground">{turn.timestamp}</span>
+                    )}
+                  </div>
+                  <p className="text-foreground/90">{turn.text}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : script ? (
+        <details className="text-xs text-muted-foreground pt-2">
+          <summary className="cursor-pointer mb-2 font-medium text-foreground hover:underline">
+            Show Raw Transcript
+          </summary>
+          <pre className="whitespace-pre-wrap text-left p-3 bg-muted/40 border border-border rounded-xl font-mono text-xs text-foreground/80">
+            {script}
+          </pre>
         </details>
-      )}
+      ) : null}
     </div>
   );
 }

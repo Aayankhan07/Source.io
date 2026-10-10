@@ -117,7 +117,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
       id: "pod-quantum",
       document_id: "demo-quantum",
       title: "The Quantum Leap: Demystifying Qubits",
-      audio_url: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
+      audio_url: "https://actions.google.com/sounds/v1/science_fiction/scifi_hum.ogg",
       status: "ready",
       script: JSON.stringify([
         { speaker: "Host A (Dr. Sarah Chen)", text: "Welcome back to Source Studio. Today, we're diving into quantum computation — why everyone is talking about qubits and why it's not just a faster laptop.", timestamp: "0:04" },
@@ -197,7 +197,7 @@ Here, $\\lambda$ is the **eigenvalue** and $v$ is the non-zero **eigenvector**.
       id: "pod-linalg",
       document_id: "demo-linalg",
       title: "Visualizing Eigenvectors with 3Blue1Brown Intuition",
-      audio_url: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
+      audio_url: "https://actions.google.com/sounds/v1/science_fiction/scifi_hum.ogg",
       status: "ready",
       script: JSON.stringify([
         { speaker: "Host A (Dr. Sarah Chen)", text: "Today we are looking at eigenvectors: vectors that stay on their own span after a transformation.", timestamp: "0:04" },
