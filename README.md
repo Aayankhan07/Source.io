@@ -6,7 +6,7 @@ Source.io is an elegant, modern, AI-powered learning companion that transforms a
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React 18, Vite, TypeScript, Tailwind CSS, shadcn/ui, Zustand
+- **Frontend:** Next.js 16 (App Router + Turbopack), React 18, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query, Zustand, Lucide React
 - **Backend:** Supabase (PostgreSQL + pgvector, Auth, Storage, Edge Functions on Deno)
 - **AI Integrations:** Groq API — `llama-3.3-70b-versatile` for notes and derivatives, `llama-3.1-8b-instant` for chat, `whisper-large-v3` for transcription; Microsoft Edge TTS for podcast speech synthesis
 
@@ -33,40 +33,38 @@ The project follows a clean, professional-grade, domain-driven (feature-based) m
 
 ```
 .
-├── public/                    # Static assets served as-is (e.g. favicons, robots)
-├── src/
-│   ├── components/            # Global visual components
-│   │   ├── ui/                # shadcn/ui low-level primitives (buttons, dialogs, inputs)
-│   │   └── common/            # Shared components (MarkdownView, NavLink)
-│   │
-│   ├── features/              # Modular self-contained domains
-│   │   ├── auth/              # Authentication contexts, login routes, and guards
-│   │   ├── chat/              # Grounded RAG dialog chat console
-│   │   ├── flashcards/        # Spaced-repetition revision cards
-│   │   ├── quiz/              # Learning assessment quiz players
-│   │   └── documents/         # Upload engines, sidebars, and workspaces
-│   │
-│   ├── lib/                   # Platform configurations and utilities
-│   │   └── services/          # Client-side background pipelines (extractors, audio triggers)
-│   │
-│   ├── pages/                 # Top-level route entrypoints (Index, NotFound)
-│   ├── App.tsx                # Application routing configuration shell
-│   └── main.tsx               # ReactDOM mounting setup
+├── app/                       # Next.js App Router pages and layouts
+│   ├── app/                   # /app workspace, settings, and document routes
+│   │   ├── doc/[docId]/       # /app/doc/:docId workspace route
+│   │   ├── settings/          # /app/settings preferences route
+│   │   ├── layout.tsx         # App layout with authentication guard
+│   │   └── page.tsx           # Dashboard route entry
+│   ├── auth/                  # /auth authentication route
+│   ├── globals.css            # Global CSS, theme variables & 3D animations
+│   ├── layout.tsx             # Root HTML layout & fonts
+│   ├── page.tsx               # Marketing landing page
+│   └── providers.tsx          # TanStack Query & theme providers
 │
-├── docs/                      # Project documentation (architecture, data model, deployment)
-├── supabase/                  # Supabase database schemas & Deno code
-│   ├── functions/             # Server-side Edge Functions
-│   │   ├── chat/              # Citation-backed chat responder
-│   │   ├── embed_chunks/      # Ingest vector-indexing
-│   │   ├── generate_derivatives/  # Flashcards and quizzes compiler
-│   │   ├── generate_notes/    # SSE stream markdown notes builder
-│   │   ├── generate_podcast/  # Host dialog script builder
-│   │   └── ingest/            # Document transcript pipeline
-│   ├── migrations/            # SQL database migrations
-│   └── config.toml            # Supabase config
-├── tailwind.config.ts         # Styling directives extension
-├── vite.config.ts             # Vite bundler rules
-└── package.json               # Package manifests and runner scripts
+├── public/                    # Static assets (images, previews, icons, videos)
+│
+├── src/
+│   ├── components/            # UI components
+│   │   ├── common/            # Shared components (MarkdownView, ThemeToggle, DailyQuotaPill)
+│   │   ├── landing/           # Landing page sections & interactive demos
+│   │   └── ui/                # shadcn/ui primitive design tokens
+│   │
+│   ├── features/              # Feature domains
+│   │   ├── auth/              # Auth context, RequireAuth guard & login views
+│   │   ├── dashboard/         # Tactile dashboard metrics, goals & cards
+│   │   ├── documents/         # Document workspace, outline, 3D flashcards & quiz runner
+│   │   └── settings/          # Model, storage, audio & theme settings
+│   │
+│   ├── hooks/                 # Custom React hooks (use-toast, use-theme, use-mobile)
+│   ├── integrations/          # Supabase client and schema types
+│   └── lib/                   # Utility helpers & API client services
+│
+├── docs/                      # Architectural and technical documentation
+└── supabase/                  # Supabase migrations, config & edge functions
 ```
 
 ---
@@ -81,22 +79,21 @@ The project follows a clean, professional-grade, domain-driven (feature-based) m
    ```
 
 2. **Configure Environment Variables:**
-   Copy the template and fill in your Supabase credentials:
+   Copy the template and fill in your Supabase credentials in `.env.local`:
    ```bash
-   cp .env.example .env
+   cp .env.example .env.local
    ```
    ```env
-   VITE_SUPABASE_URL=your-supabase-project-url
-   VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-publishable-key
    ```
-   Both values are public and browser-safe. Never put a service-role key in a `VITE_`-prefixed
-   variable — Vite inlines those into the shipped bundle.
+   Both values are public and browser-safe. Never put a service-role key in a `NEXT_PUBLIC_`-prefixed variable.
 
 3. **Start the Development Server:**
    ```bash
    npm run dev
    ```
-   The application will boot locally at `http://localhost:8080` (or `8081` if port `8080` is occupied).
+   The application will boot locally at `http://localhost:3000`.
 
 ---
 
@@ -104,15 +101,11 @@ The project follows a clean, professional-grade, domain-driven (feature-based) m
 
 | Command | Action |
 | :--- | :--- |
-| `npm run dev` | Boots local Vite HMR dev server |
-| `npm run build` | Assembles production bundle to `dist/` |
-| `npm run preview` | Previews the compiled production build locally |
+| `npm run dev` | Boots local Next.js dev server with Turbopack |
+| `npm run build` | Builds optimized production bundle |
+| `npm run start` | Starts Next.js production server |
 | `npm run typecheck` | Type-checks the project (`tsc -b --noEmit`) |
-| `npm run lint` | Analyzes code for syntax and style standard violations |
-| `npm run test` | Executes automated unit test suite via Vitest |
-
-> `npm run build` uses SWC, which strips types **without checking them**. Run `npm run typecheck`
-> before committing — the build is not a type gate.
+| `npm run lint` | Analyzes code for syntax and style standards via ESLint |
 
 ---
 

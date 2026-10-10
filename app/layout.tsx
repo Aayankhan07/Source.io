@@ -4,6 +4,7 @@ import { Providers } from "./providers";
 import SWUnregister from "./SWUnregister";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sourceio.app"),
   title: "Source.io: AI study workspace for any content",
   description:
     "Turn PDFs, videos, audio, YouTube and notes into AI-generated study notes, flashcards, quizzes, podcasts and chat.",
