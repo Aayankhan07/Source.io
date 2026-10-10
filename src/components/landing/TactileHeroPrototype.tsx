@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useReducedMotion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useTheme } from "@/hooks/use-theme";
 import {
@@ -85,7 +85,7 @@ export function TactileHeroPrototype() {
     <section className="relative w-full min-h-[100dvh] flex flex-col justify-center pt-20 sm:pt-24 lg:pt-20 pb-8 sm:pb-12 select-none">
       {/* Ambient Atmospheric Glow (Subtle Sand/Sky Halos) */}
       <div
-        className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-70 dark:opacity-30"
+        className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-70"
         style={{
           background: "radial-gradient(ellipse 85% 65% at 70% 30%, rgba(14,165,233,0.12) 0%, rgba(245,158,11,0.08) 45%, transparent 75%)",
           filter: "blur(60px)",
@@ -103,7 +103,7 @@ export function TactileHeroPrototype() {
         >
 
           {/* Headline */}
-          <h1 className="text-[clamp(32px,3.8vw,50px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 dark:text-white font-display text-balance">
+          <h1 className="text-[clamp(32px,3.8vw,50px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 font-display text-balance">
             Turn textbooks, lectures, and research papers into{" "}
             <span className="text-primary relative inline-block pb-1">
               verified study materials.
@@ -118,7 +118,7 @@ export function TactileHeroPrototype() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg leading-[1.7] text-slate-600 dark:text-slate-300 max-w-[520px]">
+          <p className="text-base sm:text-lg leading-[1.7] text-slate-600 w-full max-w-lg">
             Extract notes, test comprehension, and cite every fact. Source.io converts dense documents and recordings into structured notes, flashcards, quizzes, audio recaps, and grounded chat—with every answer linked back to its source.
           </p>
 
@@ -131,7 +131,7 @@ export function TactileHeroPrototype() {
             >
               <Link
                 href={mounted && user ? "/app" : "/auth"}
-                className="relative px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 font-semibold text-sm shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18),0_16px_32px_-8px_rgba(0,0,0,0.22)] border-t border-white/20 dark:border-black/10 flex items-center justify-center gap-2 group cursor-pointer transition-all duration-200"
+                className="relative px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18),0_16px_32px_-8px_rgba(0,0,0,0.22)] border-t border-white/20 flex items-center justify-center gap-2 group cursor-pointer transition-[background-color,box-shadow] duration-200"
               >
                 <span>{mounted && user ? "Open workspace" : "Start free"}</span>
                 <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
@@ -145,7 +145,7 @@ export function TactileHeroPrototype() {
             >
               <Link
                 href="/app/doc/demo-quantum"
-                className="px-5 py-3.5 rounded-full bg-white/90 hover:bg-white dark:bg-slate-900/90 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-slate-200/90 hover:border-slate-300 dark:border-white/10 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer group transition-all duration-200"
+                className="px-5 py-3.5 rounded-full bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm border border-slate-200/90 hover:border-slate-300 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer group transition-[background-color,border-color,box-shadow] duration-200"
               >
                 <span>See a live demo</span>
               </Link>
@@ -153,7 +153,7 @@ export function TactileHeroPrototype() {
           </div>
 
           {/* Trust Guarantees */}
-          <div className="pt-3 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+          <div className="pt-3 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-500 font-medium">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-emerald-500" />
               <span>No credit card required</span>
@@ -184,7 +184,7 @@ export function TactileHeroPrototype() {
             }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="w-full max-w-[620px] rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.08] dark:border-white/10 shadow-tactile-dock bg-white dark:bg-slate-900/90 p-2 sm:p-2.5 transition-shadow hover:shadow-2xl cursor-default"
+            className="w-full max-w-[620px] rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.08] shadow-tactile-dock bg-white p-2 sm:p-2.5 transition-shadow hover:shadow-2xl cursor-default"
           >
             <img
               src="/hero-image-2.jpg"

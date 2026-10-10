@@ -60,26 +60,26 @@ export function TactilePerformanceChart() {
 
   return (
     <>
-      <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-6 border border-black/[0.04] dark:border-white/10 shadow-tactile-card flex flex-col justify-between relative overflow-hidden select-none">
+      <div className="bg-card rounded-[32px] p-5 sm:p-6 border border-border shadow-tactile-card flex flex-col justify-between relative overflow-hidden select-none">
         {/* Top Header & Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-lg sm:text-xl font-bold font-display text-foreground tracking-tight">
               Performance Chart
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Track results and watch your retention rise.
             </p>
 
             {/* Metric Legend Pills */}
             <div className="flex items-center gap-4 mt-2.5 text-xs font-medium">
-              <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+              <span className="flex items-center gap-1.5 text-foreground">
                 <span className="size-2 rounded-full bg-[#06B6D4]" /> Theory
               </span>
-              <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+              <span className="flex items-center gap-1.5 text-foreground">
                 <span className="size-2 rounded-full bg-[#6366F1]" /> Practice
               </span>
-              <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+              <span className="flex items-center gap-1.5 text-foreground">
                 <span className="size-2 rounded-full bg-[#F59E0B]" /> Lexicon
               </span>
             </div>
@@ -90,10 +90,10 @@ export function TactilePerformanceChart() {
             <div className="relative">
               <button
                 onClick={() => setTimeframeOpen((prev) => !prev)}
-                className="h-8 px-3 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1 transition-colors cursor-pointer"
+                className="h-8 px-3 rounded-full bg-muted hover:bg-accent text-xs font-semibold text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
                 <span>{timeframe}</span>
-                <ChevronDown className="size-3" />
+                <ChevronDown className="size-3 text-muted-foreground" />
               </button>
 
               <AnimatePresence>
@@ -102,7 +102,7 @@ export function TactilePerformanceChart() {
                     initial={{ opacity: 0, y: 6, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                    className="absolute right-0 mt-2 w-28 bg-white dark:bg-slate-900 rounded-[18px] border border-black/[0.06] dark:border-white/10 p-1.5 shadow-tactile-dock z-40"
+                    className="absolute right-0 mt-2 w-28 bg-popover rounded-[18px] border border-border p-1.5 shadow-tactile-dock z-40"
                   >
                     {(["Weekly", "Monthly"] as const).map((opt) => (
                       <button
@@ -114,8 +114,8 @@ export function TactilePerformanceChart() {
                         className={cn(
                           "w-full px-2.5 py-1.5 rounded-[12px] text-xs font-semibold text-left transition-colors cursor-pointer",
                           timeframe === opt
-                            ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950"
-                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
+                            ? "bg-primary text-primary-foreground"
+                            : "text-foreground hover:bg-muted"
                         )}
                       >
                         {opt}
@@ -129,7 +129,7 @@ export function TactilePerformanceChart() {
             <button 
               onClick={() => setIsExpandedModal(true)}
               title="Expand Chart Modal"
-              className="size-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 transition-colors cursor-pointer"
+              className="size-8 rounded-full bg-muted hover:bg-accent flex items-center justify-center text-muted-foreground transition-colors cursor-pointer"
             >
               <Maximize2 className="size-3.5" />
             </button>
@@ -149,8 +149,8 @@ export function TactilePerformanceChart() {
                   className={cn(
                     "flex-1 h-full rounded-t-xl transition-colors cursor-pointer flex flex-col justify-end pb-8",
                     hoveredIndex === i 
-                      ? "bg-slate-100/80 dark:bg-white/[0.06] border-x border-slate-200/80 dark:border-white/10" 
-                      : "hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                      ? "bg-accent/50 border-x border-border" 
+                      : "hover:bg-accent/20"
                   )}
                 />
               ))}
@@ -197,20 +197,20 @@ export function TactilePerformanceChart() {
             <motion.div 
               animate={{ left: `${Math.min(85, Math.max(15, hoverX))}%` }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="absolute top-2 -translate-x-1/2 bg-slate-950 text-white rounded-[16px] px-3.5 py-1.5 shadow-tactile-pill flex items-center gap-1.5 text-xs font-bold pointer-events-none z-20 whitespace-nowrap"
+              className="absolute top-2 -translate-x-1/2 bg-popover text-popover-foreground border border-border rounded-[16px] px-3.5 py-1.5 shadow-tactile-pill flex items-center gap-1.5 text-xs font-bold pointer-events-none z-20 whitespace-nowrap"
             >
               <span className="text-amber-400">↑</span>
               <span>+{hoverValue}% Retention ({days[hoveredIndex]})</span>
             </motion.div>
 
             {/* X-Axis Day Labels */}
-            <div className="absolute bottom-0 inset-x-0 flex justify-between text-[11px] font-mono font-medium text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-100 dark:border-white/5 pointer-events-none">
+            <div className="absolute bottom-0 inset-x-0 flex justify-between text-[11px] font-mono font-medium text-muted-foreground pt-2 border-t border-border pointer-events-none">
               {days.map((day, i) => (
                 <span 
                   key={day} 
                   className={cn(
                     "text-center flex-1 transition-colors",
-                    hoveredIndex === i ? "text-slate-900 dark:text-white font-bold" : ""
+                    hoveredIndex === i ? "text-foreground font-bold" : ""
                   )}
                 >
                   {day}
@@ -220,7 +220,7 @@ export function TactilePerformanceChart() {
           </div>
 
           {/* Right Y-Axis Percentage Labels */}
-          <div className="w-8 h-40 flex flex-col justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500 text-right self-start pt-1 pointer-events-none">
+          <div className="w-8 h-40 flex flex-col justify-between text-[10px] font-mono text-muted-foreground text-right self-start pt-1 pointer-events-none">
             <span>100%</span>
             <span>80%</span>
             <span>40%</span>
@@ -232,25 +232,25 @@ export function TactilePerformanceChart() {
       {/* Expanded Chart Modal */}
       <AnimatePresence>
         {isExpandedModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-[32px] border border-black/[0.08] dark:border-white/10 p-6 sm:p-8 shadow-tactile-dock"
+              className="w-full max-w-3xl bg-card rounded-[32px] border border-border p-6 sm:p-8 shadow-tactile-dock"
             >
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-2xl font-bold font-display text-slate-900 dark:text-white">
+                  <h3 className="text-2xl font-bold font-display text-foreground">
                     Detailed Performance Analytics
                   </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Continuous Leitner retention curve analysis across study sources.
                   </p>
                 </div>
                 <button
                   onClick={() => setIsExpandedModal(false)}
-                  className="size-9 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 cursor-pointer"
+                  className="size-9 rounded-full bg-muted hover:bg-accent flex items-center justify-center text-foreground cursor-pointer"
                 >
                   <Minimize2 className="size-4" />
                 </button>
@@ -259,21 +259,21 @@ export function TactilePerformanceChart() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="p-4 rounded-[22px] bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-100 dark:border-cyan-900/40">
                   <span className="text-xs text-cyan-700 dark:text-cyan-300 font-semibold">Theory Retention</span>
-                  <span className="text-2xl font-bold block mt-1 text-slate-900 dark:text-white font-mono">88%</span>
+                  <span className="text-2xl font-bold block mt-1 text-foreground font-mono">88%</span>
                 </div>
                 <div className="p-4 rounded-[22px] bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40">
                   <span className="text-xs text-indigo-700 dark:text-indigo-300 font-semibold">Practice Accuracy</span>
-                  <span className="text-2xl font-bold block mt-1 text-slate-900 dark:text-white font-mono">78%</span>
+                  <span className="text-2xl font-bold block mt-1 text-foreground font-mono">78%</span>
                 </div>
                 <div className="p-4 rounded-[22px] bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40">
                   <span className="text-xs text-amber-700 dark:text-amber-300 font-semibold">Lexicon Recall</span>
-                  <span className="text-2xl font-bold block mt-1 text-slate-900 dark:text-white font-mono">65%</span>
+                  <span className="text-2xl font-bold block mt-1 text-foreground font-mono">65%</span>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsExpandedModal(false)}
-                className="w-full py-3 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 font-bold text-sm shadow-tactile-pill cursor-pointer"
+                className="w-full py-3 rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-tactile-pill cursor-pointer"
               >
                 Close View
               </button>

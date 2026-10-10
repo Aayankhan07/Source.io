@@ -105,7 +105,7 @@ export function TactileTopBar({
 
       {/* Center Segmented Floating Pill Bar (Only when showPills is true) */}
       {showPills && onSelectPill && (
-        <div className="flex items-center p-1 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-black/[0.04] dark:border-white/10 shadow-tactile-card overflow-x-auto scrollbar-none max-w-full">
+        <div className="flex items-center p-1 rounded-full bg-card/90 backdrop-blur-md border border-border shadow-tactile-card overflow-x-auto scrollbar-none max-w-full">
           {pills.map((pill) => {
             const isActive = activePill === pill.id;
 
@@ -116,15 +116,15 @@ export function TactileTopBar({
                 className={cn(
                   "relative px-3.5 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-[13px] font-semibold transition-colors duration-200 cursor-pointer z-10 whitespace-nowrap shrink-0",
                   isActive
-                    ? "text-white dark:text-slate-950"
-                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId="active-tactile-top-pill"
                     transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                    className="absolute inset-0 rounded-full bg-[#1E232A] dark:bg-white shadow-tactile-pill -z-10"
+                    className="absolute inset-0 rounded-full bg-primary shadow-tactile-pill -z-10"
                   />
                 )}
                 {pill.label}
@@ -140,7 +140,7 @@ export function TactileTopBar({
         <button
           onClick={onOpenSearch}
           title="Quick search sources and flashcards"
-          className="size-10 rounded-[18px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-black/[0.04] dark:border-white/10 text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white flex items-center justify-center shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="size-10 rounded-[18px] bg-card/90 backdrop-blur-md border border-border text-muted-foreground hover:text-foreground flex items-center justify-center shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <Search className="size-4.5 stroke-[2]" />
         </button>
@@ -151,12 +151,12 @@ export function TactileTopBar({
             onClick={() => setNotificationsOpen((prev) => !prev)}
             title="Notifications & Study Reminders"
             className={cn(
-              "size-10 rounded-[18px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-black/[0.04] dark:border-white/10 flex items-center justify-center shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer relative",
-              notificationsOpen ? "text-slate-950 dark:text-white border-slate-300" : "text-slate-600 dark:text-slate-300"
+              "size-10 rounded-[18px] bg-card/90 backdrop-blur-md border border-border flex items-center justify-center shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer relative",
+              notificationsOpen ? "text-foreground border-border" : "text-muted-foreground"
             )}
           >
             <Bell className="size-4.5 stroke-[2]" />
-            <span className="absolute top-2 right-2 size-2 rounded-full bg-cyan-500 border border-white dark:border-slate-900" />
+            <span className="absolute top-2 right-2 size-2 rounded-full bg-cyan-500 border border-card" />
           </button>
 
           {/* Interactive Notifications Popover */}
@@ -167,11 +167,11 @@ export function TactileTopBar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-3 w-80 sm:w-92 bg-white dark:bg-slate-900 rounded-[28px] border border-black/[0.06] dark:border-white/10 p-4 shadow-tactile-dock z-50 select-none"
+                className="absolute right-0 mt-3 w-80 sm:w-92 bg-popover text-popover-foreground rounded-[28px] border border-border p-4 shadow-tactile-dock z-50 select-none"
               >
-                <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-white/10">
-                  <h4 className="text-sm font-bold font-display text-slate-900 dark:text-white">Notifications</h4>
-                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-semibold">
+                <div className="flex items-center justify-between pb-3 mb-2 border-b border-border">
+                  <h4 className="text-sm font-bold font-display text-foreground">Notifications</h4>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-semibold">
                     2 new
                   </span>
                 </div>
@@ -185,23 +185,23 @@ export function TactileTopBar({
                         className={cn(
                           "p-2.5 rounded-[18px] flex items-start gap-2.5 transition-colors cursor-pointer",
                           n.unread
-                            ? "bg-slate-50 dark:bg-white/[0.04]"
-                            : "hover:bg-slate-50 dark:hover:bg-white/[0.02]"
+                            ? "bg-muted"
+                            : "hover:bg-accent"
                         )}
                       >
-                        <div className="size-8 rounded-[12px] bg-slate-900 text-white dark:bg-white dark:text-slate-950 flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="size-8 rounded-[12px] bg-primary text-primary-foreground flex items-center justify-center shrink-0 mt-0.5">
                           <Icon className="size-3.5" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            <span className="text-xs font-bold text-foreground truncate">
                               {n.title}
                             </span>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono shrink-0">
+                            <span className="text-[10px] text-muted-foreground font-mono shrink-0">
                               {n.time}
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                          <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
                             {n.desc}
                           </p>
                         </div>
@@ -219,15 +219,15 @@ export function TactileTopBar({
           <div 
             onClick={() => setProfileOpen((prev) => !prev)}
             className={cn(
-              "h-10 pl-1.5 pr-2.5 rounded-[18px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-black/[0.04] dark:border-white/10 flex items-center gap-2 shadow-tactile-pill cursor-pointer transition-all",
-              profileOpen ? "border-slate-300 dark:border-slate-600 scale-102" : "hover:border-slate-300 dark:hover:border-slate-700"
+              "h-10 pl-1.5 pr-2.5 rounded-[18px] bg-card/90 backdrop-blur-md border border-border flex items-center gap-2 shadow-tactile-pill cursor-pointer transition-all",
+              profileOpen ? "border-foreground/30 scale-102" : "hover:border-border"
             )}
             title={userDisplayName}
           >
-            <div className="size-7 rounded-[12px] bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold text-xs flex items-center justify-center shadow-xs">
+            <div className="size-7 rounded-[12px] bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center shadow-xs">
               {userInitial}
             </div>
-            <span className="hidden sm:inline-block text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[90px] truncate">
+            <span className="hidden sm:inline-block text-xs font-semibold text-foreground max-w-[90px] truncate">
               {userDisplayName}
             </span>
           </div>
@@ -240,18 +240,18 @@ export function TactileTopBar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-900 rounded-[28px] border border-black/[0.06] dark:border-white/10 p-3.5 shadow-tactile-dock z-50 select-none"
+                className="absolute right-0 mt-3 w-64 bg-popover text-popover-foreground rounded-[28px] border border-border p-3.5 shadow-tactile-dock z-50 select-none"
               >
                 {/* User Card */}
-                <div className="p-2.5 rounded-[18px] bg-slate-50 dark:bg-white/[0.04] mb-2 flex items-center gap-2.5">
-                  <div className="size-10 rounded-[14px] bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold text-sm flex items-center justify-center shadow-xs">
+                <div className="p-2.5 rounded-[18px] bg-muted mb-2 flex items-center gap-2.5">
+                  <div className="size-10 rounded-[14px] bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center shadow-xs">
                     {userInitial}
                   </div>
                   <div className="min-w-0">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                    <span className="text-xs font-bold text-foreground block truncate">
                       {userDisplayName}
                     </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate font-mono">
+                    <span className="text-[10px] text-muted-foreground block truncate font-mono">
                       {userEmail}
                     </span>
                   </div>
@@ -261,7 +261,7 @@ export function TactileTopBar({
                   <Link
                     href="/app/settings"
                     onClick={() => setProfileOpen(false)}
-                    className="p-2 rounded-[14px] flex items-center gap-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                    className="p-2 rounded-[14px] flex items-center gap-2.5 text-foreground hover:bg-accent transition-colors"
                   >
                     <Settings className="size-4" />
                     <span>Workspace Settings</span>

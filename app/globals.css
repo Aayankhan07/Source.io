@@ -103,28 +103,32 @@
     --secondary-700: #b45309;
   }
 
-  /* NOIR / OBSIDIAN BLACK THEME — Pure, high-contrast black workspace */
+  /* CHARCOAL GREY / NEUTRAL ZINC THEME — Modern Linear/Raycast aesthetic */
   .dark {
-    --background: 0 0% 2%;              /* #050505 pure pitch black canvas */
-    --foreground: 0 0% 98%;             /* #fafafa crisp white text */
-    --card: 0 0% 5%;                    /* #0d0d0d jet black card surface */
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 98%;
+    /* Canvas & Text */
+    --background: 240 6% 7%;            /* #121214 deep charcoal canvas */
+    --foreground: 240 5% 96%;           /* #F4F4F5 crisp soft white */
+
+    /* Surfaces */
+    --card: 240 5% 10%;                 /* #18181B zinc card surface */
+    --card-foreground: 240 5% 96%;      /* #F4F4F5 */
+    --popover: 240 5% 12%;              /* #1E1E22 floating popover */
+    --popover-foreground: 240 5% 96%;   /* #F4F4F5 */
 
     /* Crisp High-Contrast Monochrome Accent */
-    --primary: 0 0% 98%;                /* #fafafa white highlight */
-    --primary-foreground: 0 0% 5%;      /* #0d0d0d */
-    --primary-glow: 0 0% 85%;
+    --primary: 240 5% 96%;              /* #F4F4F5 white highlight */
+    --primary-foreground: 240 5% 10%;   /* #18181B */
+    --primary-glow: 240 5% 80%;
 
-    --secondary: 0 0% 11%;              /* #1c1c1c */
-    --secondary-foreground: 0 0% 98%;
+    /* Interactive & States */
+    --secondary: 240 5% 13.5%;          /* #222225 */
+    --secondary-foreground: 240 5% 96%;
 
-    --muted: 0 0% 11%;
-    --muted-foreground: 240 5% 65%;     /* #a1a1aa neutral zinc text */
+    --muted: 240 5% 13.5%;              /* #222225 */
+    --muted-foreground: 240 5% 65%;     /* #A1A1AA neutral zinc text */
 
-    --accent: 0 0% 13%;                 /* #222222 */
-    --accent-foreground: 0 0% 98%;
+    --accent: 240 5% 15%;               /* #252529 */
+    --accent-foreground: 240 5% 96%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
@@ -132,47 +136,49 @@
     --success: 158 64% 45%;
     --warning: 38 92% 54%;
 
-    --border: 0 0% 14%;                 /* #242424 subtle hairline */
-    --input: 0 0% 14%;
-    --ring: 0 0% 80%;
+    /* Lines & Focus */
+    --border: 240 5% 16.5%;             /* #27272A subtle hairline */
+    --input: 240 5% 16.5%;              /* #27272A */
+    --ring: 240 5% 65%;                 /* #A1A1AA WCAG-compliant visible focus */
 
     --radius: 0.75rem;
 
-    --surface-sunken: 0 0% 1%;          /* #030303 */
-    --surface-raised: 0 0% 8%;          /* #141414 clean charcoal */
-    --surface-elevated: 0 0% 12%;       /* #1f1f1f elevated modal/card */
+    /* Elevation Surfaces */
+    --surface-sunken: 240 6% 5.5%;      /* #0E0E10 deep inset */
+    --surface-raised: 240 5% 10%;       /* #18181B */
+    --surface-elevated: 240 5% 14.5%;   /* #242428 elevated dialog */
 
-    --sidebar-background: 0 0% 2%;      /* #050505 matte black sidebar */
+    --sidebar-background: 240 6% 6.5%;  /* #101012 refined sidebar foundation */
     --sidebar-foreground: 240 5% 72%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 0 0% 80%;
+    --sidebar-primary: 240 5% 96%;
+    --sidebar-primary-foreground: 240 5% 10%;
+    --sidebar-accent: 240 5% 13%;
+    --sidebar-accent-foreground: 240 5% 96%;
+    --sidebar-border: 240 5% 14%;
+    --sidebar-ring: 240 5% 65%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 98%), hsl(0 0% 82%));
+    --gradient-primary: linear-gradient(135deg, hsl(240 5% 96%), hsl(240 5% 82%));
 
-    /* ZAIN'S DESIGN SYSTEM TOKENS (DARK OBSIDIAN) */
+    /* ZAIN'S DESIGN SYSTEM TOKENS (CHARCOAL GREY) */
     --ink: #f4f4f5;
     --ink-light: #e4e4e7;
     --muted-ink: #a1a1aa;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
 
     /* Surfaces — Chrome darker than framed content */
-    --sidebar-bg: #050505;
-    --page-bg: #09090b;
-    --card-bg: #111113;
-    --card-bg-hover: #17171a;   /* Recessed cards deepen, never lift */
-    --hover-border: #27272a;
+    --sidebar-bg: #101012;
+    --page-bg: #121214;
+    --card-bg: #18181B;
+    --card-bg-hover: #1f1f23;           /* Recessed cards deepen, never lift */
+    --hover-border: #2d2d32;
 
     /* Crisp ink shadows for dark mode */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 12px 16px -4px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 24px -4px rgba(0, 0, 0, 0.7), 0 8px 8px -4px rgba(0, 0, 0, 0.4);
-    --shadow-2xl: 0 24px 48px -12px rgba(0, 0, 0, 0.85);
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 16px -4px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 24px -4px rgba(0, 0, 0, 0.6), 0 8px 8px -4px rgba(0, 0, 0, 0.4);
+    --shadow-2xl: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
     --shadow-plate: var(--shadow-sm);
     --shadow-glow: none;
 
@@ -247,29 +253,29 @@
     --shadow-glow: 0 4px 16px -4px rgba(14, 165, 233, 0.25);
   }
 
-  /* NOIR / OBSIDIAN BLACK THEME — high-craft pure black workspace */
+  /* CHARCOAL GREY / NEUTRAL ZINC THEME — high-craft dark workspace */
   .luminous-app.dark,
   .dark .luminous-app,
   .dark.luminous-app {
-    --background: 0 0% 2%;              /* #050505 pure pitch black canvas */
-    --foreground: 0 0% 98%;             /* #fafafa crisp white text */
-    --card: 0 0% 5%;                    /* #0d0d0d jet black card surface */
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 98%;
+    --background: 240 6% 7%;            /* #121214 deep charcoal canvas */
+    --foreground: 240 5% 96%;           /* #F4F4F5 crisp soft white text */
+    --card: 240 5% 10%;                 /* #18181B zinc card surface */
+    --card-foreground: 240 5% 96%;      /* #F4F4F5 */
+    --popover: 240 5% 12%;              /* #1E1E22 */
+    --popover-foreground: 240 5% 96%;   /* #F4F4F5 */
 
-    --primary: 0 0% 98%;                /* #fafafa crisp white highlight */
-    --primary-foreground: 0 0% 5%;      /* #0d0d0d */
-    --primary-glow: 0 0% 85%;
+    --primary: 240 5% 96%;              /* #F4F4F5 crisp white highlight */
+    --primary-foreground: 240 5% 10%;   /* #18181B */
+    --primary-glow: 240 5% 80%;
 
-    --secondary: 0 0% 11%;              /* #1c1c1c */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 240 5% 13.5%;          /* #222225 */
+    --secondary-foreground: 240 5% 96%;
 
-    --muted: 0 0% 11%;
-    --muted-foreground: 240 5% 65%;     /* #a1a1aa neutral zinc text */
+    --muted: 240 5% 13.5%;              /* #222225 */
+    --muted-foreground: 240 5% 65%;     /* #A1A1AA neutral zinc text */
 
-    --accent: 0 0% 13%;                 /* #222222 */
-    --accent-foreground: 0 0% 98%;
+    --accent: 240 5% 15%;               /* #252529 */
+    --accent-foreground: 240 5% 96%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
@@ -277,27 +283,27 @@
     --success: 158 64% 45%;
     --warning: 38 92% 54%;
 
-    --border: 0 0% 14%;                 /* #242424 subtle hairline */
-    --input: 0 0% 14%;
-    --ring: 0 0% 80%;
+    --border: 240 5% 16.5%;             /* #27272A subtle hairline */
+    --input: 240 5% 16.5%;              /* #27272A */
+    --ring: 240 5% 65%;                 /* #A1A1AA WCAG focus indicator */
 
     --radius: 0.5rem;
 
-    --surface-sunken: 0 0% 1%;          /* #030303 */
-    --surface-raised: 0 0% 8%;          /* #141414 clean charcoal */
-    --surface-elevated: 0 0% 12%;       /* #1f1f1f elevated modal/card */
+    --surface-sunken: 240 6% 5.5%;      /* #0E0E10 deep inset */
+    --surface-raised: 240 5% 10%;       /* #18181B */
+    --surface-elevated: 240 5% 14.5%;   /* #242428 */
 
-    --sidebar-background: 0 0% 2%;      /* #050505 deeper black sidebar foundation */
+    --sidebar-background: 240 6% 6.5%;  /* #101012 deep sidebar foundation */
     --sidebar-foreground: 240 5% 72%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 0 0% 80%;
+    --sidebar-primary: 240 5% 96%;
+    --sidebar-primary-foreground: 240 5% 10%;
+    --sidebar-accent: 240 5% 13%;
+    --sidebar-accent-foreground: 240 5% 96%;
+    --sidebar-border: 240 5% 14%;
+    --sidebar-ring: 240 5% 65%;
 
-    --shadow-plate: 0 16px 40px -12px rgba(0, 0, 0, 0.9);
-    --shadow-glow: 0 4px 20px -2px rgba(255, 255, 255, 0.08);
+    --shadow-plate: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 4px 20px -2px rgba(255, 255, 255, 0.05);
   }
 }
 
@@ -737,7 +743,7 @@
     background-color: #F3F5F8;
   }
   .dark .bg-tactile-canvas {
-    background-color: #0B0F19;
+    background-color: #121214;
   }
 
   .shadow-tactile-card {
@@ -745,8 +751,9 @@
                 0 4px 18px -2px rgba(15, 23, 42, 0.02);
   }
   .dark .shadow-tactile-card {
-    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.55),
-                0 0 0 1px rgba(255, 255, 255, 0.06);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
   .shadow-tactile-dock {
@@ -754,7 +761,8 @@
                 0 8px 22px -4px rgba(15, 23, 42, 0.04);
   }
   .dark .shadow-tactile-dock {
-    box-shadow: 0 24px 54px -12px rgba(0, 0, 0, 0.7),
+    box-shadow: 0 24px 54px -12px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
                 0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 
@@ -763,7 +771,8 @@
                 0 2px 8px -2px rgba(15, 23, 42, 0.03);
   }
   .dark .shadow-tactile-pill {
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6),
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
                 0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 
@@ -771,7 +780,7 @@
     box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.04);
   }
   .dark .shadow-tactile-inset {
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 
   /* Ultra-refined Frosted Liquid Glass Pill */
@@ -788,12 +797,12 @@
   }
 
   .dark .glass-tactile-pill {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(11, 15, 25, 0.5);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(24, 24, 27, 0.75);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.14);
     box-shadow: 
-      0 8px 32px 0 rgba(0, 0, 0, 0.6),
+      0 8px 32px 0 rgba(0, 0, 0, 0.5),
       inset 0 1px 1px 0 rgba(255, 255, 255, 0.16);
   }
 
@@ -808,7 +817,227 @@
   }
 
   .dark .glass-tactile-pill:hover {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(11, 15, 25, 0.65);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(24, 24, 27, 0.85);
     border-color: rgba(255, 255, 255, 0.22);
+  }
+}
+
+/* ========================================================================= */
+/* PRINT STYLESHEET (Publication-grade Study Notes Export)                   */
+/* ========================================================================= */
+.print-only {
+  display: none !important;
+}
+
+@media print {
+  @page {
+    margin: 18mm 15mm;
+    size: auto;
+  }
+
+  /* Force pure light theme variables for print so dark theme tokens never bleed */
+  :root,
+  .dark,
+  .luminous-app,
+  .luminous-app.dark,
+  body {
+    --background: 0 0% 100% !important;
+    --foreground: 222 47% 11% !important;
+    --card: 0 0% 100% !important;
+    --card-foreground: 222 47% 11% !important;
+    --muted: 210 40% 96% !important;
+    --muted-foreground: 215 16% 47% !important;
+    --border: 214 32% 91% !important;
+    --page-bg: #ffffff !important;
+    --card-bg: #ffffff !important;
+  }
+
+  /* Unconstrain viewport heights and scroll clips across Next.js app hierarchy */
+  html,
+  body,
+  #__next,
+  .luminous-app,
+  main,
+  [data-panel-group],
+  [data-panel] {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    padding-left: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Strip background tints from canvas containers */
+  .bg-tactile-canvas,
+  .bg-card,
+  .bg-background,
+  .bg-muted {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  /* Hide app chrome, dock navigation, copilot panels, and interactive widgets */
+  header,
+  nav,
+  aside,
+  .no-print,
+  button,
+  textarea,
+  input,
+  [role="separator"],
+  [data-panel-resize-handle],
+  .fixed,
+  .sticky {
+    display: none !important;
+  }
+
+  /* Show Print-only Header */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Reset Main Workspace Containers for Print */
+  .printable-note-card,
+  #printable-notes-section {
+    display: block !important;
+    visibility: visible !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+
+  #printable-notes-section * {
+    visibility: visible !important;
+  }
+
+  /* High-Contrast Print Typography & Color Reset */
+  .prose-invert-tight,
+  .prose-invert-tight * {
+    color: #1e293b !important;
+    text-shadow: none !important;
+  }
+
+  h1, h2, h3, h4, h5, h6,
+  .prose-invert-tight h1,
+  .prose-invert-tight h2,
+  .prose-invert-tight h3,
+  .prose-invert-tight h4 {
+    color: #0f172a !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    font-weight: 700 !important;
+  }
+
+  h1 { font-size: 22pt !important; margin-bottom: 8pt !important; }
+  h2 { font-size: 16pt !important; margin-top: 18pt !important; margin-bottom: 6pt !important; border-bottom: 1px solid #e2e8f0; padding-bottom: 4pt; }
+  h3 { font-size: 13pt !important; margin-top: 14pt !important; margin-bottom: 4pt !important; }
+
+  p, li {
+    color: #1e293b !important;
+    font-size: 10.5pt !important;
+    line-height: 1.6 !important;
+  }
+
+  strong, b {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+
+  /* Orphan & Break Control */
+  p, blockquote, ul, ol {
+    orphans: 3;
+    widows: 3;
+  }
+
+  table,
+  pre,
+  blockquote,
+  .katex-display {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Code Blocks in Print */
+  pre {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    padding: 8pt 10pt !important;
+    border-radius: 4pt !important;
+    font-size: 9pt !important;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+  }
+
+  code {
+    color: #0f172a !important;
+    background: #f1f5f9 !important;
+    padding: 1pt 3pt !important;
+    border-radius: 3pt !important;
+    font-size: 9.5pt !important;
+  }
+
+  pre code {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  /* Blockquotes in Print */
+  blockquote {
+    border-left: 3.5px solid #0284c7 !important;
+    padding: 6pt 10pt !important;
+    color: #334155 !important;
+    background: #f8fafc !important;
+    border-radius: 0 4pt 4pt 0 !important;
+    margin: 8pt 0 !important;
+  }
+
+  /* Tables in Print: eliminate dark background cards, overflow wrappers, and borders */
+  div:has(> table) {
+    overflow: visible !important;
+    border: none !important;
+    background: transparent !important;
+    margin: 12pt 0 !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin: 0 !important;
+    page-break-inside: avoid !important;
+  }
+
+  th, td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 6pt 8pt !important;
+    text-align: left !important;
+    font-size: 9.5pt !important;
+    color: #1e293b !important;
+    background-color: transparent !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+
+  /* Math (KaTeX) in Print */
+  .katex {
+    color: #0f172a !important;
   }
 }

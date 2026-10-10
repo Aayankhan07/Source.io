@@ -75,14 +75,14 @@ export function TactileWeeklyGoals() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-6 border border-black/[0.04] dark:border-white/10 shadow-tactile-card flex flex-col justify-between select-none relative h-full">
+    <div className="bg-card rounded-[32px] p-5 sm:p-6 border border-border shadow-tactile-card flex flex-col justify-between select-none relative h-full">
       {/* Top Header & Dropdown */}
       <div className="flex items-center justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-base sm:text-lg font-bold font-display text-foreground tracking-tight">
             Weekly Goals Progress
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Track study hours, document coverage, and retention
           </p>
         </div>
@@ -92,10 +92,10 @@ export function TactileWeeklyGoals() {
           <button
             type="button"
             onClick={() => setFilterMenuOpen((prev) => !prev)}
-            className="h-8 px-3 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="h-8 px-3 rounded-full bg-muted hover:bg-accent text-xs font-semibold text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <span>{filter}</span>
-            <ChevronDown className="size-3 text-slate-500" />
+            <ChevronDown className="size-3 text-muted-foreground" />
           </button>
 
           <AnimatePresence>
@@ -104,7 +104,7 @@ export function TactileWeeklyGoals() {
                 initial={{ opacity: 0, scale: 0.95, y: -4 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                className="absolute right-0 top-10 w-28 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-1 z-30 flex flex-col gap-0.5"
+                className="absolute right-0 top-10 w-28 bg-popover rounded-xl shadow-lg border border-border p-1 z-30 flex flex-col gap-0.5"
               >
                 {(["Day", "Week", "Month"] as const).map((opt) => (
                   <button
@@ -117,8 +117,8 @@ export function TactileWeeklyGoals() {
                     className={cn(
                       "w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
                       filter === opt
-                        ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950 font-semibold"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                        ? "bg-primary text-primary-foreground font-semibold"
+                        : "text-foreground hover:bg-muted"
                     )}
                   >
                     {opt}
@@ -139,15 +139,15 @@ export function TactileWeeklyGoals() {
           return (
             <div key={target.id} className="space-y-1.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
-                  <Icon className="size-3.5 text-slate-400" />
+                <span className="flex items-center gap-1.5 font-medium text-foreground">
+                  <Icon className="size-3.5 text-muted-foreground" />
                   <span>{target.title}</span>
                 </span>
-                <span className="font-mono text-slate-500 dark:text-slate-400 font-semibold">
+                <span className="font-mono text-muted-foreground font-semibold">
                   {target.current} / {target.target}{target.unit} ({percent}%)
                 </span>
               </div>
-              <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+              <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${percent}%` }}
@@ -161,8 +161,8 @@ export function TactileWeeklyGoals() {
       </div>
 
       {/* Actionable Goals Checklist */}
-      <div className="pt-3 border-t border-slate-100 dark:border-white/5 space-y-2">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-bold block mb-1">
+      <div className="pt-3 border-t border-border space-y-2">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-bold block mb-1">
           Active Study Targets
         </span>
         {tasks.map((task) => (
@@ -173,8 +173,8 @@ export function TactileWeeklyGoals() {
             className={cn(
               "w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between text-xs cursor-pointer",
               task.completed
-                ? "bg-slate-50/60 dark:bg-white/[0.02] border-emerald-500/30 text-slate-400 dark:text-slate-500 line-through"
-                : "bg-white dark:bg-slate-800/60 border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-slate-200 hover:border-blue-500/40"
+                ? "bg-surface-sunken border-emerald-500/30 text-muted-foreground line-through"
+                : "bg-surface-elevated border-border text-foreground hover:border-border/80"
             )}
           >
             <div className="flex items-center gap-2.5 min-w-0 pr-2">
@@ -183,14 +183,14 @@ export function TactileWeeklyGoals() {
                   "size-4 rounded-md border flex items-center justify-center transition-colors shrink-0",
                   task.completed
                     ? "bg-emerald-600 border-emerald-600 text-white"
-                    : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                    : "border-input bg-card"
                 )}
               >
                 {task.completed && <Check className="size-3 stroke-[3]" />}
               </div>
               <span className="truncate font-medium">{task.title}</span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 shrink-0">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
               {task.category}
             </span>
           </button>

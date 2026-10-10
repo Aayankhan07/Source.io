@@ -346,7 +346,7 @@ export default function WorkspaceOutline({
       <TooltipProvider delayDuration={150}>
         <aside
           className={cn(
-            "flex flex-col h-full w-full rounded-[24px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card text-foreground items-center shrink-0 select-none py-2.5 overflow-hidden",
+            "flex flex-col h-full w-full rounded-[24px] bg-card border border-border shadow-tactile-card text-foreground items-center shrink-0 select-none py-2.5 overflow-hidden",
             className
           )}
         >
@@ -450,20 +450,20 @@ export default function WorkspaceOutline({
   return (
     <aside
       className={cn(
-        "flex flex-col h-full w-full rounded-[28px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card text-foreground overflow-hidden select-none",
+        "flex flex-col h-full w-full rounded-[28px] bg-card border border-border shadow-tactile-card text-foreground overflow-hidden select-none",
         className
       )}
     >
       {/* 3.1 Sleek Header Bar */}
-      <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/10 flex items-center justify-between shrink-0 gap-2 bg-slate-50/50 dark:bg-white/[0.02]">
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between shrink-0 gap-2 bg-muted/30">
         <div className="flex items-center gap-2 min-w-0">
           <div className="size-6 rounded-lg bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 flex items-center justify-center shrink-0">
             <ListTree className="size-3.5" />
           </div>
-          <span className="text-xs font-bold tracking-tight text-slate-900 dark:text-white font-display truncate">
+          <span className="text-xs font-bold tracking-tight text-foreground font-display truncate">
             Outline
           </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-bold border border-black/[0.04] dark:border-white/10 shrink-0">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-foreground font-bold border border-border shrink-0">
             {parsedHeadings.length}
           </span>
         </div>

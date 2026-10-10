@@ -128,20 +128,20 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
   };
 
   return (
-    <div className={cn("flex flex-col h-full w-full rounded-[28px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card overflow-hidden", className)}>
+    <div className={cn("flex flex-col h-full w-full rounded-[28px] bg-card border border-border shadow-tactile-card overflow-hidden", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.04] dark:border-white/10 shrink-0 bg-slate-50/50 dark:bg-white/[0.02]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0 bg-muted/30">
         <div className="flex items-center gap-2">
-          <div className="size-6 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 flex items-center justify-center shrink-0">
+          <div className="size-6 rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
             <Sparkles className="size-3.5" />
           </div>
-          <span className="text-xs font-bold text-slate-900 dark:text-white tracking-tight font-display">
+          <span className="text-xs font-bold text-foreground tracking-tight font-display">
             Ask Copilot
           </span>
         </div>
         <div className="flex items-center gap-1">
           <button
-            className="size-7 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center justify-center transition-colors cursor-pointer"
+            className="size-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors cursor-pointer"
             onClick={() => setSuggestedExpanded(!suggestedExpanded)}
             title={suggestedExpanded ? "Collapse suggestions" : "Expand suggestions"}
             aria-label={suggestedExpanded ? "Collapse suggestions" : "Expand suggestions"}
@@ -150,7 +150,7 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
           </button>
           {onClose && (
             <button
-              className="size-7 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center transition-colors cursor-pointer"
+              className="size-7 rounded-full text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center transition-colors cursor-pointer"
               onClick={onClose}
               title="Close Ask Copilot"
               aria-label="Close Ask Copilot"
@@ -162,13 +162,13 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
       </div>
 
       {/* Suggested Questions */}
-      <div className={cn("px-3.5 py-2.5 border-b border-black/[0.04] dark:border-white/10 transition-all duration-200 overflow-hidden", !suggestedExpanded && "max-h-0 p-0 opacity-0")}>
+      <div className={cn("px-3.5 py-2.5 border-b border-border transition-all duration-200 overflow-hidden", !suggestedExpanded && "max-h-0 p-0 opacity-0")}>
         <div className="flex flex-wrap gap-1.5" role="list" aria-label="Suggested questions">
           {SUGGESTED_QUESTIONS.map((q) => (
             <button
               key={q}
               onClick={() => void send(q)}
-              className="h-7 px-3 text-[11px] font-medium rounded-full bg-slate-100/80 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+              className="h-7 px-3 text-[11px] font-medium rounded-full bg-muted/60 hover:bg-muted text-foreground/80 hover:text-foreground border border-border transition-colors cursor-pointer shrink-0"
             >
               {q}
             </button>
@@ -200,8 +200,8 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
                   className={cn(
                     "inline-block max-w-full px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words",
                     msg.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-tr-md"
-                      : "bg-surface-2 text-foreground rounded-tl-md"
+                      ? "bg-primary text-primary-foreground rounded-tr-md shadow-xs"
+                      : "bg-muted/70 text-foreground border border-border/60 rounded-tl-md shadow-xs"
                   )}
                 >
                   <MarkdownView>{msg.content}</MarkdownView>
@@ -263,9 +263,9 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-3.5 border-t border-black/[0.04] dark:border-white/10 shrink-0 bg-slate-50/50 dark:bg-white/[0.02] space-y-2">
+      <div className="p-3.5 border-t border-border shrink-0 bg-muted/20 space-y-2">
         {messages.length === 0 && (
-          <div className="px-3 py-1.5 rounded-[12px] bg-slate-100/70 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-mono">
+          <div className="px-3 py-1.5 rounded-[12px] bg-muted/50 border border-border text-[11px] text-muted-foreground flex items-center gap-1.5 font-mono">
             <ArrowUpRight className="size-3 text-purple-600 dark:text-purple-400 shrink-0" />
             <span>Answer cites ↗ highlights passage in notes</span>
           </div>
@@ -276,14 +276,14 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask a question about this lecture…"
-            className="flex-1 min-h-[44px] max-h-32 resize-none text-xs rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 pr-2 py-2.5 focus:ring-1 focus:ring-slate-950 dark:focus:ring-white"
+            className="flex-1 min-h-[44px] max-h-32 resize-none text-xs rounded-[16px] bg-muted/40 border-border text-foreground placeholder:text-muted-foreground pr-2 py-2.5 focus-visible:ring-1 focus-visible:ring-ring"
             rows={1}
             disabled={sending}
           />
           <button
             onClick={() => void send()}
             disabled={!input.trim() || sending}
-            className="size-9 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:scale-105 active:scale-95 transition-all shadow-tactile-pill flex items-center justify-center shrink-0 disabled:opacity-40 cursor-pointer"
+            className="size-9 rounded-full bg-primary text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-tactile-pill flex items-center justify-center shrink-0 disabled:opacity-40 cursor-pointer"
             aria-label="Send"
           >
             {sending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}

@@ -35,24 +35,24 @@ export default function SettingsPage() {
       <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+            <span className="p-1 rounded-lg bg-muted text-muted-foreground">
               <SettingsIcon className="size-4" />
             </span>
-            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
               Preferences
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold font-display text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold font-display text-foreground tracking-tight">
             Platform Settings
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Configure AI reasoning engines, custom provider API keys, audio recap voices, and reading ergonomics.
           </p>
         </div>
 
         <button
           onClick={() => router.push("/app")}
-          className="self-start sm:self-auto h-9 px-4 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+          className="self-start sm:self-auto h-9 px-4 rounded-full bg-muted hover:bg-accent text-xs font-semibold text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
         >
           <ArrowLeft className="size-3.5" />
           <span>Back to Dashboard</span>
@@ -72,8 +72,8 @@ export default function SettingsPage() {
               className={cn(
                 "h-10 px-4 sm:px-5 rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap shadow-2xs",
                 isActive
-                  ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-tactile-pill scale-[1.02]"
-                  : "bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 border border-black/[0.04] dark:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-primary text-primary-foreground shadow-tactile-pill scale-[1.02]"
+                  : "bg-card text-muted-foreground border border-border hover:bg-muted hover:text-foreground"
               )}
             >
               <Icon className="size-4 shrink-0" />

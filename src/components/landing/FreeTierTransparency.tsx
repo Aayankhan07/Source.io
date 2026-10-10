@@ -9,7 +9,7 @@ import {
   Key 
 } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 
 export function FreeTierTransparency() {
   const shouldReduceMotion = useReducedMotion();
@@ -88,7 +88,7 @@ export function FreeTierTransparency() {
                   e.currentTarget.style.setProperty("--feat-x", `${e.clientX - rect.left}px`);
                   e.currentTarget.style.setProperty("--feat-y", `${e.clientY - rect.top}px`);
                 }}
-                className="group relative p-5 sm:p-6 rounded-[28px] bg-white dark:bg-slate-900/90 border border-slate-200/90 hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20 shadow-tactile-card hover:shadow-lg flex items-start justify-between gap-4 select-none hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                className="group relative p-5 sm:p-6 rounded-[28px] bg-white border border-slate-200/90 hover:border-slate-300 shadow-tactile-card hover:shadow-lg flex items-start justify-between gap-4 select-none hover:-translate-y-1 transition-all duration-300 overflow-hidden"
               >
                 {/* Spotlight cursor glow */}
                 <div 
@@ -99,14 +99,14 @@ export function FreeTierTransparency() {
                 />
 
                 <div className="relative z-10">
-                  <h4 className="text-base font-bold text-slate-900 dark:text-white font-display mb-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                  <h4 className="text-base font-bold text-slate-900 font-display mb-1 group-hover:text-amber-600 transition-colors">
                     {feat.title}
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     {feat.desc}
                   </p>
                 </div>
-                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 group-hover:bg-amber-50 group-hover:text-amber-700 dark:bg-white/10 dark:group-hover:bg-amber-950/40 dark:group-hover:text-amber-400 text-slate-800 dark:text-slate-200 shrink-0 transition-colors relative z-10">
+                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 group-hover:bg-amber-50 group-hover:text-amber-700 text-slate-800 shrink-0 transition-colors relative z-10">
                   {feat.metric}
                 </span>
               </div>
@@ -114,12 +114,12 @@ export function FreeTierTransparency() {
           })}
 
           {/* Optional BYOK Pill for Technical Learners */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 hover:border-slate-300 dark:border-white/10 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300 transition-colors hover:shadow-xs">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 flex items-center justify-between text-xs text-slate-600 transition-colors hover:shadow-xs">
             <div className="flex items-center gap-2">
               <Key className="size-4 text-slate-500" />
               <span>Need unlimited volume? Bring your own Groq API key in Settings.</span>
             </div>
-            <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Optional BYOK</span>
+            <span className="text-[11px] font-mono text-emerald-600 font-semibold">Optional BYOK</span>
           </div>
         </div>
 

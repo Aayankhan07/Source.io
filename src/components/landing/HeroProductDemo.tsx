@@ -97,14 +97,14 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
   return (
     <div className="relative w-full group">
       {/* Main Sandbox Shell: Recessed Card with 12px radius and ink shadows */}
-      <div className="relative z-10 w-full rounded-xl border border-slate-200/90 dark:border-white/[0.08] bg-card text-card-foreground shadow-md transition-all duration-150 overflow-hidden">
+      <div className="relative z-10 w-full rounded-xl border border-slate-200/90 bg-card text-card-foreground shadow-md transition-all duration-150 overflow-hidden">
         {/* Top Chrome Window Header */}
         <div className="bg-muted/40 border-b border-border/80 px-4 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5" aria-hidden="true">
-              <span className="size-2 rounded-full bg-slate-300 dark:bg-white/20" />
-              <span className="size-2 rounded-full bg-slate-300 dark:bg-white/20" />
-              <span className="size-2 rounded-full bg-slate-300 dark:bg-white/20" />
+              <span className="size-2 rounded-full bg-slate-300" />
+              <span className="size-2 rounded-full bg-slate-300" />
+              <span className="size-2 rounded-full bg-slate-300" />
             </div>
             <span className="text-[11px] font-mono text-muted-foreground ml-2">
               source_sandbox.app
@@ -276,7 +276,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
               </div>
 
               {/* 5 Lens Switcher Pills with Unified Dark Blue Identity */}
-              <div className="flex items-center gap-1 p-1 bg-slate-100/80 dark:bg-accent/40 rounded-xl border border-slate-200/80 dark:border-border/60 overflow-x-auto">
+              <div className="flex items-center gap-1 p-1 bg-slate-100/80 rounded-xl border border-slate-200/80 overflow-x-auto">
                 {[
                   { id: "notes", label: "Notes", icon: FileText },
                   { id: "flashcard", label: "Cards", icon: Layers },
@@ -293,8 +293,8 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                       onClick={() => setActiveLens(tab.id as LensMode)}
                       className={`flex-1 min-w-[56px] py-1.5 px-2 rounded-lg text-xs font-medium inline-flex items-center justify-center gap-1 transition-all active:scale-[0.98] cursor-pointer ${
                         isActive
-                          ? "bg-blue-950/10 dark:bg-blue-950/50 text-blue-950 dark:text-blue-200 border-blue-900/30 dark:border-blue-700/50 shadow-[0_0_10px_rgba(30,58,138,0.15)] font-semibold border"
-                          : "text-muted-foreground hover:text-foreground hover:bg-white/60 dark:hover:bg-card/50 border border-transparent"
+                          ? "bg-blue-950/10 text-blue-950 border-blue-900/30 shadow-[0_0_10px_rgba(30,58,138,0.15)] font-semibold border"
+                          : "text-muted-foreground hover:text-foreground hover:bg-white/60 border border-transparent"
                       }`}
                     >
                       <Icon className="h-3 w-3 shrink-0" />
@@ -305,28 +305,28 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
               </div>
 
               {/* Lens Viewport Display */}
-              <div className="bg-slate-50/60 dark:bg-card/60 backdrop-blur-md rounded-xl p-3.5 border border-slate-200/80 dark:border-border/80 min-h-[145px] flex flex-col justify-center shadow-inner">
+              <div className="bg-slate-50/60 backdrop-blur-md rounded-xl p-3.5 border border-slate-200/80 min-h-[145px] flex flex-col justify-center shadow-inner">
                 {activeLens === "notes" && (
                   <div className="space-y-2.5">
                     <p className="text-xs text-foreground leading-relaxed font-sans min-h-[48px]">
                       A quantum state vector exists in{" "}
-                      <span className="bg-blue-950/10 dark:bg-blue-950/30 text-blue-950 dark:text-blue-200 px-1.5 py-0.5 rounded font-mono font-medium border border-blue-900/25">
+                      <span className="bg-blue-950/10 text-blue-950 px-1.5 py-0.5 rounded font-mono font-medium border border-blue-900/25">
                         normalized Hilbert space |ψ⟩ = α|0⟩ + β|1⟩
                       </span>
                       . Unlike classical bits constrained to discrete values,{" "}
-                      <span className="bg-blue-950/10 dark:bg-blue-950/20 text-blue-950 dark:text-blue-300 px-1.5 py-0.5 rounded font-medium border border-blue-900/20 dark:border-blue-800/40">
+                      <span className="bg-blue-950/10 text-blue-950 px-1.5 py-0.5 rounded font-medium border border-blue-900/20">
                         quantum superposition
                       </span>{" "}
                       allows simultaneous computation until measurement triggers collapse.
                     </p>
                     <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-xs">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-950/10 dark:bg-blue-950/40 border border-blue-900/30 text-blue-950 dark:text-blue-200 shadow-xs">
-                        <span className="h-1.5 w-1.5 rounded-full bg-blue-900 dark:bg-blue-400 animate-pulse" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-950/10 border border-blue-900/30 text-blue-950 shadow-xs">
+                        <span className="h-1.5 w-1.5 rounded-full bg-blue-900 animate-pulse" />
                         <span>Passage §1.2 [p. 3]</span>
-                        <span className="text-blue-900 dark:text-blue-400 font-bold">0.98</span>
+                        <span className="text-blue-900 font-bold">0.98</span>
                       </span>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-zinc-300 shadow-xs">
-                        <Clock className="h-3 w-3 text-blue-900 dark:text-blue-400" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-700 shadow-xs">
+                        <Clock className="h-3 w-3 text-blue-900" />
                         <span>Lecture [01:14]</span>
                       </span>
                     </div>
@@ -338,30 +338,30 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                     onClick={() => setCardFlipped(!cardFlipped)}
                     className={`p-3.5 rounded-lg border transition-all duration-300 cursor-pointer select-none space-y-2 shadow-xs ${
                       cardFlipped
-                        ? "bg-blue-950/5 dark:bg-blue-950/40 border-blue-900/30 dark:border-blue-700/50 shadow-[0_0_15px_rgba(30,58,138,0.12)]"
-                        : "bg-white dark:bg-card border-slate-200 dark:border-border hover:border-blue-900/30"
+                        ? "bg-blue-950/5 border-blue-900/30 shadow-[0_0_15px_rgba(30,58,138,0.12)]"
+                        : "bg-white border-slate-200 hover:border-blue-900/30"
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-                      <span className="inline-flex items-center gap-1.5 text-blue-950 dark:text-blue-300 font-medium">
-                        <span className="h-1.5 w-1.5 rounded-full bg-blue-900 dark:bg-blue-400" />
+                      <span className="inline-flex items-center gap-1.5 text-blue-950 font-medium">
+                        <span className="h-1.5 w-1.5 rounded-full bg-blue-900" />
                         Leitner Deck • Box 3
                       </span>
-                      <span className="text-blue-900 dark:text-blue-400 font-medium hover:underline">
+                      <span className="text-blue-900 font-medium hover:underline">
                         {cardFlipped ? "Click to view question" : "Click to flip answer"}
                       </span>
                     </div>
                     <p className="text-xs font-medium text-foreground leading-relaxed">
                       {cardFlipped ? (
                         <span>
-                          Linear superposition: <code className="text-blue-950 dark:text-blue-200 bg-blue-950/10 dark:bg-blue-950/50 px-1 py-0.5 rounded border border-blue-900/25 font-mono">|ψ⟩ = α|0⟩ + β|1⟩</code> evaluates all multi-path algorithms simultaneously until measurement triggers wave-function collapse.
+                          Linear superposition: <code className="text-blue-950 bg-blue-950/10 px-1 py-0.5 rounded border border-blue-900/25 font-mono">|ψ⟩ = α|0⟩ + β|1⟩</code> evaluates all multi-path algorithms simultaneously until measurement triggers wave-function collapse.
                         </span>
                       ) : (
                         "What mathematical property allows quantum systems to evaluate multiple states simultaneously before measurement?"
                       )}
                     </p>
-                    <div className="flex items-center justify-between text-xs font-mono pt-1 border-t border-slate-200 dark:border-border/50">
-                      <span className="text-slate-600 dark:text-zinc-400">Next review: In 4 Days</span>
+                    <div className="flex items-center justify-between text-xs font-mono pt-1 border-t border-slate-200">
+                      <span className="text-slate-600">Next review: In 4 Days</span>
                       <span className="text-foreground font-semibold">94.2% Retention</span>
                     </div>
                   </div>
@@ -384,9 +384,9 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                           className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer font-mono text-xs flex items-center justify-between ${
                             quizSelected === opt.id
                               ? opt.correct
-                                ? "bg-primary/10 dark:bg-primary/20 border-primary/40 text-primary font-semibold shadow-xs"
+                                ? "bg-primary/10 border-primary/40 text-primary font-semibold shadow-xs"
                                 : "bg-muted/60 border-border text-muted-foreground font-semibold"
-                              : "bg-white dark:bg-card border-slate-200 dark:border-border hover:border-primary/40 text-foreground"
+                              : "bg-white border-slate-200 hover:border-primary/40 text-foreground"
                           }`}
                         >
                           <div>
@@ -413,18 +413,18 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
                 {activeLens === "podcast" && (
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-                      <span className="flex items-center gap-1.5 text-blue-950 dark:text-blue-300">
+                      <span className="flex items-center gap-1.5 text-blue-950">
                         <span className="h-2 w-2 rounded-full bg-blue-900 animate-pulse" />
                         2-Host Dialogue (Julian &amp; Clara)
                       </span>
                       <span className="text-muted-foreground">01:14 / 04:30</span>
                     </div>
                     {/* Visual Waveform bars with Unified Dark Blue Gradient */}
-                    <div className="flex items-center gap-1 h-8 py-1 px-2.5 bg-white dark:bg-card/80 rounded-lg border border-slate-200 dark:border-border">
+                    <div className="flex items-center gap-1 h-8 py-1 px-2.5 bg-white rounded-lg border border-slate-200">
                       {[40, 70, 95, 30, 85, 60, 100, 45, 80, 55, 90, 65, 35, 75, 50].map((h, i) => (
                         <span
                           key={i}
-                          className="flex-1 bg-gradient-to-t from-blue-900 to-blue-700 dark:from-blue-600 dark:to-blue-400 rounded-full transition-all duration-300 opacity-80 hover:opacity-100"
+                          className="flex-1 bg-gradient-to-t from-blue-900 to-blue-700 rounded-full transition-all duration-300 opacity-80 hover:opacity-100"
                           style={{ height: `${h}%` }}
                         />
                       ))}
@@ -437,15 +437,15 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
 
                 {activeLens === "chat" && (
                   <div className="space-y-2 text-xs">
-                    <div className="bg-white dark:bg-card p-2.5 rounded-lg border border-slate-200 dark:border-border text-foreground font-mono">
+                    <div className="bg-white p-2.5 rounded-lg border border-slate-200 text-foreground font-mono">
                       Q: What is the formal equation for qubit superposition?
                     </div>
-                    <div className="bg-blue-950/10 dark:bg-blue-950/40 p-2.5 rounded-lg border border-blue-900/25 dark:border-blue-700/40 text-slate-900 dark:text-blue-100">
+                    <div className="bg-blue-950/10 p-2.5 rounded-lg border border-blue-900/25 text-slate-900">
                       <p className="leading-relaxed font-sans">
                         |ψ⟩ = α|0⟩ + β|1⟩ where |α|² + |β|² = 1.
                       </p>
-                      <span className="inline-flex items-center gap-1.5 font-mono text-blue-900 dark:text-blue-400 mt-1.5 text-xs font-medium">
-                        <Check className="h-3 w-3 text-blue-900 dark:text-blue-300" /> Cited from Chapter 1, p. 3 (§1.2)
+                      <span className="inline-flex items-center gap-1.5 font-mono text-blue-900 mt-1.5 text-xs font-medium">
+                        <Check className="h-3 w-3 text-blue-900" /> Cited from Chapter 1, p. 3 (§1.2)
                       </span>
                     </div>
                   </div>
@@ -453,7 +453,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
               </div>
 
               {/* Bottom Quick-Action Link */}
-              <div className="pt-1 flex items-center justify-between border-t border-slate-200/80 dark:border-border/70 mt-auto">
+              <div className="pt-1 flex items-center justify-between border-t border-slate-200/80 mt-auto">
                 <span className="text-xs font-mono text-muted-foreground">
                   View full multi-modal study workspace
                 </span>
@@ -472,7 +472,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
       </div>
 
         {/* Footer Status Strip with Theme-Aware Glassy Bar */}
-        <div className="bg-slate-50/80 dark:bg-gradient-to-r dark:from-white/[0.03] dark:via-white/[0.01] dark:to-transparent border-t border-slate-200/80 dark:border-white/[0.07] px-4 py-2.5 flex items-center justify-between text-xs font-mono text-muted-foreground">
+        <div className="bg-slate-50/80 border-t border-slate-200/80 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
@@ -480,7 +480,7 @@ export function HeroProductDemo({ onExploreWorkflow }: HeroProductDemoProps) {
             </span>
             <span>Whisper ASR • Vector Ingestion Engine</span>
           </div>
-          <span className="text-slate-400 dark:text-white/40">Zero Cost in Sandbox</span>
+          <span className="text-slate-400">Zero Cost in Sandbox</span>
         </div>
       </div>
     </div>

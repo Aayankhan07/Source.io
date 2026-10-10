@@ -221,7 +221,7 @@ export function InteractiveWorkflowDemo({
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         {/* Tab Switcher */}
         <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <TabsList className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-white/10 p-1.5 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-tactile-pill relative">
+          <TabsList className="bg-white/80 backdrop-blur-md border border-slate-200 p-1.5 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-tactile-pill relative">
             {tabsList.map((tab) => {
               const Icon = tab.icon;
               const isActive = currentTab === tab.value;
@@ -229,13 +229,13 @@ export function InteractiveWorkflowDemo({
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="relative rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all focus-visible:outline-none group cursor-pointer data-[state=active]:bg-transparent data-[state=active]:text-primary-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground hover:bg-black/[0.03] dark:hover:bg-white/[0.05]"
+                  className="relative rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all focus-visible:outline-none group cursor-pointer data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none text-slate-600 hover:text-slate-900 hover:bg-black/[0.04]"
                   title={tab.title}
                 >
                   {isActive && (
                     <motion.span
                       layoutId="activeTabPill"
-                      className="absolute inset-0 rounded-full bg-primary shadow-tactile-pill -z-0"
+                      className="absolute inset-0 rounded-full bg-slate-950 shadow-tactile-pill -z-0"
                       transition={
                         shouldReduceMotion
                           ? { duration: 0 }
@@ -245,7 +245,7 @@ export function InteractiveWorkflowDemo({
                   )}
                   <span className="relative z-10 inline-flex items-center gap-2">
                     <Icon className="size-4 shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                    <span>{tab.label}</span>
+                    <span className="font-medium tracking-tight">{tab.label}</span>
                   </span>
                 </TabsTrigger>
               );
@@ -253,24 +253,33 @@ export function InteractiveWorkflowDemo({
           </TabsList>
         </div>
 
-        {/* Console Shell (Hero-style Tactile Squircle Shell) */}
-        <div className="bg-white dark:bg-slate-900/90 rounded-[32px] sm:rounded-[40px] border border-black/[0.06] dark:border-white/10 shadow-tactile-dock overflow-hidden relative">
-          {/* Header Bar */}
-          <div className="bg-muted/30 border-b border-border/70 px-6 py-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-              <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-              <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+        {/* Console Shell (High-Contrast Immersive Dark Studio Console) */}
+        <div className="relative rounded-[32px] sm:rounded-[44px] bg-slate-950 text-slate-100 border border-slate-800 shadow-[0_24px_70px_rgba(0,0,0,0.35)] overflow-hidden">
+          {/* Subtle Studio Glow */}
+          <div
+            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none opacity-25"
+            style={{
+              background: "radial-gradient(ellipse at center, rgba(14,165,233,0.3) 0%, rgba(245,158,11,0.15) 50%, transparent 80%)",
+              filter: "blur(60px)",
+            }}
+          />
+
+          {/* Console Header Bar */}
+          <div className="relative z-10 bg-slate-900/90 border-b border-slate-800 px-6 py-4 flex items-center justify-between gap-4 backdrop-blur-md">
+            <div className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full bg-rose-500/80 shadow-xs" />
+              <span className="h-3 w-3 rounded-full bg-amber-500/80 shadow-xs" />
+              <span className="h-3 w-3 rounded-full bg-emerald-500/80 shadow-xs" />
             </div>
 
             <div className="flex-1 max-w-xs mx-auto hidden sm:flex items-center justify-center">
-              <div className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs text-foreground flex items-center justify-between font-mono shadow-2xs">
+              <div className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-1 text-xs text-slate-300 flex items-center justify-between font-mono shadow-inner">
                 <span className="truncate">quantum_computing_intro.pdf</span>
-                <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded font-mono font-medium border border-primary/20">Grounded</span>
+                <span className="text-[11px] text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded font-mono font-medium border border-emerald-500/30">Grounded</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-muted-foreground font-mono tabular-nums">
+            <div className="flex items-center gap-3 text-xs text-slate-400 font-mono tabular-nums">
               <span className="hidden md:inline">48 Citations Indexed</span>
               
               {/* Telemetry Drawer */}
@@ -278,26 +287,26 @@ export function InteractiveWorkflowDemo({
                 <DrawerTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-accent hover:text-foreground border border-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   >
                     <Terminal className="h-3 w-3" strokeWidth={1.5} /> Inspect Chunks
                   </button>
                 </DrawerTrigger>
-                <DrawerContent className="max-w-2xl mx-auto">
+                <DrawerContent className="max-w-2xl mx-auto bg-slate-900 border-slate-800 text-slate-100">
                   <DrawerHeader className="text-left">
-                    <DrawerTitle className="text-base font-semibold font-display">Document Embedding Chunks</DrawerTitle>
-                    <DrawerDescription className="text-xs">
+                    <DrawerTitle className="text-base font-semibold font-display text-white">Document Embedding Chunks</DrawerTitle>
+                    <DrawerDescription className="text-xs text-slate-400">
                       Inspect verified vector coordinates and cosine similarity scores calculated against source chunks.
                     </DrawerDescription>
                   </DrawerHeader>
                   <div className="p-4 space-y-2.5 font-mono text-xs max-h-80 overflow-y-auto">
                     {sourcePassages.map((p) => (
-                      <div key={p.id} className="p-3 rounded-lg bg-accent/60 border border-border flex items-center justify-between">
+                      <div key={p.id} className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center justify-between">
                         <div>
-                          <span className="font-semibold text-foreground block">chunk_00{p.id} • Page {p.page}</span>
-                          <span className="text-muted-foreground text-xs truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
+                          <span className="font-semibold text-white block">chunk_00{p.id} • Page {p.page}</span>
+                          <span className="text-slate-400 text-xs truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
                         </div>
-                        <span className="text-primary bg-primary/10 px-2 py-0.5 rounded text-xs font-semibold border border-primary/20 font-mono">
+                        <span className="text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded text-xs font-semibold border border-sky-500/30 font-mono">
                           {p.similarity} similarity
                         </span>
                       </div>
@@ -305,7 +314,7 @@ export function InteractiveWorkflowDemo({
                   </div>
                   <DrawerFooter className="pt-2">
                     <DrawerClose asChild>
-                      <button type="button" className="w-full py-2 rounded-full border border-border text-xs font-medium hover:bg-accent transition-colors">
+                      <button type="button" className="w-full py-2 rounded-full border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-white transition-colors">
                         Close Inspector
                       </button>
                     </DrawerClose>
@@ -328,26 +337,12 @@ export function InteractiveWorkflowDemo({
                 {/* TAB: DASHBOARD PREVIEW */}
                 <TabsContent value="dashboard" forceMount={currentTab === "dashboard" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "dashboard" && (
-                    <div className="space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                        <div>
-                          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                            <LayoutDashboard className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Central Workspace Dashboard
-                          </h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">Performance charts, weekly goals progress, and quick source access</p>
-                        </div>
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
-                          Live UI Preview
-                        </span>
-                      </div>
-
-                      <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
-                        <img
-                          src="/dashboard-preview.png"
-                          alt="Source.io Dashboard Preview"
-                          className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
-                        />
-                      </div>
+                    <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-1.5 sm:p-2.5 flex items-center justify-center shadow-inner">
+                      <img
+                        src="/dashboard-preview.png"
+                        alt="Source.io Dashboard Preview"
+                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-contain rounded-lg sm:rounded-xl shadow-xs"
+                      />
                     </div>
                   )}
                 </TabsContent>
@@ -355,26 +350,12 @@ export function InteractiveWorkflowDemo({
                 {/* TAB: LIBRARY PREVIEW */}
                 <TabsContent value="library" forceMount={currentTab === "library" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "library" && (
-                    <div className="space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                        <div>
-                          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                            <Library className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Study Sources &amp; Library
-                          </h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">All uploaded textbooks, lecture recordings, papers, and YouTube videos</p>
-                        </div>
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
-                          Multi-Format Index
-                        </span>
-                      </div>
-
-                      <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
-                        <img
-                          src="/library-preview.png"
-                          alt="Source.io Study Sources and Library Preview"
-                          className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
-                        />
-                      </div>
+                    <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-1.5 sm:p-2.5 flex items-center justify-center shadow-inner">
+                      <img
+                        src="/library-preview.png"
+                        alt="Source.io Study Sources and Library Preview"
+                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-contain rounded-lg sm:rounded-xl shadow-xs"
+                      />
                     </div>
                   )}
                 </TabsContent>
@@ -382,26 +363,12 @@ export function InteractiveWorkflowDemo({
                 {/* TAB: STRUCTURED NOTES */}
                 <TabsContent value="notes" forceMount={currentTab === "notes" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "notes" && (
-                    <div className="space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                        <div>
-                          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-foreground/80" strokeWidth={1.5} /> Structured Notes &amp; Copilot
-                          </h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">AI-synthesized lecture outlines, quantum mechanics notes, and verified Copilot</p>
-                        </div>
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground font-mono tabular-nums border border-border/60">
-                          Verified Notes
-                        </span>
-                      </div>
-
-                      <div className="w-full rounded-2xl overflow-hidden border border-border bg-slate-50 dark:bg-slate-950/40 p-2 sm:p-3 flex items-center justify-center shadow-xs">
-                        <img
-                          src="/notes-preview.png"
-                          alt="Source.io Structured Notes Preview"
-                          className="w-full max-h-[620px] object-contain rounded-xl shadow-xs"
-                        />
-                      </div>
+                    <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-1.5 sm:p-2.5 flex items-center justify-center shadow-inner">
+                      <img
+                        src="/notes-preview.png"
+                        alt="Source.io Structured Notes Preview"
+                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-contain rounded-lg sm:rounded-xl shadow-xs"
+                      />
                     </div>
                   )}
                 </TabsContent>
@@ -410,12 +377,12 @@ export function InteractiveWorkflowDemo({
                 <TabsContent value="flashcards" forceMount={currentTab === "flashcards" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "flashcards" && (
                     <div className="max-w-xl mx-auto py-6 sm:py-8 px-2 text-center space-y-6">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
+                      <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
                         <span>Card {cardIdx + 1} of {flashcardsData.length}</span>
                         <div className="flex items-center gap-2">
                           <span>Interval: {activeInterval}</span>
                           <span>•</span>
-                          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{activeRetention} Retention</span>
+                          <span className="text-emerald-400 font-semibold">{activeRetention} Retention</span>
                         </div>
                       </div>
 
@@ -431,21 +398,21 @@ export function InteractiveWorkflowDemo({
                               ? { duration: 0.15 } 
                               : { type: "spring", stiffness: 280, damping: 24 }
                           }
-                          className="w-full h-full relative [transform-style:preserve-3d] shadow-tactile-card rounded-[28px]"
+                          className="w-full h-full relative [transform-style:preserve-3d] shadow-2xl rounded-[28px]"
                         >
                           {/* Front of Card */}
-                          <div className="absolute inset-0 [backface-visibility:hidden] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[28px] p-8 flex flex-col justify-between text-left">
+                          <div className="absolute inset-0 [backface-visibility:hidden] bg-slate-900 border border-slate-700/80 rounded-[28px] p-8 flex flex-col justify-between text-left">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-sky-950/80 text-sky-400 border border-sky-500/30">
                                 Question (Click to flip)
                               </span>
-                              <Layers className="size-4 text-muted-foreground" />
+                              <Layers className="size-4 text-slate-400" />
                             </div>
-                            <p className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white leading-relaxed">
+                            <p className="text-base sm:text-lg font-bold font-display text-white leading-relaxed">
                               {flashcardsData[cardIdx].front}
                             </p>
-                            <span className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-                              <RotateCcw className="size-3.5 text-primary" /> Click card to reveal answer & formula
+                            <span className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                              <RotateCcw className="size-3.5 text-sky-400" /> Click card to reveal answer & formula
                             </span>
                           </div>
 
@@ -457,7 +424,7 @@ export function InteractiveWorkflowDemo({
                               </span>
                               <BookmarkCheck className="size-4 text-emerald-400" />
                             </div>
-                            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-mono">
+                            <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-mono">
                               {flashcardsData[cardIdx].back}
                             </p>
                             <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800 font-mono">
@@ -477,7 +444,7 @@ export function InteractiveWorkflowDemo({
                             setCardFlipped(false);
                             setCardIdx((prev) => (prev > 0 ? prev - 1 : flashcardsData.length - 1));
                           }}
-                          className="px-4 py-2 rounded-full border border-border bg-white dark:bg-slate-900 hover:bg-slate-100 text-xs font-semibold cursor-pointer transition-all active:scale-95"
+                          className="px-4 py-2 rounded-full border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 cursor-pointer transition-all active:scale-95"
                         >
                           Previous
                         </button>
@@ -487,7 +454,7 @@ export function InteractiveWorkflowDemo({
                             e.stopPropagation();
                             setCardFlipped(!cardFlipped);
                           }}
-                          className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-xs cursor-pointer transition-all active:scale-95"
+                          className="px-5 py-2 rounded-full bg-white text-slate-950 hover:bg-slate-100 text-xs font-semibold shadow-xs cursor-pointer transition-[background-color,transform] active:scale-95"
                         >
                           {cardFlipped ? "Show Prompt" : "Flip Answer"}
                         </button>
@@ -498,7 +465,7 @@ export function InteractiveWorkflowDemo({
                             setCardFlipped(false);
                             setCardIdx((prev) => (prev < flashcardsData.length - 1 ? prev + 1 : 0));
                           }}
-                          className="px-4 py-2 rounded-full border border-border bg-white dark:bg-slate-900 hover:bg-slate-100 text-xs font-semibold cursor-pointer transition-all active:scale-95"
+                          className="px-4 py-2 rounded-full border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 cursor-pointer transition-[background-color,border-color,transform] active:scale-95"
                         >
                           Next Card
                         </button>
@@ -511,16 +478,16 @@ export function InteractiveWorkflowDemo({
                 <TabsContent value="quiz" forceMount={currentTab === "quiz" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "quiz" && (
                     <div className="max-w-xl mx-auto py-8 px-4 text-center space-y-4">
-                      <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto shadow-xs">
+                      <div className="size-16 rounded-2xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto shadow-xs">
                         <ListChecks className="size-8" />
                       </div>
-                      <h4 className="text-lg font-bold text-foreground font-display">Self-Grading Practice Quizzes</h4>
-                      <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                      <h4 className="text-xl font-bold text-white font-display">Self-Grading Practice Quizzes</h4>
+                      <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
                         AI-generated multiple choice and diagnostic quiz questions with instant verification and direct passage coordinates.
                       </p>
                       <div className="pt-2">
-                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-border">
-                          <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-xs font-mono font-medium text-amber-300 border border-amber-500/30">
+                          <span className="size-2 rounded-full bg-amber-400 animate-pulse" />
                           Diagnostic Exam Mode Ready
                         </span>
                       </div>
@@ -532,9 +499,9 @@ export function InteractiveWorkflowDemo({
                 <TabsContent value="podcast" forceMount={currentTab === "podcast" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "podcast" && (
                     <div className="max-w-xl mx-auto py-6 sm:py-8 px-4 space-y-6 text-center">
-                      <div className="p-6 rounded-[28px] bg-slate-950 text-white border border-slate-800 shadow-tactile-dock space-y-5">
+                      <div className="p-6 rounded-[28px] bg-slate-900 text-white border border-slate-800 shadow-2xl space-y-5">
                         <div className="flex items-center justify-between text-xs font-mono text-slate-400 border-b border-slate-800 pb-3">
-                          <span className="flex items-center gap-1.5 text-primary">
+                          <span className="flex items-center gap-1.5 text-sky-400 font-semibold">
                             <Headphones className="size-3.5" /> 2-Host Dialogue Recap
                           </span>
                           <span>Speaker: {currentSpeaker}</span>
@@ -564,14 +531,14 @@ export function InteractiveWorkflowDemo({
                                     }
                               }
                               style={{ height: `${baseHeight}%`, width: "4px" }}
-                              className="rounded-full bg-primary origin-center"
+                              className="rounded-full bg-sky-400 origin-center"
                             />
                           ))}
                         </div>
 
                         <div className="flex items-center justify-between text-xs font-mono text-slate-400 pt-1">
                           <span>{formatAudioTime(audioSeconds)}</span>
-                          <span className="text-slate-300 font-medium">Topic: §3.4 Thermal Phase Decoherence</span>
+                          <span className="text-slate-200 font-medium">Topic: §3.4 Thermal Phase Decoherence</span>
                           <span>4:12</span>
                         </div>
 
@@ -580,7 +547,8 @@ export function InteractiveWorkflowDemo({
                           <button
                             type="button"
                             onClick={() => setPodcastPlaying(!podcastPlaying)}
-                            className="size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                            aria-label={podcastPlaying ? "Pause audio recap" : "Play audio recap"}
+                            className="size-12 rounded-full bg-white text-slate-950 flex items-center justify-center shadow-lg hover:bg-slate-100 active:scale-95 transition-[background-color,transform] cursor-pointer"
                           >
                             {podcastPlaying ? <Pause className="size-5 fill-current" /> : <Play className="size-5 fill-current ml-0.5" />}
                           </button>
@@ -601,19 +569,19 @@ export function InteractiveWorkflowDemo({
                       <div key={idx} className={`flex ${isAi ? "justify-start" : "justify-end"}`}>
                         <div className={`max-w-[88%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
                           isAi 
-                            ? "bg-accent/60 border border-border text-foreground" 
-                            : "bg-primary text-primary-foreground font-medium"
+                            ? "bg-slate-900 border border-slate-800 text-slate-100" 
+                            : "bg-white text-slate-950 font-semibold shadow-xs"
                         }`}>
                           <p>{m.content}</p>
                           {m.citation && (
-                            <div className="mt-2 pt-2 border-t border-border flex items-center justify-between text-xs font-mono text-muted-foreground tabular-nums">
-                              <span className="text-foreground font-medium flex items-center gap-1">
-                                <BookmarkCheck className="h-3 w-3 text-primary" /> {m.citation}
+                            <div className="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400 tabular-nums">
+                              <span className="text-sky-400 font-medium flex items-center gap-1">
+                                <BookmarkCheck className="h-3 w-3 text-sky-400" /> {m.citation}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => handleCopyCitation(m.citation || "Passage §1.2", m.score)}
-                                className="bg-accent hover:bg-card text-foreground px-1.5 py-0.5 rounded border border-border flex items-center gap-1 transition-colors"
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1 transition-colors cursor-pointer"
                               >
                                 <Copy className="h-2.5 w-2.5" />
                                 <span>{Math.round((m.score || 0.95) * 100)}% match</span>
@@ -626,23 +594,23 @@ export function InteractiveWorkflowDemo({
                   })}
                   {chatTyping && (
                     <div className="flex justify-start">
-                      <div className="bg-accent/60 border border-border rounded-2xl px-4 py-2 flex items-center gap-1 text-muted-foreground">
-                        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-pulse" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-pulse delay-100" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-pulse delay-200" />
+                      <div className="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-2 flex items-center gap-1 text-slate-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-pulse" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-pulse delay-100" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-pulse delay-200" />
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Input area */}
-                <div className="border-t border-border pt-3 mt-2 space-y-2">
+                <div className="border-t border-slate-800 pt-3 mt-2 space-y-2">
                   <div className="flex gap-1.5 flex-wrap">
                     <button 
                       type="button"
                       onClick={() => handleSendChat("What is quantum superposition?")}
                       disabled={chatTyping}
-                      className="text-xs px-3 py-1 rounded-full bg-accent hover:opacity-80 text-foreground transition-colors cursor-pointer"
+                      className="text-xs px-3 py-1 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors cursor-pointer"
                     >
                       What is superposition?
                     </button>
@@ -650,7 +618,7 @@ export function InteractiveWorkflowDemo({
                       type="button"
                       onClick={() => handleSendChat("Explain entanglement in simple terms.")}
                       disabled={chatTyping}
-                      className="text-xs px-3 py-1 rounded-full bg-accent hover:opacity-80 text-foreground transition-colors cursor-pointer"
+                      className="text-xs px-3 py-1 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors cursor-pointer"
                     >
                       Explain entanglement
                     </button>
@@ -664,13 +632,14 @@ export function InteractiveWorkflowDemo({
                       onKeyDown={(e) => e.key === "Enter" && handleSendChat(chatInput)}
                       placeholder="Ask a question about quantum_intro.pdf..."
                       disabled={chatTyping}
-                      className="flex-1 bg-accent/40 border border-border rounded-full px-4 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="flex-1 bg-slate-900/90 border border-slate-800 rounded-full px-4 py-2 text-xs sm:text-sm text-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500"
                     />
                     <button 
                       type="button"
                       onClick={() => handleSendChat(chatInput)}
                       disabled={chatTyping || !chatInput.trim()}
-                      className="h-9 w-9 rounded-full bg-primary hover:opacity-90 text-primary-foreground flex items-center justify-center disabled:opacity-40 transition-all shrink-0 active:scale-95 cursor-pointer"
+                      aria-label="Send question"
+                      className="h-9 w-9 rounded-full bg-white hover:bg-slate-100 text-slate-950 flex items-center justify-center disabled:opacity-40 transition-[background-color,transform,opacity] shrink-0 active:scale-95 cursor-pointer shadow-sm"
                     >
                       <Send className="h-3.5 w-3.5" />
                     </button>

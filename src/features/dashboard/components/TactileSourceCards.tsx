@@ -176,12 +176,12 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900/90 rounded-[32px] p-5 sm:p-7 border border-black/[0.04] dark:border-white/10 shadow-tactile-card flex flex-col gap-5 select-none w-full">
+    <div className="bg-card rounded-[32px] p-5 sm:p-7 border border-border shadow-tactile-card flex flex-col gap-5 select-none w-full">
       {/* Header with Title, Slots Indicator, and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold font-display text-foreground tracking-tight">
               Study Sources
             </h2>
             {isRealData && (
@@ -196,7 +196,7 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
               </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {isRealData
               ? isFull
                 ? "3 of 3 free document slots used. Delete an existing document to replace it."
@@ -213,19 +213,19 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
               placeholder="Search sources..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-4 pr-16 rounded-[20px] bg-slate-100/80 dark:bg-slate-800/80 border border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none transition-all shadow-tactile-inset"
+              className="w-full h-10 pl-4 pr-16 rounded-[20px] bg-surface-sunken border border-input focus:border-ring text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all shadow-tactile-inset"
             />
             <div className="absolute right-1.5 top-1.5 flex items-center gap-1">
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="size-7 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
+                  className="size-7 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground transition-colors cursor-pointer"
                 >
                   <X className="size-3" />
                 </button>
               )}
-              <div className="size-7 rounded-[12px] bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 flex items-center justify-center shadow-xs">
+              <div className="size-7 rounded-[12px] bg-primary text-primary-foreground flex items-center justify-center shadow-xs">
                 <Search className="size-3.5 stroke-[2.5]" />
               </div>
             </div>
@@ -239,7 +239,7 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
                 "h-10 px-4 rounded-[20px] text-xs font-semibold flex items-center gap-1.5 shadow-tactile-pill hover:scale-[1.02] active:scale-95 transition-all cursor-pointer shrink-0",
                 isFull
                   ? "bg-amber-600 hover:bg-amber-700 text-white"
-                  : "bg-[#1E232A] hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950"
+                  : "bg-primary hover:opacity-90 text-primary-foreground"
               )}
             >
               {isFull ? (
@@ -273,8 +273,8 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
             className={cn(
               "px-3.5 py-1.5 rounded-full font-medium transition-all cursor-pointer whitespace-nowrap",
               filterType === tab.id
-                ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950 font-bold shadow-2xs"
-                : "bg-slate-100/70 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                ? "bg-primary text-primary-foreground font-bold shadow-2xs"
+                : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             )}
           >
             {tab.label}
@@ -284,12 +284,12 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
 
       {/* Responsive Cards Grid */}
       {filteredList.length === 0 ? (
-        <div className="w-full py-12 px-4 rounded-[24px] border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-center">
-          <div className="size-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3 shadow-tactile-pill">
-            <FileText className="size-6 text-slate-400" />
+        <div className="w-full py-12 px-4 rounded-[24px] border border-dashed border-border flex flex-col items-center justify-center text-center">
+          <div className="size-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground mb-3 shadow-tactile-pill">
+            <FileText className="size-6 text-muted-foreground" />
           </div>
-          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No study sources found</h3>
-          <p className="text-xs text-slate-500 max-w-sm mt-1 mb-4">
+          <h3 className="text-base font-bold text-foreground">No study sources found</h3>
+          <p className="text-xs text-muted-foreground max-w-sm mt-1 mb-4">
             {searchQuery
               ? `No sources matched "${searchQuery}". Try a different term or format.`
               : "Upload your first PDF textbook, audio lecture, or YouTube video to synthesize 5 AI study lenses."}
@@ -297,7 +297,7 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
           {onNewSource && (
             <button
               onClick={onNewSource}
-              className="h-9 px-4 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:scale-105 transition-all cursor-pointer"
+              className="h-9 px-4 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:scale-105 transition-all cursor-pointer"
             >
               <Plus className="size-3.5" />
               <span>Upload First Source</span>

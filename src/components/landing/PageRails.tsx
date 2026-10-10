@@ -17,7 +17,7 @@ export function PageRails({ children, className }: PageRailsProps) {
     <div className={cn("relative w-full max-w-[1440px] mx-auto overflow-hidden", className)}>
       {/* Left Blueprint Rail */}
       <div
-        className="hidden md:block absolute top-0 bottom-0 pointer-events-none z-10 w-0 border-l border-dashed border-slate-300/80 dark:border-white/[0.09]"
+        className="hidden md:block absolute top-0 bottom-0 pointer-events-none z-10 w-0 border-l border-dashed border-slate-300/80"
         style={{
           left: "max(24px, calc(50% - 659px))",
           borderStyle: "dashed",
@@ -27,7 +27,7 @@ export function PageRails({ children, className }: PageRailsProps) {
 
       {/* Right Blueprint Rail */}
       <div
-        className="hidden md:block absolute top-0 bottom-0 pointer-events-none z-10 w-0 border-r border-dashed border-slate-300/80 dark:border-white/[0.09]"
+        className="hidden md:block absolute top-0 bottom-0 pointer-events-none z-10 w-0 border-r border-dashed border-slate-300/80"
         style={{
           right: "max(24px, calc(50% - 659px))",
           borderStyle: "dashed",

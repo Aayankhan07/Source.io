@@ -129,6 +129,11 @@ export function DailyQuotaPill() {
     queryKey: ["daily_ai_actions_usage", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
+      // Guest demo sessions are not stored in Supabase (and guest-user-01 is not a valid UUID in Postgres)
+      if (user?.id === "guest-user-01") {
+        return { total: 0, chat: 0, notes: 0, derivatives: 0 };
+      }
+
       const todayUtc = new Date();
       todayUtc.setUTCHours(0, 0, 0, 0);
 

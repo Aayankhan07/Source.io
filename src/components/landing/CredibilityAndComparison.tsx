@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Check, X, ArrowRight, BookOpen, GraduationCap, Microscope, Briefcase, Users } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SectionHeading } from "./SectionHeading";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 
 export function CredibilityAndComparison() {
   const shouldReduceMotion = useReducedMotion();
@@ -140,8 +140,8 @@ export function CredibilityAndComparison() {
                 onClick={() => setActivePersona(key)}
                 className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold border transition-all cursor-pointer shadow-xs active:scale-95 ${
                   isSelected
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950 border-slate-900 dark:border-white shadow-sm"
-                    : "bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
                 }`}
               >
                 <Icon className="size-3.5" />
@@ -152,23 +152,23 @@ export function CredibilityAndComparison() {
         </div>
 
         {/* Active Persona Card */}
-        <div className="bg-white dark:bg-slate-900/90 rounded-[32px] sm:rounded-[36px] border border-slate-200 dark:border-white/10 p-7 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-8 items-center relative overflow-hidden">
+        <div className="bg-white rounded-[32px] sm:rounded-[36px] border border-slate-200 p-7 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-8 items-center relative overflow-hidden">
           <div className="lg:col-span-7 space-y-3.5 relative z-10">
-            <span className="text-xs font-mono text-slate-500 dark:text-slate-400 font-medium block">
+            <span className="text-xs font-mono text-slate-500 font-medium block">
               Sample source workflow
             </span>
-            <h3 className="text-xl font-bold font-display text-slate-900 dark:text-white">
+            <h3 className="text-xl font-bold font-display text-slate-900">
               {personas[activePersona].source}
             </h3>
-            <p className="text-[14px] leading-relaxed text-slate-700 dark:text-slate-300">
+            <p className="text-[14px] leading-relaxed text-slate-700">
               {personas[activePersona].description}
             </p>
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white block mb-1">Extracted key topics:</strong>
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+              <strong className="text-slate-900 block mb-1">Extracted key topics:</strong>
               {personas[activePersona].extracted}
             </div>
             <div className="pt-2 flex flex-wrap items-center gap-2.5">
-              <span className="text-xs font-mono px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold">
+              <span className="text-xs font-mono px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-900 font-semibold">
                 {personas[activePersona].citation}
               </span>
               <span className="text-xs text-slate-500 font-medium">
@@ -177,12 +177,12 @@ export function CredibilityAndComparison() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 bg-slate-50 dark:bg-white/[0.03] rounded-[24px] border border-slate-200 dark:border-white/10 p-6 space-y-3 text-xs relative z-10 shadow-xs">
-            <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-white/10 text-xs font-mono text-slate-500 dark:text-slate-400">
+          <div className="lg:col-span-5 bg-slate-50 rounded-[24px] border border-slate-200 p-6 space-y-3 text-xs relative z-10 shadow-xs">
+            <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 text-xs font-mono text-slate-500">
               <span>Derived study assets</span>
               <span className="text-emerald-500 font-semibold">Ready</span>
             </div>
-            <div className="space-y-2.5 text-slate-700 dark:text-slate-300 font-medium">
+            <div className="space-y-2.5 text-slate-700 font-medium">
               <div className="flex items-center justify-between">
                 <span>1. Structured Markdown Outline</span>
                 <Check className="size-4 text-emerald-500" />
@@ -219,26 +219,26 @@ export function CredibilityAndComparison() {
         />
 
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto rounded-[32px] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/90 shadow-tactile-card">
+        <div className="hidden md:block overflow-x-auto rounded-[32px] border border-slate-200 bg-white shadow-tactile-card">
           <table className="w-full text-left border-collapse text-[13px]">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white font-mono text-xs">
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-900 font-mono text-xs">
                 <th className="h-12 px-6 font-semibold">Capability</th>
-                <th className="h-12 px-5 font-bold text-slate-900 dark:text-white">Source.io</th>
-                <th className="h-12 px-5 font-normal text-slate-500 dark:text-slate-400">Generic ChatGPT</th>
-                <th className="h-12 px-6 font-normal text-slate-500 dark:text-slate-400">NotebookLM</th>
+                <th className="h-12 px-5 font-bold text-slate-900">Source.io</th>
+                <th className="h-12 px-5 font-normal text-slate-500">Generic ChatGPT</th>
+                <th className="h-12 px-6 font-normal text-slate-500">NotebookLM</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-white/10">
+            <tbody className="divide-y divide-slate-100">
               {comparisonRows.map((row) => (
-                <tr key={row.feature} className="h-12 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-3.5 font-medium text-slate-900 dark:text-white">
+                <tr key={row.feature} className="h-12 hover:bg-slate-50/50 transition-colors">
+                  <td className="px-6 py-3.5 font-medium text-slate-900">
                     <div>{row.feature}</div>
                     <div className="text-slate-500 text-xs font-mono font-normal mt-0.5">{row.note}</div>
                   </td>
                   <td className="px-5 py-3.5">
                     {row.source === true ? (
-                      <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold font-mono text-xs">
+                      <span className="inline-flex items-center gap-1.5 text-emerald-600 font-semibold font-mono text-xs">
                         <Check className="size-4" /> Native
                       </span>
                     ) : (
@@ -260,7 +260,7 @@ export function CredibilityAndComparison() {
                         <X className="size-4 text-slate-400" /> None
                       </span>
                     ) : row.notebooklm === true ? (
-                      <span className="inline-flex items-center gap-1 text-slate-800 dark:text-slate-200 font-mono text-xs">
+                      <span className="inline-flex items-center gap-1 text-slate-800 font-mono text-xs">
                         <Check className="size-4 text-emerald-500" /> Yes
                       </span>
                     ) : (
@@ -276,21 +276,21 @@ export function CredibilityAndComparison() {
         {/* Mobile View */}
         <div className="md:hidden space-y-3">
           {comparisonRows.map((row) => (
-            <div key={row.feature} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[22px] p-4 space-y-2 shadow-xs">
+            <div key={row.feature} className="bg-white border border-slate-200 rounded-[22px] p-4 space-y-2 shadow-xs">
               <div>
-                <h3 className="font-semibold text-slate-900 dark:text-white text-xs">{row.feature}</h3>
+                <h3 className="font-semibold text-slate-900 text-xs">{row.feature}</h3>
                 <p className="text-slate-500 text-[11px] mt-0.5">{row.note}</p>
               </div>
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-white/10 text-xs font-mono">
-                <div className="p-2 rounded-[12px] bg-slate-100 dark:bg-white/10 text-center">
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-mono">
+                <div className="p-2 rounded-[12px] bg-slate-100 text-center">
                   <span className="text-slate-500 block text-[10px] mb-0.5">Source.io</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">Native</span>
+                  <span className="text-emerald-600 font-bold">Native</span>
                 </div>
-                <div className="p-2 rounded-[12px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-center">
+                <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
                   <span className="text-slate-500 block text-[10px] mb-0.5">ChatGPT</span>
                   <span className="text-slate-500">{row.chatgpt === false ? "None" : "Prompted"}</span>
                 </div>
-                <div className="p-2 rounded-[12px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-center">
+                <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
                   <span className="text-slate-500 block text-[10px] mb-0.5">NotebookLM</span>
                   <span className="text-slate-500">{row.notebooklm === false ? "None" : row.notebooklm === true ? "Yes" : "Partial"}</span>
                 </div>
@@ -299,7 +299,7 @@ export function CredibilityAndComparison() {
           ))}
         </div>
 
-        <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-6 font-medium">
+        <p className="text-center text-xs text-slate-500 mt-6 font-medium">
           Built with feedback from students, researchers, and technical learners.
         </p>
       </section>
@@ -326,13 +326,15 @@ export function CredibilityAndComparison() {
             <AccordionItem 
               key={idx} 
               value={`item-${idx}`}
-              className="group border border-slate-200/90 hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20 rounded-full bg-white dark:bg-slate-900/90 px-6 sm:px-8 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="group border border-slate-200/90 hover:border-slate-300 data-[state=open]:border-amber-200/60 data-[state=open]:shadow-[0_4px_24px_-4px_rgba(245,158,11,0.08)] rounded-2xl sm:rounded-[22px] bg-white data-[state=open]:bg-amber-50/30 px-6 sm:px-7 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
             >
-              <AccordionTrigger className="min-h-[58px] sm:min-h-[64px] text-left font-bold text-sm sm:text-[15px] leading-normal text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 py-4 sm:py-5 hover:no-underline font-display cursor-pointer flex items-center justify-between gap-4 transition-colors">
+              <AccordionTrigger className="min-h-[58px] sm:min-h-[64px] text-left font-bold text-sm sm:text-[15px] leading-normal text-slate-900 group-hover:text-amber-600 py-4 sm:py-5 hover:no-underline font-display cursor-pointer flex items-center justify-between gap-4 transition-colors">
                 <span className="flex-1 py-0.5">{faq.q}</span>
               </AccordionTrigger>
-              <AccordionContent className="text-[13.5px] leading-relaxed text-slate-600 dark:text-slate-300 pb-5 pt-1">
-                {faq.a}
+              <AccordionContent className="text-[13.5px] sm:text-sm leading-[1.75] text-slate-700 pb-5 sm:pb-6 pt-0 mt-0">
+                <div className="border-t border-slate-200/80 pt-4">
+                  {faq.a}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}

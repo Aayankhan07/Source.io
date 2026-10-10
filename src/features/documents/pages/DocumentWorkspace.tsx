@@ -17,7 +17,7 @@ import MarkdownView from "@/components/common/MarkdownView";
 import {
   AlertCircle, FileText, Layers, ListChecks, Headphones, Loader2, Trash2, ChevronLeft, Sparkles, RefreshCw, Menu,
   Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Search, Copy, Check, Share2,
-  ListTree, X
+  ListTree, X, Printer
 } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { streamNotes, generateDerivatives } from "@/lib/services/pipeline";
@@ -399,6 +399,11 @@ export default function DocumentWorkspace() {
     setTimeout(() => setCopiedNotes(false), 2000);
   };
 
+  const handleExportPdf = () => {
+    if (!note?.markdown) return;
+    window.print();
+  };
+
   if (docQuery.isLoading) {
     return (
       <div className="h-full flex items-center justify-center bg-background">
@@ -456,10 +461,10 @@ export default function DocumentWorkspace() {
   return (
     <div className="h-full flex flex-col bg-tactile-canvas overflow-hidden">
       {/* Workspace Floating Tactile Capsule Bar (Centered, Matches sc 3) */}
-      <div className="px-4 sm:px-8 pt-4 pb-2.5 flex items-center justify-center relative shrink-0 z-10 select-none">
+      <div className="px-4 sm:px-8 pt-4 pb-2.5 flex items-center justify-center relative shrink-0 z-10 select-none no-print">
         {openMobileNav && (
           <button
-            className="md:hidden absolute left-4 size-9 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white bg-white/90 dark:bg-slate-900/90 border border-black/[0.06] dark:border-white/10 shrink-0 cursor-pointer shadow-xs"
+            className="md:hidden absolute left-4 size-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground bg-card/90 border border-border shrink-0 cursor-pointer shadow-xs"
             onClick={openMobileNav}
             aria-label="Open navigation"
           >
@@ -467,7 +472,7 @@ export default function DocumentWorkspace() {
           </button>
         )}
 
-        <div className="inline-flex items-center gap-1 p-1 sm:p-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-x-auto scrollbar-none max-w-full">
+        <div className="inline-flex items-center gap-1 p-1 sm:p-1.5 rounded-full bg-card/95 backdrop-blur-md border border-border shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-x-auto scrollbar-none max-w-full">
           {tabs.map((t) => {
             const isActive = currentTab === t.id;
             return (
@@ -477,8 +482,8 @@ export default function DocumentWorkspace() {
                 className={cn(
                   "h-8 sm:h-9 px-3.5 sm:px-5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 flex items-center gap-2 cursor-pointer select-none",
                   isActive
-                    ? "bg-[#1E232A] text-white dark:bg-white dark:text-slate-950 shadow-xs scale-[1.01]"
-                    : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60"
+                    ? "bg-primary text-primary-foreground shadow-xs scale-[1.01]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
                 <span>{t.label}</span>
@@ -487,8 +492,8 @@ export default function DocumentWorkspace() {
                     className={cn(
                       "text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none",
                       isActive
-                        ? "bg-white/20 text-white dark:bg-slate-950/20 dark:text-slate-950"
-                        : "bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300"
+                        ? "bg-primary-foreground/20 text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
                     )}
                   >
                     {t.count}
@@ -504,16 +509,19 @@ export default function DocumentWorkspace() {
       <div className="flex-1 overflow-hidden relative">
         {currentTab === "notes" && (
           <>
-            {/* Desktop View (>= 1024px) */}
-            <div className="hidden lg:block h-full w-full relative">
+            {/* Desktop View (>= 1024px, force active in print) */}
+            <div className="hidden lg:block print:block h-full w-full relative">
               <ResizablePanelGroup direction="horizontal" className="h-full w-full">
                 {/* Left Rail: Retractable Document Outline */}
                 {outlineOpen && !focusMode && (
                   <>
                     <ResizablePanel
+                      id="workspace-outline-panel"
+                      order={1}
                       defaultSize={outlineRetracted ? 4 : 20}
                       minSize={outlineRetracted ? 4 : 14}
                       maxSize={outlineRetracted ? 5 : 28}
+                      className="no-print"
                     >
                       <div className="h-full p-2.5 pl-3 pr-1">
                         <WorkspaceOutline
@@ -526,30 +534,34 @@ export default function DocumentWorkspace() {
                         />
                       </div>
                     </ResizablePanel>
-                    <ResizableHandle className="w-1.5 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-col-resize" />
+                    <ResizableHandle className="w-1.5 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-col-resize no-print" />
                   </>
                 )}
 
                 {/* Center Stage: Notes Reading Content */}
-                <ResizablePanel defaultSize={outlineOpen ? (outlineRetracted ? (askPanelOpen ? 72 : 96) : (askPanelOpen ? 56 : 80)) : (askPanelOpen ? 76 : 100)}>
+                <ResizablePanel
+                  id="workspace-notes-stage"
+                  order={2}
+                  defaultSize={outlineOpen ? (outlineRetracted ? (askPanelOpen ? 72 : 96) : (askPanelOpen ? 56 : 80)) : (askPanelOpen ? 76 : 100)}
+                >
                   <main className="h-full overflow-y-auto relative bg-tactile-canvas p-2.5 px-2">
                     <div className="max-w-4xl mx-auto space-y-6 pb-16">
                       {/* "On this page: ..." Summary Banner (Wireframe Badge 4) */}
                       {headings.length > 0 && notesSettings.showPageSummaryBanner && (
-                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-[18px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-black/[0.04] dark:border-white/10 text-xs text-slate-600 dark:text-slate-400 shadow-2xs animate-fade-in">
-                          <span className="font-bold text-slate-900 dark:text-white shrink-0 font-display">On this page:</span>
+                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-[18px] bg-card/80 backdrop-blur-md border border-border text-xs text-muted-foreground shadow-2xs animate-fade-in no-print">
+                          <span className="font-bold text-foreground shrink-0 font-display">On this page:</span>
                           <div className="flex items-center gap-1.5 overflow-x-auto truncate scrollbar-none">
                             {headings.slice(0, 6).map((h, idx) => (
                               <button
                                 key={h.id}
                                 onClick={() => setActiveHeadingId(h.id)}
-                                className="hover:text-slate-900 dark:hover:text-white hover:underline transition-colors shrink-0 text-left cursor-pointer"
+                                className="hover:text-foreground hover:underline transition-colors shrink-0 text-left cursor-pointer"
                               >
                                 {h.text}{idx < Math.min(headings.length, 6) - 1 ? " · " : ""}
                               </button>
                             ))}
                             {headings.length > 6 && (
-                              <span className="shrink-0 text-slate-400">+{headings.length - 6} more</span>
+                              <span className="shrink-0 text-muted-foreground">+{headings.length - 6} more</span>
                             )}
                           </div>
                         </div>
@@ -557,18 +569,35 @@ export default function DocumentWorkspace() {
 
                       {assetsQuery.isLoading ? (
                         <div className="flex items-center justify-center py-24">
-                          <Loader2 className="size-6 animate-spin text-slate-400" />
+                          <Loader2 className="size-6 animate-spin text-muted-foreground" />
                         </div>
                       ) : note?.markdown ? (
                         <div className="space-y-6 animate-fade-in pb-16">
-                          <div className="rounded-[32px] bg-white dark:bg-slate-900 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-10 lg:p-12">
-                            {/* Document metadata & Action Bar */}
-                            <div className="flex flex-wrap items-center justify-between gap-3 pb-6 mb-8 border-b border-black/[0.04] dark:border-white/10">
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 font-bold border border-black/[0.04] dark:border-white/10 shrink-0">
+                          <div id="printable-notes-section" className="rounded-[32px] bg-card border border-border shadow-tactile-card p-6 sm:p-10 lg:p-12 printable-note-card">
+                            {/* Print-Only Header (Publication Title & Metadata) */}
+                            <div className="print-only mb-6 pb-4 border-b border-slate-300">
+                              <div className="flex items-center justify-between text-xs text-slate-500 font-mono mb-2">
+                                <span className="uppercase tracking-wider font-bold">Source.io Study Engine</span>
+                                <span>{new Date(doc.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                              </div>
+                              <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight mb-2">
+                                {doc.title}
+                              </h1>
+                              <div className="flex items-center gap-3 text-xs text-slate-600 font-mono">
+                                <span className="uppercase font-bold px-2 py-0.5 rounded bg-slate-100 border border-slate-300">
                                   {doc.source_type}
                                 </span>
-                                <span className="text-xs text-slate-400 dark:text-slate-500 font-mono shrink-0">
+                                <span>{readTimeMinutes} min read</span>
+                              </div>
+                            </div>
+
+                            {/* Document metadata & Action Bar (Screen Only) */}
+                            <div className="flex flex-wrap items-center justify-between gap-3 pb-6 mb-8 border-b border-border no-print">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-muted text-foreground font-bold border border-border shrink-0">
+                                  {doc.source_type}
+                                </span>
+                                <span className="text-xs text-muted-foreground font-mono shrink-0">
                                   {readTimeMinutes} min read
                                 </span>
                               </div>
@@ -576,17 +605,26 @@ export default function DocumentWorkspace() {
                               <div className="flex items-center gap-1.5 shrink-0">
                                 <button
                                   onClick={handleCopyNotes}
-                                  className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                                  className="h-8 px-3 text-xs font-semibold text-foreground bg-muted hover:bg-accent rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                                 >
                                   {copiedNotes ? <Check className="size-3 text-emerald-500 stroke-[2.5]" /> : <Copy className="size-3" />}
                                   <span>{copiedNotes ? "Copied" : "Copy"}</span>
+                                </button>
+
+                                <button
+                                  onClick={handleExportPdf}
+                                  title="Export or print publication-ready notes as PDF"
+                                  className="h-8 px-3 text-xs font-semibold text-foreground bg-muted hover:bg-accent rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                                >
+                                  <Printer className="size-3.5 text-muted-foreground" />
+                                  <span>Export PDF</span>
                                 </button>
 
                                 {note?.markdown && (
                                   <button
                                     onClick={generate}
                                     disabled={streaming}
-                                    className="h-8 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                                    className="h-8 px-3 text-xs font-semibold text-foreground bg-muted hover:bg-accent rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                                   >
                                     <RefreshCw className={cn("size-3", streaming && "animate-spin text-sky-500")} />
                                     <span>Regenerate</span>
@@ -598,7 +636,7 @@ export default function DocumentWorkspace() {
                                 <button
                                   onClick={() => setDeleteOpen(true)}
                                   title="Delete document"
-                                  className="size-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                                  className="size-8 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
                                 >
                                   <Trash2 className="size-3.5" />
                                 </button>
@@ -607,36 +645,36 @@ export default function DocumentWorkspace() {
 
                             <MarkdownView>{note.markdown}</MarkdownView>
 
-                            {/* Product Feedback on generated notes */}
-                            <div className="pt-6 mt-8 border-t border-black/[0.04] dark:border-white/10 flex items-center justify-between">
+                            {/* Product Feedback on generated notes (Screen Only) */}
+                            <div className="pt-6 mt-8 border-t border-border flex items-center justify-between no-print">
                               <AiFeedbackButtons
                                 documentId={doc.id}
                                 feature="notes"
                                 model={settings.preferredModel}
                               />
-                              <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+                              <span className="text-[11px] text-muted-foreground font-mono">
                                 Source.io Study Engine
                               </span>
                             </div>
                           </div>
                           {streaming && (
-                            <div className="flex items-center gap-2 text-xs text-sky-600 dark:text-sky-400 font-mono bg-sky-50 dark:bg-sky-950/40 p-3 rounded-full border border-sky-200 dark:border-sky-800 max-w-max">
+                            <div className="flex items-center gap-2 text-xs text-sky-600 dark:text-sky-400 font-mono bg-sky-50 dark:bg-sky-950/40 p-3 rounded-full border border-sky-200 dark:border-sky-800 max-w-max no-print">
                               <Loader2 className="size-3.5 animate-spin" /> Stream compiling notes…
                             </div>
                           )}
                         </div>
                       ) : doc.status === "ready" ? (
-                        <div className="rounded-[28px] border border-black/[0.04] dark:border-white/10 p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-white dark:bg-slate-900 shadow-tactile-card animate-fade-in">
+                        <div className="rounded-[28px] border border-border p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-card shadow-tactile-card animate-fade-in no-print">
                           <div className="size-12 rounded-2xl bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center text-amber-700 dark:text-amber-400 mx-auto">
                             <Sparkles className="size-6" />
                           </div>
                           <div className="space-y-1">
-                            <h3 className="font-bold text-slate-900 dark:text-white font-display text-base">Generate study notes</h3>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            <h3 className="font-bold text-foreground font-display text-base">Generate study notes</h3>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
                               We've indexed your material. Generate structured teaching notes to begin.
                             </p>
                           </div>
-                          <button onClick={generate} disabled={streaming} className="h-10 px-5 rounded-full text-xs font-bold bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer flex items-center gap-2 mx-auto">
+                          <button onClick={generate} disabled={streaming} className="h-10 px-5 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer flex items-center gap-2 mx-auto">
                             {streaming ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
                             <span>Generate Notes</span>
                           </button>
@@ -655,8 +693,15 @@ export default function DocumentWorkspace() {
                 {/* Right Rail: Ask Panel */}
                 {askPanelOpen && !focusMode && (
                   <>
-                    <ResizableHandle className="w-1.5 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-col-resize" />
-                    <ResizablePanel defaultSize={24} minSize={18} maxSize={35}>
+                    <ResizableHandle className="w-1.5 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-col-resize no-print" />
+                    <ResizablePanel
+                      id="workspace-ask-panel"
+                      order={3}
+                      defaultSize={24}
+                      minSize={18}
+                      maxSize={35}
+                      className="no-print"
+                    >
                       <div className="h-full p-2.5 pr-3 pl-1">
                         <AskPanel
                           documentId={doc.id}
@@ -673,13 +718,13 @@ export default function DocumentWorkspace() {
 
               {/* Floating Re-open Triggers when collapsed */}
               {!outlineOpen && !focusMode && (
-                <div className="absolute left-4 top-4 z-30 animate-fade-in">
+                <div className="absolute left-4 top-4 z-30 animate-fade-in no-print">
                   <button
                     onClick={() => {
                       setOutlineOpen(true);
                       setOutlineRetracted(false);
                     }}
-                    className="h-9 px-3.5 rounded-full shadow-tactile-pill bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    className="h-9 px-3.5 rounded-full shadow-tactile-pill bg-card/95 backdrop-blur-md border border-border text-foreground hover:bg-accent text-xs font-semibold flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                     title="Open Outline"
                   >
                     <ListTree className="size-3.5 text-sky-600 dark:text-sky-400" />
@@ -689,10 +734,10 @@ export default function DocumentWorkspace() {
               )}
 
               {!askPanelOpen && !focusMode && (
-                <div className="absolute right-4 top-4 z-30 animate-fade-in">
+                <div className="absolute right-4 top-4 z-30 animate-fade-in no-print">
                   <button
                     onClick={() => setAskPanelOpen(true)}
-                    className="h-9 px-3.5 rounded-full shadow-tactile-pill bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    className="h-9 px-3.5 rounded-full shadow-tactile-pill bg-card/95 backdrop-blur-md border border-border text-foreground hover:bg-accent text-xs font-semibold flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                     title="Open Ask Copilot"
                   >
                     <Sparkles className="size-3.5 text-purple-600 dark:text-purple-400" />
@@ -702,9 +747,8 @@ export default function DocumentWorkspace() {
               )}
             </div>
 
-
             {/* Mobile Viewport (< 1024px) */}
-            <div className="lg:hidden h-full overflow-y-auto">
+            <div className="lg:hidden h-full overflow-y-auto no-print">
               <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4">
                 {headings.length > 0 && notesSettings.showPageSummaryBanner && (
                   <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/70 text-xs text-muted-foreground">
@@ -975,9 +1019,22 @@ function CustomAudioPlayer({
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    if (playing) audioRef.current.pause();
-    else audioRef.current.play();
-    setPlaying(!playing);
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setPlaying(true);
+          })
+          .catch((err) => {
+            console.warn("Audio playback not supported or interrupted:", err);
+            setPlaying(false);
+          });
+      }
+    }
   };
 
   return (
