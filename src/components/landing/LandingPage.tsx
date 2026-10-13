@@ -10,21 +10,18 @@ import { FreeTierTransparency } from "./FreeTierTransparency";
 import { PricingComparisonSection } from "./PricingComparisonSection";
 import { CredibilityAndComparison } from "./CredibilityAndComparison";
 import { LandingFooter } from "./LandingFooter";
+import { useTheme } from "@/hooks/use-theme";
 
 export function LandingPage() {
+  const { setTheme } = useTheme();
+
   useEffect(() => {
-    // Landing page is optimized for the light tactile theme; restore previous theme on unmount
-    const wasDark = document.documentElement.classList.contains("dark");
+    setTheme("light");
     document.documentElement.classList.remove("dark");
-    return () => {
-      if (wasDark) {
-        document.documentElement.classList.add("dark");
-      }
-    };
-  }, []);
+  }, [setTheme]);
 
   return (
-    <div className="min-h-[100dvh] bg-tactile-canvas text-foreground font-sans relative overflow-x-clip transition-colors duration-200">
+    <div className="min-h-[100dvh] bg-[#F3F5F8] text-slate-900 font-sans relative overflow-x-clip transition-colors duration-200">
       {/* Ambient Continuous Atmospheric Halos (Soft, subtle sky and warm amber accents) */}
       <div
         className="absolute top-0 right-0 w-full lg:w-[65%] h-[700px] -z-10 pointer-events-none opacity-50"

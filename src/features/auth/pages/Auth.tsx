@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Sparkles, Loader2, Mail, ArrowLeft, ArrowUpRight, Upload, Headphones, ListChecks, ArrowRight, ShieldCheck } from "lucide-react";
-import ThemeToggle from "@/components/common/ThemeToggle";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
@@ -80,11 +79,6 @@ export default function Auth() {
 
   return (
     <main className={cn("luminous-app min-h-screen flex bg-background text-foreground relative font-sans antialiased", theme === "dark" && "dark")}>
-      {/* Top right theme toggle */}
-      <div className="absolute top-4 right-4 z-20">
-        <ThemeToggle variant="pill" />
-      </div>
-
       {/* Left split pane: Branding / Features (Hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-muted/40 border-r border-border p-12 flex-col justify-between relative z-10">
         {/* Top brand header */}

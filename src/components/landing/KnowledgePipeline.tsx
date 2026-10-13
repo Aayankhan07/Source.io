@@ -3,17 +3,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { 
-  FileUp, 
   FileText, 
-  Check, 
-  Sparkles, 
   Layers, 
   HelpCircle, 
   Headphones, 
   BookmarkCheck, 
   ExternalLink,
   ChevronRight,
-  Database
+  ScanLine,
+  Check
 } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 
@@ -143,61 +141,299 @@ export function KnowledgePipeline() {
             })}
           </div>
 
-          {/* Right Column: Sticky Live Visual Product Panel */}
+          {/* Right Column: Persistent Source Page Annotated Across Steps */}
           <div className="lg:col-span-7 lg:sticky lg:top-28">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-xs relative overflow-hidden min-h-[380px] sm:min-h-[420px] flex flex-col justify-between">
+            <div className="relative">
               
-              {/* Panel Top Metadata Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                <div className="flex items-center gap-2.5">
-                  <span className="font-mono text-xs font-semibold text-slate-800">
-                    STAGE {STAGES[activeStep].step}
-                  </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="font-mono text-[11px] tracking-wide text-sky-600 uppercase font-medium">
-                    {STAGES[activeStep].eyebrow}
-                  </span>
+              {/* Document Sheet (Grounded on Canvas - No nested cards, subtle hairline paper aesthetic) */}
+              <div className="relative rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(15,23,42,0.04)] overflow-hidden min-h-[460px] sm:min-h-[500px] p-6 sm:p-8 flex flex-col justify-between">
+                
+                {/* Real Document Running Header */}
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100 text-[11px] font-mono text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-700">GRIFFITHS</span>
+                    <span>•</span>
+                    <span className="truncate max-w-[200px] sm:max-w-xs">Introduction to Quantum Mechanics (3rd Ed.)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sky-600 font-semibold">p. 14, ¶3</span>
+                    <span>•</span>
+                    <span>SEC 1.2</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  {STAGES.map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        i === activeStep ? "w-6 bg-sky-600" : "w-1.5 bg-slate-200"
-                      }`} 
-                    />
-                  ))}
+
+                {/* Persistent Textbook Page Body */}
+                <div className="relative py-5 space-y-4 font-serif text-[13px] sm:text-[14px] leading-relaxed text-slate-800">
+                  
+                  {/* Step 1: Ingestion Scan Line Overlay */}
+                  {activeStep === 0 && !shouldReduceMotion && (
+                    <motion.div
+                      initial={{ top: "0%" }}
+                      animate={{ top: ["0%", "100%", "0%"] }}
+                      transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute left-0 right-0 h-[2px] bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.8)] z-30 pointer-events-none"
+                    >
+                      <div className="absolute right-2 -top-4 px-1.5 py-0.5 rounded bg-sky-600 text-white font-mono text-[9px] uppercase tracking-wider">
+                        OCR Scan
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Section Title */}
+                  <div className="font-sans font-bold text-base sm:text-lg text-slate-900 tracking-tight not-italic">
+                    1.2 The Statistical Interpretation & Superposition
+                  </div>
+
+                  {/* Paragraph 1 - Core Theory */}
+                  <div className="relative group">
+                    {/* Step 1 OCR Bounding Boxes */}
+                    {activeStep === 0 && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute -inset-1 border border-dashed border-sky-400/70 bg-sky-50/20 rounded pointer-events-none"
+                      >
+                        <span className="absolute -top-2.5 left-2 px-1 bg-sky-100 text-sky-700 font-mono text-[9px] rounded">
+                          text_block_01 [conf: 99.8%]
+                        </span>
+                      </motion.div>
+                    )}
+
+                    {/* Step 2 Structured Highlight (Key Concept) */}
+                    {activeStep >= 1 && (
+                      <span className="bg-amber-100/70 text-slate-900 rounded px-1 py-0.5 font-sans font-medium">
+                        [Key Concept: Born Rule]
+                      </span>
+                    )}{" "}
+                    What is the physical interpretation of the wave function $\Psi(x, t)$? Born&apos;s statistical interpretation asserts that $|\Psi(x, t)|^2$ gives the probability density of finding the particle at point $x$ at time $t$.
+                  </div>
+
+                  {/* Paragraph 2 - Equation & Math */}
+                  <div className="relative py-2 my-1">
+                    {/* Step 1 Equation Bounding Box */}
+                    {activeStep === 0 && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 border border-sky-400/80 bg-sky-50/30 rounded flex items-center justify-between px-2 pointer-events-none"
+                      >
+                        <span className="font-mono text-[9px] text-sky-700 bg-white/90 px-1 py-0.5 rounded border border-sky-200">
+                          formula_detector: LaTeX OCR
+                        </span>
+                      </motion.div>
+                    )}
+
+                    {/* Step 2 Structured Highlight (Equation) */}
+                    <div className={`p-3 rounded-lg text-center font-mono text-xs sm:text-sm transition-colors duration-200 ${
+                      activeStep >= 1 
+                        ? "bg-sky-50/80 border border-sky-200/80 text-sky-950 font-semibold" 
+                        : "bg-slate-50 border border-slate-100 text-slate-800"
+                    }`}>
+                      $$P(a \le x \le b) = \int_a^b |\Psi(x, t)|^2 \, dx = 1$$
+                      {activeStep >= 1 && (
+                        <span className="block mt-1 text-[10px] text-sky-600 font-sans uppercase font-bold tracking-wider">
+                          Equation 1.3 • Normalization Condition
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Paragraph 3 - The Exact Target Paragraph for Citations */}
+                  <div className="relative">
+                    {/* Step 1 OCR Bounding Box */}
+                    {activeStep === 0 && (
+                      <div className="absolute -inset-1 border border-dashed border-sky-400/70 bg-sky-50/20 rounded pointer-events-none">
+                        <span className="absolute -top-2.5 left-2 px-1 bg-sky-100 text-sky-700 font-mono text-[9px] rounded">
+                          text_block_03 [conf: 99.4%]
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Step 2 & 3 Highlight */}
+                    {activeStep === 1 && (
+                      <span className="bg-emerald-100/80 text-slate-900 rounded px-1 py-0.5 font-sans font-medium">
+                        [Definition: Quantum Indeterminacy]
+                      </span>
+                    )}
+
+                    {/* Step 4 Verification: Active Coordinate Highlight with connecting indicator */}
+                    {activeStep === 3 && (
+                      <div className="absolute -inset-1.5 rounded-lg border-2 border-sky-500 bg-sky-50/60 pointer-events-none" />
+                    )}
+
+                    <span className={activeStep === 3 ? "relative z-10 font-medium text-slate-950" : ""}>
+                      The wave function itself is not an observable; only its modulus squared corresponds to measurable physical probability. Prior to projective measurement, the particle does not &quot;have&quot; a definite position $x$ in any classical sense.
+                    </span>
+
+                    {/* Step 4 Target Coordinate Pin */}
+                    {activeStep === 3 && (
+                      <span className="relative z-10 inline-flex items-center gap-1 ml-1.5 px-1.5 py-0.5 rounded bg-sky-600 text-white font-mono text-[10px] font-bold tracking-tight">
+                        Target Passage ¶3
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Dynamic Product UI Content with subtle transition */}
-              <div className="py-6 flex-1 flex flex-col justify-center">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeStep}
-                    initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-                    transition={{ duration: 0.22, ease: "easeOut" }}
-                    className="w-full"
-                  >
-                    {activeStep === 0 && <UploadIngestionMock />}
-                    {activeStep === 1 && <HierarchicalOutlineMock />}
-                    {activeStep === 2 && <StudyModesMock />}
-                    {activeStep === 3 && <VerifiedCitationMock />}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
+                {/* Dynamic Step Layer Overlays (Lifting off the page or connecting to it) */}
+                <div className="pt-4 border-t border-slate-100 mt-2">
+                  <AnimatePresence mode="wait">
+                    
+                    {/* STEP 1 OVERLAY: Ingestion Live Scan Status */}
+                    {activeStep === 0 && (
+                      <motion.div
+                        key="overlay-ingestion"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-500"
+                      >
+                        <div className="flex items-center gap-2">
+                          <ScanLine className="size-4 text-sky-600 animate-pulse" />
+                          <span className="text-slate-800 font-medium">
+                            PyMuPDF layout parser: 3 text blocks, 1 LaTeX equation
+                          </span>
+                        </div>
+                        <span className="text-emerald-600 font-medium flex items-center gap-1">
+                          <Check className="size-3" /> Vector coordinates mapped
+                        </span>
+                      </motion.div>
+                    )}
 
-              {/* Panel Bottom Footer with technical pipeline detail */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
-                <span className="flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Engine: Whisper ASR + PyMuPDF + Gemini Vector Store
-                </span>
-                <span className="text-slate-400">
-                  {STAGES[activeStep].metric}
-                </span>
+                    {/* STEP 2 OVERLAY: Slim Hierarchical Outline Tree sliding beside page */}
+                    {activeStep === 1 && (
+                      <motion.div
+                        key="overlay-structure"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className="space-y-1.5 font-mono text-[11px]"
+                      >
+                        <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                          Derived Hierarchical Chunk Map
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                            <span className="size-1.5 rounded-full bg-amber-500" />
+                            §1.2 Born Rule [Concept]
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-sky-50 text-sky-800 border border-sky-200">
+                            <span className="size-1.5 rounded-full bg-sky-500" />
+                            Eq 1.3 Normalization [Formula]
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            <span className="size-1.5 rounded-full bg-emerald-500" />
+                            ¶3 Indeterminacy [Definition]
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* STEP 3 OVERLAY: Passage lifts off and splits into 4 output stubs */}
+                    {activeStep === 2 && (
+                      <motion.div
+                        key="overlay-synthesis"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className="space-y-2"
+                      >
+                        <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold flex items-center justify-between">
+                          <span>Synthesized Stubs (Lifted from ¶3)</span>
+                          <span className="text-sky-600">4 Synchronized Modalities</span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          
+                          {/* Note Stub */}
+                          <div className="p-2 rounded-lg border border-slate-200 bg-slate-50 text-left">
+                            <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500 font-semibold mb-1">
+                              <FileText className="size-3 text-sky-600" /> Note
+                            </div>
+                            <p className="text-[11px] text-slate-800 line-clamp-2 leading-tight">
+                              Wavefunction magnitude squared defines probability density.
+                            </p>
+                          </div>
+
+                          {/* Flashcard Stub */}
+                          <div className="p-2 rounded-lg border border-slate-200 bg-slate-50 text-left">
+                            <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500 font-semibold mb-1">
+                              <Layers className="size-3 text-amber-600" /> Card
+                            </div>
+                            <p className="text-[11px] text-slate-800 line-clamp-2 leading-tight">
+                              Q: Is Ψ(x,t) observable? A: No, only |Ψ|².
+                            </p>
+                          </div>
+
+                          {/* Quiz Stub */}
+                          <div className="p-2 rounded-lg border border-slate-200 bg-slate-50 text-left">
+                            <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500 font-semibold mb-1">
+                              <HelpCircle className="size-3 text-purple-600" /> Quiz
+                            </div>
+                            <p className="text-[11px] text-slate-800 line-clamp-2 leading-tight">
+                              What does |Ψ|² dx represent in Born&apos;s rule?
+                            </p>
+                          </div>
+
+                          {/* Audio Waveform Stub */}
+                          <div className="p-2 rounded-lg border border-slate-200 bg-slate-50 text-left">
+                            <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500 font-semibold mb-1">
+                              <Headphones className="size-3 text-emerald-600" /> Podcast
+                            </div>
+                            <div className="flex items-center gap-0.5 h-4 mt-1">
+                              {[60, 100, 40, 80, 50, 90, 30].map((h, i) => (
+                                <div 
+                                  key={i} 
+                                  className="w-1 bg-emerald-500 rounded-full" 
+                                  style={{ height: `${h}%` }} 
+                                />
+                              ))}
+                            </div>
+                          </div>
+
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* STEP 4 OVERLAY: Exact Answer Sentence with Citation Chip pointing back */}
+                    {activeStep === 3 && (
+                      <motion.div
+                        key="overlay-verification"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className="p-3 sm:p-4 rounded-xl bg-slate-900 text-white space-y-2 relative shadow-md"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono text-sky-400 font-semibold uppercase tracking-wider">
+                            Verified Synthesized Answer
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
+                            <BookmarkCheck className="size-3" /> Exact Source Link
+                          </span>
+                        </div>
+
+                        <p className="text-xs sm:text-[13px] text-slate-200 leading-snug font-sans">
+                          &quot;A particle does not possess a definite classical position prior to measurement; only $|\Psi(x,t)|^2$ describes the probability distribution.&quot;
+                        </p>
+
+                        {/* Citation Chip visibly linking back */}
+                        <div className="pt-1 flex items-center justify-between border-t border-slate-800">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-sky-500/20 text-sky-300 border border-sky-500/40 font-mono text-xs font-semibold">
+                            <BookmarkCheck className="size-3.5 text-sky-400" />
+                            <span>p. 14, ¶3</span>
+                            <ChevronRight className="size-3" />
+                            <span>Lines 18–22</span>
+                          </div>
+
+                          <span className="text-[10px] font-mono text-slate-400">
+                            Matched vector similarity: 0.984
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+
+                  </AnimatePresence>
+                </div>
+
               </div>
             </div>
           </div>
@@ -205,210 +441,5 @@ export function KnowledgePipeline() {
         </div>
       </div>
     </section>
-  );
-}
-
-// Visual 1: Ingestion / Upload Mock
-function UploadIngestionMock() {
-  return (
-    <div className="space-y-4">
-      {/* Drag & Drop Area */}
-      <div className="border border-dashed border-slate-300 rounded-xl p-5 bg-slate-50/60 text-center">
-        <div className="size-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center mx-auto mb-2.5">
-          <FileUp className="size-5" />
-        </div>
-        <p className="text-xs font-semibold text-slate-800">
-          Drop textbooks, PDFs, lecture audio or slides
-        </p>
-        <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-          Up to 300 pages • Auto OCR & speech transcript
-        </p>
-      </div>
-
-      {/* Processed Ingestion Item Preview */}
-      <div className="border border-slate-200/90 rounded-xl p-3.5 bg-white space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="size-8 rounded-md bg-sky-50 text-sky-700 flex items-center justify-center font-mono text-[10px] font-bold">
-              PDF
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-slate-900 truncate">
-                Griffiths_Quantum_Mechanics_Ch4.pdf
-              </p>
-              <p className="text-[10px] font-mono text-slate-500">
-                4.2 MB • 38 pages • OCR complete
-              </p>
-            </div>
-          </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-medium">
-            <Check className="size-3" /> Ready
-          </span>
-        </div>
-
-        {/* Ingestion stream progress */}
-        <div className="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
-          <div className="bg-sky-600 h-full w-full rounded-full" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Visual 2: Hierarchical Outline Mock
-function HierarchicalOutlineMock() {
-  return (
-    <div className="border border-slate-200/90 rounded-xl p-4 bg-white space-y-3 font-mono text-xs">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-        <span className="text-[11px] font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
-          <Database className="size-3.5 text-sky-600" /> Vector Chunk Tree
-        </span>
-        <span className="text-[10px] text-slate-400">14 chunks indexed</span>
-      </div>
-
-      <div className="space-y-2 text-[11px]">
-        {/* Node 1 */}
-        <div className="p-2 rounded-lg bg-slate-50/80 border border-slate-100">
-          <div className="flex items-center justify-between text-slate-900 font-semibold">
-            <span>§4.1 Spin Angular Momentum</span>
-            <span className="text-[10px] text-sky-600">p. 137</span>
-          </div>
-          <p className="text-[10px] text-slate-500 font-sans mt-0.5">
-            Stern-Gerlach apparatus, eigenspaces of S_z and S_x
-          </p>
-        </div>
-
-        {/* Node 2 - Nested */}
-        <div className="ml-4 p-2 rounded-lg bg-sky-50/50 border border-sky-100/80">
-          <div className="flex items-center justify-between text-slate-900 font-semibold">
-            <span>↳ 4.1.2 Pauli Spin Matrices</span>
-            <span className="text-[10px] text-sky-600 font-mono">3 chunks</span>
-          </div>
-          <p className="text-[10px] text-slate-600 font-sans mt-0.5">
-            σ_x, σ_y, σ_z algebraic commutation [σ_i, σ_j] = 2iε_ijk σ_k
-          </p>
-        </div>
-
-        {/* Node 3 */}
-        <div className="p-2 rounded-lg bg-slate-50/80 border border-slate-100">
-          <div className="flex items-center justify-between text-slate-900 font-semibold">
-            <span>§4.2 Addition of Angular Momenta</span>
-            <span className="text-[10px] text-sky-600">p. 152</span>
-          </div>
-          <p className="text-[10px] text-slate-500 font-sans mt-0.5">
-            Clebsch-Gordan coefficient matrices & singlet states
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Visual 3: Five Study Modes Mock
-function StudyModesMock() {
-  const modes = [
-    { label: "Study Notes", icon: FileText, desc: "Dense synthesized summaries" },
-    { label: "Leitner Flashcards", icon: Layers, desc: "Spaced repetition intervals" },
-    { label: "Practice Quiz", icon: HelpCircle, desc: "Diagnostic testing with rationale" },
-    { label: "Audio Recap", icon: Headphones, desc: "2-host podcast walkthrough" },
-    { label: "Socratic Chat", icon: Sparkles, desc: "Direct grounded source dialogue" },
-  ];
-
-  return (
-    <div className="space-y-2">
-      <div className="text-[11px] font-mono text-slate-500 mb-2 flex items-center justify-between">
-        <span>5 Coordinated Modalities</span>
-        <span className="text-sky-600 font-medium">Single pipeline pass</span>
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {modes.slice(0, 4).map((m) => {
-          const Icon = m.icon;
-          return (
-            <div 
-              key={m.label} 
-              className="p-3 rounded-xl border border-slate-200/90 bg-white flex items-start gap-2.5"
-            >
-              <div className="size-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 mt-0.5">
-                <Icon className="size-3.5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold text-slate-800 leading-snug">
-                  {m.label}
-                </p>
-                <p className="text-[10px] text-slate-500 mt-0.5 truncate">
-                  {m.desc}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* 5th Mode full width spotlight */}
-      <div className="p-3 rounded-xl border border-sky-200/80 bg-sky-50/40 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="size-7 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0">
-            <Sparkles className="size-3.5" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-slate-900 leading-snug">
-              Socratic Source Chat
-            </p>
-            <p className="text-[10px] text-slate-600">
-              Zero hallucinations — constrained strictly to your documents
-            </p>
-          </div>
-        </div>
-        <ChevronRight className="size-4 text-sky-600" />
-      </div>
-    </div>
-  );
-}
-
-// Visual 4: Verified Citation Mock (Highlighting the strongest feature)
-function VerifiedCitationMock() {
-  return (
-    <div className="space-y-3">
-      {/* Generated answer with citation chip */}
-      <div className="border border-slate-200/90 rounded-xl p-4 bg-white space-y-2">
-        <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wide">
-            Generated Answer
-          </span>
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
-            <BookmarkCheck className="size-3" /> 100% Grounded
-          </span>
-        </div>
-
-        <p className="text-xs text-slate-800 leading-relaxed font-sans">
-          The Pauli spin matrix along the z-axis has eigenvalues +1 and -1 corresponding to orthogonal spin-up and spin-down eigenspaces:
-        </p>
-
-        {/* Exact Citation Chip */}
-        <div className="pt-2 flex flex-wrap items-center gap-2">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-50 text-sky-700 border border-sky-200 text-xs font-mono font-medium hover:bg-sky-100 transition-colors cursor-pointer">
-            <BookmarkCheck className="size-3 text-sky-600" />
-            <span>p. 42, ¶3</span>
-            <ExternalLink className="size-2.5 opacity-60" />
-          </div>
-
-          <span className="text-[11px] font-mono text-slate-400">
-            Lines 14–19 • Griffith_QM.pdf
-          </span>
-        </div>
-      </div>
-
-      {/* Source PDF Inspector Peek */}
-      <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] font-mono text-slate-600 space-y-1">
-        <div className="flex items-center justify-between text-slate-400 text-[10px]">
-          <span>SOURCE EXCERPT</span>
-          <span>PAGE 42</span>
-        </div>
-        <p className="italic text-slate-700 line-clamp-2">
-          "...the operator S_z is represented in this basis by the diagonal matrix (ħ/2) * diag(1, -1), confirming that measurement along z yields eigenvalues ±ħ/2."
-        </p>
-      </div>
-    </div>
   );
 }
