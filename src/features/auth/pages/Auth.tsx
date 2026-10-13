@@ -17,13 +17,19 @@ export default function Auth() {
   const { user, loading, signInAsGuest } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  const { theme } = useTheme();
+  const { setTheme } = useTheme();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
+
+  useEffect(() => {
+    // Default login page to white/light mode
+    setTheme("light");
+    document.documentElement.classList.remove("dark");
+  }, [setTheme]);
 
   useEffect(() => {
     if (!loading && user) router.replace("/app");
@@ -78,7 +84,7 @@ export default function Auth() {
   };
 
   return (
-    <main className={cn("luminous-app min-h-screen flex bg-background text-foreground relative font-sans antialiased", theme === "dark" && "dark")}>
+    <main className="luminous-app min-h-screen flex bg-white text-slate-900 relative font-sans antialiased">
       {/* Left split pane: Branding / Features (Hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-muted/40 border-r border-border p-12 flex-col justify-between relative z-10">
         {/* Top brand header */}
