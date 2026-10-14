@@ -5,13 +5,16 @@ import SWUnregister from "./SWUnregister";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sourceio.app"),
-  title: "Source.io: AI study workspace for any content",
+  title: "AI Study Notes, Flashcards & Quizzes with Citations | Source.io",
   description:
-    "Turn PDFs, videos, audio, YouTube and notes into AI-generated study notes, flashcards, quizzes, podcasts and chat.",
+    "Transform textbooks, lecture recordings, and research papers into verified study notes, 3D flashcards, quizzes, and podcasts with exact source citations. Start free.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Source.io: AI study workspace for any content",
+    title: "AI Study Notes, Flashcards & Quizzes with Citations | Source.io",
     description:
-      "Turn PDFs, videos, audio, YouTube and notes into AI-generated study notes, flashcards, quizzes, podcasts and chat.",
+      "Transform textbooks, lecture recordings, and research papers into verified study notes, 3D flashcards, quizzes, and podcasts with exact source citations.",
     images: [
       {
         url: "/og-image.png",
@@ -24,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Source.io: AI study workspace for any content",
+    title: "AI Study Notes, Flashcards & Quizzes with Citations | Source.io",
     description:
-      "Turn PDFs, videos, audio, YouTube and notes into AI-generated study notes, flashcards, quizzes, podcasts and chat.",
+      "Transform textbooks, lecture recordings, and research papers into verified study notes, 3D flashcards, quizzes, and podcasts with exact source citations.",
     images: ["/og-image.png"],
   },
   icons: { icon: "/favicon.png" },

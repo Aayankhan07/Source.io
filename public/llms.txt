@@ -1,0 +1,58 @@
+# Source.io
+
+> Source.io is an AI-powered active learning workspace that transforms dense textbooks, lecture audio recordings, and scientific research papers into structured notes, 3D flashcards, practice quizzes, and dual-host audio recaps—with every claim, definition, and formula anchored to its exact source coordinate.
+
+## Core Value Proposition
+- **Grounded Verification**: Unlike generic LLMs that hallucinate, Source.io indexes source documents with page numbers, paragraph positions, and audio timestamps. Every generated insight cites its exact source.
+- **Five Coordinated Study Modes**: Convert any document or recording into Structured Notes, Spaced Repetition Leitner Flashcards, Practice Quizzes with explanations, Studio Audio Recaps, and Grounded Source Chat.
+- **Privacy & Security**: Zero-retention policy. Uploaded documents, lecture recordings, and notes are never retained to train commercial AI models.
+- **Transparent Pricing**: Real Free Forever tier (25 actions/day), $9/mo Scholar Pass, and Developer BYOK (Bring Your Own Key) mode.
+
+## Quick Links
+- [Main Landing Page](https://sourceio.app/)
+- [Interactive Quantum Demo Document](https://sourceio.app/app/doc/demo-quantum)
+- [Machine-Readable Pricing Guide](https://sourceio.app/pricing.md)
+- [Full XML Sitemap](https://sourceio.app/sitemap.xml)
+
+## Product Features & Specifications
+
+### 1. Structured Study Notes
+- Automatic hierarchical synthesis (Core Concepts, Mathematical Formulations, Key Takeaways).
+- Native KaTeX rendering for complex formulas and physics equations.
+- In-line citation badges linking directly to source PDF bounding boxes and paragraphs.
+- One-click export to standard clean Markdown.
+
+### 2. Spaced Repetition Leitner Flashcards
+- Front-and-back concept cards generated directly from key document definitions.
+- Leitner 5-box spaced repetition algorithm with recall accuracy tracking.
+- Interactive 3D flip physics with keyboard accessibility (Space to flip, 1-4 for difficulty rating).
+
+### 3. Practice Quizzes & Diagnostic Tests
+- Multiple-choice and short-answer questions targeted at key concepts and edge cases.
+- Comprehensive explanations for both correct and incorrect choices.
+- Immediate coordinate proof displaying the exact source paragraph supporting the correct answer.
+
+### 4. Audio Recaps & Podcasts
+- Dual-voice conversational audio summaries discussing paper methodologies and lecture topics.
+- Synchronized waveform playback with interactive transcripts.
+- Commute-ready study format with time-stamped topic jumps.
+
+### 5. Grounded Source Chat
+- Direct conversation with documents using vector embedding retrieval.
+- Cosine similarity matching (typically 90%+ similarity threshold).
+- Quotation highlights and passage coordinates returned alongside each response.
+
+## Supported Ingestion Formats
+- **PDF Documents**: Research papers, syllabi, textbooks up to 50MB (100 pages free, 300 pages Scholar).
+- **Audio & Video**: MP3, WAV, M4A, MP4 recordings with automatic Whisper speech-to-text.
+- **Web & Lectures**: YouTube lecture URLs, clean web articles, Word (.docx), and Markdown/text files.
+
+## Pricing Summary
+- **Free Forever**: $0/mo — 25 daily AI actions (resets 00:00 UTC), 3 document slots, all 5 study modes, no credit card.
+- **Scholar Pass**: $9/mo — Unlimited priority generations, unlimited storage, 300-page books, studio audio.
+- **BYOK (Bring Your Own Key)**: $0 — Connect personal Gemini or Groq API key for unlimited generations.
+
+## Contact & Organization
+- **Product**: Source.io
+- **Website**: https://sourceio.app
+- **Category**: Educational Technology / AI Knowledge Workspace
