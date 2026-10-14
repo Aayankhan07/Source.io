@@ -43,6 +43,9 @@ export function DailyQuotaPill() {
   const [showAllowanceWhy, setShowAllowanceWhy] = useState(false);
   const [showActivityHistory, setShowActivityHistory] = useState(false);
 
+  // Strictly guard: Only render inside the authenticated workspace (/app), never on the landing page
+  const isAppRoute = pathname?.startsWith("/app");
+
   // Movable draggable position state (Default: top right x=0, y=0)
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const posRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -313,6 +316,10 @@ export function DailyQuotaPill() {
     }
     return "text-slate-800 dark:text-slate-100";
   }, [hasByok, remaining]);
+
+  if (!isAppRoute) {
+    return null;
+  }
 
   return (
     <motion.div

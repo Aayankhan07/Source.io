@@ -199,13 +199,9 @@ export function InteractiveWorkflowDemo({
   ];
 
   return (
-    <motion.section 
+    <section 
       id="modes" 
       data-alias="simulator" 
-      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.12 }}
-      transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24"
     >
       <SectionHeading
@@ -635,6 +631,6 @@ export function InteractiveWorkflowDemo({
             </div>
           </div>
         </Tabs>
-      </motion.section>
+      </section>
     );
   }

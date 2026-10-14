@@ -318,12 +318,8 @@ export function CredibilityAndComparison() {
       </section>
 
       {/* 3. Frequently Asked Questions */}
-      <motion.section 
+      <section 
         id="faq" 
-        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.12 }}
-        transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="max-w-3xl mx-auto text-left w-full scroll-mt-24"
       >
         {/* Structured Data for Search Engines & Crawlers */}
@@ -371,7 +367,7 @@ export function CredibilityAndComparison() {
             </AccordionItem>
           ))}
         </Accordion>
-      </motion.section>
+      </section>
 
       {/* 4. Final CTA Banner */}
       <motion.section 

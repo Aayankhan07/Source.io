@@ -20,7 +20,7 @@ export function LandingPage() {
   }, [setTheme]);
 
   return (
-    <div className="min-h-[100dvh] bg-[#F3F5F8] text-slate-900 font-sans relative overflow-x-clip transition-colors duration-200">
+    <div className="min-h-[100dvh] bg-[#FAF9F6] text-slate-950 antialiased selection:bg-sky-100 selection:text-sky-900 font-sans relative overflow-x-clip transition-colors duration-200">
       {/* Ambient Continuous Atmospheric Halos (Soft, subtle sky and warm amber accents) */}
       <div
         className="absolute top-0 right-0 w-full lg:w-[65%] h-[700px] -z-10 pointer-events-none opacity-50"

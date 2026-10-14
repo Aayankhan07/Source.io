@@ -42,8 +42,8 @@ export function PricingComparisonSection() {
     >
       {/* Section Header */}
       <div className="text-center max-w-4xl mx-auto space-y-3 mb-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium border border-amber-500/30 bg-amber-500/10 text-amber-950 mb-1">
-          <span className="size-1.5 rounded-full bg-amber-500" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold border border-sky-500/25 bg-sky-500/10 text-sky-900 mb-1">
+          <span className="size-1.5 rounded-full bg-sky-500" />
           Transparent Pricing
         </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-900 text-balance">
