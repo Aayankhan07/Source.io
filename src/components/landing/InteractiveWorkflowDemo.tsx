@@ -251,39 +251,39 @@ export function InteractiveWorkflowDemo({
           </TabsList>
         </div>
 
-        {/* Console Shell (High-Contrast Immersive Dark Studio Console) */}
-        <div className="relative rounded-[32px] sm:rounded-[44px] bg-slate-950 text-slate-100 border border-slate-800 shadow-[0_24px_70px_rgba(0,0,0,0.35)] overflow-hidden">
-          {/* Subtle Studio Glow */}
+        {/* Interactive Workspace Container (Clean Light Mode Frame matching page aesthetic) */}
+        <div className="relative rounded-2xl sm:rounded-3xl bg-white text-slate-900 border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
+          {/* Subtle Ambient Glow */}
           <div
-            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none opacity-25"
+            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none opacity-40"
             style={{
-              background: "radial-gradient(ellipse at center, rgba(14,165,233,0.3) 0%, rgba(245,158,11,0.15) 50%, transparent 80%)",
+              background: "radial-gradient(ellipse at center, rgba(14,165,233,0.15) 0%, rgba(245,158,11,0.08) 50%, transparent 80%)",
               filter: "blur(60px)",
             }}
           />
 
-          {/* Console Header Bar */}
-          <div className="relative z-10 bg-slate-900/90 border-b border-slate-800 px-6 py-4 flex items-center justify-between gap-4 backdrop-blur-md">
+          {/* Clean Light Header Bar */}
+          <div className="relative z-10 bg-slate-50/90 border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between gap-4 backdrop-blur-md">
             <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-rose-500/80 shadow-xs" />
-              <span className="h-3 w-3 rounded-full bg-amber-500/80 shadow-xs" />
-              <span className="h-3 w-3 rounded-full bg-emerald-500/80 shadow-xs" />
+              <span className="h-3 w-3 rounded-full bg-rose-400/80" />
+              <span className="h-3 w-3 rounded-full bg-amber-400/80" />
+              <span className="h-3 w-3 rounded-full bg-emerald-400/80" />
             </div>
 
             <div className="flex-1 max-w-xs mx-auto hidden sm:flex items-center justify-center">
-              <div className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-1 text-xs text-slate-300 flex items-center justify-between font-mono shadow-inner">
+              <div className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1 text-xs text-slate-700 flex items-center justify-between font-mono shadow-xs">
                 <span className="truncate">quantum_computing_intro.pdf</span>
-                <span className="text-[11px] text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded font-mono font-medium border border-emerald-500/30">Grounded</span>
+                <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-mono font-medium border border-emerald-200">Grounded</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-400 font-mono tabular-nums">
+            <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-500 font-mono tabular-nums">
               <span className="hidden md:inline">48 Citations Indexed</span>
               
               {/* Live Demo Deep Link */}
               <Link
                 href={`/app/doc/demo-quantum?tab=${currentTab === "flashcards" ? "cards" : currentTab}`}
-                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition-colors cursor-pointer font-medium"
                 title="Open this mode in live workspace demo"
               >
                 <ExternalLink className="h-3 w-3" />
@@ -295,26 +295,26 @@ export function InteractiveWorkflowDemo({
                 <DrawerTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shadow-xs"
                   >
                     <Terminal className="h-3 w-3" strokeWidth={1.5} /> Inspect Chunks
                   </button>
                 </DrawerTrigger>
-                <DrawerContent className="max-w-2xl mx-auto bg-slate-900 border-slate-800 text-slate-100">
+                <DrawerContent className="max-w-2xl mx-auto bg-white border-slate-200 text-slate-900">
                   <DrawerHeader className="text-left">
-                    <DrawerTitle className="text-base font-semibold font-display text-white">Document Embedding Chunks</DrawerTitle>
-                    <DrawerDescription className="text-xs text-slate-400">
+                    <DrawerTitle className="text-base font-semibold font-display text-slate-900">Document Embedding Chunks</DrawerTitle>
+                    <DrawerDescription className="text-xs text-slate-500">
                       Inspect verified vector coordinates and cosine similarity scores calculated against source chunks.
                     </DrawerDescription>
                   </DrawerHeader>
                   <div className="p-4 space-y-2.5 font-mono text-xs max-h-80 overflow-y-auto">
                     {sourcePassages.map((p) => (
-                      <div key={p.id} className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+                      <div key={p.id} className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
                         <div>
-                          <span className="font-semibold text-white block">chunk_00{p.id} • Page {p.page}</span>
-                          <span className="text-slate-400 text-xs truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
+                          <span className="font-semibold text-slate-900 block">chunk_00{p.id} • Page {p.page}</span>
+                          <span className="text-slate-500 text-xs truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
                         </div>
-                        <span className="text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded text-xs font-semibold border border-sky-500/30 font-mono">
+                        <span className="text-sky-700 bg-sky-50 px-2 py-0.5 rounded text-xs font-semibold border border-sky-200 font-mono">
                           {p.similarity} similarity
                         </span>
                       </div>
@@ -322,7 +322,7 @@ export function InteractiveWorkflowDemo({
                   </div>
                   <DrawerFooter className="pt-2">
                     <DrawerClose asChild>
-                      <button type="button" className="w-full py-2 rounded-full border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-white transition-colors">
+                      <button type="button" className="w-full py-2 rounded-full border border-slate-200 bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-900 transition-colors">
                         Close Inspector
                       </button>
                     </DrawerClose>
@@ -333,7 +333,7 @@ export function InteractiveWorkflowDemo({
           </div>
 
           {/* Interactive Workspace Body with silky tab cross-fade */}
-          <div className="p-5 sm:p-8 min-h-[380px]">
+          <div className="p-3 sm:p-5 min-h-[380px] bg-slate-50/50">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentTab}
@@ -345,11 +345,11 @@ export function InteractiveWorkflowDemo({
                 {/* TAB 1: STRUCTURED NOTES */}
                 <TabsContent value="notes" forceMount={currentTab === "notes" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "notes" && (
-                    <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-1.5 sm:p-2.5 flex items-center justify-center shadow-inner">
+                    <div className="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-white">
                       <img
                         src="/notes-preview.png"
                         alt="Source.io Structured Notes Preview"
-                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-contain rounded-lg sm:rounded-xl shadow-xs"
+                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-cover object-top select-none"
                       />
                     </div>
                   )}

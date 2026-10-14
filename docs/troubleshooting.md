@@ -3,7 +3,7 @@
 ## Setup and auth
 
 **Every request 401s, or the console shows the `[supabase]` credentials error.**
-`.env` is missing or was not loaded. Copy `.env.example`, fill it in, and **restart the dev server** — Vite reads env files only at startup. The app falls back to placeholder credentials rather than crashing, so this looks like an auth bug rather than a config one.
+`.env.local` is missing or was not loaded. Copy `.env.example`, fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and **restart the dev server**. The app falls back to placeholder credentials in development rather than crashing, so this looks like an auth bug rather than a config one.
 
 **Stuck on the loading spinner forever.**
 `AuthContext` never resolved `loading`. It registers `onAuthStateChange` *before* calling `getSession()`; reversing that order drops the initial event. Check `src/features/auth/context/AuthContext.tsx:24-39`.
@@ -66,11 +66,11 @@ The `event: citations` SSE frame was missed. It is emitted once, before the toke
 
 ## Build and tooling
 
-**Type error in production that `npm run build` never caught.**
-Expected. `vite build` uses SWC, which strips types without checking. Run `npm run typecheck` — that is the actual gate. Add it to CI.
+**Type error in production that was not caught locally.**
+Always run `npm run typecheck` (`tsc -b --noEmit`) before committing or pushing. It checks the entire TypeScript project graph.
 
-**`npm test` fails on a fresh clone.**
-It should not any more. `supabase-connection.test.ts` self-skips without credentials. A *skipped* result there is normal.
+**Next.js dynamic server usage error (`useSearchParams`).**
+Components calling `useSearchParams()` during client-side hydration must be wrapped in a `<Suspense>` boundary in Next.js App Router (e.g., `app/auth/page.tsx` and `app/app/doc/[docId]/page.tsx`).
 
 **ESLint reports errors in `supabase/functions/`.**
 It should not — they are in the ignore list, since they are Deno code with different globals. If you see them, `eslint.config.js` lost its `supabase/functions/**` entry.

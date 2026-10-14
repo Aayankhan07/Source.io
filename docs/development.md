@@ -11,47 +11,38 @@
 
 ```bash
 npm install
-cp .env.example .env    # then fill in your values
+cp .env.example .env.local    # then fill in your values
 npm run dev
 ```
 
-The dev server listens on **port 8080** (`vite.config.ts`), falling back to 8081 if that is taken.
+The dev server listens on **port 3000** by default.
 
 ## Environment variables
 
-Only two, both public and browser-safe:
+Only two public, browser-safe variables are required:
 
 | Variable | Where to find it |
 | :--- | :--- |
-| `VITE_SUPABASE_URL` | Supabase dashboard → Project Settings → API → Project URL |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | same page → the **anon** / publishable key |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase dashboard → Project Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | same page → the **anon** / publishable key |
 
-> **Never put a service-role key in a `VITE_`-prefixed variable.** Vite inlines every `VITE_*` value into the JavaScript bundle shipped to browsers. Server-side secrets belong in Supabase project secrets — see [edge functions](./edge-functions.md).
+> **Never put a service-role key in a `NEXT_PUBLIC_`-prefixed variable.** Next.js inlines every `NEXT_PUBLIC_*` value into the JavaScript bundle shipped to browsers. Server-side secrets belong in Supabase project secrets — see [edge functions](./edge-functions.md).
 
-`src/integrations/supabase/client.ts` falls back to placeholder values so the module stays importable in CI, and logs a `console.error` when the real values are missing. If every request 401s and that error is in the console, your `.env` was not loaded — restart the dev server, since Vite only reads it at startup.
+`src/integrations/supabase/client.ts` falls back to placeholder values so the module stays importable in CI, and logs a `console.error` when the real values are missing. If requests fail or 401 and that error appears in the console, your `.env.local` was not loaded — restart the dev server after editing environment variables.
 
 ## Scripts
 
 | Command | Action |
 | :--- | :--- |
-| `npm run dev` | Vite dev server with HMR on :8080 |
-| `npm run build` | Production bundle to `dist/` |
-| `npm run build:dev` | Development-mode bundle (unminified, useful for debugging deploys) |
-| `npm run preview` | Serve the built `dist/` locally |
+| `npm run dev` | Next.js development server on :3000 |
+| `npm run build` | Next.js production build (`.next/`) |
+| `npm run start` | Start Next.js production server |
 | `npm run typecheck` | `tsc -b --noEmit` across all project references |
 | `npm run lint` | ESLint over the whole repo |
-| `npm test` | Vitest, single run |
-| `npm run test:watch` | Vitest in watch mode |
 
 ### Run `npm run typecheck` before every commit
 
-`npm run build` uses the SWC plugin, which **strips types without checking them**. A type error will build and deploy perfectly happily and then crash in the browser. This exact failure mode shipped a `ReferenceError` to production once already. The build is not a type gate; `typecheck` is.
-
-## Testing
-
-Vitest with jsdom, configured in `vitest.config.ts`. Tests live in `src/**/*.{test,spec}.{ts,tsx}`; `src/test/setup.ts` pulls in `@testing-library/jest-dom` and stubs `matchMedia`.
-
-`src/test/supabase-connection.test.ts` is an integration test that queries the live project. It self-skips when `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` are absent, so `npm test` passes on a fresh clone with no `.env`. A skipped result there is expected, not a failure.
+Always run `npm run typecheck` before committing. Next.js production builds validate code, but running typecheck directly provides rapid feedback across the entire workspace.
 
 ## Conventions
 

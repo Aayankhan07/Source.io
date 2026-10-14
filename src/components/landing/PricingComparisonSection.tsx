@@ -41,25 +41,17 @@ export function PricingComparisonSection() {
       className="py-12 sm:py-20 relative z-10 w-full scroll-mt-24"
     >
       {/* Section Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+      <div className="text-center max-w-4xl mx-auto space-y-3 mb-10">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium border border-amber-500/30 bg-amber-500/10 text-amber-950 mb-1">
           <span className="size-1.5 rounded-full bg-amber-500" />
           Transparent Pricing
         </div>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-900">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-900 text-balance">
           A real free tier. No deceptive trial traps.
         </h2>
-        <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto text-balance">
           Every account receives 25 daily AI actions that reset every night at 00:00 UTC. Bring your own API key anytime for unlimited local usage.
         </p>
-
-        {/* Next quota countdown pill */}
-        <div className="pt-2 flex justify-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700 shadow-sm">
-            <Clock className="size-3.5 text-slate-500" />
-            <span>Daily allowance refreshes in: <strong className="font-semibold text-slate-900">{timeUntilReset || "24h 00m 00s"}</strong></span>
-          </div>
-        </div>
       </div>
 
       {/* 2-Tier Pricing Cards Grid */}

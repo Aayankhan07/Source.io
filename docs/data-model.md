@@ -79,6 +79,10 @@ Roles are stored separately from profiles on purpose: a user must not be able to
 
 Progress bookkeeping for long-running ingests: `kind`, `status`, `progress` (0–100), `error`, `payload`. Written by edge functions using the service role.
 
+### `ai_usage_logs`
+
+Cost guardrails and telemetry: logs timestamp, user, `function_name`, `provider`, `model`, `prompt_tokens`, `completion_tokens`, and optional `document_id`. Used for enforcing the free-tier daily quotas.
+
 ## Database functions
 
 | Function | Purpose |
@@ -104,6 +108,7 @@ Deliberate exceptions:
 - `profiles` — select is `USING (true)`, public by design.
 - `quiz_attempts` and `chat_messages` — no update policy; history is append-only.
 - `user_roles` — writes restricted to admins via `has_role`.
+- `ai_usage_logs` — insert/select policies for user telemetry and service-role tracking.
 
 **Every new table needs its own policies.** With RLS enabled and no policies, the table is invisible to clients — which looks exactly like "the data disappeared."
 
@@ -127,5 +132,7 @@ Applied in filename order:
 | `20260419182628_…` | Storage read policies for avatars and podcasts |
 | `20260420174623_…` | De-duplication unique index, extra indexes, `match_document_chunks` |
 | `20260601125221_…` | Security tightening: admin-only role writes, private podcasts bucket |
+| `20261005190000_…` | AI cost guardrails: idempotency keys, token ceiling enforcement |
+| `20261005200000_…` | Full free cost plan: `ai_usage_logs` telemetry table and daily quota accounting |
 
 Never edit an applied migration — add a new one. See [deployment](./deployment.md).

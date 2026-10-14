@@ -15,4 +15,4 @@ Reference documentation for the Source.io codebase. Start with the root [`README
 
 - Code references are written as `path/to/file.ts:42` so they can be opened directly.
 - "Edge function" always means a Deno function under `supabase/functions/`, deployed to Supabase.
-- Anything described as a *secret* is server-side only and must never appear in a `VITE_`-prefixed variable — Vite inlines those into the browser bundle.
+- Anything described as a *secret* is server-side only and must never appear in a `NEXT_PUBLIC_`-prefixed variable — Next.js exposes those directly to the client browser bundle.

@@ -5,7 +5,7 @@
 Source.io is a single-page React app talking to Supabase. There is no bespoke backend server — every server-side operation is either a direct PostgREST query (guarded by Row Level Security) or a Deno edge function.
 
 ```
-Browser (React SPA, Vite)
+Browser (React / Next.js 16 App Router)
   │
   ├── supabase-js ──────────► PostgREST  ──► Postgres (RLS enforced per user)
   │                           Realtime   ──► postgres_changes subscriptions
@@ -136,7 +136,7 @@ Similarity search runs through the `match_document_chunks` Postgres function usi
 
 ## Shared conventions
 
-- **Path alias** — `@/` maps to `src/`, configured in both `vite.config.ts` and the tsconfigs.
+- **Path alias** — `@/` maps to `src/`, configured in `tsconfig.json`.
 - **Edge function calls** — always go through `callFunction` / `functionError` in `src/lib/services/functions.ts`. It attaches the Bearer token and throws `"Not authenticated"` when no session exists.
 - **Error messages** — use `errorMessage(e)` from `src/lib/utils.ts` in `catch` blocks. `catch (e: any)` is a lint error.
-- **Styling** — Tailwind with semantic CSS variables defined in `src/index.css`. Markdown is styled by the hand-written `.prose-invert-tight` rules there; the typography plugin is not enabled.
+- **Styling** — Tailwind CSS with semantic tokens and charcoal/zinc variables defined in `app/globals.css`. Markdown is styled by tailored `.prose-invert-tight` and KaTeX mathematical typography rules.

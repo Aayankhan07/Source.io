@@ -212,7 +212,7 @@ export function CredibilityAndComparison() {
         <SectionHeading
           badge="Comparison"
           badgeTone="blue"
-          line1="Built for verifiable learning"
+          line1="Why general AI chatbots fall short for exam prep"
           description="How Source.io compares with generic AI chat windows when studying dense sources."
           align="left"
         />
@@ -392,12 +392,12 @@ export function CredibilityAndComparison() {
           />
 
           {/* Central Content */}
-          <div className="relative z-10 max-w-2xl mx-auto space-y-4">
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-white">
-              Stop skimming. <span className="text-slate-300 font-normal">Start mastering.</span>
+          <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-white text-balance">
+              Stop skimming. Start mastering.
             </h2>
 
-            <p className="text-base sm:text-lg leading-relaxed text-slate-300 max-w-[520px] mx-auto">
+            <p className="text-base sm:text-lg leading-relaxed text-slate-300 max-w-[540px] mx-auto text-balance">
               Upload your first document or lecture recording and see what Source.io can generate.
             </p>
 

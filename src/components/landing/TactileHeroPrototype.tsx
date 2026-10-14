@@ -169,12 +169,12 @@ export function TactileHeroPrototype() {
           </div>
         </motion.div>
 
-        {/* Right Column: Balanced preview frame with directional slide and subtle 3D tilt parallax */}
+        {/* Right Column: High-resolution floating workspace frame with active citation callout card */}
         <motion.div 
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: shouldReduceMotion ? 0.3 : 0.85, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end [perspective:1000px]"
+          className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end [perspective:1000px] relative"
         >
           <motion.div 
             style={{
@@ -184,13 +184,49 @@ export function TactileHeroPrototype() {
             }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="w-full max-w-[620px] rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.08] shadow-tactile-dock bg-white p-2 sm:p-2.5 transition-shadow hover:shadow-2xl cursor-default"
+            className="w-full max-w-[580px] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.12),0_1px_3px_rgba(0,0,0,0.05)] bg-white p-2.5 transition-shadow hover:shadow-2xl cursor-default relative group"
           >
-            <img
-              src="/hero-image-2.jpg"
-              alt="Source.io study workspace preview"
-              className="w-full h-auto aspect-[16/11] rounded-[20px] sm:rounded-[28px] object-cover pointer-events-none select-none"
-            />
+            {/* Top Workspace Chrome */}
+            <div className="flex items-center justify-between px-3 py-2 bg-slate-50/80 border border-slate-100 rounded-xl mb-2 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="size-2.5 rounded-full bg-rose-400/80" />
+                <span className="size-2.5 rounded-full bg-amber-400/80" />
+                <span className="size-2.5 rounded-full bg-emerald-400/80" />
+                <span className="font-mono text-[11px] text-slate-500 ml-1 truncate max-w-[160px] sm:max-w-xs">quantum_intro.pdf</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 font-medium">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>38 Pages Indexed</span>
+              </div>
+            </div>
+
+            {/* Tight UI Preview Graphic */}
+            <div className="relative overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
+              <img
+                src="/notes-preview.png"
+                alt="Source.io study workspace preview showing verified notes and citations"
+                className="w-full h-auto aspect-[16/10] object-cover object-top pointer-events-none select-none transition-transform duration-500 group-hover:scale-[1.02]"
+              />
+
+              {/* Floating Interactive Callout Card: Grounded Citation Pill */}
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-[340px] bg-slate-900/95 backdrop-blur-md text-white p-3 sm:p-3.5 rounded-xl border border-slate-700/80 shadow-2xl flex items-start gap-3">
+                <div className="size-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center shrink-0 text-sky-400">
+                  <ShieldCheck className="size-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono text-sky-400 font-semibold uppercase tracking-wider">Citation Coordinate</span>
+                    <span className="text-[10px] font-mono bg-sky-950/80 text-sky-300 border border-sky-500/30 px-1.5 py-0.2 rounded">96% match</span>
+                  </div>
+                  <p className="text-xs text-slate-200 mt-1 font-medium leading-snug line-clamp-2">
+                    "Decoherence is induced by environmental thermal vibrations and stray fields."
+                  </p>
+                  <div className="mt-1.5 text-[10px] text-slate-400 font-mono">
+                    Linked to <span className="text-white font-medium">Page 14, ¶3</span> in source PDF
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </div>

@@ -74,7 +74,7 @@ export function KnowledgePipeline() {
       />
 
       <div className="mt-12 sm:mt-16 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: Interactive Flow Steps */}
           <div className="lg:col-span-5 flex flex-col divide-y divide-slate-100">
@@ -141,11 +141,11 @@ export function KnowledgePipeline() {
           </div>
 
           {/* Right Column: Persistent Source Page Annotated Across Steps */}
-          <div className="lg:col-span-7 lg:sticky lg:top-28">
-            <div className="relative">
+          <div className="lg:col-span-7 h-full flex flex-col justify-center">
+            <div className="relative h-full">
               
               {/* Document Sheet (Grounded on Canvas - No nested cards, subtle hairline paper aesthetic) */}
-              <div className="relative rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(15,23,42,0.04)] overflow-hidden min-h-[460px] sm:min-h-[500px] p-6 sm:p-8 flex flex-col justify-between">
+              <div className="relative rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(15,23,42,0.04)] overflow-hidden h-full min-h-[480px] sm:min-h-[520px] p-6 sm:p-8 flex flex-col justify-between">
                 
                 {/* Real Document Running Header */}
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100 text-[11px] font-mono text-slate-400">

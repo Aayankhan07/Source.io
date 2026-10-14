@@ -4,19 +4,18 @@ Three things ship independently: the static frontend, the database migrations, a
 
 ## Frontend
 
-The repo carries a `vercel.json` with a catch-all rewrite to `/index.html`, which is what keeps client-side routes working on a hard refresh. Any static host works with the equivalent SPA fallback.
+The repository deploys cleanly to Vercel or any Node.js hosting platform with native Next.js support. Server and client routes are handled through the Next.js App Router.
 
 **Build settings**
 
 | Setting | Value |
 | :--- | :--- |
+| Framework Preset | Next.js |
 | Build command | `npm run build` |
-| Output directory | `dist` |
+| Output directory | `.next` (managed automatically by Vercel) |
 | Install command | `npm ci` |
 
-**Environment variables** — set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in the host's dashboard. They are read at *build* time and inlined into the bundle, so changing them requires a rebuild, not just a restart.
-
-Consider adding `npm run typecheck && npm run lint` to the build command. `vite build` does not typecheck, so without it a type error deploys silently.
+**Environment variables** — set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in your hosting provider's dashboard. Values prefixed with `NEXT_PUBLIC_` are read at build time and made available to client components.
 
 ## Migrations
 
