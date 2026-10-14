@@ -34,9 +34,9 @@ export function LandingFooter() {
               <span className="font-medium text-foreground block mb-2.5">Resources</span>
               <ul className="space-y-2 text-muted-foreground">
                 <li><Link href="/app/doc/demo-quantum" className="hover:text-foreground transition-colors">Interactive Demo</Link></li>
-                <li><a href="#modes" className="hover:text-foreground transition-colors">Spaced Repetition</a></li>
-                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">Citation Engine</a></li>
-                <li><a href="#pricing" className="hover:text-foreground transition-colors">Developer BYOK</a></li>
+                <li><Link href="/vs-notebooklm" className="hover:text-foreground transition-colors">vs NotebookLM</Link></li>
+                <li><Link href="/pricing.md" className="hover:text-foreground transition-colors">Pricing (Markdown)</Link></li>
+                <li><Link href="/llms.txt" className="hover:text-foreground transition-colors">llms.txt</Link></li>
               </ul>
             </div>
 

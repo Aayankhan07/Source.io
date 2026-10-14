@@ -631,6 +631,41 @@ export function InteractiveWorkflowDemo({
             </div>
           </div>
         </Tabs>
+
+        {/* Public Interactive Document Library Strip */}
+        <div className="mt-8 pt-6 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-left">
+            <p className="text-xs font-bold font-display uppercase tracking-wider text-slate-800">
+              Explore Live Public Workspaces
+            </p>
+            <p className="text-xs text-slate-500">
+              Open interactive study workspaces with full LaTeX math formulas, 3D flashcards, and coordinate citations without logging in.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <Link
+              href="/app/doc/demo-quantum"
+              className="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
+            >
+              <span>Quantum Computing</span>
+              <ExternalLink className="size-3 text-slate-400" />
+            </Link>
+            <Link
+              href="/app/doc/demo-linalg"
+              className="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
+            >
+              <span>Linear Algebra</span>
+              <ExternalLink className="size-3 text-slate-400" />
+            </Link>
+            <Link
+              href="/app/doc/demo-networking"
+              className="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
+            >
+              <span>Network Protocols</span>
+              <ExternalLink className="size-3 text-slate-400" />
+            </Link>
+          </div>
+        </div>
       </section>
     );
   }

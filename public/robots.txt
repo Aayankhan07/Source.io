@@ -45,8 +45,10 @@ Allow: /pricing.md
 Allow: /llms.txt
 Allow: /llms-full.txt
 Allow: /app/doc/demo-quantum
+Allow: /app/doc/demo-linalg
+Allow: /app/doc/demo-networking
 Disallow: /api/
 Disallow: /app/settings
 
 # Canonical XML Sitemap
-Sitemap: https://sourceio.app/sitemap.xml
+Sitemap: https://source-io.vercel.app/sitemap.xml

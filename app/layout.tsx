@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 import SWUnregister from "./SWUnregister";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sourceio.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://source-io.vercel.app"),
   title: "AI Study Notes, Flashcards & Quizzes with Citations | Source.io",
   description:
     "Transform textbooks, lecture recordings, and research papers into verified study notes, 3D flashcards, quizzes, and podcasts with exact source citations. Start free.",

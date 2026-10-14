@@ -106,7 +106,7 @@ export default function DocumentWorkspace() {
 
   const docQuery = useQuery({
     queryKey: queryKeys.document(docId ?? ""),
-    enabled: !!docId && !!user,
+    enabled: !!docId && (isDemo || !!user),
     queryFn: async () => {
       if (docId && DEMO_DOCUMENTS[docId]) {
         return DEMO_DOCUMENTS[docId].document;
@@ -123,7 +123,7 @@ export default function DocumentWorkspace() {
 
   const assetsQuery = useQuery({
     queryKey: queryKeys.assets(docId ?? ""),
-    enabled: !!docId && !!user,
+    enabled: !!docId && (isDemo || !!user),
     queryFn: async (): Promise<DocumentAssets> => {
       if (docId && DEMO_DOCUMENTS[docId]) {
         const d = DEMO_DOCUMENTS[docId];
