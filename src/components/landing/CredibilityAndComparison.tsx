@@ -237,11 +237,11 @@ export function CredibilityAndComparison() {
                   </td>
                   <td className="px-5 py-3.5">
                     {row.source === true ? (
-                      <span className="inline-flex items-center gap-1.5 text-emerald-600 font-semibold font-mono text-xs">
-                        <Check className="size-4" /> Native
+                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs">
+                        <Check className="size-3.5 text-emerald-600 stroke-[2.5]" /> Native
                       </span>
                     ) : (
-                      <span>{row.source}</span>
+                      <span className="font-medium text-slate-900">{row.source}</span>
                     )}
                   </td>
                   <td className="px-5 py-3.5 text-slate-500 text-xs font-mono">
@@ -281,9 +281,9 @@ export function CredibilityAndComparison() {
                 <p className="text-slate-500 text-[11px] mt-0.5">{row.note}</p>
               </div>
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-mono">
-                <div className="p-2 rounded-[12px] bg-slate-100 text-center">
-                  <span className="text-slate-500 block text-[10px] mb-0.5">Source.io</span>
-                  <span className="text-emerald-600 font-bold">Native</span>
+                <div className="p-2 rounded-[12px] bg-emerald-50/80 border border-emerald-200/80 text-center">
+                  <span className="text-emerald-800 font-semibold block text-[10px] mb-0.5">Source.io</span>
+                  <span className="text-emerald-700 font-bold">Native</span>
                 </div>
                 <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
                   <span className="text-slate-500 block text-[10px] mb-0.5">ChatGPT</span>

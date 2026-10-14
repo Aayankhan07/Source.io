@@ -42,11 +42,10 @@ export function PricingComparisonSection() {
     >
       {/* Section Header */}
       <div className="text-center max-w-4xl mx-auto space-y-3 mb-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold border border-sky-500/25 bg-sky-500/10 text-sky-900 mb-1">
-          <span className="size-1.5 rounded-full bg-sky-500" />
+        <span className="inline-flex items-center rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold tracking-wide text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase shadow-xs mb-1">
           Transparent Pricing
-        </div>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-900 text-balance">
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-950 text-balance">
           A real free tier. No deceptive trial traps.
         </h2>
         <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto text-balance">

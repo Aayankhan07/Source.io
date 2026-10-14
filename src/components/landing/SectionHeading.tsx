@@ -20,13 +20,13 @@ interface SectionHeadingProps {
 }
 
 const badgeToneStyles: Record<string, string> = {
-  blue: "bg-sky-500/10 text-sky-900 border-sky-500/25 font-semibold",
-  darkBlue: "bg-sky-500/10 text-sky-900 border-sky-500/25 font-semibold",
-  cyan: "bg-sky-500/10 text-sky-900 border-sky-500/25 font-semibold",
-  amber: "bg-sky-500/10 text-sky-900 border-sky-500/25 font-semibold",
-  slate: "bg-sky-500/10 text-sky-900 border-sky-500/25 font-semibold",
-  emerald: "bg-sky-500/10 text-sky-900 border-sky-500/25 font-semibold",
-  violet: "bg-sky-500/10 text-sky-900 border-sky-500/25 font-semibold",
+  blue: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
+  darkBlue: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
+  cyan: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
+  amber: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
+  slate: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
+  emerald: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
+  violet: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
 };
 
 export function SectionHeading({
@@ -55,7 +55,7 @@ export function SectionHeading({
         <div className="mb-3.5">
           <span
             className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold leading-[18px] border shadow-xs transition-colors",
+              "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase transition-colors shadow-xs",
               badgeToneStyles[badgeTone] || badgeToneStyles.blue
             )}
           >
@@ -67,7 +67,7 @@ export function SectionHeading({
 
       {/* 2. Solid High-Contrast Headline */}
       <h2
-        className="text-[clamp(26px,3vw,40px)] font-bold tracking-[-0.02em] leading-[1.18] text-slate-900 font-sans text-balance"
+        className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 text-balance leading-[1.18]"
       >
         <span>{line1}</span>
         {line2 && (
@@ -82,8 +82,8 @@ export function SectionHeading({
       {description && (
         <p
           className={cn(
-            "mt-3.5 text-[15.5px] leading-[1.7] text-slate-600 font-normal w-full text-balance",
-            compact ? "max-w-2xl" : "max-w-lg"
+            "mt-3 text-base sm:text-lg text-slate-600 leading-relaxed w-full text-balance",
+            compact ? "max-w-2xl" : "max-w-2xl"
           )}
         >
           {description}
