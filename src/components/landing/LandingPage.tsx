@@ -6,7 +6,6 @@ import { TactileHeroPrototype } from "./TactileHeroPrototype";
 import { IngestionRibbon } from "./IngestionRibbon";
 import { KnowledgePipeline } from "./KnowledgePipeline";
 import { InteractiveWorkflowDemo } from "./InteractiveWorkflowDemo";
-import { FreeTierTransparency } from "./FreeTierTransparency";
 import { PricingComparisonSection } from "./PricingComparisonSection";
 import { CredibilityAndComparison } from "./CredibilityAndComparison";
 import { LandingFooter } from "./LandingFooter";
@@ -65,10 +64,7 @@ export function LandingPage() {
         {/* Section 5: Product Demo (5 Benefit-Driven Study Modes with sc switcher & placeholders) */}
         <InteractiveWorkflowDemo />
 
-        {/* Section 6: Pricing & Free Plan Transparency (3 core pillars + daily reset) */}
-        <FreeTierTransparency />
-
-        {/* Section 7: Full 3-Tier Pricing & BYOK Comparison */}
+        {/* Section 6: Unified Pricing & BYOK Comparison */}
         <PricingComparisonSection />
 
         {/* Section 8: Use Cases, Capability Comparison, 5 Core FAQs & Final CTA */}

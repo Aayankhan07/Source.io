@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -16,14 +16,24 @@ import { cn } from "@/lib/utils";
 export default function Auth() {
   const { user, loading, signInAsGuest } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryMode = searchParams.get("mode");
+  const redirectTarget = searchParams.get("redirect") || "/app";
+
   const { toast } = useToast();
   const { setTheme } = useTheme();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">(queryMode === "signup" ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
+
+  useEffect(() => {
+    if (queryMode === "signup" || queryMode === "signin") {
+      setMode(queryMode);
+    }
+  }, [queryMode]);
 
   useEffect(() => {
     // Default login page to white/light mode
@@ -32,8 +42,8 @@ export default function Auth() {
   }, [setTheme]);
 
   useEffect(() => {
-    if (!loading && user) router.replace("/app");
-  }, [user, loading, router]);
+    if (!loading && user) router.replace(redirectTarget);
+  }, [user, loading, router, redirectTarget]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +90,7 @@ export default function Auth() {
       title: "Guest Session Active",
       description: "Welcome to Source.io! Exploring sample documents.",
     });
-    router.push("/app");
+    router.push(redirectTarget);
   };
 
   return (

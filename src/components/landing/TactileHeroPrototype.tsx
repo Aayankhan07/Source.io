@@ -130,7 +130,7 @@ export function TactileHeroPrototype() {
               transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
               <Link
-                href={mounted && user ? "/app" : "/auth"}
+                href={mounted && user ? "/app" : "/auth?mode=signup"}
                 className="relative px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18),0_16px_32px_-8px_rgba(0,0,0,0.22)] border-t border-white/20 flex items-center justify-center gap-2 group cursor-pointer transition-[background-color,box-shadow] duration-200"
               >
                 <span>{mounted && user ? "Open workspace" : "Start free"}</span>

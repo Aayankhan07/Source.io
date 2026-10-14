@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAppShell } from "@/features/documents/context/AppShellContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -76,7 +76,25 @@ export default function DocumentWorkspace() {
   const { settings, notesSettings } = useSettings();
 
   // Active workspace tab state
-  const [currentTab, setCurrentTab] = useState<TabId>("notes");
+  const searchParams = useSearchParams();
+  const requestedTab = searchParams?.get("tab");
+  const [currentTab, setCurrentTab] = useState<TabId>(() => {
+    if (requestedTab === "cards" || requestedTab === "flashcards") return "cards";
+    if (requestedTab === "quiz") return "quiz";
+    if (requestedTab === "podcast") return "podcast";
+    return "notes";
+  });
+
+  useEffect(() => {
+    if (!requestedTab) return;
+    if (requestedTab === "cards" || requestedTab === "flashcards") setCurrentTab("cards");
+    else if (requestedTab === "quiz") setCurrentTab("quiz");
+    else if (requestedTab === "podcast") setCurrentTab("podcast");
+    else if (requestedTab === "notes" || requestedTab === "chat") {
+      setCurrentTab("notes");
+      if (requestedTab === "chat") setAskPanelOpen(true);
+    }
+  }, [requestedTab]);
 
   // Sync Copilot open state to global app shell for collision-free quota pill placement
   useEffect(() => {

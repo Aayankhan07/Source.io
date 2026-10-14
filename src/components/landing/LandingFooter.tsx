@@ -14,7 +14,7 @@ export function LandingFooter() {
               </span>
             </Link>
             <p className="text-[13px] leading-[20px] text-muted-foreground">
-              The multimodal intelligence workspace that synthesizes complex documents into verified study notes, active recall systems, and cited dialogues.
+              Turn textbooks, lectures, and research papers into cited notes, active flashcards, and practice quizzes.
             </p>
           </div>
 
@@ -22,28 +22,29 @@ export function LandingFooter() {
             <div>
               <span className="font-medium text-foreground block mb-2.5">Product</span>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#workbench" className="hover:text-foreground transition-colors">Study Lenses</a></li>
-                <li><a href="#grounding" className="hover:text-foreground transition-colors">Verification Engine</a></li>
-                <li><a href="#pipeline" className="hover:text-foreground transition-colors">Pipeline</a></li>
-                <li><a href="#comparison" className="hover:text-foreground transition-colors">Comparison &amp; FAQ</a></li>
+                <li><a href="#modes" className="hover:text-foreground transition-colors">Study Modes</a></li>
+                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing &amp; Free Plan</a></li>
+                <li><a href="#comparison" className="hover:text-foreground transition-colors">Comparison</a></li>
+                <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
               </ul>
             </div>
 
             <div>
-              <span className="font-medium text-foreground block mb-2.5">Grounding</span>
+              <span className="font-medium text-foreground block mb-2.5">Resources</span>
               <ul className="space-y-2 text-muted-foreground">
-                <li><span className="text-muted-foreground">Whisper ASR</span></li>
-                <li><span className="text-muted-foreground">Groq Llama 3.3-70b</span></li>
-                <li><span className="text-muted-foreground">pgvector Coordinates</span></li>
-                <li><span className="text-muted-foreground">Citation Engine</span></li>
+                <li><Link href="/app/doc/demo-quantum" className="hover:text-foreground transition-colors">Interactive Demo</Link></li>
+                <li><a href="#modes" className="hover:text-foreground transition-colors">Spaced Repetition</a></li>
+                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">Citation Engine</a></li>
+                <li><a href="#pricing" className="hover:text-foreground transition-colors">Developer BYOK</a></li>
               </ul>
             </div>
 
             <div>
               <span className="font-medium text-foreground block mb-2.5">Platform</span>
               <ul className="space-y-2 text-muted-foreground">
-                <li><Link href="/auth" className="hover:text-foreground transition-colors">Sign in</Link></li>
-                <li><Link href="/auth" className="hover:text-foreground transition-colors">Create account</Link></li>
+                <li><Link href="/auth?mode=signin" className="hover:text-foreground transition-colors">Sign in</Link></li>
+                <li><Link href="/auth?mode=signup" className="hover:text-foreground transition-colors">Create account</Link></li>
                 <li><span className="text-muted-foreground">Zero-Data Retention</span></li>
                 <li><span className="text-muted-foreground">MIT License</span></li>
               </ul>
@@ -53,8 +54,7 @@ export function LandingFooter() {
 
         <div className="pt-5 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span className="size-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.7)]" aria-hidden="true" />
-            <span>All inference pipelines operational</span>
+            <span>Isolated sessions • Zero model training</span>
           </div>
           <div className="font-mono">
             &copy; {new Date().getFullYear()} Source.io • Built for anyone with a document

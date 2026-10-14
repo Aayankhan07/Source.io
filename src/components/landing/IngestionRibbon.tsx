@@ -7,18 +7,17 @@ import {
 const INGESTION_FORMATS = [
   { icon: FileText, label: "PDF Documents", tag: "PDF" },
   { icon: Video, label: "Lecture Videos", tag: "YouTube, MP4" },
-  { icon: Mic, label: "Audio Recordings", tag: "MP3, WAV" },
-  { icon: Database, label: "Research Papers", tag: "LaTeX, arXiv" },
+  { icon: Mic, label: "Audio Seminars", tag: "MP3, WAV, M4A" },
+  { icon: FileCode, label: "Word & Documents", tag: "DOCX, Text" },
   { icon: Globe, label: "Web Articles", tag: "URLs" },
-  { icon: FileCode, label: "Markdown & Word", tag: "MD, DOCX" },
-  { icon: BookOpen, label: "EPUB Textbooks", tag: "EPUB" },
+  { icon: Database, label: "Research Papers", tag: "Dense PDF" },
 ];
 
 export function IngestionRibbon() {
   return (
     <section className="py-8 sm:py-12 px-0 relative z-10 w-full flex flex-col items-center justify-center overflow-hidden">
       <p className="text-xs sm:text-sm font-medium text-slate-600 mb-3.5 text-center px-4">
-        Upload PDFs, documents, web articles, lecture recordings, audio, or LaTeX files.
+        Ingest textbooks, lecture recordings, papers, and notes with automatic coordinate mapping.
       </p>
 
       {/* Moving Ribbon Track with Edge Fade Masks */}

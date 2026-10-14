@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { 
   FileText, Headphones, MessagesSquare, ListChecks, Layers,
@@ -29,7 +30,7 @@ interface InteractiveWorkflowDemoProps {
 }
 
 export function InteractiveWorkflowDemo({ 
-  activeTab = "dashboard", 
+  activeTab = "notes", 
   onTabChange 
 }: InteractiveWorkflowDemoProps) {
   const [currentTab, setCurrentTab] = useState<string>(activeTab);
@@ -190,8 +191,6 @@ export function InteractiveWorkflowDemo({
   const shouldReduceMotion = useReducedMotion();
 
   const tabsList = [
-    { value: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Performance chart, goals & study sources" },
-    { value: "library", label: "Library", icon: Library, title: "Study sources and library overview" },
     { value: "notes", label: "Structured Notes", icon: FileText, title: "Understand main ideas quickly" },
     { value: "flashcards", label: "Flashcards", icon: Layers, title: "Retain concepts over time" },
     { value: "quiz", label: "Practice Quiz", icon: ListChecks, title: "Test whether you actually understand" },
@@ -212,9 +211,8 @@ export function InteractiveWorkflowDemo({
       <SectionHeading
         badge="5 Study Modes"
         badgeTone="blue"
-        line1="One source."
-        line2="Five ways to learn."
-        description="Convert one source document into five coordinated study modes, each tailored to a different stage of learning."
+        line1="Five coordinated study modes derived from any source."
+        description="Convert any document or recording into interconnected study modes tailored to every stage of learning."
         align="center"
       />
 
@@ -279,9 +277,19 @@ export function InteractiveWorkflowDemo({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-slate-400 font-mono tabular-nums">
+            <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-400 font-mono tabular-nums">
               <span className="hidden md:inline">48 Citations Indexed</span>
               
+              {/* Live Demo Deep Link */}
+              <Link
+                href={`/app/doc/demo-quantum?tab=${currentTab === "flashcards" ? "cards" : currentTab}`}
+                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 transition-colors cursor-pointer"
+                title="Open this mode in live workspace demo"
+              >
+                <ExternalLink className="h-3 w-3" />
+                <span className="hidden sm:inline">Test Live</span>
+              </Link>
+
               {/* Telemetry Drawer */}
               <Drawer>
                 <DrawerTrigger asChild>
@@ -334,33 +342,7 @@ export function InteractiveWorkflowDemo({
                 exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -8, filter: shouldReduceMotion ? "none" : "blur(4px)" }}
                 transition={{ duration: shouldReduceMotion ? 0.15 : 0.28, ease: [0.16, 1, 0.3, 1] }}
               >
-                {/* TAB: DASHBOARD PREVIEW */}
-                <TabsContent value="dashboard" forceMount={currentTab === "dashboard" ? true : undefined} className="mt-0 focus-visible:outline-none">
-                  {currentTab === "dashboard" && (
-                    <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-1.5 sm:p-2.5 flex items-center justify-center shadow-inner">
-                      <img
-                        src="/dashboard-preview.png"
-                        alt="Source.io Dashboard Preview"
-                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-contain rounded-lg sm:rounded-xl shadow-xs"
-                      />
-                    </div>
-                  )}
-                </TabsContent>
-
-                {/* TAB: LIBRARY PREVIEW */}
-                <TabsContent value="library" forceMount={currentTab === "library" ? true : undefined} className="mt-0 focus-visible:outline-none">
-                  {currentTab === "library" && (
-                    <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-1.5 sm:p-2.5 flex items-center justify-center shadow-inner">
-                      <img
-                        src="/library-preview.png"
-                        alt="Source.io Study Sources and Library Preview"
-                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-contain rounded-lg sm:rounded-xl shadow-xs"
-                      />
-                    </div>
-                  )}
-                </TabsContent>
-
-                {/* TAB: STRUCTURED NOTES */}
+                {/* TAB 1: STRUCTURED NOTES */}
                 <TabsContent value="notes" forceMount={currentTab === "notes" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "notes" && (
                     <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-1.5 sm:p-2.5 flex items-center justify-center shadow-inner">

@@ -68,8 +68,7 @@ export function KnowledgePipeline() {
       <SectionHeading
         badge="How It Works"
         badgeTone="blue"
-        line1="From source material to active learning"
-        line2="in four continuous steps."
+        line1="From source material to active learning in four continuous steps."
         description="Upload your material once. Source.io extracts structure, derives practice tools, and preserves exact citations."
         align="center"
       />
@@ -193,8 +192,8 @@ export function KnowledgePipeline() {
                         animate={{ opacity: 1 }}
                         className="absolute -inset-1 border border-dashed border-sky-400/70 bg-sky-50/20 rounded pointer-events-none"
                       >
-                        <span className="absolute -top-2.5 left-2 px-1 bg-sky-100 text-sky-700 font-mono text-[9px] rounded">
-                          text_block_01 [conf: 99.8%]
+                        <span className="absolute -top-2.5 left-2 px-1.5 py-0.5 bg-sky-100 text-sky-700 font-mono text-[9px] rounded font-semibold">
+                          99.8% Text Coordinate Match
                         </span>
                       </motion.div>
                     )}
@@ -217,8 +216,8 @@ export function KnowledgePipeline() {
                         animate={{ opacity: 1 }}
                         className="absolute inset-0 border border-sky-400/80 bg-sky-50/30 rounded flex items-center justify-between px-2 pointer-events-none"
                       >
-                        <span className="font-mono text-[9px] text-sky-700 bg-white/90 px-1 py-0.5 rounded border border-sky-200">
-                          formula_detector: LaTeX OCR
+                        <span className="font-mono text-[9px] text-sky-700 bg-white/90 px-1.5 py-0.5 rounded border border-sky-200 font-semibold">
+                          LaTeX Formula & Notation Parser
                         </span>
                       </motion.div>
                     )}
@@ -243,8 +242,8 @@ export function KnowledgePipeline() {
                     {/* Step 1 OCR Bounding Box */}
                     {activeStep === 0 && (
                       <div className="absolute -inset-1 border border-dashed border-sky-400/70 bg-sky-50/20 rounded pointer-events-none">
-                        <span className="absolute -top-2.5 left-2 px-1 bg-sky-100 text-sky-700 font-mono text-[9px] rounded">
-                          text_block_03 [conf: 99.4%]
+                        <span className="absolute -top-2.5 left-2 px-1.5 py-0.5 bg-sky-100 text-sky-700 font-mono text-[9px] rounded font-semibold">
+                          Paragraph Coordinate Match
                         </span>
                       </div>
                     )}
@@ -425,7 +424,7 @@ export function KnowledgePipeline() {
                           </div>
 
                           <span className="text-[10px] font-mono text-slate-400">
-                            Matched vector similarity: 0.984
+                            Cosine similarity: 98.4%
                           </span>
                         </div>
                       </motion.div>

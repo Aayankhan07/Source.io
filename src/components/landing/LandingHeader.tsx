@@ -61,7 +61,7 @@ export function LandingHeader() {
             href="#modes"
             className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
           >
-            Product
+            Study Modes
           </a>
           <a
             href="#how-it-works"
@@ -70,16 +70,16 @@ export function LandingHeader() {
             How it works
           </a>
           <a
-            href="#verification"
-            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
-          >
-            Verification
-          </a>
-          <a
             href="#pricing"
             className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
           >
-            Free plan
+            Pricing
+          </a>
+          <a
+            href="#comparison"
+            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
+          >
+            Comparison
           </a>
           <a
             href="#faq"
@@ -109,7 +109,7 @@ export function LandingHeader() {
           ) : (
             <div className="flex items-center gap-1.5">
               <Link
-                href="/auth"
+                href="/auth?mode=signin"
                 className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-colors"
               >
                 Sign in
@@ -120,7 +120,7 @@ export function LandingHeader() {
                 transition={{ type: "spring", stiffness: 450, damping: 25 }}
               >
                 <Link
-                  href="/auth"
+                  href="/auth?mode=signup"
                   className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill hover:shadow-md border-t border-white/20 transition-all inline-flex items-center justify-center cursor-pointer"
                 >
                   Start free
@@ -150,7 +150,7 @@ export function LandingHeader() {
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
           >
-            Product
+            Study Modes
           </a>
           <a
             href="#how-it-works"
@@ -160,18 +160,18 @@ export function LandingHeader() {
             How it works
           </a>
           <a
-            href="#verification"
-            onClick={() => setMobileMenuOpen(false)}
-            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
-          >
-            Verification
-          </a>
-          <a
             href="#pricing"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
           >
-            Free plan
+            Pricing
+          </a>
+          <a
+            href="#comparison"
+            onClick={() => setMobileMenuOpen(false)}
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
+          >
+            Comparison
           </a>
           <a
             href="#faq"

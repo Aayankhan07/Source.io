@@ -33,7 +33,7 @@ export function PricingComparisonSection() {
 
   return (
     <motion.section
-      id="pricing-plans"
+      id="pricing"
       initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.12 }}
@@ -42,9 +42,10 @@ export function PricingComparisonSection() {
     >
       {/* Section Header */}
       <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
-        <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-slate-500 font-semibold">
-          04. TRANSPARENT PRICING & FREE ALLOWANCE
-        </p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium border border-amber-500/30 bg-amber-500/10 text-amber-950 mb-1">
+          <span className="size-1.5 rounded-full bg-amber-500" />
+          Transparent Pricing
+        </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-900">
           A real free tier. No deceptive trial traps.
         </h2>
@@ -56,13 +57,13 @@ export function PricingComparisonSection() {
         <div className="pt-2 flex justify-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700 shadow-sm">
             <Clock className="size-3.5 text-slate-500" />
-            <span>Next quota refresh in: <strong className="font-semibold text-slate-900">{timeUntilReset || "24h 00m 00s"}</strong></span>
+            <span>Daily allowance refreshes in: <strong className="font-semibold text-slate-900">{timeUntilReset || "24h 00m 00s"}</strong></span>
           </div>
         </div>
       </div>
 
-      {/* 3 Pricing Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch max-w-6xl mx-auto pt-4">
+      {/* 2-Tier Pricing Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch max-w-4xl mx-auto pt-4">
         {/* Plan 1: Free Forever */}
         <div 
           onMouseMove={(e) => {
@@ -125,7 +126,7 @@ export function PricingComparisonSection() {
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Export to Markdown, Anki (.apkg), and MP3</span>
+                <span>Instant export to clean Markdown notes</span>
               </li>
             </ul>
           </div>
@@ -137,7 +138,7 @@ export function PricingComparisonSection() {
               transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
               <Link
-                href="/auth"
+                href="/auth?mode=signup"
                 className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs hover:shadow-sm"
               >
                 <span>Start free without credit card</span>
@@ -186,7 +187,7 @@ export function PricingComparisonSection() {
                 <span className="text-xs font-mono text-slate-500">/ month</span>
               </div>
               <p className="text-xs text-slate-500 mt-1.5 font-medium">
-                Or use your own Groq / Gemini API key free
+                Billed monthly • Cancel anytime
               </p>
             </div>
 
@@ -217,7 +218,7 @@ export function PricingComparisonSection() {
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Option to Bring-Your-Own-Key (BYOK) for $0/mo</span>
+                <span>Full source coordinate & citation inspector</span>
               </li>
             </ul>
           </div>
@@ -229,7 +230,7 @@ export function PricingComparisonSection() {
               transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
               <Link
-                href="/auth"
+                href="/auth?mode=signup"
                 className="relative w-full py-3.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-xl border-t border-white/20 cursor-pointer"
               >
                 <span>Get Scholar Pass</span>
@@ -238,93 +239,10 @@ export function PricingComparisonSection() {
             </motion.div>
           </div>
         </div>
-
-        {/* Plan 3: Campus & Research Lab */}
-        <div 
-          onMouseMove={(e) => {
-            if (shouldReduceMotion) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            e.currentTarget.style.setProperty("--card-x", `${e.clientX - rect.left}px`);
-            e.currentTarget.style.setProperty("--card-y", `${e.clientY - rect.top}px`);
-          }}
-          className="group relative rounded-[28px] bg-white border border-slate-200/90 hover:border-slate-300 p-7 sm:p-8 flex flex-col justify-between shadow-tactile-card hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
-        >
-          {/* Spotlight Cursor Glow */}
-          <div 
-            className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
-            style={{
-              background: "radial-gradient(400px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(14, 165, 233, 0.08), transparent 70%)"
-            }}
-          />
-
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-500">
-                CAMPUS & RESEARCH LAB
-              </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
-                Team License
-              </span>
-            </div>
-
-            <div className="mb-4">
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-4xl sm:text-5xl font-black font-display text-slate-900">$29</span>
-                <span className="text-xs font-mono text-slate-500">/ lab seat</span>
-              </div>
-              <p className="text-xs text-slate-500 mt-1.5 font-medium">
-                Billed annually or per research grant
-              </p>
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
-              For university departments, clinical study groups, and enterprise research teams.
-            </p>
-
-            <ul className="space-y-3 text-xs sm:text-[13px] text-slate-700 border-t border-slate-100 pt-6">
-              <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Shared collaborative document repositories</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Classroom shared flashcard decks & quiz metrics</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Canvas & Blackboard LMS single sign-on (SSO)</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Dedicated compliance DPA & zero-retention SLA</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Direct priority engineering support</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="pt-8 relative z-10">
-            <motion.div
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.965, y: 0.5 }}
-              transition={{ type: "spring", stiffness: 450, damping: 25 }}
-            >
-              <Link
-                href="/auth"
-                className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs hover:shadow-sm"
-              >
-                <span>Contact Academic Licensing</span>
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </motion.div>
-          </div>
-        </div>
       </div>
 
       {/* Bottom BYOK (Bring Your Own Key) Callout Banner */}
-      <div className="max-w-6xl mx-auto mt-8">
+      <div className="max-w-4xl mx-auto mt-8">
         <div className="p-4 sm:p-5 rounded-[22px] bg-white border border-slate-200 shadow-tactile-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="size-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 shrink-0">
@@ -341,7 +259,7 @@ export function PricingComparisonSection() {
           </div>
 
           <Link
-            href="/app/settings"
+            href="/auth?redirect=/app/settings"
             className="text-xs font-semibold text-slate-900 hover:underline whitespace-nowrap shrink-0 self-end sm:self-center"
           >
             Configure in Settings →

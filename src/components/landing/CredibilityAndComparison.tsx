@@ -78,7 +78,7 @@ export function CredibilityAndComparison() {
     {
       feature: "Multi-format ingestion (PDF, Audio, LaTeX)",
       source: true,
-      chatgpt: "Text only",
+      chatgpt: "No native coordinate/LaTeX OCR",
       notebooklm: "Text & Audio",
       note: "Extracts text, Whisper speech-to-text, and mathematical equations",
     },
@@ -94,7 +94,7 @@ export function CredibilityAndComparison() {
   const faqs = [
     {
       q: "What file types and sizes are supported?",
-      a: "Source.io accepts PDF documents up to 50MB, audio recordings (MP3, WAV, M4A), YouTube lecture links, Markdown, DOCX, and LaTeX documents. Text extraction, OCR, and speech-to-text run automatically upon upload.",
+      a: "Source.io accepts PDF documents up to 50MB, audio and video recordings (MP3, WAV, M4A, MP4), YouTube lecture links, Word (.docx), and plain text. Text extraction, layout parsing, and speech-to-text run automatically upon upload.",
     },
     {
       q: "How are citations generated?",
@@ -110,7 +110,7 @@ export function CredibilityAndComparison() {
     },
     {
       q: "Can I export my notes and flashcards?",
-      a: "Yes. You can export your structured notes to standard Markdown or PDF, and export flashcard decks to Anki-compatible formats for offline study.",
+      a: "Yes. You can export your structured notes directly to standard clean Markdown, and copy flashcards and practice quizzes with full citation proofs for offline study.",
     },
   ];
 
@@ -121,8 +121,7 @@ export function CredibilityAndComparison() {
         <SectionHeading
           badge="Use Cases"
           badgeTone="amber"
-          line1="Built for serious learning,"
-          line2="across every discipline."
+          line1="Built for serious learning across every discipline."
           description="From doctoral research papers to undergraduate exams, Source.io adapts to rigorous source material."
           align="left"
         />
@@ -288,11 +287,25 @@ export function CredibilityAndComparison() {
                 </div>
                 <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
                   <span className="text-slate-500 block text-[10px] mb-0.5">ChatGPT</span>
-                  <span className="text-slate-500">{row.chatgpt === false ? "None" : "Prompted"}</span>
+                  <span className="text-slate-600 font-medium">
+                    {row.chatgpt === false ? (
+                      <span className="text-slate-400">None</span>
+                    ) : (
+                      <span>{row.chatgpt}</span>
+                    )}
+                  </span>
                 </div>
                 <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
                   <span className="text-slate-500 block text-[10px] mb-0.5">NotebookLM</span>
-                  <span className="text-slate-500">{row.notebooklm === false ? "None" : row.notebooklm === true ? "Yes" : "Partial"}</span>
+                  <span className="text-slate-600 font-medium">
+                    {row.notebooklm === false ? (
+                      <span className="text-slate-400">None</span>
+                    ) : row.notebooklm === true ? (
+                      <span className="text-emerald-600 font-bold">Yes</span>
+                    ) : (
+                      <span>{row.notebooklm}</span>
+                    )}
+                  </span>
                 </div>
               </div>
             </div>
@@ -313,6 +326,25 @@ export function CredibilityAndComparison() {
         transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="max-w-3xl mx-auto text-left w-full scroll-mt-24"
       >
+        {/* Structured Data for Search Engines & Crawlers */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqs.map((faq) => ({
+                "@type": "Question",
+                name: faq.q,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: faq.a,
+                },
+              })),
+            }),
+          }}
+        />
+
         <SectionHeading
           badge="FAQ"
           badgeTone="slate"
@@ -376,7 +408,7 @@ export function CredibilityAndComparison() {
                 transition={{ type: "spring", stiffness: 450, damping: 25 }}
               >
                 <Link
-                  href="/auth"
+                  href="/auth?mode=signup"
                   className="w-full sm:w-auto bg-white text-slate-950 font-bold text-sm px-8 py-3.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.2),0_16px_32px_-8px_rgba(0,0,0,0.25)] hover:bg-slate-100 transition-all inline-flex items-center justify-center gap-2 cursor-pointer border-t border-white/40"
                 >
                   <span>Start free</span>
