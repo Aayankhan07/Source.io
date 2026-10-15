@@ -33,6 +33,7 @@ import { useSettings } from "@/features/settings/context/SettingsContext";
 import { AiFeedbackButtons } from "@/components/common/AiFeedbackButtons";
 import { FlashcardsDeck } from "@/features/documents/components/FlashcardsDeck";
 import { QuizPlayer } from "@/features/documents/components/QuizPlayer";
+import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
 
 type DocumentAssets = {
   note: NoteRow | null;
@@ -491,7 +492,7 @@ export default function DocumentWorkspace() {
 
   return (
     <div className="h-full flex flex-col bg-tactile-canvas overflow-hidden">
-      {/* Workspace Floating Tactile Capsule Bar (Centered, Matches sc 3) */}
+      {/* Workspace Floating Tactile Capsule Bar (Centered with Top-Right Quota Pill) */}
       <div className="px-4 sm:px-8 pt-4 pb-2.5 flex items-center justify-center relative shrink-0 z-10 select-none no-print">
         {openMobileNav && (
           <button
@@ -533,6 +534,11 @@ export default function DocumentWorkspace() {
               </button>
             );
           })}
+        </div>
+
+        {/* Top-Right Quota Pill matching reference design */}
+        <div className="hidden sm:flex absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 items-center">
+          <DailyQuotaPill inline />
         </div>
       </div>
 

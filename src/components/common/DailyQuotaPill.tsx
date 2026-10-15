@@ -36,7 +36,11 @@ import { useProviderQuota } from "@/features/settings/context/ProviderQuotaConte
 
 const DAILY_FREE_LIMIT = 25;
 
-export function DailyQuotaPill() {
+interface DailyQuotaPillProps {
+  inline?: boolean;
+}
+
+export function DailyQuotaPill({ inline = false }: DailyQuotaPillProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
@@ -54,8 +58,9 @@ export function DailyQuotaPill() {
   const posRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
-  // Restore saved position from localStorage
+  // Restore saved position from localStorage (only for floating mode)
   useEffect(() => {
+    if (inline) return;
     try {
       const saved = localStorage.getItem("source_quota_pill_pos");
       if (saved) {
@@ -227,65 +232,52 @@ export function DailyQuotaPill() {
     return null;
   }
 
-  return (
-    <motion.div
-      drag
-      dragMomentum={false}
-      dragElastic={0.06}
-      onDragStart={() => {
-        setIsDragging(true);
-        setPopoverOpen(false);
+  const pillContent = (
+    <Popover 
+      open={popoverOpen} 
+      onOpenChange={(open) => {
+        if (isDragging) return;
+        setPopoverOpen(open);
       }}
-      onDragEnd={handleDragEnd}
-      animate={{ x: pos.x, y: pos.y }}
-      transition={{ type: "spring", damping: 30, stiffness: 450 }}
-      className="fixed top-3.5 right-4 sm:right-6 z-50 select-none cursor-grab active:cursor-grabbing"
     >
-      <Popover 
-        open={popoverOpen} 
-        onOpenChange={(open) => {
-          if (isDragging) return;
-          setPopoverOpen(open);
-        }}
-      >
-        <PopoverTrigger asChild>
-          <button
-            onClick={(e) => {
-              if (isDragging) {
-                e.preventDefault();
-                e.stopPropagation();
-              }
-            }}
-            className={cn(
-              "group h-8 px-3 rounded-full flex items-center gap-1.5 cursor-grab active:cursor-grabbing",
-              "glass-tactile-pill",
-              "hover:scale-105 active:scale-95 transition-all text-xs font-semibold",
-              glowClasses
-            )}
-            title="Drag anywhere to reposition - Click to view real API quota details"
-          >
-            <GripVertical className="size-3 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 transition-colors shrink-0 -ml-0.5" />
-            {hasByok ? (
-              <ShieldCheck className="size-3.5 text-slate-900 dark:text-white" />
-            ) : remaining === 0 ? (
-              <AlertTriangle className="size-3.5 text-slate-900 dark:text-white" />
-            ) : (
-              <Zap className="size-3.5 text-slate-900 dark:text-white" />
-            )}
-            <span className="tabular-nums font-medium">
-              {pillText}
-            </span>
-            {/* Live Progress Bar */}
-            <div className="w-9 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden ml-0.5 border border-slate-300/40 dark:border-white/5">
-              <div
-                className="h-full rounded-full transition-all duration-300 bg-slate-900 dark:bg-white"
-                style={{ width: `${Math.max(6, displayPercentage)}%` }}
-              />
-            </div>
-          </button>
-        </PopoverTrigger>
+      <PopoverTrigger asChild>
+        <button
+          onClick={(e) => {
+            if (isDragging) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
+          className={cn(
+            "group h-8 px-3 rounded-full flex items-center gap-1.5 cursor-grab active:cursor-grabbing",
+            "glass-tactile-pill",
+            "hover:scale-105 active:scale-95 transition-all text-xs font-semibold",
+            glowClasses
+          )}
+          title="Click to view real API quota details"
+        >
+          <GripVertical className="size-3 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 transition-colors shrink-0 -ml-0.5" />
+          {hasByok ? (
+            <ShieldCheck className="size-3.5 text-slate-900 dark:text-white" />
+          ) : remaining === 0 ? (
+            <AlertTriangle className="size-3.5 text-slate-900 dark:text-white" />
+          ) : (
+            <Zap className="size-3.5 text-slate-900 dark:text-white" />
+          )}
+          <span className="tabular-nums font-medium">
+            {pillText}
+          </span>
+          {/* Live Progress Bar */}
+          <div className="w-9 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden ml-0.5 border border-slate-300/40 dark:border-white/5">
+            <div
+              className="h-full rounded-full transition-all duration-300 bg-slate-900 dark:bg-white"
+              style={{ width: `${Math.max(6, displayPercentage)}%` }}
+            />
+          </div>
+        </button>
+      </PopoverTrigger>
 
-        <PopoverContent
+      <PopoverContent
           side="bottom"
           align="end"
           sideOffset={8}
@@ -303,7 +295,7 @@ export function DailyQuotaPill() {
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
                   {hasByok ? `${activeByokProvider} Key` : "Free Tier"}
                 </span>
-                {(pos.x !== 0 || pos.y !== 0) && (
+                {!inline && (pos.x !== 0 || pos.y !== 0) && (
                   <button
                     type="button"
                     onClick={handleResetPosition}
@@ -447,6 +439,27 @@ export function DailyQuotaPill() {
           </div>
         </PopoverContent>
       </Popover>
+  );
+
+  if (inline) {
+    return pillContent;
+  }
+
+  return (
+    <motion.div
+      drag
+      dragMomentum={false}
+      dragElastic={0.06}
+      onDragStart={() => {
+        setIsDragging(true);
+        setPopoverOpen(false);
+      }}
+      onDragEnd={handleDragEnd}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={{ type: "spring", damping: 30, stiffness: 450 }}
+      className="fixed top-5 sm:top-6 right-44 sm:right-52 z-50 select-none cursor-grab active:cursor-grabbing"
+    >
+      {pillContent}
     </motion.div>
   );
 }

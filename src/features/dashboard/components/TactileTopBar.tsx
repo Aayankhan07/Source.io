@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, Bell, Settings, LogOut, CheckCircle2, BookOpen, Clock, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/features/auth/context/AuthContext";
+import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
 import { cn } from "@/lib/utils";
 
 interface TactileTopBarProps {
@@ -134,8 +135,11 @@ export function TactileTopBar({
         </div>
       )}
 
-      {/* Top Right Utilities: Search, Notifications, Profile (NO THEME TOGGLE) */}
+      {/* Top Right Utilities: Daily Quota Pill, Search, Notifications, Profile */}
       <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* Real-time API Quota Pill */}
+        <DailyQuotaPill inline />
+
         {/* Search Button */}
         <button
           onClick={onOpenSearch}

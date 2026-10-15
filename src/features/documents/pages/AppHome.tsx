@@ -75,9 +75,6 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
         </main>
 
         <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
-
-        {/* Global Floating Daily Quota Bar */}
-        <DailyQuotaPill />
       </div>
     </AppShellProvider>
   );
