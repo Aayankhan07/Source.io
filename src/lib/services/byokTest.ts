@@ -3,8 +3,11 @@ export interface ByokTestResult {
   message: string;
   provider: "groq" | "gemini" | "openai";
   remainingRequests?: number;
+  limitRequests?: number;
   remainingTokens?: number;
+  limitTokens?: number;
   resetTokens?: string;
+  resetRequests?: string;
 }
 
 /**
@@ -64,16 +67,22 @@ export async function testProviderApiKey(
 
       // Check for rate limit headers
       const remReq = resp.headers.get("x-ratelimit-remaining-requests");
+      const limReq = resp.headers.get("x-ratelimit-limit-requests");
       const remTok = resp.headers.get("x-ratelimit-remaining-tokens");
+      const limTok = resp.headers.get("x-ratelimit-limit-tokens");
       const resetTok = resp.headers.get("x-ratelimit-reset-tokens");
+      const resetReq = resp.headers.get("x-ratelimit-reset-requests");
 
       return {
         ok: true,
         message: "Connection successful! Groq is connected and ready.",
         provider,
         remainingRequests: remReq ? parseInt(remReq, 10) : undefined,
+        limitRequests: limReq ? parseInt(limReq, 10) : undefined,
         remainingTokens: remTok ? parseInt(remTok, 10) : undefined,
+        limitTokens: limTok ? parseInt(limTok, 10) : undefined,
         resetTokens: resetTok || undefined,
+        resetRequests: resetReq || undefined,
       };
     }
 
@@ -114,10 +123,15 @@ export async function testProviderApiKey(
         };
       }
 
+      // Gemini free tier default quotas: 15 Requests Per Minute (RPM), 1,000,000 TPM
       return {
         ok: true,
         message: "Connection successful! Google Gemini is connected and ready.",
         provider,
+        limitRequests: 15,
+        remainingRequests: 15,
+        limitTokens: 1000000,
+        remainingTokens: 1000000,
       };
     }
 
@@ -157,10 +171,23 @@ export async function testProviderApiKey(
         };
       }
 
+      const remReq = resp.headers.get("x-ratelimit-remaining-requests");
+      const limReq = resp.headers.get("x-ratelimit-limit-requests");
+      const remTok = resp.headers.get("x-ratelimit-remaining-tokens");
+      const limTok = resp.headers.get("x-ratelimit-limit-tokens");
+      const resetTok = resp.headers.get("x-ratelimit-reset-tokens");
+      const resetReq = resp.headers.get("x-ratelimit-reset-requests");
+
       return {
         ok: true,
         message: "Connection successful! OpenAI is connected and ready.",
         provider,
+        remainingRequests: remReq ? parseInt(remReq, 10) : undefined,
+        limitRequests: limReq ? parseInt(limReq, 10) : undefined,
+        remainingTokens: remTok ? parseInt(remTok, 10) : undefined,
+        limitTokens: limTok ? parseInt(limTok, 10) : undefined,
+        resetTokens: resetTok || undefined,
+        resetRequests: resetReq || undefined,
       };
     }
 

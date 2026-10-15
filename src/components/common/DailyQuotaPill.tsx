@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { useProviderQuota } from "@/features/settings/context/ProviderQuotaContext";
+
 const DAILY_FREE_LIMIT = 25;
 
 export function DailyQuotaPill() {
@@ -39,6 +41,7 @@ export function DailyQuotaPill() {
   const pathname = usePathname();
   const { user } = useAuth();
   const { settings } = useSettings();
+  const { quota: providerQuota, refreshQuota } = useProviderQuota();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [showAllowanceWhy, setShowAllowanceWhy] = useState(false);
   const [showActivityHistory, setShowActivityHistory] = useState(false);
@@ -101,7 +104,6 @@ export function DailyQuotaPill() {
     setTimeout(() => setIsDragging(false), 120);
   };
 
-
   // Live countdown to midnight UTC
   const [timeUntilReset, setTimeUntilReset] = useState<string>("");
 
@@ -132,7 +134,6 @@ export function DailyQuotaPill() {
     queryKey: ["daily_ai_actions_usage", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
-      // Guest demo sessions are not stored in Supabase (and guest-user-01 is not a valid UUID in Postgres)
       if (user?.id === "guest-user-01") {
         return { total: 0, chat: 0, notes: 0, derivatives: 0 };
       }
@@ -171,54 +172,6 @@ export function DailyQuotaPill() {
     refetchInterval: 15_000,
   });
 
-  // 2. Fetch latest provider health / rate limit snapshot (Bar B: Provider Quota)
-  const { data: providerSnapshot } = useQuery({
-    queryKey: ["latest_provider_usage_snapshot"],
-    enabled: !!user?.id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("provider_usage")
-        .select("*")
-        .order("captured_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        return null;
-      }
-      return data;
-    },
-    refetchInterval: 15_000,
-  });
-
-  // Dynamic freshness calculation clock
-  const [nowMs, setNowMs] = useState(Date.now());
-  useEffect(() => {
-    const timer = setInterval(() => setNowMs(Date.now()), 5_000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Data freshness indicator for Bar B (Live: <15s, Recent: <5m, Stale: >=5m, Unknown)
-  const providerFreshness = useMemo(() => {
-    if (!providerSnapshot?.captured_at) {
-      return { status: "unknown" as const, label: "Unknown", detail: "No recent provider telemetry", isStale: false };
-    }
-    const ageMs = nowMs - new Date(providerSnapshot.captured_at).getTime();
-    const ageSec = Math.max(0, Math.floor(ageMs / 1000));
-
-    if (ageSec < 15) {
-      return { status: "live" as const, label: "Live", detail: `${ageSec}s ago`, isStale: false };
-    }
-    if (ageSec < 300) {
-      const min = Math.floor(ageSec / 60);
-      const sec = ageSec % 60;
-      const timeStr = min > 0 ? `${min}m ${sec}s ago` : `${sec}s ago`;
-      return { status: "recent" as const, label: "Recent", detail: timeStr, isStale: false };
-    }
-    const min = Math.floor(ageSec / 60);
-    return { status: "stale" as const, label: "Stale", detail: `${min}m ago`, isStale: true };
-  }, [providerSnapshot?.captured_at, nowMs]);
-
   const activeByokProvider = useMemo(() => {
     if (settings?.apiKeys?.groq?.trim()) return "Groq";
     if (settings?.apiKeys?.gemini?.trim()) return "Google Gemini";
@@ -233,75 +186,28 @@ export function DailyQuotaPill() {
   const percentUsed = Math.min(100, Math.round((usageCount / DAILY_FREE_LIMIT) * 100));
   const percentAllowanceRemaining = Math.max(0, 100 - percentUsed);
 
-  // Compute Provider Quota state: Exact | Estimated | Unknown
-  const providerQuotaState = useMemo(() => {
+  // Determine active displayed percentage and label
+  const displayPercentage = useMemo(() => {
+    if (hasByok && providerQuota.percentRemaining != null) {
+      return providerQuota.percentRemaining;
+    }
+    return percentAllowanceRemaining;
+  }, [hasByok, providerQuota.percentRemaining, percentAllowanceRemaining]);
+
+  const pillText = useMemo(() => {
     if (hasByok) {
-      if (activeByokProvider === "Groq" && providerSnapshot?.remaining_tokens != null) {
-        return "exact";
+      if (providerQuota.percentRemaining != null) {
+        return `${activeByokProvider} ${providerQuota.percentRemaining}% limit left`;
       }
-      return "unknown"; // Gemini / OpenAI do not expose exact remaining quota headers
+      if (providerQuota.remainingTokens != null && providerQuota.limitTokens != null) {
+        const remK = Math.round(providerQuota.remainingTokens / 1000);
+        const limK = Math.round(providerQuota.limitTokens / 1000);
+        return `${remK}k/${limK}k tokens left`;
+      }
+      return `${activeByokProvider} Connected`;
     }
-
-    if (!providerSnapshot) {
-      return "unknown";
-    }
-
-    if (
-      providerSnapshot.remaining_tokens != null &&
-      providerSnapshot.token_limit != null &&
-      providerSnapshot.token_limit > 0
-    ) {
-      return "exact";
-    }
-
-    if (providerSnapshot.remaining_tokens != null || providerSnapshot.remaining_requests != null) {
-      return "estimated";
-    }
-
-    return "unknown";
-  }, [hasByok, activeByokProvider, providerSnapshot]);
-
-  // Exact calculations
-  const tokenPercentRemaining = useMemo(() => {
-    if (
-      providerSnapshot?.remaining_tokens != null &&
-      providerSnapshot?.token_limit != null &&
-      providerSnapshot.token_limit > 0
-    ) {
-      return Math.min(
-        100,
-        Math.max(
-          0,
-          Math.round((providerSnapshot.remaining_tokens / providerSnapshot.token_limit) * 100)
-        )
-      );
-    }
-    return null;
-  }, [providerSnapshot]);
-
-  const requestPercentRemaining = useMemo(() => {
-    if (
-      providerSnapshot?.remaining_requests != null &&
-      providerSnapshot?.request_limit != null &&
-      providerSnapshot.request_limit > 0
-    ) {
-      return Math.min(
-        100,
-        Math.max(
-          0,
-          Math.round((providerSnapshot.remaining_requests / providerSnapshot.request_limit) * 100)
-        )
-      );
-    }
-    return null;
-  }, [providerSnapshot]);
-
-  const providerHealthStatus = useMemo(() => {
-    if (tokenPercentRemaining == null) return "Good";
-    if (tokenPercentRemaining > 40) return "Good";
-    if (tokenPercentRemaining > 15) return "Moderate";
-    return "Constrained";
-  }, [tokenPercentRemaining]);
+    return `${displayPercentage}% limit left`;
+  }, [hasByok, providerQuota, activeByokProvider, displayPercentage]);
 
   // Alert glowing state styles
   const glowClasses = useMemo(() => {
@@ -356,36 +262,26 @@ export function DailyQuotaPill() {
               "hover:scale-105 active:scale-95 transition-all text-xs font-semibold",
               glowClasses
             )}
-            title="Drag anywhere to reposition • Click to view usage allowance"
+            title="Drag anywhere to reposition - Click to view real API quota details"
           >
             <GripVertical className="size-3 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 transition-colors shrink-0 -ml-0.5" />
             {hasByok ? (
-              <>
-                <ShieldCheck className="size-3.5 text-slate-900 dark:text-white" />
-                <span>BYOK: {activeByokProvider}</span>
-              </>
+              <ShieldCheck className="size-3.5 text-slate-900 dark:text-white" />
             ) : remaining === 0 ? (
-              <>
-                <AlertTriangle className="size-3.5 text-slate-900 dark:text-white" />
-                <span className="font-bold">0 / {DAILY_FREE_LIMIT} left</span>
-              </>
+              <AlertTriangle className="size-3.5 text-slate-900 dark:text-white" />
             ) : (
-              <>
-                <Sparkles
-                  className="size-3.5 text-slate-900 dark:text-white"
-                />
-                <span className="tabular-nums font-medium">
-                  {remaining} / {DAILY_FREE_LIMIT} left
-                </span>
-                {/* Micro Progress Bar */}
-                <div className="w-9 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden ml-0.5 border border-slate-300/40 dark:border-white/5">
-                  <div
-                    className="h-full rounded-full transition-all duration-300 bg-slate-900 dark:bg-white"
-                    style={{ width: `${Math.max(6, percentAllowanceRemaining)}%` }}
-                  />
-                </div>
-              </>
+              <Zap className="size-3.5 text-slate-900 dark:text-white" />
             )}
+            <span className="tabular-nums font-medium">
+              {pillText}
+            </span>
+            {/* Live Progress Bar */}
+            <div className="w-9 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden ml-0.5 border border-slate-300/40 dark:border-white/5">
+              <div
+                className="h-full rounded-full transition-all duration-300 bg-slate-900 dark:bg-white"
+                style={{ width: `${Math.max(6, displayPercentage)}%` }}
+              />
+            </div>
           </button>
         </PopoverTrigger>
 
@@ -400,12 +296,12 @@ export function DailyQuotaPill() {
             {/* Header */}
             <div className="flex items-center justify-between pb-0.5">
               <div className="flex items-center gap-1.5">
-                <Sparkles className="size-4 text-slate-900 dark:text-white" />
-                <h4 className="font-bold text-xs font-display text-slate-900 dark:text-white">AI Allowance</h4>
+                <Zap className="size-4 text-slate-900 dark:text-white" />
+                <h4 className="font-bold text-xs font-display text-slate-900 dark:text-white">API Quota</h4>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
-                  {hasByok ? "BYOK Active" : "Free Student Tier"}
+                  {hasByok ? `${activeByokProvider} Key` : "Free Tier"}
                 </span>
                 {(pos.x !== 0 || pos.y !== 0) && (
                   <button
@@ -425,24 +321,40 @@ export function DailyQuotaPill() {
               <div className="flex items-baseline justify-between">
                 <div>
                   <span className="text-2xl font-black font-display tracking-tight text-slate-900 dark:text-white">
-                    {hasByok ? "∞" : remaining}
+                    {hasByok && providerQuota.percentRemaining != null
+                      ? `${providerQuota.percentRemaining}%`
+                      : hasByok
+                      ? "Active"
+                      : `${percentAllowanceRemaining}%`}
                   </span>
                   <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5 font-medium">
-                    {hasByok ? "actions (unmetered)" : `/ ${DAILY_FREE_LIMIT} actions left`}
+                    {hasByok ? "capacity remaining" : `/ ${remaining} actions left`}
                   </span>
                 </div>
                 <span className="text-[11px] font-mono font-bold text-slate-900 dark:text-white">
-                  {hasByok ? "BYOK" : `${percentAllowanceRemaining}%`}
+                  {hasByok ? "Live Key" : `${usageCount}/${DAILY_FREE_LIMIT} used`}
                 </span>
               </div>
 
               {/* Progress Bar showing remaining allowance */}
-              {!hasByok && (
-                <div className="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-800 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500 bg-slate-900 dark:bg-white"
-                    style={{ width: `${Math.max(4, percentAllowanceRemaining)}%` }}
-                  />
+              <div className="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500 bg-slate-900 dark:bg-white"
+                  style={{ width: `${Math.max(4, displayPercentage)}%` }}
+                />
+              </div>
+
+              {hasByok && providerQuota.remainingTokens !== undefined && providerQuota.limitTokens !== undefined && (
+                <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300 pt-0.5 font-mono">
+                  <span>Tokens</span>
+                  <span>{providerQuota.remainingTokens.toLocaleString()} / {providerQuota.limitTokens.toLocaleString()}</span>
+                </div>
+              )}
+
+              {hasByok && providerQuota.remainingRequests !== undefined && providerQuota.limitRequests !== undefined && (
+                <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300 pt-0.5 font-mono">
+                  <span>Requests</span>
+                  <span>{providerQuota.remainingRequests} / {providerQuota.limitRequests}</span>
                 </div>
               )}
 
@@ -450,14 +362,16 @@ export function DailyQuotaPill() {
               <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
                 <span className="flex items-center gap-1">
                   <Clock className="size-3 text-slate-400 shrink-0" />
-                  Resets in {timeUntilReset || "midnight UTC"}
+                  {hasByok && providerQuota.resetTime
+                    ? `Resets in ${providerQuota.resetTime}`
+                    : `Resets in ${timeUntilReset || "midnight UTC"}`}
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowAllowanceWhy(!showAllowanceWhy)}
-                  className="text-[10.5px] text-sky-600 dark:text-sky-400 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
+                  className="text-[10.5px] text-slate-700 dark:text-slate-300 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
                 >
-                  <span>Cost rules</span>
+                  <span>Details</span>
                   {showAllowanceWhy ? <ChevronUp className="size-2.5" /> : <ChevronDown className="size-2.5" />}
                 </button>
               </div>
@@ -505,8 +419,8 @@ export function DailyQuotaPill() {
               <div className="flex items-center gap-1.5">
                 <span className="size-1.5 rounded-full bg-slate-900 dark:bg-white animate-pulse" />
                 <span className="text-[11px] font-semibold text-slate-900 dark:text-white">
-                  {providerQuotaState === "exact" && tokenPercentRemaining != null
-                    ? `${tokenPercentRemaining}% capacity`
+                  {hasByok && providerQuota.percentRemaining != null
+                    ? `${providerQuota.percentRemaining}% limit left`
                     : "Operational"}
                 </span>
               </div>

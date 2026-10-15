@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/features/auth/context/AuthContext";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { SettingsProvider } from "@/features/settings/context/SettingsContext";
+import { ProviderQuotaProvider } from "@/features/settings/context/ProviderQuotaContext";
 import { useState } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -28,9 +29,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <TooltipProvider>
         <ThemeProvider>
           <SettingsProvider>
-            <Toaster />
-            <Sonner />
-            <AuthProvider>{children}</AuthProvider>
+            <ProviderQuotaProvider>
+              <Toaster />
+              <Sonner />
+              <AuthProvider>{children}</AuthProvider>
+            </ProviderQuotaProvider>
           </SettingsProvider>
         </ThemeProvider>
       </TooltipProvider>

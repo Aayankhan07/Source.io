@@ -1,5 +1,33 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# Next.js Build Outputs & Caches
+.next/
+out/
+build/
+dist/
+dist-ssr/
+.turbo/
+.cache/
+.eslintcache
+*.tsbuildinfo
+next-env.d.ts.bak
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,49 +35,57 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-.next
+# Environment & Secrets (Never commit secrets)
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
 *.local
-pnpm-lock.yaml
 
-# Editor directories and files
+# Supabase Local Development & Functions Secrets
+supabase/.temp/
+supabase/.branches/
+supabase/.env
+supabase/functions/.env
+supabase/functions/*/.env
+
+# Deployment Metadata
+.vercel/
+.netlify/
+
+# System Files & Standalone Packages
+.DS_Store
+*.DS_Store
+Thumbs.db
+desktop.ini
+*.exe
+*.zip
+*.tar.gz
+*.7z
+
+# Editor & IDE Directories
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.swp
+*.swo
+*~
 
-# Environment secrets
-.env
-.env.*
-.env*.local
-!.env.example
+# Credentials & Certificates
+*.pem
+*.key
+*.cert
+*.crt
 
-# Supabase local development
-supabase/.temp/
-supabase/.branches/
-supabase/functions/.env
-supabase/functions/*/.env
-
-# Deployment platform metadata
-.vercel/
-.netlify/
-
-# System files
-Thumbs.db
-desktop.ini
-
-# Standalone executables and zip packages
-*.exe
-*.zip
-
-# AI assistants & local tooling
+# AI Agent Workspaces & Local Agent Caches
 .claude/
 .impeccable/
 .cursor/
@@ -61,49 +97,8 @@ desktop.ini
 .roo/
 skills-lock.json
 
-# Temporary screenshots, user assets & inspection artifacts
-/public/screenshot*.png
+# Temporary Media & Scratch Files
 screenshot*.png
-*.PNG
-*.png
-*.jpg
-*.jpeg
-*.mp4
-!/public/**
+screenshot*.jpg
+/public/screenshot*.png
 strip-dark.js
-
-# Testing & coverage artifacts
-test-results/
-playwright-report/
-.nyc_output/
-
-# Cache directories & build artifacts
-.eslintcache
-.cache/
-.turbo/
-*.tsbuildinfo
-
-# Credentials & local keys
-*.pem
-*.key
-*.cert
-*.crt
-
-# Next.js
-.next/
-out/
-build/
-
-# Supabase
-supabase/.env
-supabase/functions/*/.env
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
