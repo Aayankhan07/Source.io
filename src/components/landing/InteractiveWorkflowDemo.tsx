@@ -261,15 +261,15 @@ export function InteractiveWorkflowDemo({
           {/* Clean Light Header Bar */}
           <div className="relative z-10 bg-slate-50/90 border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between gap-4 backdrop-blur-md">
             <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-rose-400/80" />
-              <span className="h-3 w-3 rounded-full bg-amber-400/80" />
-              <span className="h-3 w-3 rounded-full bg-emerald-400/80" />
+              <span className="h-3 w-3 rounded-full bg-slate-300" />
+              <span className="h-3 w-3 rounded-full bg-slate-300" />
+              <span className="h-3 w-3 rounded-full bg-slate-400" />
             </div>
 
             <div className="flex-1 max-w-xs mx-auto hidden sm:flex items-center justify-center">
               <div className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1 text-xs text-slate-700 flex items-center justify-between font-mono shadow-xs">
                 <span className="truncate">quantum_computing_intro.pdf</span>
-                <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-mono font-medium border border-emerald-200">Grounded</span>
+                <span className="text-[11px] text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded font-mono font-medium border border-slate-200">Grounded</span>
               </div>
             </div>
 
@@ -279,7 +279,7 @@ export function InteractiveWorkflowDemo({
               {/* Live Demo Deep Link */}
               <Link
                 href={`/app/doc/demo-quantum?tab=${currentTab === "flashcards" ? "cards" : currentTab}`}
-                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition-colors cursor-pointer font-medium"
+                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 transition-colors cursor-pointer font-medium shadow-2xs"
                 title="Open this mode in live workspace demo"
               >
                 <ExternalLink className="h-3 w-3" />
@@ -291,7 +291,7 @@ export function InteractiveWorkflowDemo({
                 <DrawerTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shadow-xs"
+                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 shadow-xs"
                   >
                     <Terminal className="h-3 w-3" strokeWidth={1.5} /> Inspect Chunks
                   </button>
@@ -310,7 +310,7 @@ export function InteractiveWorkflowDemo({
                           <span className="font-semibold text-slate-900 block">chunk_00{p.id} • Page {p.page}</span>
                           <span className="text-slate-500 text-xs truncate max-w-sm block">"{p.text.slice(0, 50)}..."</span>
                         </div>
-                        <span className="text-sky-700 bg-sky-50 px-2 py-0.5 rounded text-xs font-semibold border border-sky-200 font-mono">
+                        <span className="text-slate-900 bg-slate-100 px-2 py-0.5 rounded text-xs font-semibold border border-slate-200 font-mono">
                           {p.similarity} similarity
                         </span>
                       </div>
@@ -360,7 +360,7 @@ export function InteractiveWorkflowDemo({
                         <div className="flex items-center gap-2">
                           <span>Interval: {activeInterval}</span>
                           <span>•</span>
-                          <span className="text-emerald-400 font-semibold">{activeRetention} Retention</span>
+                          <span className="text-white font-semibold font-mono">{activeRetention} Retention</span>
                         </div>
                       </div>
 
@@ -381,7 +381,7 @@ export function InteractiveWorkflowDemo({
                           {/* Front of Card */}
                           <div className="absolute inset-0 [backface-visibility:hidden] bg-slate-900 border border-slate-700/80 rounded-[28px] p-8 flex flex-col justify-between text-left">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-sky-950/80 text-sky-400 border border-sky-500/30">
+                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white border border-white/20">
                                 Question (Click to flip)
                               </span>
                               <Layers className="size-4 text-slate-400" />
@@ -390,24 +390,24 @@ export function InteractiveWorkflowDemo({
                               {flashcardsData[cardIdx].front}
                             </p>
                             <span className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
-                              <RotateCcw className="size-3.5 text-sky-400" /> Click card to reveal answer & formula
+                              <RotateCcw className="size-3.5 text-white" /> Click card to reveal answer & formula
                             </span>
                           </div>
 
                           {/* Back of Card */}
                           <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-slate-950 text-white border border-slate-800 rounded-[28px] p-8 flex flex-col justify-between text-left shadow-2xl">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white border border-white/20">
                                 Answer & Coordinate
                               </span>
-                              <BookmarkCheck className="size-4 text-emerald-400" />
+                              <BookmarkCheck className="size-4 text-white" />
                             </div>
                             <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-mono">
                               {flashcardsData[cardIdx].back}
                             </p>
                             <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800 font-mono">
                               <span>Page 4 • §1.3 • 97% Match</span>
-                              <span className="text-emerald-400 font-bold">Space Repetition Sync</span>
+                              <span className="text-white font-bold">Space Repetition Sync</span>
                             </div>
                           </div>
                         </motion.div>
@@ -479,7 +479,7 @@ export function InteractiveWorkflowDemo({
                     <div className="max-w-xl mx-auto py-6 sm:py-8 px-4 space-y-6 text-center">
                       <div className="p-6 rounded-[28px] bg-slate-900 text-white border border-slate-800 shadow-2xl space-y-5">
                         <div className="flex items-center justify-between text-xs font-mono text-slate-400 border-b border-slate-800 pb-3">
-                          <span className="flex items-center gap-1.5 text-sky-400 font-semibold">
+                          <span className="flex items-center gap-1.5 text-white font-semibold">
                             <Headphones className="size-3.5" /> 2-Host Dialogue Recap
                           </span>
                           <span>Speaker: {currentSpeaker}</span>
@@ -509,7 +509,7 @@ export function InteractiveWorkflowDemo({
                                     }
                               }
                               style={{ height: `${baseHeight}%`, width: "4px" }}
-                              className="rounded-full bg-sky-400 origin-center"
+                              className="rounded-full bg-white origin-center"
                             />
                           ))}
                         </div>
@@ -553,8 +553,8 @@ export function InteractiveWorkflowDemo({
                           <p>{m.content}</p>
                           {m.citation && (
                             <div className="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400 tabular-nums">
-                              <span className="text-sky-400 font-medium flex items-center gap-1">
-                                <BookmarkCheck className="h-3 w-3 text-sky-400" /> {m.citation}
+                              <span className="text-white font-medium flex items-center gap-1">
+                                <BookmarkCheck className="h-3 w-3 text-white" /> {m.citation}
                               </span>
                               <button
                                 type="button"
@@ -610,7 +610,7 @@ export function InteractiveWorkflowDemo({
                       onKeyDown={(e) => e.key === "Enter" && handleSendChat(chatInput)}
                       placeholder="Ask a question about quantum_intro.pdf..."
                       disabled={chatTyping}
-                      className="flex-1 bg-slate-900/90 border border-slate-800 rounded-full px-4 py-2 text-xs sm:text-sm text-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500"
+                      className="flex-1 bg-slate-900/90 border border-slate-800 rounded-full px-4 py-2 text-xs sm:text-sm text-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
                     />
                     <button 
                       type="button"

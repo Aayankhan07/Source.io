@@ -155,15 +155,15 @@ export function TactileHeroPrototype() {
           {/* Trust Guarantees */}
           <div className="pt-3 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-500 font-medium">
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-emerald-500" />
+              <CheckCircle2 className="size-3.5 text-slate-900" />
               <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-emerald-500" />
+              <CheckCircle2 className="size-3.5 text-slate-900" />
               <span>25 free actions daily</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-emerald-500" />
+              <CheckCircle2 className="size-3.5 text-slate-900" />
               <span>Zero-data retention</span>
             </div>
           </div>
@@ -189,13 +189,13 @@ export function TactileHeroPrototype() {
             {/* Top Workspace Chrome */}
             <div className="flex items-center justify-between px-3 py-2 bg-slate-50/80 border border-slate-100 rounded-xl mb-2 text-xs">
               <div className="flex items-center gap-2">
-                <span className="size-2.5 rounded-full bg-rose-400/80" />
-                <span className="size-2.5 rounded-full bg-amber-400/80" />
-                <span className="size-2.5 rounded-full bg-emerald-400/80" />
+                <span className="size-2.5 rounded-full bg-slate-300" />
+                <span className="size-2.5 rounded-full bg-slate-300" />
+                <span className="size-2.5 rounded-full bg-slate-400" />
                 <span className="font-mono text-[11px] text-slate-500 ml-1 truncate max-w-[160px] sm:max-w-xs">quantum_intro.pdf</span>
               </div>
-              <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 font-medium">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 font-medium">
+                <span className="size-1.5 rounded-full bg-slate-900" />
                 <span>38 Pages Indexed</span>
               </div>
             </div>
@@ -210,13 +210,13 @@ export function TactileHeroPrototype() {
 
               {/* Floating Interactive Callout Card: Grounded Citation Pill */}
               <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-[340px] bg-slate-900/95 backdrop-blur-md text-white p-3 sm:p-3.5 rounded-xl border border-slate-700/80 shadow-2xl flex items-start gap-3">
-                <div className="size-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center shrink-0 text-sky-400">
+                <div className="size-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shrink-0 text-white">
                   <ShieldCheck className="size-4" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-mono text-sky-400 font-semibold uppercase tracking-wider">Citation Coordinate</span>
-                    <span className="text-[10px] font-mono bg-sky-950/80 text-sky-300 border border-sky-500/30 px-1.5 py-0.2 rounded">96% match</span>
+                    <span className="text-[11px] font-mono text-slate-300 font-semibold uppercase tracking-wider">Citation Coordinate</span>
+                    <span className="text-[10px] font-mono bg-white/10 text-white border border-white/20 px-1.5 py-0.2 rounded">96% match</span>
                   </div>
                   <p className="text-xs text-slate-200 mt-1 font-medium leading-snug line-clamp-2">
                     "Decoherence is induced by environmental thermal vibrations and stray fields."

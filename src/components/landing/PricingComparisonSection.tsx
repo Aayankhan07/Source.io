@@ -42,7 +42,7 @@ export function PricingComparisonSection() {
     >
       {/* Section Header */}
       <div className="text-center max-w-4xl mx-auto space-y-3 mb-10">
-        <span className="inline-flex items-center rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold tracking-wide text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase shadow-xs mb-1">
+        <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-[11px] font-mono uppercase tracking-wider text-slate-900 border border-slate-300 shadow-2xs mb-1">
           Transparent Pricing
         </span>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-950 text-balance">
@@ -78,7 +78,7 @@ export function PricingComparisonSection() {
               <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-500">
                 FREE FOREVER
               </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
+              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-900 group-hover:scale-105 transition-transform">
                 Daily Refill
               </span>
             </div>
@@ -96,27 +96,27 @@ export function PricingComparisonSection() {
 
             <ul className="space-y-3 text-xs sm:text-[13px] text-slate-700 border-t border-slate-100 pt-6">
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>25 AI study generations every single day</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>3 concurrent active document slots</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>All 5 study modes (Notes, Cards, Quiz, Audio, Chat)</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>Sub-second KaTeX math & LaTeX formula rendering</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>Zero data retention: documents never train models</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>Instant export to clean Markdown notes</span>
               </li>
             </ul>
@@ -167,7 +167,7 @@ export function PricingComparisonSection() {
               <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-900">
                 SCHOLAR PASS
               </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-sky-500/40 bg-sky-50 text-sky-600 group-hover:scale-105 transition-transform">
+              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-900 bg-slate-900 text-white group-hover:scale-105 transition-transform">
                 Unlimited
               </span>
             </div>
@@ -188,27 +188,27 @@ export function PricingComparisonSection() {
 
             <ul className="space-y-3 text-xs sm:text-[13px] text-slate-700 border-t border-slate-100 pt-6">
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span className="font-semibold text-slate-900">Unlimited AI generations with priority queue</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>Unlimited active document storage slots</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>High-bitrate studio audio podcast generation</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>Full-book ingestion (up to 300 pages per file)</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>Custom Leitner interval memory curves</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span>Full source coordinate & citation inspector</span>
               </li>
             </ul>

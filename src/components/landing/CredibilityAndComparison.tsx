@@ -179,28 +179,28 @@ export function CredibilityAndComparison() {
           <div className="lg:col-span-5 bg-slate-50 rounded-[24px] border border-slate-200 p-6 space-y-3 text-xs relative z-10 shadow-xs">
             <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 text-xs font-mono text-slate-500">
               <span>Derived study assets</span>
-              <span className="text-emerald-500 font-semibold">Ready</span>
+              <span className="text-slate-900 font-semibold font-mono">Ready</span>
             </div>
             <div className="space-y-2.5 text-slate-700 font-medium">
               <div className="flex items-center justify-between">
                 <span>1. Structured Markdown Outline</span>
-                <Check className="size-4 text-emerald-500" />
+                <Check className="size-4 text-slate-900" />
               </div>
               <div className="flex items-center justify-between">
                 <span>2. Active Recall Flashcards</span>
-                <Check className="size-4 text-emerald-500" />
+                <Check className="size-4 text-slate-900" />
               </div>
               <div className="flex items-center justify-between">
                 <span>3. Practice Quiz with Explanations</span>
-                <Check className="size-4 text-emerald-500" />
+                <Check className="size-4 text-slate-900" />
               </div>
               <div className="flex items-center justify-between">
                 <span>4. Conversational Audio Recap</span>
-                <Check className="size-4 text-emerald-500" />
+                <Check className="size-4 text-slate-900" />
               </div>
               <div className="flex items-center justify-between">
                 <span>5. Grounded Source Chat</span>
-                <Check className="size-4 text-emerald-500" />
+                <Check className="size-4 text-slate-900" />
               </div>
             </div>
           </div>
@@ -237,8 +237,8 @@ export function CredibilityAndComparison() {
                   </td>
                   <td className="px-5 py-3.5">
                     {row.source === true ? (
-                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs">
-                        <Check className="size-3.5 text-emerald-600 stroke-[2.5]" /> Native
+                      <span className="inline-flex items-center gap-1.5 bg-slate-900 text-white border border-slate-900 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs">
+                        <Check className="size-3.5 text-white stroke-[2.5]" /> Native
                       </span>
                     ) : (
                       <span className="font-medium text-slate-900">{row.source}</span>
@@ -259,8 +259,8 @@ export function CredibilityAndComparison() {
                         <X className="size-4 text-slate-400" /> None
                       </span>
                     ) : row.notebooklm === true ? (
-                      <span className="inline-flex items-center gap-1 text-slate-800 font-mono text-xs">
-                        <Check className="size-4 text-emerald-500" /> Yes
+                      <span className="inline-flex items-center gap-1 text-slate-900 font-mono text-xs font-medium">
+                        <Check className="size-4 text-slate-900" /> Yes
                       </span>
                     ) : (
                       <span>{row.notebooklm}</span>
@@ -281,9 +281,9 @@ export function CredibilityAndComparison() {
                 <p className="text-slate-500 text-[11px] mt-0.5">{row.note}</p>
               </div>
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-mono">
-                <div className="p-2 rounded-[12px] bg-emerald-50/80 border border-emerald-200/80 text-center">
-                  <span className="text-emerald-800 font-semibold block text-[10px] mb-0.5">Source.io</span>
-                  <span className="text-emerald-700 font-bold">Native</span>
+                <div className="p-2 rounded-[12px] bg-slate-900 text-white text-center">
+                  <span className="text-slate-300 font-semibold block text-[10px] mb-0.5">Source.io</span>
+                  <span className="text-white font-bold">Native</span>
                 </div>
                 <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
                   <span className="text-slate-500 block text-[10px] mb-0.5">ChatGPT</span>
@@ -301,7 +301,7 @@ export function CredibilityAndComparison() {
                     {row.notebooklm === false ? (
                       <span className="text-slate-400">None</span>
                     ) : row.notebooklm === true ? (
-                      <span className="text-emerald-600 font-bold">Yes</span>
+                      <span className="text-slate-900 font-bold">Yes</span>
                     ) : (
                       <span>{row.notebooklm}</span>
                     )}

@@ -30,13 +30,13 @@ export function IngestionRibbon() {
               return (
                 <div
                   key={`track-1-${item.label}`}
-                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-sky-300/80 hover:bg-white transition-[transform,box-shadow,border-color,background-color] duration-200 select-none cursor-pointer"
+                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400 hover:bg-white transition-[transform,box-shadow,border-color,background-color] duration-200 select-none cursor-pointer"
                 >
-                  <div className="size-5 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-sky-500/10 group-hover:text-sky-600 transition-[background-color,color] duration-200">
+                  <div className="size-5 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-[background-color,color] duration-200">
                     <Icon className="size-3" />
                   </div>
                   <span className="whitespace-nowrap group-hover:text-slate-950 transition-colors">{item.label}</span>
-                  <span className="text-[10px] font-mono text-slate-400 group-hover:text-sky-600 whitespace-nowrap transition-colors">
+                  <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-900 whitespace-nowrap transition-colors">
                     {item.tag}
                   </span>
                 </div>
@@ -51,13 +51,13 @@ export function IngestionRibbon() {
               return (
                 <div
                   key={`track-2-${item.label}`}
-                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-sky-300/80 hover:bg-white transition-[transform,box-shadow,border-color,background-color] duration-200 select-none cursor-pointer"
+                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400 hover:bg-white transition-[transform,box-shadow,border-color,background-color] duration-200 select-none cursor-pointer"
                 >
-                  <div className="size-5 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-sky-500/10 group-hover:text-sky-600 transition-[background-color,color] duration-200">
+                  <div className="size-5 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-[background-color,color] duration-200">
                     <Icon className="size-3" />
                   </div>
                   <span className="whitespace-nowrap group-hover:text-slate-950 transition-colors">{item.label}</span>
-                  <span className="text-[10px] font-mono text-slate-400 group-hover:text-sky-600 whitespace-nowrap transition-colors">
+                  <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-900 whitespace-nowrap transition-colors">
                     {item.tag}
                   </span>
                 </div>

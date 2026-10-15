@@ -20,13 +20,13 @@ interface SectionHeadingProps {
 }
 
 const badgeToneStyles: Record<string, string> = {
-  blue: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
-  darkBlue: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
-  cyan: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
-  amber: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
-  slate: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
-  emerald: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
-  violet: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 uppercase font-semibold text-xs tracking-wide",
+  blue: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
+  darkBlue: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
+  cyan: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
+  amber: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
+  slate: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
+  emerald: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
+  violet: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
 };
 
 export function SectionHeading({
