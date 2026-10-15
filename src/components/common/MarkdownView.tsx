@@ -1,11 +1,52 @@
 "use client";
-
+import React, { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/features/settings/context/SettingsContext";
+
+// Matches citations like [p. 14, §1.2], [p. 18], [Page 4, §2], [§3.4], [Passage §1.1]
+const CITATION_REGEX = /(\[(?:p\.|pp\.|page|passage|§)[\w\s.,§\-]+\])/gi;
+
+function renderWithCitations(node: ReactNode): ReactNode {
+  if (typeof node === "string") {
+    if (!CITATION_REGEX.test(node)) return node;
+    const parts = node.split(CITATION_REGEX);
+    return parts.map((part, i) => {
+      if (CITATION_REGEX.test(part)) {
+        return (
+          <span
+            key={i}
+            className="citation-chip cursor-default"
+            title="Source Grounded Citation"
+          >
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  }
+
+  if (Array.isArray(node)) {
+    return node.map((child, i) => (
+      <React.Fragment key={i}>{renderWithCitations(child)}</React.Fragment>
+    ));
+  }
+
+  if (React.isValidElement(node)) {
+    const element = node as React.ReactElement<{ children?: ReactNode }>;
+    if (element.props && element.props.children) {
+      return React.cloneElement(element, {
+        children: renderWithCitations(element.props.children),
+      });
+    }
+  }
+
+  return node;
+}
 
 interface MarkdownViewProps {
   children: string;
@@ -77,6 +118,27 @@ export default function MarkdownView({
             const text = String(children ?? "");
             const id = text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
             return <h3 id={id} className="scroll-mt-24 group relative font-display" {...props}>{children}</h3>;
+          },
+          p: ({ children, ...props }) => {
+            return (
+              <p {...props}>
+                {renderWithCitations(children)}
+              </p>
+            );
+          },
+          li: ({ children, ...props }) => {
+            return (
+              <li {...props}>
+                {renderWithCitations(children)}
+              </li>
+            );
+          },
+          blockquote: ({ children, ...props }) => {
+            return (
+              <blockquote {...props}>
+                {renderWithCitations(children)}
+              </blockquote>
+            );
           },
         }}
       >

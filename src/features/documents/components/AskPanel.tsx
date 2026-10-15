@@ -209,20 +209,19 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
                 </div>
 
                 {msg.citations && msg.citations.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1" role="list" aria-label="Citations">
+                  <div className="flex flex-wrap gap-1 mt-1.5" role="list" aria-label="Citations">
                     {msg.citations.map((c) => (
-                      <Button
+                      <button
                         key={c.chunk_id}
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 px-2 text-[11px] font-mono text-primary hover:text-primary/80 border-transparent rounded-full"
+                        type="button"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[9.5px] font-mono font-bold rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors cursor-pointer shadow-2xs"
                         role="listitem"
                         onClick={() => onScrollToHeading?.(c.chunk_id)}
-                        title="Jump to passage"
+                        title="Jump to grounded source passage"
                       >
-                        <ArrowUpRight className="h-2.5 w-2.5 mr-1" />
-                        {c.chunk_id}
-                      </Button>
+                        <ArrowUpRight className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400" />
+                        <span>{c.chunk_id}</span>
+                      </button>
                     ))}
                   </div>
                 )}
