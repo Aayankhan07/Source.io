@@ -189,9 +189,9 @@ export function TactileHeroPrototype() {
             {/* Top Workspace Chrome */}
             <div className="flex items-center justify-between px-3 py-2 bg-slate-50/80 border border-slate-100 rounded-xl mb-2 text-xs">
               <div className="flex items-center gap-2">
-                <span className="size-2.5 rounded-full bg-slate-300" />
-                <span className="size-2.5 rounded-full bg-slate-300" />
-                <span className="size-2.5 rounded-full bg-slate-400" />
+                <span className="size-2.5 rounded-full bg-rose-400/80" />
+                <span className="size-2.5 rounded-full bg-amber-400/80" />
+                <span className="size-2.5 rounded-full bg-emerald-400/80" />
                 <span className="font-mono text-[11px] text-slate-500 ml-1 truncate max-w-[160px] sm:max-w-xs">quantum_intro.pdf</span>
               </div>
               <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 font-medium">

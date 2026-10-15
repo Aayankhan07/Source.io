@@ -261,9 +261,9 @@ export function InteractiveWorkflowDemo({
           {/* Clean Light Header Bar */}
           <div className="relative z-10 bg-slate-50/90 border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between gap-4 backdrop-blur-md">
             <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-slate-300" />
-              <span className="h-3 w-3 rounded-full bg-slate-300" />
-              <span className="h-3 w-3 rounded-full bg-slate-400" />
+              <span className="h-3 w-3 rounded-full bg-rose-400/80" />
+              <span className="h-3 w-3 rounded-full bg-amber-400/80" />
+              <span className="h-3 w-3 rounded-full bg-emerald-400/80" />
             </div>
 
             <div className="flex-1 max-w-xs mx-auto hidden sm:flex items-center justify-center">
