@@ -378,12 +378,12 @@ export function QuizPlayer({
           </div>
 
           <div className="flex items-center gap-2 font-mono text-xs">
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+            <span className="text-slate-900 dark:text-white font-semibold flex items-center gap-1">
               <CheckCircle2 className="size-3" />
               {correctCount}
             </span>
             <span className="text-muted-foreground/40">/</span>
-            <span className="text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
+            <span className="text-slate-500 font-semibold flex items-center gap-1">
               <XCircle className="size-3" />
               {wrongCount}
             </span>
@@ -391,7 +391,7 @@ export function QuizPlayer({
         </div>
 
         {/* Stepped Progress Bar */}
-        <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden flex">
+        <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
           {questions.map((q, idx) => {
             const ans = selectedAnswers[q.id];
             const answered = ans !== undefined;
@@ -403,10 +403,10 @@ export function QuizPlayer({
                 key={q.id}
                 className={cn(
                   "h-full flex-1 border-r border-background/40 transition-all duration-300",
-                  !answered && isCurrent && "bg-sky-500",
+                  !answered && isCurrent && "bg-slate-400 dark:bg-slate-500",
                   !answered && !isCurrent && "bg-transparent",
-                  answered && correct && "bg-emerald-500",
-                  answered && !correct && "bg-rose-500",
+                  answered && correct && "bg-slate-900 dark:bg-white",
+                  answered && !correct && "bg-slate-400/50 dark:bg-slate-600/50",
                 )}
               />
             );
@@ -419,7 +419,7 @@ export function QuizPlayer({
         {/* Question Text */}
         <div className="space-y-3">
           <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
-            <HelpCircle className="size-3.5 text-sky-500" />
+            <HelpCircle className="size-3.5 text-slate-900 dark:text-white" />
             {currentQ.type === "true_false" ? "True or False" : "Multiple Choice Question"}
           </span>
           <div className="text-base sm:text-lg font-semibold font-display text-foreground leading-snug">
@@ -440,19 +440,19 @@ export function QuizPlayer({
 
             if (isCurrentAnswered) {
               if (isThisCorrect) {
-                // Correct answer glows green
+                // Correct answer: solid dark ink border & fill
                 stateStyles =
-                  "border-emerald-500/80 bg-emerald-500/10 dark:bg-emerald-950/20 text-emerald-900 dark:text-emerald-100 ring-1 ring-emerald-500/40 shadow-sm";
-                badgeStyles = "bg-emerald-500 text-white font-bold border-transparent";
+                  "border-2 border-slate-900 dark:border-white bg-slate-100/90 dark:bg-slate-800/90 text-slate-950 dark:text-white font-semibold shadow-xs";
+                badgeStyles = "bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold border-transparent";
               } else if (isSelected && !isThisCorrect) {
-                // User picked wrong answer: glows red
+                // User picked wrong answer: muted dashed border & strikethrough
                 stateStyles =
-                  "border-rose-500/80 bg-rose-500/10 dark:bg-rose-950/20 text-rose-900 dark:text-rose-100 ring-1 ring-rose-500/40";
-                badgeStyles = "bg-rose-500 text-white font-bold border-transparent";
+                  "border border-dashed border-slate-300 dark:border-slate-700 bg-transparent opacity-50 line-through text-slate-500";
+                badgeStyles = "bg-slate-200 dark:bg-slate-800 text-slate-500 border-border";
               } else {
-                // Other unselected choices fade slightly
-                stateStyles = "border-border/50 bg-card/30 opacity-50";
-                badgeStyles = "bg-muted/60 text-muted-foreground/60 border-border/40";
+                // Other unselected choices fade
+                stateStyles = "border-border/40 bg-card/20 opacity-40";
+                badgeStyles = "bg-muted/40 text-muted-foreground/40 border-border/30";
               }
             }
 
@@ -482,10 +482,10 @@ export function QuizPlayer({
                 </div>
 
                 {isCurrentAnswered && isThisCorrect && (
-                  <CheckCircle2 className="size-5 text-emerald-500 shrink-0 animate-scale-in" />
+                  <CheckCircle2 className="size-5 text-slate-900 dark:text-white shrink-0 animate-scale-in stroke-[2.5]" />
                 )}
                 {isCurrentAnswered && isSelected && !isThisCorrect && (
-                  <XCircle className="size-5 text-rose-500 shrink-0 animate-scale-in" />
+                  <XCircle className="size-5 text-slate-500 shrink-0 animate-scale-in" />
                 )}
               </button>
             );
@@ -495,25 +495,20 @@ export function QuizPlayer({
         {/* Immediate Diagnostic Explanation (Revealed once answered) */}
         {isCurrentAnswered && (
           <div
-            className={cn(
-              "rounded-2xl p-4 sm:p-5 border transition-all animate-fade-in space-y-2.5",
-              isCorrect
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-100"
-                : "bg-rose-500/10 border-rose-500/30 text-rose-950 dark:text-rose-100",
-            )}
+            className="rounded-2xl p-4 sm:p-5 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-foreground transition-all animate-fade-in space-y-2.5 shadow-xs"
           >
             <div className="flex items-center gap-2">
               {isCorrect ? (
                 <>
-                  <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                  <span className="font-bold font-mono text-xs uppercase text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-4 text-slate-900 dark:text-white stroke-[2.5]" />
+                  <span className="font-bold font-mono text-xs uppercase text-slate-900 dark:text-white">
                     Correct Answer
                   </span>
                 </>
               ) : (
                 <>
-                  <XCircle className="size-4 text-rose-600 dark:text-rose-400 stroke-[2.5]" />
-                  <span className="font-bold font-mono text-xs uppercase text-rose-600 dark:text-rose-400">
+                  <XCircle className="size-4 text-slate-600 dark:text-slate-400 stroke-[2.5]" />
+                  <span className="font-bold font-mono text-xs uppercase text-slate-700 dark:text-slate-300">
                     Incorrect — Correct choice is: {currentQ.correct}
                   </span>
                 </>
@@ -531,12 +526,12 @@ export function QuizPlayer({
             )}
 
             {/* Grounded Citation Reference Proof */}
-            <div className="pt-2 border-t border-emerald-500/20 dark:border-emerald-500/10 flex items-center justify-between text-[11px] font-mono">
-              <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-medium">
-                <span className="size-1.5 rounded-full bg-emerald-500" />
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] font-mono">
+              <span className="inline-flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                <span className="size-1.5 rounded-full bg-slate-900 dark:bg-white" />
                 Verified from source: p. {((currentIndex % 4) + 1) * 3 + 2}, ¶{((currentIndex % 3) + 1)}
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 font-bold">
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-mono font-bold">
                 98% Grounded Proof
               </span>
             </div>

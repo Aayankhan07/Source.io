@@ -149,23 +149,20 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, hideHead
   const getFormatBadgeStyle = (type: string) => {
     switch (type.toLowerCase()) {
       case "pdf":
-        return "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60";
       case "audio":
-        return "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60";
       case "youtube":
-        return "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60";
       case "text":
       default:
-        return "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-slate-700";
+        return "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-700";
     }
   };
 
   const getCardStyle = () => {
     return {
-      cardBg: "bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs hover:shadow-md",
+      cardBg: "bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 shadow-xs hover:shadow-md",
       titleColor: "text-slate-950 dark:text-white",
       subColor: "text-slate-500 dark:text-slate-400",
-      tagBg: "bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border-slate-200/60 dark:border-slate-700/60",
+      tagBg: "bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-slate-700/60",
       avatarBg: "bg-slate-900 text-white dark:bg-white dark:text-slate-900",
     };
   };
@@ -184,8 +181,8 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, hideHead
                 <span className={cn(
                   "text-xs font-mono px-2.5 py-0.5 rounded-full border font-semibold flex items-center gap-1.5",
                   isFull
-                    ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
-                    : "bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800"
+                    ? "bg-slate-200 text-slate-900 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700"
+                    : "bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700"
                 )}>
                   <Layers className="size-3" />
                   <span>{activeCount} / 3 slots used</span>
@@ -206,8 +203,8 @@ export function TactileSourceCards({ documents, isLoading, onNewSource, hideHead
               <span className={cn(
                 "text-xs font-mono px-2.5 py-1 rounded-full border font-semibold flex items-center gap-1.5",
                 isFull
-                  ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
-                  : "bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800"
+                  ? "bg-slate-200 text-slate-900 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700"
+                  : "bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700"
               )}>
                 <Layers className="size-3" />
                 <span>{activeCount} / 3 slots used</span>

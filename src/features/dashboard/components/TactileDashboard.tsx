@@ -82,8 +82,8 @@ export function TactileDashboard() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="space-y-2 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 dark:bg-sky-950/50 px-2.5 py-0.5 text-[11px] font-mono font-semibold text-sky-700 dark:text-sky-300 border border-sky-200/80 dark:border-sky-800/60">
-                    <Clock className="size-3 text-sky-600" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-[11px] font-mono font-semibold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
+                    <Clock className="size-3 text-slate-500" />
                     Continue Where You Left Off
                   </span>
                   <span className="text-[11px] font-mono text-muted-foreground">
@@ -109,16 +109,16 @@ export function TactileDashboard() {
                 </button>
                 <button
                   onClick={() => router.push(`/app/doc/${documents[0]?.id || "demo-quantum"}?tab=cards`)}
-                  className="h-9 px-4 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                  className="h-9 px-4 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
                 >
-                  <RotateCw className="size-3.5 text-sky-600 dark:text-sky-400" />
+                  <RotateCw className="size-3.5 text-slate-600 dark:text-slate-300" />
                   <span>Flashcards</span>
                 </button>
                 <button
                   onClick={() => router.push(`/app/doc/${documents[0]?.id || "demo-quantum"}?tab=quiz`)}
-                  className="h-9 px-4 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                  className="h-9 px-4 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
                 >
-                  <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle2 className="size-3.5 text-slate-900 dark:text-white" />
                   <span>Take Quiz</span>
                 </button>
               </div>

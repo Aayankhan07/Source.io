@@ -306,13 +306,13 @@ export function DailyQuotaPill() {
   // Alert glowing state styles
   const glowClasses = useMemo(() => {
     if (hasByok) {
-      return "!border-emerald-500/50 text-emerald-950 dark:text-emerald-100 hover:!border-emerald-500/70 shadow-[0_4px_16px_rgba(16,185,129,0.2)]";
+      return "!border-slate-400 text-slate-900 dark:text-slate-100 hover:!border-slate-500 shadow-xs";
     }
     if (remaining === 0) {
-      return "!border-rose-500/60 shadow-[0_0_16px_rgba(244,63,94,0.35)] text-rose-900 dark:text-rose-200 animate-pulse";
+      return "!border-slate-900/60 shadow-xs text-slate-900 dark:text-slate-100";
     }
     if (remaining <= 3) {
-      return "!border-amber-400/60 shadow-[0_0_14px_rgba(251,191,36,0.35)] text-amber-900 dark:text-amber-200";
+      return "!border-slate-400 shadow-xs text-slate-900 dark:text-slate-100";
     }
     return "text-slate-800 dark:text-slate-100";
   }, [hasByok, remaining]);
@@ -361,34 +361,26 @@ export function DailyQuotaPill() {
             <GripVertical className="size-3 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 transition-colors shrink-0 -ml-0.5" />
             {hasByok ? (
               <>
-                <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                <ShieldCheck className="size-3.5 text-slate-900 dark:text-white" />
                 <span>BYOK: {activeByokProvider}</span>
               </>
             ) : remaining === 0 ? (
               <>
-                <AlertTriangle className="size-3.5 text-rose-500" />
+                <AlertTriangle className="size-3.5 text-slate-900 dark:text-white" />
                 <span className="font-bold">0 / {DAILY_FREE_LIMIT} left</span>
               </>
             ) : (
               <>
                 <Sparkles
-                  className={cn(
-                    "size-3.5",
-                    remaining <= 3 ? "text-amber-500" : "text-sky-600 dark:text-sky-400"
-                  )}
+                  className="size-3.5 text-slate-900 dark:text-white"
                 />
                 <span className="tabular-nums font-medium">
                   {remaining} / {DAILY_FREE_LIMIT} left
                 </span>
                 {/* Micro Progress Bar */}
-                <div className="w-9 h-1.5 rounded-full bg-slate-900/10 dark:bg-white/15 overflow-hidden ml-0.5 border border-white/40 dark:border-white/5">
+                <div className="w-9 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden ml-0.5 border border-slate-300/40 dark:border-white/5">
                   <div
-                    className={cn(
-                      "h-full rounded-full transition-all duration-300",
-                      remaining <= 3
-                        ? "bg-amber-500"
-                        : "bg-sky-600 dark:bg-sky-500"
-                    )}
+                    className="h-full rounded-full transition-all duration-300 bg-slate-900 dark:bg-white"
                     style={{ width: `${Math.max(6, percentAllowanceRemaining)}%` }}
                   />
                 </div>
@@ -408,11 +400,11 @@ export function DailyQuotaPill() {
             {/* Header */}
             <div className="flex items-center justify-between pb-0.5">
               <div className="flex items-center gap-1.5">
-                <Sparkles className="size-4 text-sky-600 dark:text-sky-400" />
+                <Sparkles className="size-4 text-slate-900 dark:text-white" />
                 <h4 className="font-bold text-xs font-display text-slate-900 dark:text-white">AI Allowance</h4>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
                   {hasByok ? "BYOK Active" : "Free Student Tier"}
                 </span>
                 {(pos.x !== 0 || pos.y !== 0) && (
@@ -439,7 +431,7 @@ export function DailyQuotaPill() {
                     {hasByok ? "actions (unmetered)" : `/ ${DAILY_FREE_LIMIT} actions left`}
                   </span>
                 </div>
-                <span className="text-[11px] font-mono font-bold text-sky-600 dark:text-sky-400">
+                <span className="text-[11px] font-mono font-bold text-slate-900 dark:text-white">
                   {hasByok ? "BYOK" : `${percentAllowanceRemaining}%`}
                 </span>
               </div>
@@ -448,10 +440,7 @@ export function DailyQuotaPill() {
               {!hasByok && (
                 <div className="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-800 overflow-hidden">
                   <div
-                    className={cn(
-                      "h-full rounded-full transition-all duration-500",
-                      remaining <= 3 ? "bg-amber-500" : "bg-sky-600 dark:bg-sky-500"
-                    )}
+                    className="h-full rounded-full transition-all duration-500 bg-slate-900 dark:bg-white"
                     style={{ width: `${Math.max(4, percentAllowanceRemaining)}%` }}
                   />
                 </div>
@@ -514,8 +503,8 @@ export function DailyQuotaPill() {
                 <span className="text-[11px] font-medium">{hasByok ? `${activeByokProvider} Key` : "Groq AI Engine"}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                <span className="size-1.5 rounded-full bg-slate-900 dark:bg-white animate-pulse" />
+                <span className="text-[11px] font-semibold text-slate-900 dark:text-white">
                   {providerQuotaState === "exact" && tokenPercentRemaining != null
                     ? `${tokenPercentRemaining}% capacity`
                     : "Operational"}

@@ -214,12 +214,12 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
                       <button
                         key={c.chunk_id}
                         type="button"
-                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[9.5px] font-mono font-bold rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors cursor-pointer shadow-2xs"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[9.5px] font-mono font-bold rounded-md bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-900 transition-colors cursor-pointer shadow-2xs"
                         role="listitem"
                         onClick={() => onScrollToHeading?.(c.chunk_id)}
                         title="Jump to grounded source passage"
                       >
-                        <ArrowUpRight className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400" />
+                        <ArrowUpRight className="h-2.5 w-2.5 opacity-70" />
                         <span>{c.chunk_id}</span>
                       </button>
                     ))}
