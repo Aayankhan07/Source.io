@@ -251,9 +251,10 @@ export function PricingComparisonSection() {
 
           <Link
             href="/auth?redirect=/app/settings"
-            className="text-xs font-semibold text-slate-900 hover:underline whitespace-nowrap shrink-0 self-end sm:self-center"
+            className="group inline-flex items-center gap-1.5 text-xs font-semibold text-slate-900 hover:text-slate-950 whitespace-nowrap shrink-0 self-end sm:self-center cursor-pointer"
           >
-            Configure in Settings →
+            <span>Configure in Settings</span>
+            <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform duration-200" />
           </Link>
         </div>
       </div>

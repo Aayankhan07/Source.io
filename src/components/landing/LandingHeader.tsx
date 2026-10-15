@@ -12,31 +12,41 @@ export function LandingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 280, damping: 30, restDelta: 0.001 });
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 40);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navLinks = [
+    { href: "#modes", label: "Study Modes" },
+    { href: "#how-it-works", label: "How it works" },
+    { href: "#pricing", label: "Pricing" },
+    { href: "#comparison", label: "Comparison" },
+    { href: "#faq", label: "FAQ" },
+  ];
+
   return (
     <header className="fixed top-3.5 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] sm:w-[calc(100%-3rem)] max-w-5xl select-none transition-[top,transform] duration-300">
       <div
         className={cn(
-          "w-full rounded-full px-3 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between transition-[background-color,border-color,box-shadow] duration-300 relative overflow-hidden",
-          "bg-white/90 backdrop-blur-xl",
-          "border border-black/[0.06]",
-          scrolled ? "shadow-tactile-dock" : "shadow-tactile-pill"
+          "w-full rounded-full px-3 sm:px-5 flex items-center justify-between transition-all duration-300 relative overflow-hidden",
+          "bg-white/95 backdrop-blur-xl",
+          "border border-slate-200/90",
+          scrolled ? "py-1.5 sm:py-2 shadow-tactile-dock" : "py-2.5 sm:py-3 shadow-tactile-pill"
         )}
       >
         {/* Subtle Spring-Damped Scroll Progress Bar along header bottom */}
         <motion.div
           style={{ scaleX }}
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary origin-left pointer-events-none opacity-85 z-20"
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900 origin-left pointer-events-none opacity-85 z-20"
         />
         {/* Brand Logo with App's Geometric Box Emblem */}
         <Link
@@ -51,42 +61,35 @@ export function LandingHeader() {
             </svg>
           </div>
           <span className="font-bold text-base sm:text-lg tracking-tight text-slate-900 font-display">
-            Source<span className="text-primary font-medium">.io</span>
+            Source<span className="text-slate-900 font-medium">.io</span>
           </span>
         </Link>
 
-        {/* Center Floating Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2 text-[13px] font-medium text-slate-600">
-          <a
-            href="#modes"
-            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
-          >
-            Study Modes
-          </a>
-          <a
-            href="#how-it-works"
-            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
-          >
-            How it works
-          </a>
-          <a
-            href="#pricing"
-            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
-          >
-            Pricing
-          </a>
-          <a
-            href="#comparison"
-            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
-          >
-            Comparison
-          </a>
-          <a
-            href="#faq"
-            className="px-3 py-1.5 rounded-full hover:bg-black/[0.04] hover:text-slate-900 transition-colors"
-          >
-            FAQ
-          </a>
+        {/* Center Floating Navigation Links with Sliding Ghost Pill */}
+        <nav 
+          onMouseLeave={() => setHoveredLink(null)}
+          className="hidden md:flex items-center gap-0.5 lg:gap-1 text-[13px] font-medium text-slate-600 relative"
+        >
+          {navLinks.map((link) => {
+            const isHovered = hoveredLink === link.href;
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                onMouseEnter={() => setHoveredLink(link.href)}
+                className="relative px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 transition-colors"
+              >
+                {isHovered && (
+                  <motion.div
+                    layoutId="navHover"
+                    className="absolute inset-0 rounded-full bg-slate-100 -z-0"
+                    transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                  />
+                )}
+                <span className="relative z-10">{link.label}</span>
+              </a>
+            );
+          })}
         </nav>
 
         {/* Right Action Controls: Sign In / Start Free & Theme Toggle */}

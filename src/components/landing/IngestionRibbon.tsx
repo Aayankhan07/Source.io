@@ -20,50 +20,28 @@ export function IngestionRibbon() {
         Ingest textbooks, lecture recordings, papers, and notes with automatic coordinate mapping.
       </p>
 
-      {/* Moving Ribbon Track with Edge Fade Masks */}
-      <div className="w-full relative overflow-hidden py-1 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-        <div className="flex w-max animate-marquee hover:[animation-play-state:paused] gap-2 sm:gap-2.5">
-          {/* First set of items */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {INGESTION_FORMATS.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={`track-1-${item.label}`}
-                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400 hover:bg-white transition-[transform,box-shadow,border-color,background-color] duration-200 select-none cursor-pointer"
-                >
-                  <div className="size-5 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-[background-color,color] duration-200">
-                    <Icon className="size-3" />
-                  </div>
-                  <span className="whitespace-nowrap group-hover:text-slate-950 transition-colors">{item.label}</span>
-                  <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-900 whitespace-nowrap transition-colors">
-                    {item.tag}
-                  </span>
+      {/* Centered Static Array of Tactile Format Chips */}
+      <div className="w-full max-w-5xl mx-auto px-4 pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+          {INGESTION_FORMATS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.label}
+                className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400 hover:bg-white transition-all duration-200 select-none cursor-pointer"
+              >
+                <div className="size-6 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-colors duration-200">
+                  <Icon className="size-3.5 group-hover:scale-110 transition-transform duration-200" />
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Duplicate set of items for seamless loop */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-hidden="true">
-            {INGESTION_FORMATS.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={`track-2-${item.label}`}
-                  className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400 hover:bg-white transition-[transform,box-shadow,border-color,background-color] duration-200 select-none cursor-pointer"
-                >
-                  <div className="size-5 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-[background-color,color] duration-200">
-                    <Icon className="size-3" />
-                  </div>
-                  <span className="whitespace-nowrap group-hover:text-slate-950 transition-colors">{item.label}</span>
-                  <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-900 whitespace-nowrap transition-colors">
-                    {item.tag}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                <span className="whitespace-nowrap group-hover:text-slate-950 font-medium transition-colors">
+                  {item.label}
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-800 whitespace-nowrap transition-colors">
+                  {item.tag}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

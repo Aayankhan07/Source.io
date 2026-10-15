@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { 
   FileText, 
@@ -61,7 +61,17 @@ const STAGES: Stage[] = [
 
 export function KnowledgePipeline() {
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [isPaused, setIsPaused] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+
+  // Auto-stepping 4.5s cycle with pause on user interaction
+  useEffect(() => {
+    if (shouldReduceMotion || isPaused) return;
+    const timer = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % STAGES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [shouldReduceMotion, isPaused]);
 
   return (
     <section id="how-it-works" className="py-14 sm:py-24 relative z-10 mx-auto scroll-mt-24 w-full">
@@ -77,26 +87,35 @@ export function KnowledgePipeline() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: Interactive Flow Steps */}
-          <div className="lg:col-span-5 flex flex-col divide-y divide-slate-100">
+          <div 
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            className="lg:col-span-5 flex flex-col divide-y divide-slate-100"
+          >
             {STAGES.map((stage, idx) => {
               const isActive = activeStep === idx;
               return (
                 <button
                   key={stage.id}
                   type="button"
-                  onClick={() => setActiveStep(idx)}
-                  className={`group relative text-left py-6 px-4 sm:px-6 transition-colors duration-200 rounded-2xl ${
+                  onClick={() => {
+                    setActiveStep(idx);
+                    setIsPaused(true);
+                  }}
+                  className={`group relative text-left py-6 px-4 sm:px-6 transition-colors duration-200 rounded-2xl cursor-pointer ${
                     isActive 
                       ? "bg-slate-50/80" 
                       : "hover:bg-slate-50/40"
                   }`}
                 >
-                  {/* Subtle active indicator bar */}
-                  <div 
-                    className={`absolute left-0 top-6 bottom-6 w-[3px] rounded-r transition-all duration-200 ${
-                      isActive ? "bg-slate-900 opacity-100" : "opacity-0"
-                    }`} 
-                  />
+                  {/* Sliding active indicator bar */}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="pipelineIndicator"
+                      className="absolute left-0 top-5 bottom-5 w-[3px] rounded-r bg-slate-900 shadow-sm"
+                      transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                    />
+                  )}
 
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">

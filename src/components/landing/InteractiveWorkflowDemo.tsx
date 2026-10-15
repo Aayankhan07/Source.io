@@ -251,9 +251,9 @@ export function InteractiveWorkflowDemo({
         <div className="relative rounded-2xl sm:rounded-3xl bg-white text-slate-900 border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
           {/* Subtle Ambient Glow */}
           <div
-            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none opacity-40"
+            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none opacity-30"
             style={{
-              background: "radial-gradient(ellipse at center, rgba(14,165,233,0.15) 0%, rgba(245,158,11,0.08) 50%, transparent 80%)",
+              background: "radial-gradient(ellipse at center, rgba(15,23,42,0.04) 0%, transparent 80%)",
               filter: "blur(60px)",
             }}
           />

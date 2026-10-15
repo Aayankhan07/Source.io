@@ -15,6 +15,25 @@ export const ENTER: Transition = {
   bounce: 0,
 };
 
+export const SPRING_TACTILE: Transition = {
+  type: "spring",
+  stiffness: 400,
+  damping: 32,
+  mass: 0.8,
+};
+
+export const SPRING_SNAPPY: Transition = {
+  type: "spring",
+  stiffness: 450,
+  damping: 26,
+};
+
+export const SPRING_GENTLE: Transition = {
+  type: "spring",
+  stiffness: 280,
+  damping: 24,
+};
+
 export const HOVER: Transition = {
   type: "spring",
   duration: 0.28,

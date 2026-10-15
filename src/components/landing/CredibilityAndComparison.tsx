@@ -126,7 +126,7 @@ export function CredibilityAndComparison() {
           align="left"
         />
 
-        {/* Persona Selector Tabs */}
+        {/* Persona Selector Tabs with Gliding Obsidian Pill */}
         <div className="flex flex-wrap gap-2.5 mb-6">
           {(["students", "researchers", "professionals", "teams"] as const).map((key) => {
             const item = personas[key];
@@ -137,14 +137,23 @@ export function CredibilityAndComparison() {
                 key={key}
                 type="button"
                 onClick={() => setActivePersona(key)}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold border transition-all cursor-pointer shadow-xs active:scale-95 ${
+                className={`relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs select-none ${
                   isSelected
-                    ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
+                    ? "text-white"
+                    : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200"
                 }`}
               >
-                <Icon className="size-3.5" />
-                <span>{item.title}</span>
+                {isSelected && (
+                  <motion.div
+                    layoutId="activePersonaPill"
+                    className="absolute inset-0 rounded-full bg-slate-900 -z-0 shadow-sm"
+                    transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <Icon className="size-3.5" />
+                  <span>{item.title}</span>
+                </span>
               </button>
             );
           })}
@@ -181,28 +190,41 @@ export function CredibilityAndComparison() {
               <span>Derived study assets</span>
               <span className="text-slate-900 font-semibold font-mono">Ready</span>
             </div>
-            <div className="space-y-2.5 text-slate-700 font-medium">
-              <div className="flex items-center justify-between">
-                <span>1. Structured Markdown Outline</span>
-                <Check className="size-4 text-slate-900" />
-              </div>
-              <div className="flex items-center justify-between">
-                <span>2. Active Recall Flashcards</span>
-                <Check className="size-4 text-slate-900" />
-              </div>
-              <div className="flex items-center justify-between">
-                <span>3. Practice Quiz with Explanations</span>
-                <Check className="size-4 text-slate-900" />
-              </div>
-              <div className="flex items-center justify-between">
-                <span>4. Conversational Audio Recap</span>
-                <Check className="size-4 text-slate-900" />
-              </div>
-              <div className="flex items-center justify-between">
-                <span>5. Grounded Source Chat</span>
-                <Check className="size-4 text-slate-900" />
-              </div>
-            </div>
+            
+            {/* Staggered Derived Asset Rows */}
+            <motion.div 
+              key={activePersona}
+              initial="hidden"
+              animate="show"
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.045 }
+                }
+              }}
+              className="space-y-2.5 text-slate-700 font-medium"
+            >
+              {[
+                "1. Structured Markdown Outline",
+                "2. Active Recall Flashcards",
+                "3. Practice Quiz with Explanations",
+                "4. Conversational Audio Recap",
+                "5. Grounded Source Chat"
+              ].map((asset) => (
+                <motion.div 
+                  key={asset}
+                  variants={{
+                    hidden: { opacity: 0, x: -6 },
+                    show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 450, damping: 28 } }
+                  }}
+                  className="flex items-center justify-between"
+                >
+                  <span>{asset}</span>
+                  <Check className="size-4 text-slate-900" />
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
@@ -229,17 +251,23 @@ export function CredibilityAndComparison() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {comparisonRows.map((row) => (
-                <tr key={row.feature} className="h-12 hover:bg-slate-50/50 transition-colors">
+              {comparisonRows.map((row, idx) => (
+                <tr key={row.feature} className="h-12 hover:bg-slate-50/70 transition-colors">
                   <td className="px-6 py-3.5 font-medium text-slate-900">
                     <div>{row.feature}</div>
                     <div className="text-slate-500 text-xs font-mono font-normal mt-0.5">{row.note}</div>
                   </td>
                   <td className="px-5 py-3.5">
                     {row.source === true ? (
-                      <span className="inline-flex items-center gap-1.5 bg-slate-900 text-white border border-slate-900 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs">
+                      <motion.span 
+                        initial={{ scale: 0.86, opacity: 0 }}
+                        whileInView={{ scale: 1, opacity: 1 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ delay: idx * 0.05, type: "spring", stiffness: 450, damping: 25 }}
+                        className="inline-flex items-center gap-1.5 bg-slate-900 text-white border border-slate-900 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs"
+                      >
                         <Check className="size-3.5 text-white stroke-[2.5]" /> Native
-                      </span>
+                      </motion.span>
                     ) : (
                       <span className="font-medium text-slate-900">{row.source}</span>
                     )}
@@ -377,13 +405,20 @@ export function CredibilityAndComparison() {
         transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="text-center pb-6 w-full relative"
       >
-        <div className="relative rounded-[36px] sm:rounded-[44px] bg-slate-950 text-white p-8 sm:p-16 shadow-2xl border border-slate-800 overflow-hidden hover:border-slate-700 transition-colors duration-300">
-          {/* Subtle Ambient Glow */}
+        <div 
+          onMouseMove={(e) => {
+            if (shouldReduceMotion) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty("--cta-x", `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty("--cta-y", `${e.clientY - rect.top}px`);
+          }}
+          className="relative rounded-[36px] sm:rounded-[44px] bg-slate-950 text-white p-8 sm:p-16 shadow-2xl border border-slate-800 overflow-hidden group hover:border-slate-700 transition-colors duration-300"
+        >
+          {/* Tactile Cursor Ink Spotlight Glow */}
           <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] pointer-events-none opacity-30"
+            className="pointer-events-none absolute -inset-px rounded-[36px] sm:rounded-[44px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
             style={{
-              background: "radial-gradient(ellipse at center, rgba(14,165,233,0.3) 0%, rgba(245,158,11,0.15) 50%, transparent 80%)",
-              filter: "blur(60px)",
+              background: "radial-gradient(550px circle at var(--cta-x, 250px) var(--cta-y, 150px), rgba(255, 255, 255, 0.07), transparent 70%)",
             }}
           />
 

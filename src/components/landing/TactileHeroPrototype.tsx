@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -72,22 +72,28 @@ export function TactileHeroPrototype() {
     mouseY.set(0);
   };
 
-  // Interactive Card Flip state
-  const [cardFlipped, setCardFlipped] = useState(false);
+  // Citation Sync Loop (4.5s pulse cycle)
+  const [citationActive, setCitationActive] = useState(false);
 
-  // Interactive Quiz state
-  const [quizSelected, setQuizSelected] = useState<number | null>(null);
-
-  // Audio Podcast playback state
-  const [audioPlaying, setAudioPlaying] = useState(false);
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const interval = setInterval(() => {
+      setCitationActive(true);
+      const timer = setTimeout(() => {
+        setCitationActive(false);
+      }, 2200);
+      return () => clearTimeout(timer);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [shouldReduceMotion]);
 
   return (
     <section className="relative w-full min-h-[100dvh] flex flex-col justify-center pt-20 sm:pt-24 lg:pt-20 pb-8 sm:pb-12 select-none">
-      {/* Ambient Atmospheric Glow (Subtle Sand/Sky Halos) */}
+      {/* Ambient Subtle Shadow Background */}
       <div
-        className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-70"
+        className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-40"
         style={{
-          background: "radial-gradient(ellipse 85% 65% at 70% 30%, rgba(14,165,233,0.12) 0%, rgba(245,158,11,0.08) 45%, transparent 75%)",
+          background: "radial-gradient(ellipse 85% 65% at 70% 30%, rgba(15,23,42,0.04) 0%, transparent 75%)",
           filter: "blur(60px)",
         }}
         aria-hidden="true"
@@ -102,17 +108,26 @@ export function TactileHeroPrototype() {
           className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-left space-y-6 sm:space-y-8"
         >
 
-          {/* Headline */}
+          {/* Headline with Animated Ink-Stroke Underline */}
           <h1 className="text-[clamp(32px,3.8vw,50px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 font-display text-balance">
             Turn textbooks, lectures, and research papers into{" "}
-            <span className="text-primary relative inline-block pb-1">
+            <span className="relative inline-block pb-1 text-slate-900">
               verified study materials.
               <svg
-                className="absolute -bottom-1 left-0 w-full h-2 text-primary/40"
+                className="absolute -bottom-1 left-0 w-full h-2 text-slate-900/60"
                 viewBox="0 0 100 20"
                 preserveAspectRatio="none"
               >
-                <path d="M0 15 Q 50 2 100 15" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                <motion.path
+                  d="M0 15 Q 50 2 100 15"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                />
               </svg>
             </span>
           </h1>
@@ -208,8 +223,16 @@ export function TactileHeroPrototype() {
                 className="w-full h-auto aspect-[16/10] object-cover object-top pointer-events-none select-none transition-transform duration-500 group-hover:scale-[1.02]"
               />
 
-              {/* Floating Interactive Callout Card: Grounded Citation Pill */}
-              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-[340px] bg-slate-900/95 backdrop-blur-md text-white p-3 sm:p-3.5 rounded-xl border border-slate-700/80 shadow-2xl flex items-start gap-3">
+              {/* Floating Interactive Callout Card: Grounded Citation Pill with Spring Sync Pulse */}
+              <motion.div 
+                animate={
+                  citationActive
+                    ? { y: -3, scale: 1.02, borderColor: "rgba(255,255,255,0.4)" }
+                    : { y: 0, scale: 1, borderColor: "rgba(51,65,85,0.8)" }
+                }
+                transition={{ type: "spring", stiffness: 450, damping: 24 }}
+                className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-[340px] bg-slate-900/95 backdrop-blur-md text-white p-3 sm:p-3.5 rounded-xl border shadow-2xl flex items-start gap-3 transition-colors duration-300"
+              >
                 <div className="size-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shrink-0 text-white">
                   <ShieldCheck className="size-4" />
                 </div>
@@ -225,7 +248,7 @@ export function TactileHeroPrototype() {
                     Linked to <span className="text-white font-medium">Page 14, ¶3</span> in source PDF
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         </motion.div>
