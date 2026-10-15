@@ -170,7 +170,7 @@ export function FlashcardsDeck({
           disabled={loading}
           className="rounded-full text-xs h-10 px-6 font-semibold bg-primary text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-tactile-pill"
         >
-          {loading ? <Sparkles className="size-4 mr-2 animate-spin text-purple-400" /> : <Sparkles className="size-4 mr-2" />}
+          {loading ? <Sparkles className="size-4 mr-2 animate-spin text-sky-400" /> : <Sparkles className="size-4 mr-2" />}
           <span>Generate Flashcard Deck</span>
         </Button>
       </div>
@@ -272,7 +272,7 @@ export function FlashcardsDeck({
             disabled={loading}
             className="rounded-full text-xs h-8 px-3 gap-1.5 border-border text-foreground hover:bg-muted"
           >
-            <Sparkles className="size-3 text-purple-500" />
+            <Sparkles className="size-3 text-sky-500" />
             <span>Regenerate</span>
           </Button>
         </div>
@@ -367,7 +367,7 @@ export function FlashcardsDeck({
                 )}
               >
                 <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
-                  <span className="uppercase font-bold tracking-wider text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                  <span className="uppercase font-bold tracking-wider text-[10px] px-2 py-0.5 rounded bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/80 dark:border-sky-800/50">
                     Answer / Definition
                   </span>
                   <span className="text-[11px] flex items-center gap-1 text-muted-foreground">
@@ -407,6 +407,7 @@ export function FlashcardsDeck({
                 variant="outline"
                 size="sm"
                 onClick={handleNext}
+                disabled={currentIndex === deck.length - 1}
                 className="rounded-full text-xs h-9 px-3.5 gap-1 border-border text-foreground hover:bg-muted"
                 aria-label="Next card"
               >
@@ -421,20 +422,30 @@ export function FlashcardsDeck({
                 size="sm"
                 variant="outline"
                 onClick={markLearning}
-                className="rounded-full text-xs h-9 px-4 gap-1.5 border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/50"
+                className="rounded-full text-xs h-9 px-4 gap-1.5 border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 hover:border-amber-500/50 cursor-pointer"
                 title="Mark for review (Key 1)"
               >
-                <AlertCircle className="size-3.5" />
-                <span>Again (<kbd className="font-mono text-[10px]">1</kbd>)</span>
+                <AlertCircle className="size-3.5 text-amber-600 dark:text-amber-400" />
+                <span className="flex items-center gap-1.5">
+                  Again
+                  <kbd className="rounded bg-amber-100 dark:bg-amber-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-800 dark:text-amber-200 border border-amber-300/60 dark:border-amber-700/50">
+                    1
+                  </kbd>
+                </span>
               </Button>
               <Button
                 size="sm"
                 onClick={markMastered}
-                className="rounded-full text-xs h-9 px-4 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                className="rounded-full text-xs h-9 px-4 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
                 title="Mark mastered (Key 2 or 3)"
               >
                 <CheckCircle2 className="size-3.5" />
-                <span>Mastered (<kbd className="font-mono text-[10px]">2</kbd>)</span>
+                <span className="flex items-center gap-1.5">
+                  Mastered
+                  <kbd className="rounded bg-emerald-800 dark:bg-emerald-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-100 border border-emerald-600/50">
+                    2
+                  </kbd>
+                </span>
               </Button>
             </div>
           </div>

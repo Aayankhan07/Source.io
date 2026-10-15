@@ -17,12 +17,12 @@ import MarkdownView from "@/components/common/MarkdownView";
 import {
   AlertCircle, FileText, Layers, ListChecks, Headphones, Loader2, Trash2, ChevronLeft, Sparkles, RefreshCw, Menu,
   Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Search, Copy, Check, Share2,
-  ListTree, X, Printer
+  ListTree, X, Printer, Download
 } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { streamNotes, generateDerivatives } from "@/lib/services/pipeline";
 import { generatePodcast } from "@/lib/services/podcast";
-import { cn, errorMessage } from "@/lib/utils";
+import { cn, errorMessage, calculateReadTime } from "@/lib/utils";
 import { queryKeys } from "@/lib/queryKeys";
 import { DEMO_DOCUMENTS } from "@/features/documents/data/mockDocuments";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -233,10 +233,7 @@ export default function DocumentWorkspace() {
   const headings = useMemo(() => extractHeadings(note?.markdown), [note?.markdown]);
 
   const readTimeMinutes = useMemo(() => {
-    if (!note?.markdown) return 1;
-    const wordCount = note.markdown.trim().split(/\s+/).filter(Boolean).length;
-    const wpm = settings?.readingTargetWpm || 200;
-    return Math.max(1, Math.round(wordCount / wpm));
+    return calculateReadTime(note?.markdown, settings?.readingTargetWpm || 200).readMinutes;
   }, [note?.markdown, settings?.readingTargetWpm]);
 
   const generate = async () => {
@@ -580,8 +577,8 @@ export default function DocumentWorkspace() {
                 >
                   <main className="h-full overflow-y-auto relative bg-tactile-canvas p-2.5 px-2">
                     <div className="max-w-4xl mx-auto space-y-6 pb-16">
-                      {/* "On this page: ..." Summary Banner (Wireframe Badge 4) */}
-                      {headings.length > 0 && notesSettings.showPageSummaryBanner && (
+                      {/* "On this page: ..." Summary Banner (Visible only when left outline is closed or retracted to save vertical space) */}
+                      {headings.length > 0 && notesSettings.showPageSummaryBanner && (!outlineOpen || outlineRetracted || focusMode) && (
                         <div className="flex items-center gap-2 px-4 py-2.5 rounded-[18px] bg-card/80 backdrop-blur-md border border-border text-xs text-muted-foreground shadow-2xs animate-fade-in no-print">
                           <span className="font-bold text-foreground shrink-0 font-display">On this page:</span>
                           <div className="flex items-center gap-1.5 overflow-x-auto truncate scrollbar-none">
@@ -774,7 +771,7 @@ export default function DocumentWorkspace() {
                     className="h-9 px-3.5 rounded-full shadow-tactile-pill bg-card/95 backdrop-blur-md border border-border text-foreground hover:bg-accent text-xs font-semibold flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                     title="Open Ask Copilot"
                   >
-                    <Sparkles className="size-3.5 text-purple-600 dark:text-purple-400" />
+                    <Sparkles className="size-3.5 text-sky-600 dark:text-sky-400" />
                     <span>Ask Copilot</span>
                   </button>
                 </div>
@@ -1034,11 +1031,38 @@ function CustomAudioPlayer({
     return null;
   }, [script]);
 
+  const [playbackRate, setPlaybackRate] = useState<number>(1.0);
+  const { toast } = useToast();
+
+  const cyclePlaybackRate = () => {
+    const rates = [1.0, 1.25, 1.5, 2.0];
+    const nextIdx = (rates.indexOf(playbackRate) + 1) % rates.length;
+    const newRate = rates[nextIdx];
+    setPlaybackRate(newRate);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = newRate;
+    }
+  };
+
+  const handleExportMp3 = () => {
+    if (audioUrl) {
+      const a = document.createElement("a");
+      a.href = audioUrl;
+      a.download = `${title.toLowerCase().replace(/\s+/g, "-")}-recap.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast({ title: "Export Started", description: "Downloading Socratic audio recap MP3." });
+    } else {
+      toast({ title: "Simulated Export", description: "Audio synthesized and exported to MP3." });
+    }
+  };
+
   return (
     <div className="bg-card p-6 sm:p-8 rounded-[28px] border border-border shadow-tactile-card space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="size-10 rounded-2xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 shadow-tactile-pill">
+          <div className="size-10 rounded-2xl bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/80 dark:border-sky-800/60 flex items-center justify-center shrink-0 shadow-tactile-pill">
             <Headphones className="size-5" />
           </div>
           <div className="min-w-0">
@@ -1049,18 +1073,31 @@ function CustomAudioPlayer({
           </div>
         </div>
 
-        {onRegenerate && (
+        <div className="flex items-center gap-2">
           <Button
-            onClick={onRegenerate}
-            disabled={loading}
+            onClick={handleExportMp3}
             variant="outline"
             size="sm"
-            className="rounded-full text-xs h-8 px-3 gap-1.5"
+            className="rounded-full text-xs h-8 px-3 gap-1.5 border-border text-foreground hover:bg-muted cursor-pointer"
+            title="Download MP3"
           >
-            {loading ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5 text-purple-500" />}
-            <span>Regenerate</span>
+            <Download className="size-3.5 text-slate-500" />
+            <span>Export MP3</span>
           </Button>
-        )}
+
+          {onRegenerate && (
+            <Button
+              onClick={onRegenerate}
+              disabled={loading}
+              variant="outline"
+              size="sm"
+              className="rounded-full text-xs h-8 px-3 gap-1.5 border-border text-foreground hover:bg-muted"
+            >
+              {loading ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5 text-sky-600 dark:text-sky-400" />}
+              <span>Regenerate</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Main Play Bar & Waveform Tracker */}
@@ -1068,7 +1105,7 @@ function CustomAudioPlayer({
         <div className="flex items-center gap-4">
           <button
             onClick={togglePlay}
-            className="size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-medium hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer shrink-0"
+            className="size-12 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 flex items-center justify-center font-medium hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer shrink-0"
             aria-label={playing ? "Pause" : "Play"}
           >
             {playing ? <span className="text-base font-bold">⏸</span> : <span className="text-base font-bold ml-0.5">▶</span>}
@@ -1079,13 +1116,22 @@ function CustomAudioPlayer({
               className="h-2.5 bg-muted rounded-full overflow-hidden cursor-pointer relative group"
             >
               <div
-                className="h-full bg-primary rounded-full transition-all duration-100 group-hover:bg-primary/80"
+                className="h-full bg-sky-600 dark:bg-sky-500 rounded-full transition-all duration-100 group-hover:bg-sky-500"
                 style={{ width: `${Math.max(0, Math.min(100, progress * 100))}%` }}
               />
             </div>
             <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground">
               <span>{formatSecs(currentTime)}</span>
-              <span>{formatSecs(duration || 180)}</span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={cyclePlaybackRate}
+                  className="px-2 py-0.5 rounded-full bg-muted border border-border text-[10px] font-bold text-foreground hover:bg-accent transition-colors cursor-pointer"
+                  title="Cycle playback speed"
+                >
+                  {playbackRate}x
+                </button>
+                <span>{formatSecs(duration || 180)}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1098,21 +1144,21 @@ function CustomAudioPlayer({
             <span className="text-xs font-bold text-foreground font-display">Dialogue Script</span>
             <span className="text-[10px] font-mono text-muted-foreground">Dr. Sarah Chen · Marcus</span>
           </div>
-          <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1 custom-scrollbar">
             {parsedScript.map((turn: { speaker: string; text: string; timestamp?: string }, idx: number) => {
               const isHostA = turn.speaker.includes("Sarah") || turn.speaker.includes("Host A");
               return (
                 <div
                   key={idx}
                   className={cn(
-                    "p-3 rounded-2xl border text-xs leading-relaxed space-y-1",
+                    "p-3.5 rounded-2xl border text-xs leading-relaxed space-y-1 transition-all",
                     isHostA
-                      ? "bg-purple-500/5 border-purple-500/20 text-foreground"
-                      : "bg-muted/40 border-border text-foreground"
+                      ? "bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 shadow-2xs text-foreground"
+                      : "bg-slate-50/80 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/60 text-foreground"
                   )}
                 >
                   <div className="flex items-center justify-between text-[11px] font-medium">
-                    <span className={cn("font-bold", isHostA ? "text-purple-600 dark:text-purple-400" : "text-sky-600 dark:text-sky-400")}>
+                    <span className={cn("font-bold", isHostA ? "text-slate-900 dark:text-white" : "text-sky-700 dark:text-sky-400")}>
                       {turn.speaker}
                     </span>
                     {turn.timestamp && (

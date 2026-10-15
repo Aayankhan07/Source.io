@@ -28,6 +28,7 @@ interface TactileSourceCardsProps {
   isLoading?: boolean;
   onNewSource?: () => void;
   onExpandView?: () => void;
+  hideHeader?: boolean;
 }
 
 // Fallback demo documents mapped to working mock sets in mockDocuments.ts
@@ -70,7 +71,7 @@ const DEMO_SOURCES = [
   },
 ];
 
-export function TactileSourceCards({ documents, isLoading, onNewSource }: TactileSourceCardsProps) {
+export function TactileSourceCards({ documents, isLoading, onNewSource, hideHeader = false }: TactileSourceCardsProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -145,65 +146,78 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
     }
   };
 
-  const getCardStyle = (color: string) => {
-    switch (color) {
-      case "lavender":
-        return {
-          cardBg: "bg-[#EEECFC] dark:bg-indigo-950/35 border-[#DDD8FA] dark:border-indigo-800/30",
-          titleColor: "text-slate-900 dark:text-indigo-100",
-          subColor: "text-slate-600 dark:text-indigo-300/80",
-          tagBg: "bg-white/80 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 border-indigo-200 dark:border-indigo-700/50",
-          avatarBg: "bg-indigo-600 text-white",
-        };
-      case "sky":
-        return {
-          cardBg: "bg-[#E6F8FB] dark:bg-cyan-950/35 border-[#CEF0F6] dark:border-cyan-800/30",
-          titleColor: "text-slate-900 dark:text-cyan-100",
-          subColor: "text-slate-600 dark:text-cyan-300/80",
-          tagBg: "bg-white/80 dark:bg-cyan-900/60 text-cyan-900 dark:text-cyan-200 border-cyan-200 dark:border-cyan-700/50",
-          avatarBg: "bg-cyan-600 text-white",
-        };
-      case "mint":
+  const getFormatBadgeStyle = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60";
+      case "audio":
+        return "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60";
+      case "youtube":
+        return "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60";
+      case "text":
       default:
-        return {
-          cardBg: "bg-[#E7F7ED] dark:bg-emerald-950/35 border-[#C9EED6] dark:border-emerald-800/30",
-          titleColor: "text-slate-900 dark:text-emerald-100",
-          subColor: "text-slate-600 dark:text-emerald-300/80",
-          tagBg: "bg-white/80 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 border-emerald-200 dark:border-emerald-700/50",
-          avatarBg: "bg-emerald-600 text-white",
-        };
+        return "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-slate-700";
     }
+  };
+
+  const getCardStyle = () => {
+    return {
+      cardBg: "bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs hover:shadow-md",
+      titleColor: "text-slate-950 dark:text-white",
+      subColor: "text-slate-500 dark:text-slate-400",
+      tagBg: "bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border-slate-200/60 dark:border-slate-700/60",
+      avatarBg: "bg-slate-900 text-white dark:bg-white dark:text-slate-900",
+    };
   };
 
   return (
     <div className="bg-card rounded-[32px] p-5 sm:p-7 border border-border shadow-tactile-card flex flex-col gap-5 select-none w-full">
       {/* Header with Title, Slots Indicator, and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-bold font-display text-foreground tracking-tight">
-              Study Sources
-            </h2>
+        {!hideHeader ? (
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl sm:text-2xl font-bold font-display text-foreground tracking-tight">
+                Study Sources
+              </h2>
+              {isRealData && (
+                <span className={cn(
+                  "text-xs font-mono px-2.5 py-0.5 rounded-full border font-semibold flex items-center gap-1.5",
+                  isFull
+                    ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
+                    : "bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800"
+                )}>
+                  <Layers className="size-3" />
+                  <span>{activeCount} / 3 slots used</span>
+                </span>
+              )}
+            </div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              {isRealData
+                ? isFull
+                  ? "3 of 3 free document slots used. Delete an existing document to replace it."
+                  : `${slotsRemaining} document slot${slotsRemaining === 1 ? "" : "s"} available. Click any source to study.`
+                : "Click any source to enter its 5 study modes"}
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
             {isRealData && (
               <span className={cn(
-                "text-xs font-mono px-2.5 py-0.5 rounded-full border font-semibold flex items-center gap-1.5",
+                "text-xs font-mono px-2.5 py-1 rounded-full border font-semibold flex items-center gap-1.5",
                 isFull
                   ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
-                  : "bg-purple-50 text-purple-800 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800"
+                  : "bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800"
               )}>
                 <Layers className="size-3" />
                 <span>{activeCount} / 3 slots used</span>
               </span>
             )}
+            <span className="text-xs text-muted-foreground">
+              Filter by format or search across all uploaded textbooks and papers.
+            </span>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {isRealData
-              ? isFull
-                ? "3 of 3 free document slots used. Delete an existing document to replace it."
-                : `${slotsRemaining} document slot${slotsRemaining === 1 ? "" : "s"} available. Click any source to study.`
-              : "Click any source to enter its 5 AI study lenses"}
-          </p>
-        </div>
+        )}
 
         {/* Search Input Bar + New Source Quick Button */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -307,14 +321,15 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredList.map((item) => {
-            const style = getCardStyle(item.color);
+            const style = getCardStyle();
+            const formatBadgeClass = getFormatBadgeStyle(item.source_type);
 
             return (
               <div
                 key={item.id}
                 onClick={() => router.push(`/app/doc/${item.id}`)}
                 className={cn(
-                  "p-4 sm:p-5 rounded-[24px] border transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-tactile-pill active:scale-[0.99] select-none group flex flex-col justify-between min-h-[170px] relative",
+                  "p-4 sm:p-5 rounded-[24px] border transition-all duration-200 cursor-pointer hover:-translate-y-1 active:scale-[0.99] select-none group flex flex-col justify-between min-h-[175px] relative",
                   style.cardBg
                 )}
               >
@@ -336,7 +351,7 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
                           <Trash2 className="size-3.5" />
                         </button>
                       )}
-                      <span className="p-1 rounded-full bg-white/60 dark:bg-white/10 text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="p-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
                         <ArrowRight className="size-3.5" />
                       </span>
                     </div>
@@ -348,17 +363,17 @@ export function TactileSourceCards({ documents, isLoading, onNewSource }: Tactil
                 </div>
 
                 {/* Bottom Meta Pill & Format Badge */}
-                <div className="flex items-center justify-between pt-2 border-t border-current/10 text-xs">
+                <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-white/5 text-xs">
                   <div className={cn("px-2.5 py-1 rounded-[14px] border font-medium flex items-center gap-1.5 shadow-2xs", style.tagBg)}>
-                    <Calendar className="size-3" />
+                    <Calendar className="size-3 text-slate-400" />
                     <span className="text-[11px] font-mono">{item.date}</span>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-mono font-semibold uppercase px-2 py-0.5 rounded-md bg-white/70 dark:bg-black/30 border border-current/10">
+                    <span className={cn("text-[10.5px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border shadow-2xs", formatBadgeClass)}>
                       {item.source_type}
                     </span>
-                    <div className="size-6 rounded-full border border-black/[0.06] dark:border-white/10 bg-slate-900 text-white dark:bg-white dark:text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-2xs">
+                    <div className="size-6 rounded-full border border-border bg-slate-900 text-white dark:bg-white dark:text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-2xs">
                       {getSourceIcon(item.source_type)}
                     </div>
                   </div>

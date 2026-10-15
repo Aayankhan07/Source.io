@@ -330,7 +330,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
             <span className="text-slate-600 dark:text-slate-400">
               Saved documents: <strong className="text-slate-900 dark:text-white">{activeDocCount} of 3 used</strong>
             </span>
-            <span className="font-mono text-purple-600 dark:text-purple-400 font-semibold text-[11px]">
+            <span className="font-mono text-sky-700 dark:text-sky-300 font-semibold text-[11px]">
               {slotsAvailable} slot{slotsAvailable === 1 ? "" : "s"} available
             </span>
           </div>

@@ -18,7 +18,7 @@ import {
   List,
   Sparkles,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, calculateReadTime } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -151,11 +151,7 @@ export default function WorkspaceOutline({
 
   const { settings, notesSettings } = useSettings();
   const stats = useMemo(() => {
-    if (!markdown) return { words: 0, readMinutes: 0 };
-    const words = markdown.trim().split(/\s+/).filter(Boolean).length;
-    const wpm = settings?.readingTargetWpm || 200;
-    const readMinutes = Math.max(1, Math.ceil(words / wpm));
-    return { words, readMinutes };
+    return calculateReadTime(markdown, settings?.readingTargetWpm || 200);
   }, [markdown, settings?.readingTargetWpm]);
 
   // Current active index for progress bar

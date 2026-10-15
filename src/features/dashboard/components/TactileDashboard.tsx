@@ -8,7 +8,7 @@ import { queryKeys } from "@/lib/queryKeys";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { DocumentRow } from "@/features/documents/types";
 import { useAppShell } from "@/features/documents/context/AppShellContext";
-import { Search, X, FileText, ArrowRight, BookOpen } from "lucide-react";
+import { Search, X, FileText, ArrowRight, BookOpen, Sparkles, Clock, CheckCircle2, RotateCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { TactileTopBar } from "./TactileTopBar";
@@ -77,10 +77,58 @@ export function TactileDashboard() {
       {/* VIEW 1: Overview Mode */}
       {activeView === "dashboard" && (
         <div className="flex flex-col gap-6 sm:gap-8 w-full">
-          {/* Top Section: Performance Analytics + Weekly Goals (12-column split) */}
+          {/* Top Hero: Continue Where You Left Off Card */}
+          <div className="w-full bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/90 dark:border-slate-800 p-5 sm:p-6 shadow-xs relative overflow-hidden">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div className="space-y-2 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 dark:bg-sky-950/50 px-2.5 py-0.5 text-[11px] font-mono font-semibold text-sky-700 dark:text-sky-300 border border-sky-200/80 dark:border-sky-800/60">
+                    <Clock className="size-3 text-sky-600" />
+                    Continue Where You Left Off
+                  </span>
+                  <span className="text-[11px] font-mono text-muted-foreground">
+                    Last active today
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white truncate">
+                  {documents[0]?.title || "Introduction to Quantum Computing"}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  You reviewed 4 flashcards and 2 notes chapters. Resume to keep your active recall streak.
+                </p>
+              </div>
+
+              {/* Quick Resume Buttons */}
+              <div className="flex flex-wrap items-center gap-2 pt-1 lg:pt-0 shrink-0">
+                <button
+                  onClick={() => router.push(`/app/doc/${documents[0]?.id || "demo-quantum"}?tab=notes`)}
+                  className="h-9 px-4 rounded-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer"
+                >
+                  <FileText className="size-3.5" />
+                  <span>Resume Notes</span>
+                </button>
+                <button
+                  onClick={() => router.push(`/app/doc/${documents[0]?.id || "demo-quantum"}?tab=cards`)}
+                  className="h-9 px-4 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                >
+                  <RotateCw className="size-3.5 text-sky-600 dark:text-sky-400" />
+                  <span>Flashcards</span>
+                </button>
+                <button
+                  onClick={() => router.push(`/app/doc/${documents[0]?.id || "demo-quantum"}?tab=quiz`)}
+                  className="h-9 px-4 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                >
+                  <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Take Quiz</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Analytics Section: Performance Analytics + Weekly Goals (12-column split) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
             <div className="lg:col-span-7 w-full">
-              <TactilePerformanceChart />
+              <TactilePerformanceChart isGuest={user?.id === "guest-user-01" || !user} />
             </div>
             <div className="lg:col-span-5 w-full">
               <TactileWeeklyGoals />
@@ -106,6 +154,7 @@ export function TactileDashboard() {
             documents={documents}
             isLoading={isLoading}
             onNewSource={openUpload}
+            hideHeader={true}
           />
         </div>
       )}

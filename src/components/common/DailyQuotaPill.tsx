@@ -374,7 +374,7 @@ export function DailyQuotaPill() {
                 <Sparkles
                   className={cn(
                     "size-3.5",
-                    remaining <= 3 ? "text-amber-500" : "text-cyan-500 dark:text-cyan-400"
+                    remaining <= 3 ? "text-amber-500" : "text-sky-600 dark:text-sky-400"
                   )}
                 />
                 <span className="tabular-nums font-medium">
@@ -387,7 +387,7 @@ export function DailyQuotaPill() {
                       "h-full rounded-full transition-all duration-300",
                       remaining <= 3
                         ? "bg-amber-500"
-                        : "bg-cyan-500 dark:bg-cyan-400"
+                        : "bg-sky-600 dark:bg-sky-500"
                     )}
                     style={{ width: `${Math.max(6, percentAllowanceRemaining)}%` }}
                   />
@@ -402,13 +402,13 @@ export function DailyQuotaPill() {
           align="end"
           sideOffset={8}
           collisionPadding={12}
-          className="w-[320px] p-4 rounded-[26px] bg-white/75 dark:bg-slate-900/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/70 dark:border-white/15 shadow-[0_20px_50px_rgba(15,23,42,0.12),inset_0_1px_1.5px_rgba(255,255,255,0.9)] dark:shadow-[0_24px_54px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.12)] text-foreground select-none"
+          className="w-[320px] p-4 rounded-[26px] bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl backdrop-saturate-150 border border-slate-200/80 dark:border-white/15 shadow-[0_20px_50px_rgba(15,23,42,0.12),inset_0_1px_1.5px_rgba(255,255,255,0.9)] dark:shadow-[0_24px_54px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.12)] text-foreground select-none"
         >
           <div className="space-y-3">
             {/* Header */}
             <div className="flex items-center justify-between pb-0.5">
               <div className="flex items-center gap-1.5">
-                <Sparkles className="size-4 text-cyan-500 dark:text-cyan-400" />
+                <Sparkles className="size-4 text-sky-600 dark:text-sky-400" />
                 <h4 className="font-bold text-xs font-display text-slate-900 dark:text-white">AI Allowance</h4>
               </div>
               <div className="flex items-center gap-1.5">
@@ -439,7 +439,7 @@ export function DailyQuotaPill() {
                     {hasByok ? "actions (unmetered)" : `/ ${DAILY_FREE_LIMIT} actions left`}
                   </span>
                 </div>
-                <span className="text-[11px] font-mono font-bold text-purple-600 dark:text-purple-400">
+                <span className="text-[11px] font-mono font-bold text-sky-600 dark:text-sky-400">
                   {hasByok ? "BYOK" : `${percentAllowanceRemaining}%`}
                 </span>
               </div>
@@ -450,7 +450,7 @@ export function DailyQuotaPill() {
                   <div
                     className={cn(
                       "h-full rounded-full transition-all duration-500",
-                      remaining <= 3 ? "bg-amber-500" : "bg-gradient-to-r from-purple-600 to-indigo-500"
+                      remaining <= 3 ? "bg-amber-500" : "bg-sky-600 dark:bg-sky-500"
                     )}
                     style={{ width: `${Math.max(4, percentAllowanceRemaining)}%` }}
                   />
@@ -466,7 +466,7 @@ export function DailyQuotaPill() {
                 <button
                   type="button"
                   onClick={() => setShowAllowanceWhy(!showAllowanceWhy)}
-                  className="text-[10.5px] text-purple-600 dark:text-purple-400 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
+                  className="text-[10.5px] text-sky-600 dark:text-sky-400 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
                 >
                   <span>Cost rules</span>
                   {showAllowanceWhy ? <ChevronUp className="size-2.5" /> : <ChevronDown className="size-2.5" />}

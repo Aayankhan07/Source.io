@@ -27,11 +27,12 @@ export const DEMO_DOCUMENTS: Record<string, DemoDocumentData> = {
 Quantum Computing leverages the unique principles of quantum physics to solve complex calculations that would take classical supercomputers millennia:
 
 *   **Superposition**: A state where quantum systems contain multiple values simultaneously until measured. A qubit state is expressed mathematically as:
-    $$\\|\\psi\\rangle = \\alpha\\|0\\rangle + \\beta\\|1\\rangle$$
-    where $|\\alpha|^2 + |\\beta|^2 = 1$.
+    $$|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle$$
+    where $|\\alpha|^2 + |\\beta|^2 = 1$. [p. 14, §1.2]
 *   **Entanglement**: Spooky correlation between qubits, locking their states instantly across distance:
-    $$\\|\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(\\|00\\rangle + \\|11\\rangle)$$
-*   **Decoherence**: Environmental noise causing qubits to lose their quantum state. This is the biggest engineering hurdle in contemporary quantum architectures.
+    $$|\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)$$
+    [p. 18, §2.1]
+*   **Decoherence**: Environmental noise causing qubits to lose their quantum state. This is the biggest engineering hurdle in contemporary quantum architectures. [p. 22, §3.4]
 
 ---
 
@@ -39,12 +40,12 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
 
 | Architectural Property | Classical Computers | Quantum Computers |
 | :--- | :--- | :--- |
-| **Core Information Unit** | Bits (deterministic $0$ or $1$) | Qubits (coherent $|0\\rangle$, $|1\\rangle$, or linear superposition) |
+| **Core Information Unit** | Bits (deterministic $0$ or $1$) | Qubits (coherent superposition of $|0\\rangle$ and $|1\\rangle$) |
 | **State Vector Scaling** | Linear ($N$ bits store $N$ states) | Exponential ($N$ qubits span $2^N$ complex amplitudes) |
 | **Entanglement** | Impossible (strictly local) | Supported natively via Bell states |
 | **Error Mechanisms** | Rare bit-flip | Continuous phase errors, amplitude damping, thermal decoherence |
 
-> **Key Takeaway**: Quantum algorithms like Shor's and Grover's do not simply try everything faster; they use quantum interference to cancel incorrect candidate answers and amplify the correct probability amplitude.`,
+> **Key Takeaway**: Quantum algorithms like Shor's and Grover's do not simply try everything faster; they use quantum interference to cancel incorrect candidate answers and amplify the correct probability amplitude. [p. 26]`,
     },
     cards: [
       {

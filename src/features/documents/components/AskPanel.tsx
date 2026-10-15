@@ -132,7 +132,7 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0 bg-muted/30">
         <div className="flex items-center gap-2">
-          <div className="size-6 rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+          <div className="size-6 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/80 dark:border-sky-800/50 flex items-center justify-center shrink-0">
             <Sparkles className="size-3.5" />
           </div>
           <span className="text-xs font-bold text-foreground tracking-tight font-display">
@@ -266,7 +266,7 @@ export function AskPanel({ documentId, noteMarkdown, headings = [], onScrollToHe
       <div className="p-3.5 border-t border-border shrink-0 bg-muted/20 space-y-2">
         {messages.length === 0 && (
           <div className="px-3 py-1.5 rounded-[12px] bg-muted/50 border border-border text-[11px] text-muted-foreground flex items-center gap-1.5 font-mono">
-            <ArrowUpRight className="size-3 text-purple-600 dark:text-purple-400 shrink-0" />
+            <ArrowUpRight className="size-3 text-sky-600 dark:text-sky-400 shrink-0" />
             <span>Answer cites ↗ highlights passage in notes</span>
           </div>
         )}

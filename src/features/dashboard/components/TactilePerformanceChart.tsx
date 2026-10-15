@@ -5,7 +5,7 @@ import { Maximize2, Minimize2, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export function TactilePerformanceChart() {
+export function TactilePerformanceChart({ isGuest = false }: { isGuest?: boolean }) {
   const [timeframe, setTimeframe] = useState<"Weekly" | "Monthly">("Weekly");
   const [timeframeOpen, setTimeframeOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number>(4); // Thursday default
@@ -64,9 +64,16 @@ export function TactilePerformanceChart() {
         {/* Top Header & Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold font-display text-foreground tracking-tight">
-              Performance Chart
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg sm:text-xl font-bold font-display text-foreground tracking-tight">
+                Performance Chart
+              </h2>
+              {isGuest && (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border border-slate-200/80 dark:border-slate-700">
+                  Sample Workspace Data
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               Track results and watch your retention rise.
             </p>
