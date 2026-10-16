@@ -9,7 +9,7 @@ import { useAuth } from "@/features/auth/context/AuthContext";
 import { useAppShell } from "@/features/documents/context/AppShellContext";
 import { DocumentRow } from "@/features/documents/types";
 import { Search, X, FileText, BookOpen, Plus, LayoutDashboard, Settings, CornerDownLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export function GlobalCommandPalette() {

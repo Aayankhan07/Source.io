@@ -34,6 +34,40 @@ export async function consumeDailyQuota(
 }
 
 /**
+ * Checks if the request is BYOK, and if not, consumes 1 daily quota action.
+ * Returns null if allowed, or an HTTP 429 response if the quota is exceeded.
+ */
+export async function enforceDailyQuota(
+  admin: SupabaseClient,
+  userId: string,
+  corsHeaders: Record<string, string>,
+  options: {
+    isByok: boolean;
+    errorMessage?: string;
+  }
+): Promise<Response | null> {
+  if (options.isByok) return null;
+
+  const quota = await consumeDailyQuota(admin, userId, 1);
+  if (!quota.allowed) {
+    return new Response(
+      JSON.stringify({
+        error:
+          options.errorMessage ||
+          "Daily free generation limit reached (25/25 actions). Upgrade to Scholar Pass ($9/mo) or provide personal API keys in Settings.",
+        quotaExceeded: true,
+        code: "QUOTA_EXCEEDED",
+      }),
+      {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+  return null;
+}
+
+/**
  * Atomically consumes daily TTS audio synthesis quota via PostgreSQL row-level locked RPC.
  *
  * @param admin - Supabase service role client

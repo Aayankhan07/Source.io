@@ -1,5 +1,6 @@
 // Chunk a document's raw_text and embed via deterministic local hashed n-gram embeddings.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { authenticateRequest } from "../_shared/auth.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -79,34 +80,9 @@ function chunkText(raw: string | null | undefined): string[] {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-  const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-  const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  // Note: embeddings are computed locally (deterministic hashed n-grams), so no AI key required.
-
-  const userClient = createClient(SUPABASE_URL, ANON, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const admin = createClient(SUPABASE_URL, SERVICE);
-
-  const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(
-    authHeader.replace("Bearer ", ""),
-  );
-  if (claimsErr || !claimsData?.claims) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const userId = claimsData.claims.sub as string;
+  const auth = await authenticateRequest(req, corsHeaders);
+  if (auth.errorResponse) return auth.errorResponse;
+  const { admin, userId } = auth;
 
   let body: { document_id?: string; batch_index?: number; batch_size?: number };
   try { body = await req.json(); } catch {

@@ -83,6 +83,17 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
     setTextTitle(""); setTextContent(""); setYtUrl(""); setFile(null);
   };
 
+  const handleDocumentCreated = (docId: string, toastTitle: string, toastDescription: string) => {
+    toast({ title: toastTitle, description: toastDescription });
+    queryClient.invalidateQueries({ queryKey: queryKeys.documents });
+    if (user?.id) {
+      queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count", user.id] });
+    }
+    reset();
+    onOpenChange(false);
+    router.push(`/app/doc/${docId}`);
+  };
+
   const createTextDoc = async () => {
     if (!user || !textContent.trim()) return;
     if (isSlotLimitReached) {
@@ -129,12 +140,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         .select("id")
         .single();
       if (error) throw error;
-      toast({ title: "Document created", description: "Saved to your study library." });
-      queryClient.invalidateQueries({ queryKey: queryKeys.documents });
-      queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count", user.id] });
-      reset(); 
-      onOpenChange(false);
-      router.push(`/app/doc/${data!.id}`);
+      handleDocumentCreated(data!.id, "Document created", "Saved to your study library.");
     } catch (e: unknown) {
       toast({ title: "Failed", description: errorMessage(e), variant: "destructive" });
     } finally {
@@ -167,12 +173,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         .select("id")
         .single();
       if (error) throw error;
-      toast({ title: "YouTube link queued", description: "Fetching transcript…" });
-      queryClient.invalidateQueries({ queryKey: queryKeys.documents });
-      queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count", user.id] });
-      reset(); 
-      onOpenChange(false);
-      router.push(`/app/doc/${data!.id}`);
+      handleDocumentCreated(data!.id, "YouTube link queued", "Fetching transcript…");
       triggerIngest(data!.id).catch((e) =>
         toast({ title: "Transcript failed", description: errorMessage(e), variant: "destructive" }),
       );
@@ -247,12 +248,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
           .select("id")
           .single();
         if (error) throw error;
-        toast({ title: "Document added", description: "Generating study notes…" });
-        queryClient.invalidateQueries({ queryKey: queryKeys.documents });
-        queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count", user.id] });
-        reset(); 
-        onOpenChange(false);
-        router.push(`/app/doc/${data!.id}`);
+        handleDocumentCreated(data!.id, "Document added", "Generating study notes…");
         // Background embed chunks for RAG chat without blocking notes
         embedChunks(data!.id).catch((e) =>
           console.warn("Background embed sync:", errorMessage(e)),
@@ -281,12 +277,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         .select("id")
         .single();
       if (error) throw error;
-      toast({ title: "File uploaded", description: "Transcribing…" });
-      queryClient.invalidateQueries({ queryKey: queryKeys.documents });
-      queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count", user.id] });
-      reset(); 
-      onOpenChange(false);
-      router.push(`/app/doc/${data!.id}`);
+      handleDocumentCreated(data!.id, "File uploaded", "Transcribing…");
       triggerIngest(data!.id).catch((e) =>
         toast({ title: "Ingest failed", description: errorMessage(e), variant: "destructive" }),
       );

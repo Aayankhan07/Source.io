@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Maximize2, Minimize2, ChevronDown, CheckCircle2, RotateCw, BookOpen, Layers, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/context/AuthContext";

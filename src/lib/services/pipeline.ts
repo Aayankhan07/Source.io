@@ -10,7 +10,7 @@ export async function triggerIngest(documentId: string): Promise<void> {
  * Progressive embedding for large documents (300+ pages / 500+ chunks).
  * Calls embed_chunks in batches of 50 to avoid edge memory limits and timeouts.
  */
-export async function embedChunksProgressive(
+async function embedChunksProgressive(
   documentId: string,
   onProgress?: (progressPct: number, currentBatch: number, totalBatches: number) => void
 ): Promise<{ ok: boolean; chunks: number; cached?: boolean }> {

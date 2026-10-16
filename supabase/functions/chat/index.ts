@@ -1,9 +1,10 @@
 // RAG streaming chat for a document. Embeds the question, retrieves top-k chunks,
 // streams Gemini response, persists messages, and returns citations as a leading SSE event.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { checkDailyQuota, consumeDailyQuota } from "../_shared/quotas.ts";
+import { checkDailyQuota, consumeDailyQuota, enforceDailyQuota } from "../_shared/quotas.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
+import { authenticateRequest } from "../_shared/auth.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -109,37 +110,14 @@ ${passages}`;
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-  const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-  const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
-  if (!GROQ_API_KEY) {
-    return new Response(JSON.stringify({ error: "GROQ_API_KEY missing" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const userClient = createClient(SUPABASE_URL, ANON, {
-    global: { headers: { Authorization: authHeader } },
+  const auth = await authenticateRequest(req, corsHeaders, {
+    requireApiKey: {
+      envVar: "GROQ_API_KEY",
+      errorMessage: "GROQ_API_KEY missing",
+    },
   });
-  const admin = createClient(SUPABASE_URL, SERVICE);
-
-  const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(
-    authHeader.replace("Bearer ", ""),
-  );
-  if (claimsErr || !claimsData?.claims) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const userId = claimsData.claims.sub as string;
+  if (auth.errorResponse) return auth.errorResponse;
+  const { admin, userClient, userId } = auth;
 
   // Emergency circuit breaker check
   const breaker = await checkCircuitBreaker(admin, "ai_requests_enabled");
@@ -175,19 +153,11 @@ Deno.serve(async (req) => {
 
   // Cost guardrail: atomic daily quota check (25/day, UTC midnight reset)
   const isByok = !!(req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
-  if (!isByok) {
-    const quota = await consumeDailyQuota(admin, userId, 1);
-    if (!quota.allowed) {
-      return new Response(
-        JSON.stringify({
-          error: "Daily free Copilot question limit reached (25/day). Your quota will reset at midnight UTC.",
-          quotaExceeded: true,
-          code: "QUOTA_EXCEEDED",
-        }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-  }
+  const quotaResponse = await enforceDailyQuota(admin, userId, corsHeaders, {
+    isByok,
+    errorMessage: "Daily free Copilot question limit reached (25/day). Your quota will reset at midnight UTC.",
+  });
+  if (quotaResponse) return quotaResponse;
 
   const requestId = crypto.randomUUID();
   const startTime = Date.now();

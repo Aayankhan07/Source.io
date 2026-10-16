@@ -102,3 +102,4 @@ screenshot*.png
 screenshot*.jpg
 /public/screenshot*.png
 strip-dark.js
+.fallow/

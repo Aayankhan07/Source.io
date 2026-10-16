@@ -4,7 +4,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
-import { consumeDailyQuota } from "../_shared/quotas.ts";
+import { consumeDailyQuota, enforceDailyQuota } from "../_shared/quotas.ts";
+import { authenticateRequest } from "../_shared/auth.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -103,32 +104,9 @@ Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-    const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const envGroqKey = Deno.env.get("GROQ_API_KEY");
-
-    const userClient = createClient(SUPABASE_URL, ANON, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const admin = createClient(SUPABASE_URL, SERVICE);
-
-    const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(
-      authHeader.replace("Bearer ", ""),
-    );
-    if (claimsErr || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    const userId = claimsData.claims.sub as string;
+  const auth = await authenticateRequest(req, corsHeaders);
+  if (auth.errorResponse) return auth.errorResponse;
+  const { admin, userId } = auth;
 
     // Emergency circuit breaker check
     const breaker = await checkCircuitBreaker(admin, "ai_requests_enabled");
@@ -152,7 +130,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const groqApiKey = body.api_key?.trim() || envGroqKey;
+    const groqApiKey = body.api_key?.trim() || Deno.env.get("GROQ_API_KEY");
     if (!groqApiKey) {
       return new Response(JSON.stringify({ error: "GROQ_API_KEY not configured. Please add your API key in Settings." }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -213,22 +191,8 @@ Deno.serve(async (req) => {
 
   // Atomic Quota Concurrency Guardrail (TOCTOU protection)
   const isByok = !!(body.api_key?.trim() || req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
-  if (!isByok) {
-    const quota = await consumeDailyQuota(admin, userId, 1);
-    if (!quota.allowed) {
-      return new Response(
-        JSON.stringify({
-          error: "Daily free generation limit reached (25/25 actions). Upgrade to Scholar Pass ($9/mo) or provide personal API keys in Settings.",
-          quotaExceeded: true,
-          code: "QUOTA_EXCEEDED",
-        }),
-        {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-  }
+  const quotaResponse = await enforceDailyQuota(admin, userId, corsHeaders, { isByok });
+  if (quotaResponse) return quotaResponse;
 
   // Cost guardrail: acquire concurrency lock to prevent duplicate runs
   const lock = await acquireJobLock(admin, {

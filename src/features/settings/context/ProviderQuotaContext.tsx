@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useSettings } from "@/features/settings/context/SettingsContext";
 import { testProviderApiKey, ByokTestResult } from "@/lib/services/byokTest";
 
-export interface ProviderQuotaInfo {
+interface ProviderQuotaInfo {
   provider: "groq" | "gemini" | "openai" | null;
   hasByok: boolean;
   remainingTokens?: number;

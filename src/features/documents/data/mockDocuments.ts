@@ -332,5 +332,3 @@ Orthogonal chip sequences are generated recursively via Walsh tables (Hadamard m
     ],
   },
 };
-
-export const DEMO_DOCUMENT_LIST: DocumentRow[] = Object.values(DEMO_DOCUMENTS).map(d => d.document);

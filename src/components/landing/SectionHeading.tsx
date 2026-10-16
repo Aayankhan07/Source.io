@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { reveal, revealStagger, VIEWPORT } from "./motion";
 
-export type BadgeTone = "blue" | "darkBlue" | "cyan" | "amber" | "slate";
+type BadgeTone = "blue" | "darkBlue" | "cyan" | "amber" | "slate";
 
 interface SectionHeadingProps {
   badge?: string;

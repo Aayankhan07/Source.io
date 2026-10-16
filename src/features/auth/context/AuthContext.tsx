@@ -8,7 +8,7 @@ import { errorMessage } from "@/lib/utils";
 /** Upper bound on the initial session lookup before we surface an error. */
 const SESSION_LOOKUP_TIMEOUT_MS = 6000;
 
-export const GUEST_USER: User = {
+const GUEST_USER: User = {
   id: "guest-user-01",
   app_metadata: {},
   user_metadata: { display_name: "Scholar Guest" },

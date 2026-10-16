@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import DashboardContainer from "./components/DashboardContainer";
 
 export default function AppPage() {

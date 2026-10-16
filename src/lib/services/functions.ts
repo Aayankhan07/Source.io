@@ -2,7 +2,7 @@
 import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
 
 /** Absolute URL of an edge function. Uses the same base URL as the Supabase client. */
-export const functionUrl = (name: string) => `${SUPABASE_URL}/functions/v1/${name}`;
+const functionUrl = (name: string) => `${SUPABASE_URL}/functions/v1/${name}`;
 
 /**
  * POST a JSON body to an edge function with the current user's access token and project apikey.

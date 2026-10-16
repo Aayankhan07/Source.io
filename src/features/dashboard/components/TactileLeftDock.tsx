@@ -13,7 +13,7 @@ import {
   Moon,
   Sparkles
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 

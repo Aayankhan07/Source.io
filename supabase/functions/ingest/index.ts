@@ -3,6 +3,7 @@
 // audio/video (Groq Whisper v3 transcription). PDF/DOCX parsing happens in the browser.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
+import { authenticateRequest } from "../_shared/auth.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -90,32 +91,9 @@ async function transcribeWithGroq(file: Blob, filename: string, apiKey: string):
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-  const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-  const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
-
-  const userClient = createClient(SUPABASE_URL, ANON, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const admin = createClient(SUPABASE_URL, SERVICE);
-
-  const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(
-    authHeader.replace("Bearer ", ""),
-  );
-  if (claimsErr || !claimsData?.claims) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const userId = claimsData.claims.sub as string;
+  const auth = await authenticateRequest(req, corsHeaders);
+  if (auth.errorResponse) return auth.errorResponse;
+  const { admin, userId } = auth;
 
   // Emergency circuit breaker check
   const breaker = await checkCircuitBreaker(admin, "uploads_enabled");

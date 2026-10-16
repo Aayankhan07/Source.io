@@ -78,5 +78,3 @@ export function AiFeedbackButtons({
     </div>
   );
 }
-
-export default AiFeedbackButtons;

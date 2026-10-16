@@ -10,6 +10,52 @@ export interface ByokTestResult {
   resetRequests?: string;
 }
 
+function evaluateProviderStatus(
+  status: number,
+  provider: "groq" | "gemini" | "openai"
+): { ok: false; message: string; provider: typeof provider } | null {
+  if (status === 401 || status === 403 || (provider === "gemini" && status === 400)) {
+    return {
+      ok: false,
+      message: "This API key is invalid. Check it or create a new one.",
+      provider,
+    };
+  }
+  if (status === 429) {
+    return {
+      ok: false,
+      message: "This provider's allowance is currently used up. Try again after the reset time.",
+      provider,
+    };
+  }
+  if (status < 200 || status >= 300) {
+    return {
+      ok: false,
+      message: "The AI provider is temporarily unavailable. Your saved notes are safe.",
+      provider,
+    };
+  }
+  return null;
+}
+
+function parseRateLimits(headers: Headers) {
+  const remReq = headers.get("x-ratelimit-remaining-requests");
+  const limReq = headers.get("x-ratelimit-limit-requests");
+  const remTok = headers.get("x-ratelimit-remaining-tokens");
+  const limTok = headers.get("x-ratelimit-limit-tokens");
+  const resetTok = headers.get("x-ratelimit-reset-tokens");
+  const resetReq = headers.get("x-ratelimit-reset-requests");
+
+  return {
+    remainingRequests: remReq ? parseInt(remReq, 10) : undefined,
+    limitRequests: limReq ? parseInt(limReq, 10) : undefined,
+    remainingTokens: remTok ? parseInt(remTok, 10) : undefined,
+    limitTokens: limTok ? parseInt(limTok, 10) : undefined,
+    resetTokens: resetTok || undefined,
+    resetRequests: resetReq || undefined,
+  };
+}
+
 /**
  * Tests a student's personal BYOK key using a minimal 5-token probe.
  * Translates provider errors into friendly, student-facing messages.
@@ -43,46 +89,14 @@ export async function testProviderApiKey(
         }),
       });
 
-      if (resp.status === 401 || resp.status === 403) {
-        return {
-          ok: false,
-          message: "This API key is invalid. Check it or create a new one.",
-          provider,
-        };
-      }
-      if (resp.status === 429) {
-        return {
-          ok: false,
-          message: "This provider's allowance is currently used up. Try again after the reset time.",
-          provider,
-        };
-      }
-      if (!resp.ok) {
-        return {
-          ok: false,
-          message: "The AI provider is temporarily unavailable. Your saved notes are safe.",
-          provider,
-        };
-      }
-
-      // Check for rate limit headers
-      const remReq = resp.headers.get("x-ratelimit-remaining-requests");
-      const limReq = resp.headers.get("x-ratelimit-limit-requests");
-      const remTok = resp.headers.get("x-ratelimit-remaining-tokens");
-      const limTok = resp.headers.get("x-ratelimit-limit-tokens");
-      const resetTok = resp.headers.get("x-ratelimit-reset-tokens");
-      const resetReq = resp.headers.get("x-ratelimit-reset-requests");
+      const failure = evaluateProviderStatus(resp.status, provider);
+      if (failure) return failure;
 
       return {
         ok: true,
         message: "Connection successful! Groq is connected and ready.",
         provider,
-        remainingRequests: remReq ? parseInt(remReq, 10) : undefined,
-        limitRequests: limReq ? parseInt(limReq, 10) : undefined,
-        remainingTokens: remTok ? parseInt(remTok, 10) : undefined,
-        limitTokens: limTok ? parseInt(limTok, 10) : undefined,
-        resetTokens: resetTok || undefined,
-        resetRequests: resetReq || undefined,
+        ...parseRateLimits(resp.headers),
       };
     }
 
@@ -101,29 +115,9 @@ export async function testProviderApiKey(
         }
       );
 
-      if (resp.status === 400 || resp.status === 403) {
-        return {
-          ok: false,
-          message: "This API key is invalid. Check it or create a new one.",
-          provider,
-        };
-      }
-      if (resp.status === 429) {
-        return {
-          ok: false,
-          message: "This provider's allowance is currently used up. Try again after the reset time.",
-          provider,
-        };
-      }
-      if (!resp.ok) {
-        return {
-          ok: false,
-          message: "The AI provider is temporarily unavailable. Your saved notes are safe.",
-          provider,
-        };
-      }
+      const failure = evaluateProviderStatus(resp.status, provider);
+      if (failure) return failure;
 
-      // Gemini free tier default quotas: 15 Requests Per Minute (RPM), 1,000,000 TPM
       return {
         ok: true,
         message: "Connection successful! Google Gemini is connected and ready.",
@@ -149,45 +143,14 @@ export async function testProviderApiKey(
         }),
       });
 
-      if (resp.status === 401 || resp.status === 403) {
-        return {
-          ok: false,
-          message: "This API key is invalid. Check it or create a new one.",
-          provider,
-        };
-      }
-      if (resp.status === 429) {
-        return {
-          ok: false,
-          message: "This provider's allowance is currently used up. Try again after the reset time.",
-          provider,
-        };
-      }
-      if (!resp.ok) {
-        return {
-          ok: false,
-          message: "The AI provider is temporarily unavailable. Your saved notes are safe.",
-          provider,
-        };
-      }
-
-      const remReq = resp.headers.get("x-ratelimit-remaining-requests");
-      const limReq = resp.headers.get("x-ratelimit-limit-requests");
-      const remTok = resp.headers.get("x-ratelimit-remaining-tokens");
-      const limTok = resp.headers.get("x-ratelimit-limit-tokens");
-      const resetTok = resp.headers.get("x-ratelimit-reset-tokens");
-      const resetReq = resp.headers.get("x-ratelimit-reset-requests");
+      const failure = evaluateProviderStatus(resp.status, provider);
+      if (failure) return failure;
 
       return {
         ok: true,
         message: "Connection successful! OpenAI is connected and ready.",
         provider,
-        remainingRequests: remReq ? parseInt(remReq, 10) : undefined,
-        limitRequests: limReq ? parseInt(limReq, 10) : undefined,
-        remainingTokens: remTok ? parseInt(remTok, 10) : undefined,
-        limitTokens: limTok ? parseInt(limTok, 10) : undefined,
-        resetTokens: resetTok || undefined,
-        resetRequests: resetReq || undefined,
+        ...parseRateLimits(resp.headers),
       };
     }
 
@@ -196,7 +159,7 @@ export async function testProviderApiKey(
       message: "Unsupported provider.",
       provider,
     };
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
     return {
       ok: false,
       message: "Network error connecting to provider. Check your internet connection.",

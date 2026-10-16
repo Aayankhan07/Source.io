@@ -33,7 +33,7 @@ export interface OutlineHeading {
   level: number;
 }
 
-export interface ParsedHeading extends OutlineHeading {
+interface ParsedHeading extends OutlineHeading {
   emoji?: string;
   number?: string;
   cleanTitle: string;
@@ -66,7 +66,7 @@ export function extractHeadings(markdown: string | null | undefined): OutlineHea
   return headings;
 }
 
-export function parseHeading(h: OutlineHeading, index: number): ParsedHeading {
+function parseHeading(h: OutlineHeading, index: number): ParsedHeading {
   let text = h.text.trim();
   let emoji: string | undefined;
   let number: string | undefined;

@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Bell, Settings, LogOut, CheckCircle2, BookOpen, Clock, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
 import { cn } from "@/lib/utils";

@@ -2,7 +2,7 @@
 import { extractText, getDocumentProxy } from "unpdf";
 import mammoth from "mammoth";
 
-export async function extractPdfText(file: File): Promise<string> {
+async function extractPdfText(file: File): Promise<string> {
   const ab = await file.arrayBuffer();
   const pdf = await getDocumentProxy(new Uint8Array(ab));
   const { text } = await extractText(pdf, { mergePages: false });
@@ -17,7 +17,7 @@ export async function extractPdfText(file: File): Promise<string> {
   return out.replace(/\s+\n/g, "\n").trim();
 }
 
-export async function extractDocxText(file: File): Promise<string> {
+async function extractDocxText(file: File): Promise<string> {
   const ab = await file.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer: ab });
   return (result.value ?? "").trim();

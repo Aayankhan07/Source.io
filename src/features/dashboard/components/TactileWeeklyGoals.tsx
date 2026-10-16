@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ChevronDown, CheckCircle2, Clock, BookOpen, Layers, Check, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "app/**/*.{ts,tsx}",
+    "src/**/*.{ts,tsx}",
+    "supabase/functions/**/*.{ts,tsx}"
+  ],
+  "ignorePatterns": [
+    "supabase/functions/generate_podcast/index_test.ts",
+    "src/integrations/supabase/types.ts"
+  ],
+  "ignoreExports": [
+    {
+      "file": "src/components/ui/dialog.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/ui/alert-dialog.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/ui/drawer.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/ui/scroll-area.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/ui/toast.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/ui/sonner.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/hooks/use-toast.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/landing/motion.ts",
+      "exports": ["*"]
+    }
+  ],
+  "duplicates": {
+    "minOccurrences": 3
+  },
+  "rules": {
+    "duplicate-export": "warn",
+    "test-only-dependencies": "warn"
+  }
+}
