@@ -17,6 +17,8 @@ import {
   X,
   Layers,
   BarChart3,
+  PenTool,
+  Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,6 +32,44 @@ interface QuizPlayerProps {
   loading?: boolean;
 }
 
+export function checkQuizAnswerMatch(
+  userAns: string | undefined,
+  correct: string,
+  choices?: string[] | null,
+  isShort?: boolean,
+): boolean {
+  if (!userAns || userAns === "[Skipped]") return false;
+  const cleanUser = userAns.trim().toLowerCase();
+  const cleanCorrect = correct.trim().toLowerCase();
+  if (cleanUser === cleanCorrect) return true;
+
+  if (isShort) {
+    // 1. Alphanumeric canonical comparison (e.g. CVE-2017-0144 vs cve 2017 0144)
+    const normUser = cleanUser.replace(/[^a-z0-9]/g, "");
+    const normCorrect = cleanCorrect.replace(/[^a-z0-9]/g, "");
+    if (normUser && normCorrect && normUser === normCorrect) return true;
+
+    // 2. Remove leading articles ("the", "a", "an")
+    const stripLeading = (s: string) => s.replace(/^(the|a|an)\s+/i, "").trim();
+    if (stripLeading(cleanUser) === stripLeading(cleanCorrect)) return true;
+
+    // 3. Check choices array if used for alternative acceptable synonyms
+    if (Array.isArray(choices)) {
+      for (const alt of choices) {
+        if (typeof alt === "string") {
+          const cleanAlt = alt.trim().toLowerCase();
+          if (cleanUser === cleanAlt) return true;
+          const normAlt = cleanAlt.replace(/[^a-z0-9]/g, "");
+          if (normUser && normAlt && normUser === normAlt) return true;
+          if (stripLeading(cleanUser) === stripLeading(cleanAlt)) return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 export function QuizPlayer({
   documentId,
   quiz,
@@ -41,6 +81,7 @@ export function QuizPlayer({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [isCompleted, setIsCompleted] = useState(false);
   const [activeReviewId, setActiveReviewId] = useState<string | null>(null);
+  const [shortAnswerInput, setShortAnswerInput] = useState("");
 
   // Sync state whenever quiz changes
   useEffect(() => {
@@ -50,6 +91,7 @@ export function QuizPlayer({
       setSelectedAnswers({});
       setIsCompleted(false);
       setActiveReviewId(null);
+      setShortAnswerInput("");
     } else {
       setQuestions([]);
     }
@@ -63,6 +105,7 @@ export function QuizPlayer({
   // Compute normalized choices for any question type
   const activeChoices = useMemo(() => {
     if (!currentQ) return [];
+    if (currentQ.type === "short_answer") return [];
     if (currentQ.choices && currentQ.choices.length > 0) {
       return currentQ.choices;
     }
@@ -72,6 +115,20 @@ export function QuizPlayer({
     return [];
   }, [currentQ]);
 
+  // Robust determination: explicit short_answer OR fallback if question has no selectable options
+  const isShortAnswer = Boolean(
+    currentQ && (currentQ.type === "short_answer" || (currentQ.type !== "true_false" && activeChoices.length === 0))
+  );
+
+  // Sync text input with current question / previous answers
+  useEffect(() => {
+    if (currentAnswer !== undefined) {
+      setShortAnswerInput(currentAnswer === "[Skipped]" ? "" : currentAnswer);
+    } else {
+      setShortAnswerInput("");
+    }
+  }, [currentIndex, currentAnswer]);
+
   // Overall score calculations
   const { score, correctCount, wrongCount } = useMemo(() => {
     let correct = 0;
@@ -79,7 +136,8 @@ export function QuizPlayer({
     questions.forEach((q) => {
       const ans = selectedAnswers[q.id];
       if (ans !== undefined) {
-        if (ans.trim().toLowerCase() === q.correct.trim().toLowerCase()) {
+        const isShort = q.type === "short_answer" || (!q.choices?.length && q.type !== "true_false");
+        if (checkQuizAnswerMatch(ans, q.correct, q.choices, isShort)) {
           correct++;
         } else {
           wrong++;
@@ -249,7 +307,8 @@ export function QuizPlayer({
           <div className="space-y-3">
             {questions.map((q, idx) => {
               const userAns = selectedAnswers[q.id];
-              const isCorrect = userAns && userAns.trim().toLowerCase() === q.correct.trim().toLowerCase();
+              const isShort = q.type === "short_answer" || (!q.choices?.length && q.type !== "true_false");
+              const isCorrect = checkQuizAnswerMatch(userAns, q.correct, q.choices, isShort);
               const isExpanded = activeReviewId === q.id;
 
               return (
@@ -322,7 +381,11 @@ export function QuizPlayer({
                               isCorrect ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400",
                             )}
                           >
-                            {userAns || "No answer recorded"}
+                            {userAns === "[Skipped]" ? (
+                              <span className="italic text-muted-foreground">Skipped</span>
+                            ) : (
+                              userAns || "No answer recorded"
+                            )}
                           </span>
                         </div>
 
@@ -361,7 +424,7 @@ export function QuizPlayer({
   // Active Stepped Question Runner
   const isCorrect =
     isCurrentAnswered &&
-    currentAnswer.trim().toLowerCase() === currentQ.correct.trim().toLowerCase();
+    checkQuizAnswerMatch(currentAnswer, currentQ.correct, currentQ.choices, isShortAnswer);
 
   return (
     <div className="max-w-2xl mx-auto my-4 space-y-5">
@@ -395,7 +458,8 @@ export function QuizPlayer({
           {questions.map((q, idx) => {
             const ans = selectedAnswers[q.id];
             const answered = ans !== undefined;
-            const correct = answered && ans.trim().toLowerCase() === q.correct.trim().toLowerCase();
+            const isShort = q.type === "short_answer" || (!q.choices?.length && q.type !== "true_false");
+            const correct = answered && checkQuizAnswerMatch(ans, q.correct, q.choices, isShort);
             const isCurrent = idx === currentIndex;
 
             return (
@@ -419,78 +483,176 @@ export function QuizPlayer({
         {/* Question Text */}
         <div className="space-y-3">
           <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
-            <HelpCircle className="size-3.5 text-slate-900 dark:text-white" />
-            {currentQ.type === "true_false" ? "True or False" : "Multiple Choice Question"}
+            {currentQ.type === "true_false" ? (
+              <>
+                <HelpCircle className="size-3.5 text-slate-900 dark:text-white" />
+                True or False
+              </>
+            ) : isShortAnswer ? (
+              <>
+                <PenTool className="size-3.5 text-slate-900 dark:text-white" />
+                Short Answer Question
+              </>
+            ) : (
+              <>
+                <HelpCircle className="size-3.5 text-slate-900 dark:text-white" />
+                Multiple Choice Question
+              </>
+            )}
           </span>
           <div className="text-base sm:text-lg font-semibold font-display text-foreground leading-snug">
             <MarkdownView>{currentQ.question}</MarkdownView>
           </div>
         </div>
 
-        {/* Choice Buttons List */}
-        <div className="space-y-2.5 pt-2">
-          {activeChoices.map((choice, idx) => {
-            const choiceLabel = String.fromCharCode(65 + idx); // 'A', 'B', 'C', 'D'
-            const isSelected = currentAnswer === choice;
-            const isThisCorrect = choice.trim().toLowerCase() === currentQ.correct.trim().toLowerCase();
-
-            // Status styles once answered
-            let stateStyles = "hover:bg-muted/70 hover:border-border/90 border-border bg-card/50";
-            let badgeStyles = "bg-muted text-muted-foreground border-border";
-
-            if (isCurrentAnswered) {
-              if (isThisCorrect) {
-                // Correct answer: solid dark ink border & fill
-                stateStyles =
-                  "border-2 border-slate-900 dark:border-white bg-slate-100/90 dark:bg-slate-800/90 text-slate-950 dark:text-white font-semibold shadow-xs";
-                badgeStyles = "bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold border-transparent";
-              } else if (isSelected && !isThisCorrect) {
-                // User picked wrong answer: muted dashed border & strikethrough
-                stateStyles =
-                  "border border-dashed border-slate-300 dark:border-slate-700 bg-transparent opacity-50 line-through text-slate-500";
-                badgeStyles = "bg-slate-200 dark:bg-slate-800 text-slate-500 border-border";
-              } else {
-                // Other unselected choices fade
-                stateStyles = "border-border/40 bg-card/20 opacity-40";
-                badgeStyles = "bg-muted/40 text-muted-foreground/40 border-border/30";
-              }
-            }
-
-            return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handleSelectChoice(choice)}
-                disabled={isCurrentAnswered}
-                className={cn(
-                  "w-full text-left p-3.5 sm:p-4 rounded-2xl border text-xs sm:text-sm font-medium transition-all duration-150 flex items-center justify-between gap-3 group cursor-pointer",
-                  stateStyles,
-                  !isCurrentAnswered && "hover:scale-[1.008] active:scale-[0.995]",
-                  isCurrentAnswered && "cursor-default",
-                )}
+        {/* Short Answer Input or Choice Buttons List */}
+        {isShortAnswer ? (
+          <div className="space-y-3 pt-2">
+            {!isCurrentAnswered ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (shortAnswerInput.trim()) {
+                    handleSelectChoice(shortAnswerInput.trim());
+                  }
+                }}
+                className="space-y-3"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span
-                    className={cn(
-                      "size-7 rounded-xl flex items-center justify-center font-mono text-xs border shrink-0 transition-colors",
-                      badgeStyles,
-                    )}
-                  >
-                    {choiceLabel}
-                  </span>
-                  <span className="leading-relaxed min-w-0 font-sans">{choice}</span>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={shortAnswerInput}
+                    onChange={(e) => setShortAnswerInput(e.target.value)}
+                    placeholder="Type your exact answer here..."
+                    autoFocus
+                    className="w-full px-4 py-3.5 pr-28 rounded-2xl border border-border bg-background text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white transition-all shadow-xs"
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    <Button
+                      type="submit"
+                      disabled={!shortAnswerInput.trim()}
+                      size="sm"
+                      className="rounded-xl h-8 px-3.5 text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      <span>Submit</span>
+                      <Send className="size-3 ml-1.5" />
+                    </Button>
+                  </div>
                 </div>
 
-                {isCurrentAnswered && isThisCorrect && (
-                  <CheckCircle2 className="size-5 text-slate-900 dark:text-white shrink-0 animate-scale-in stroke-[2.5]" />
+                <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
+                  <span className="text-[11px] font-mono">Press Enter ↵ to submit</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectChoice("[Skipped]")}
+                    className="text-[11px] font-mono text-muted-foreground hover:text-foreground underline underline-offset-2 cursor-pointer transition-colors"
+                  >
+                    I don't know (reveal answer)
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div
+                className={cn(
+                  "p-4 rounded-2xl border transition-all space-y-1.5",
+                  isCorrect
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-950 dark:text-emerald-100"
+                    : "border-rose-500/30 bg-rose-500/10 text-rose-950 dark:text-rose-100",
                 )}
-                {isCurrentAnswered && isSelected && !isThisCorrect && (
-                  <XCircle className="size-5 text-slate-500 shrink-0 animate-scale-in" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider opacity-70">
+                    Your Response
+                  </span>
+                  <span className="flex items-center gap-1 text-xs font-mono font-bold">
+                    {isCorrect ? (
+                      <>
+                        <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                        Correct
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="size-3.5 text-rose-600 dark:text-rose-400" />
+                        Incorrect
+                      </>
+                    )}
+                  </span>
+                </div>
+                <div className="text-sm font-semibold font-mono">
+                  {currentAnswer === "[Skipped]" ? (
+                    <span className="italic text-muted-foreground">Question skipped</span>
+                  ) : (
+                    currentAnswer
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-2.5 pt-2">
+            {activeChoices.map((choice, idx) => {
+              const choiceLabel = String.fromCharCode(65 + idx); // 'A', 'B', 'C', 'D'
+              const isSelected = currentAnswer === choice;
+              const isThisCorrect = choice.trim().toLowerCase() === currentQ.correct.trim().toLowerCase();
+
+              // Status styles once answered
+              let stateStyles = "hover:bg-muted/70 hover:border-border/90 border-border bg-card/50";
+              let badgeStyles = "bg-muted text-muted-foreground border-border";
+
+              if (isCurrentAnswered) {
+                if (isThisCorrect) {
+                  // Correct answer: solid dark ink border & fill
+                  stateStyles =
+                    "border-2 border-slate-900 dark:border-white bg-slate-100/90 dark:bg-slate-800/90 text-slate-950 dark:text-white font-semibold shadow-xs";
+                  badgeStyles = "bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold border-transparent";
+                } else if (isSelected && !isThisCorrect) {
+                  // User picked wrong answer: muted dashed border & strikethrough
+                  stateStyles =
+                    "border border-dashed border-slate-300 dark:border-slate-700 bg-transparent opacity-50 line-through text-slate-500";
+                  badgeStyles = "bg-slate-200 dark:bg-slate-800 text-slate-500 border-border";
+                } else {
+                  // Other unselected choices fade
+                  stateStyles = "border-border/40 bg-card/20 opacity-40";
+                  badgeStyles = "bg-muted/40 text-muted-foreground/40 border-border/30";
+                }
+              }
+
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleSelectChoice(choice)}
+                  disabled={isCurrentAnswered}
+                  className={cn(
+                    "w-full text-left p-3.5 sm:p-4 rounded-2xl border text-xs sm:text-sm font-medium transition-all duration-150 flex items-center justify-between gap-3 group cursor-pointer",
+                    stateStyles,
+                    !isCurrentAnswered && "hover:scale-[1.008] active:scale-[0.995]",
+                    isCurrentAnswered && "cursor-default",
+                  )}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span
+                      className={cn(
+                        "size-7 rounded-xl flex items-center justify-center font-mono text-xs border shrink-0 transition-colors",
+                        badgeStyles,
+                      )}
+                    >
+                      {choiceLabel}
+                    </span>
+                    <span className="leading-relaxed min-w-0 font-sans">{choice}</span>
+                  </div>
+
+                  {isCurrentAnswered && isThisCorrect && (
+                    <CheckCircle2 className="size-5 text-slate-900 dark:text-white shrink-0 animate-scale-in stroke-[2.5]" />
+                  )}
+                  {isCurrentAnswered && isSelected && !isThisCorrect && (
+                    <XCircle className="size-5 text-slate-500 shrink-0 animate-scale-in" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Immediate Diagnostic Explanation (Revealed once answered) */}
         {isCurrentAnswered && (
@@ -509,7 +671,9 @@ export function QuizPlayer({
                 <>
                   <XCircle className="size-4 text-slate-600 dark:text-slate-400 stroke-[2.5]" />
                   <span className="font-bold font-mono text-xs uppercase text-slate-700 dark:text-slate-300">
-                    Incorrect — Correct choice is: {currentQ.correct}
+                    {isShortAnswer
+                      ? `Incorrect — Expected: ${currentQ.correct}`
+                      : `Incorrect — Correct choice is: ${currentQ.correct}`}
                   </span>
                 </>
               )}
@@ -562,7 +726,11 @@ export function QuizPlayer({
           ) : (
             <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/40 border border-border/60">
               <span className="size-1.5 rounded-full bg-sky-500 animate-pulse" />
-              <span>Select an answer above to verify</span>
+              <span>
+                {isShortAnswer
+                  ? "Type your answer above to verify"
+                  : "Select an answer above to verify"}
+              </span>
             </div>
           )}
         </div>

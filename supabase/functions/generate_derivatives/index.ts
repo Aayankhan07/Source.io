@@ -78,7 +78,7 @@ Write all card, question, choice, and explanation text in the language the stude
 - Rules by type:
   * mcq: "choices" has exactly 4 strings, and "correct" is EXACTLY one of them, character for character.
   * true_false: "choices" is null and "correct" is "True" or "False".
-  * short_answer: "choices" is null and "correct" is the shortest canonical answer.
+  * short_answer: "choices" can be null or a list of acceptable alternative variations/synonyms (1 to 4 strings), and "correct" is the canonical answer.
 - Schema:
 {
   "quiz_title": "string",
@@ -441,11 +441,19 @@ Deno.serve(async (req) => {
     .slice(0, 20)
     .map((q, i) => {
       let choices = q.choices;
-      if (q.type !== "mcq") choices = null;
       if (q.type === "mcq") {
         if (!Array.isArray(choices) || choices.length < 2) return null;
         // Ensure correct is in choices
         if (!choices.includes(q.correct)) choices = [...choices.slice(0, 3), q.correct];
+      } else if (q.type === "short_answer") {
+        // choices can optionally hold acceptable synonyms/alternative variations
+        if (Array.isArray(choices)) {
+          choices = choices.map((c) => String(c).trim()).filter(Boolean);
+        } else {
+          choices = null;
+        }
+      } else {
+        choices = null;
       }
       return {
         type: q.type,
