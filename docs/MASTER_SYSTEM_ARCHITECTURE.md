@@ -1,5 +1,5 @@
 # Source.io — Master Technical Architecture & System Design Document
-*Version: 2.4.0 • Academic Production Standard • Last Updated: October 2026*
+*Version: 3.0.0 • Academic Production Standard • Last Updated: October 2026*
 
 ---
 
@@ -453,7 +453,7 @@ The backend schema leverages PostgreSQL's relational integrity and the `pgvector
 
 ```sql
 -- 1. Enable pgvector extension
-CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions;
 
 -- 2. User Profiles & Daily Quota Management (Hardened with Midnight UTC Lazy Rollover)
 CREATE TABLE public.profiles (
@@ -462,6 +462,7 @@ CREATE TABLE public.profiles (
     display_name TEXT,
     avatar_url TEXT,
     tier TEXT DEFAULT 'free' CHECK (tier IN ('free', 'pro')),
+    active_docs_limit INTEGER DEFAULT 3,
     daily_quota_used INTEGER DEFAULT 0,
     daily_quota_limit INTEGER DEFAULT 25,
     daily_tts_quota_used INTEGER DEFAULT 0,
@@ -471,7 +472,7 @@ CREATE TABLE public.profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Atomic Quota Consumption RPC (TOCTOU race-condition neutralization)
+-- Atomic Quota Consumption RPC (Single atomic update + Negative-cost guard + Fixed column reference)
 CREATE OR REPLACE FUNCTION public.consume_daily_quota(
   p_user_id UUID,
   p_cost INT DEFAULT 1
@@ -484,27 +485,36 @@ AS $$
 DECLARE
   v_updated BOOLEAN;
 BEGIN
-  -- Lazy rollover: reset daily counters at midnight UTC if a new day has begun
-  UPDATE public.profiles
-  SET daily_quota_used = 0,
-      daily_tts_quota_used = 0,
-      quota_reset_date = CURRENT_DATE
-  WHERE (id = p_user_id OR user_id = p_user_id)
-    AND (quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE);
+  IF p_cost <= 0 THEN
+    RAISE EXCEPTION 'Quota cost must be a positive integer';
+  END IF;
 
-  -- Atomic update with row-level locking
+  -- Atomic lazy rollover and quota deduction in a single lock acquisition
   UPDATE public.profiles
-  SET daily_quota_used = daily_quota_used + p_cost,
-      updated_at = NOW()
-  WHERE (id = p_user_id OR user_id = p_user_id)
-    AND (daily_quota_used + p_cost) <= daily_quota_limit
+  SET 
+    daily_quota_used = CASE 
+      WHEN quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE THEN p_cost 
+      ELSE daily_quota_used + p_cost 
+    END,
+    daily_tts_quota_used = CASE 
+      WHEN quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE THEN 0 
+      ELSE daily_tts_quota_used 
+    END,
+    quota_reset_date = CURRENT_DATE,
+    updated_at = NOW()
+  WHERE id = p_user_id
+    AND (
+      ( (quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE) AND p_cost <= daily_quota_limit )
+      OR 
+      ( quota_reset_date = CURRENT_DATE AND (daily_quota_used + p_cost) <= daily_quota_limit )
+    )
   RETURNING TRUE INTO v_updated;
 
   RETURN COALESCE(v_updated, FALSE);
 END;
 $$;
 
--- Atomic Studio Audio TTS Quota Consumption RPC
+-- Atomic Studio Audio TTS Quota Consumption RPC (Single atomic update + Negative-cost guard)
 CREATE OR REPLACE FUNCTION public.consume_daily_tts_quota(
   p_user_id UUID,
   p_cost INT DEFAULT 1
@@ -517,23 +527,40 @@ AS $$
 DECLARE
   v_updated BOOLEAN;
 BEGIN
-  UPDATE public.profiles
-  SET daily_quota_used = 0,
-      daily_tts_quota_used = 0,
-      quota_reset_date = CURRENT_DATE
-  WHERE (id = p_user_id OR user_id = p_user_id)
-    AND (quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE);
+  IF p_cost <= 0 THEN
+    RAISE EXCEPTION 'TTS quota cost must be a positive integer';
+  END IF;
 
   UPDATE public.profiles
-  SET daily_tts_quota_used = daily_tts_quota_used + p_cost,
-      updated_at = NOW()
-  WHERE (id = p_user_id OR user_id = p_user_id)
-    AND (daily_tts_quota_used + p_cost) <= daily_tts_quota_limit
+  SET 
+    daily_quota_used = CASE 
+      WHEN quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE THEN 0 
+      ELSE daily_quota_used 
+    END,
+    daily_tts_quota_used = CASE 
+      WHEN quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE THEN p_cost 
+      ELSE daily_tts_quota_used + p_cost 
+    END,
+    quota_reset_date = CURRENT_DATE,
+    updated_at = NOW()
+  WHERE id = p_user_id
+    AND (
+      ( (quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE) AND p_cost <= daily_tts_quota_limit )
+      OR 
+      ( quota_reset_date = CURRENT_DATE AND (daily_tts_quota_used + p_cost) <= daily_tts_quota_limit )
+    )
   RETURNING TRUE INTO v_updated;
 
   RETURN COALESCE(v_updated, FALSE);
 END;
 $$;
+
+-- Lock down RPC execution strictly to backend service_role (Edge Functions)
+REVOKE EXECUTE ON FUNCTION public.consume_daily_quota(UUID, INT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.consume_daily_quota(UUID, INT) TO service_role;
+
+REVOKE EXECUTE ON FUNCTION public.consume_daily_tts_quota(UUID, INT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.consume_daily_tts_quota(UUID, INT) TO service_role;
 
 -- 3. Document Storage & Metadata
 CREATE TABLE public.documents (
@@ -551,10 +578,36 @@ CREATE TABLE public.documents (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Document Chunks & Optimized Vector Embeddings (halfvec 768d)
+-- Active Document Slot Constraint Trigger (Enforces tier limits at DB layer)
+CREATE OR REPLACE FUNCTION public.check_active_document_limit()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_current_count INT;
+  v_max_allowed INT;
+BEGIN
+  SELECT count(*) INTO v_current_count FROM public.documents WHERE user_id = NEW.user_id;
+  SELECT COALESCE(active_docs_limit, 3) INTO v_max_allowed FROM public.profiles WHERE id = NEW.user_id;
+
+  IF v_current_count >= v_max_allowed THEN
+    RAISE EXCEPTION 'Active document slot limit reached (%). Upgrade to Pro for unlimited storage.', v_max_allowed;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER trg_check_document_limit
+BEFORE INSERT ON public.documents
+FOR EACH ROW EXECUTE FUNCTION public.check_active_document_limit();
+
+-- 4. Document Chunks & Optimized Vector Embeddings (halfvec 768d + Direct user_id for RLS)
 CREATE TABLE public.document_chunks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     page_number INTEGER NOT NULL,
     paragraph_index INTEGER NOT NULL,
     char_start INTEGER,
@@ -565,14 +618,18 @@ CREATE TABLE public.document_chunks (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- High-performance composite index optimizing per-document similarity retrieval
+-- High-performance indices optimizing per-document and per-user RLS similarity retrieval
 CREATE INDEX IF NOT EXISTS idx_document_chunks_document_id 
 ON public.document_chunks(document_id);
 
+CREATE INDEX IF NOT EXISTS idx_document_chunks_user_id 
+ON public.document_chunks(user_id);
+
+-- HNSW Vector Index on halfvec(768) (Safe on empty migration tables)
 CREATE INDEX IF NOT EXISTS idx_document_chunks_embedding
 ON public.document_chunks 
-USING ivfflat (embedding halfvec_cosine_ops)
-WITH (lists = 100);
+USING hnsw (embedding extensions.halfvec_cosine_ops)
+WITH (m = 16, ef_construction = 64);
 
 -- 5. Spaced Repetition Flashcards & Leitner State
 CREATE TABLE public.flashcards (
@@ -627,17 +684,23 @@ CREATE TABLE public.notes (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 9. Conversational Grounded Copilot Messages
+-- 9. Conversational Grounded Copilot Messages (With persisted structured citations)
 CREATE TABLE public.chat_messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
     content TEXT NOT NULL,
+    citations JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Row-Level Security (RLS) Policy Example
+-- Row-Level Security (RLS) Policy Specifications
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view their own profile"
+ON public.profiles FOR SELECT
+USING (auth.uid() = id);
+
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can only read their own documents"
 ON public.documents FOR SELECT
@@ -646,6 +709,20 @@ USING (auth.uid() = user_id);
 CREATE POLICY "Users can only modify their own documents"
 ON public.documents FOR ALL
 USING (auth.uid() = user_id);
+
+ALTER TABLE public.document_chunks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can only read their own document chunks"
+ON public.document_chunks FOR SELECT
+USING (auth.uid() = user_id);
+
+ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can read own chat messages"
+ON public.chat_messages FOR SELECT
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own chat messages"
+ON public.chat_messages FOR INSERT
+WITH CHECK (auth.uid() = user_id);
 ```
 
 ---
