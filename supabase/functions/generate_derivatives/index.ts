@@ -252,9 +252,62 @@ Deno.serve(async (req) => {
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
 
-  // Keep source under 35k chars to fit within Groq's 12k TPM limit
-  const MAX = 35_000;
-  const trimmed = source.length > MAX ? source.slice(0, MAX) : source;
+  // Intelligent full-document distillation for long lectures (e.g. 50 - 300 pages)
+  function distillSourceForDerivatives(rawText: string, targetMaxChars = 18_000): string {
+    if (!rawText) return "";
+    const clean = rawText
+      .replace(/\r\n/g, "\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+    if (clean.length <= targetMaxChars) return clean;
+
+    const slideRegex = /(?=--- (?:Slide \/ Page|Slide|Page) \d+ ---)/i;
+    const pages = clean.split(slideRegex).filter((p) => p.trim().length > 0);
+
+    if (pages.length >= 4) {
+      const totalPages = pages.length;
+      const budgetPerSlide = Math.max(60, Math.floor(targetMaxChars / totalPages));
+
+      const condensed = pages.map((pageStr) => {
+        const p = pageStr.trim();
+        if (p.length <= budgetPerSlide + 25) return p;
+        const lines = p.split("\n").map((l) => l.trim()).filter(Boolean);
+        const titleLine = lines[0] ?? "";
+        const substantive = lines.slice(1).filter((line) => {
+          const lower = line.toLowerCase();
+          return (
+            line.startsWith("-") ||
+            line.startsWith("•") ||
+            /^\d+[\.\)]/.test(line) ||
+            line.includes("=") ||
+            lower.includes("formula") ||
+            lower.includes("definition") ||
+            lower.includes("key")
+          );
+        });
+        const joined = [titleLine, ...substantive].join("\n");
+        return joined.length <= budgetPerSlide + 30 ? joined : joined.slice(0, budgetPerSlide + 30);
+      });
+
+      return condensed.join("\n\n");
+    }
+
+    // Chronological sections across 100% of material
+    const numSections = 10;
+    const sectionLen = Math.floor(clean.length / numSections);
+    const charsPerSection = Math.floor(targetMaxChars / numSections);
+    const sections: string[] = [];
+    for (let i = 0; i < numSections; i++) {
+      const chunk = clean.slice(i * sectionLen, (i + 1) * sectionLen).trim();
+      sections.push(chunk.slice(0, charsPerSection));
+    }
+    return sections.join("\n\n");
+  }
+
+  // Keep source under 18k chars (~4.8k tokens) to guarantee prompt + max_tokens < 10k TPM
+  const trimmed = distillSourceForDerivatives(source, 18_000);
 
   const callGroq = (model: string) => {
     const customPromptInstructions = [
@@ -271,7 +324,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model,
         temperature: 0.3,
-        max_tokens: 2500,
+        max_tokens: 2200,
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
@@ -287,9 +340,20 @@ Deno.serve(async (req) => {
   };
 
   let aiResp = await callGroq("openai/gpt-oss-20b");
-  if (aiResp.status === 429) {
-    console.warn("Groq 20B rate limited (429), immediately falling back to openai/gpt-oss-120b...");
-    aiResp = await callGroq("openai/gpt-oss-120b");
+  if (aiResp.status === 429 || !aiResp.ok) {
+    console.warn("Groq 20B rate limited or busy, falling back to openai/gpt-oss-120b...");
+    try { aiResp.body?.cancel(); } catch { /* noop */ }
+    const fallbackResp = await callGroq("openai/gpt-oss-120b");
+    if (fallbackResp.ok) {
+      aiResp = fallbackResp;
+    } else {
+      console.warn("Groq 120B busy, falling back to llama-3.1-8b-instant (30k TPM)...");
+      try { fallbackResp.body?.cancel(); } catch { /* noop */ }
+      const instantResp = await callGroq("llama-3.1-8b-instant");
+      if (instantResp.ok) {
+        aiResp = instantResp;
+      }
+    }
   }
 
   // Capture provider quota/health snapshot

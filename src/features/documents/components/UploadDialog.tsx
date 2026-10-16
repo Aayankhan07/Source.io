@@ -23,7 +23,7 @@ import {
   Layers 
 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import { triggerIngest } from "@/lib/services/pipeline";
+import { triggerIngest, embedChunks } from "@/lib/services/pipeline";
 import { extractFileText } from "@/lib/services/extract";
 import { errorMessage } from "@/lib/utils";
 import { queryKeys } from "@/lib/queryKeys";
@@ -254,8 +254,8 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         onOpenChange(false);
         router.push(`/app/doc/${data!.id}`);
         // Background embed chunks for RAG chat without blocking notes
-        triggerIngest(data!.id).catch((e) =>
-          console.warn("Background ingest sync:", errorMessage(e)),
+        embedChunks(data!.id).catch((e) =>
+          console.warn("Background embed sync:", errorMessage(e)),
         );
         return;
       }

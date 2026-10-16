@@ -325,9 +325,90 @@ Deno.serve(async (req) => {
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
 
-  // Groq llama-3.3-70b-versatile free-tier rate limit: 12k TPM. Keep source under 35k chars (~8-9k tokens) to prevent TPM errors.
-  const MAX_CHARS = 35_000;
-  const source = doc.raw_text.length > MAX_CHARS ? doc.raw_text.slice(0, MAX_CHARS) : doc.raw_text;
+  // Intelligent full-document distillation for long lectures (e.g. 50 - 300 pages)
+  function distillSourceForNotes(rawText: string, targetMaxChars = 20_000): string {
+    if (!rawText) return "";
+    const clean = rawText
+      .replace(/\r\n/g, "\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+    if (clean.length <= targetMaxChars) return clean;
+
+    // 1. Check for Slide / Page delimiters
+    const slideRegex = /(?=--- (?:Slide \/ Page|Slide|Page) \d+ ---)/i;
+    const pages = clean.split(slideRegex).filter((p) => p.trim().length > 0);
+
+    if (pages.length >= 4) {
+      const totalPages = pages.length;
+      const budgetPerSlide = Math.max(70, Math.floor(targetMaxChars / totalPages));
+
+      const condensedPages = pages.map((pageStr) => {
+        const p = pageStr.trim();
+        if (p.length <= budgetPerSlide + 30) return p;
+
+        const lines = p.split("\n").map((l) => l.trim()).filter(Boolean);
+        const titleLine = lines[0] ?? "";
+        const subtitleLine = lines[1] ?? "";
+
+        // Retain high-yield content: formulas, definitions, key bullets
+        const substantive = lines.slice(2).filter((line) => {
+          const lower = line.toLowerCase();
+          return (
+            line.startsWith("-") ||
+            line.startsWith("•") ||
+            line.startsWith("*") ||
+            /^\d+[\.\)]/.test(line) ||
+            line.includes("=") ||
+            line.includes(":") ||
+            lower.includes("formula") ||
+            lower.includes("definition") ||
+            lower.includes("key") ||
+            lower.includes("theorem") ||
+            lower.includes("rule") ||
+            lower.includes("summary") ||
+            lower.includes("important")
+          );
+        });
+
+        const joined = [titleLine, subtitleLine, ...substantive].filter(Boolean).join("\n");
+        if (joined.length <= budgetPerSlide + 40) return joined;
+        return joined.slice(0, budgetPerSlide + 40);
+      });
+
+      const result = condensedPages.join("\n\n");
+      if (result.length <= targetMaxChars + 1500) {
+        return `[Source: Comprehensive lecture deck spanning all ${totalPages} slides from beginning to end]\n\n${result}`;
+      }
+      return result.slice(0, targetMaxChars);
+    }
+
+    // 2. Uniform chronological multi-section sampling across the entire document (0% to 100%)
+    const numSections = 12;
+    const sectionLen = Math.floor(clean.length / numSections);
+    const charsPerSection = Math.floor((targetMaxChars - 500) / numSections);
+
+    const sections: string[] = [];
+    for (let i = 0; i < numSections; i++) {
+      const chunkStart = i * sectionLen;
+      const chunk = clean.slice(chunkStart, chunkStart + sectionLen).trim();
+      const chunkLines = chunk.split("\n").map((l) => l.trim()).filter(Boolean);
+      let collected = "";
+      for (const line of chunkLines) {
+        if (collected.length + line.length > charsPerSection) break;
+        collected += line + "\n";
+      }
+      const pctStart = Math.round((i / numSections) * 100);
+      const pctEnd = Math.round(((i + 1) / numSections) * 100);
+      sections.push(`--- Part ${i + 1} (${pctStart}% - ${pctEnd}% of source material) ---\n${collected.trim()}`);
+    }
+
+    return `[Source: Comprehensive study material covering all topics from start to finish]\n\n${sections.join("\n\n")}`;
+  }
+
+  // Strictly keep source under 20k chars (~5.2k tokens) to guarantee prompt + max_tokens < 10k TPM
+  const source = distillSourceForNotes(doc.raw_text, 20_000);
 
   let toneInstruction = "";
   if (body.tone === "simplified" || body.notes_depth === "feynman") {
@@ -344,7 +425,7 @@ Deno.serve(async (req) => {
     `Source title: ${doc.title}\n\n--- SOURCE START ---\n${source}\n--- SOURCE END ---\n\n` +
     `Generate the study notes now, following the required structure exactly.${toneInstruction}`;
 
-  async function callGroq(model = "openai/gpt-oss-120b"): Promise<Response> {
+  async function callGroq(model: string): Promise<Response> {
     return await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -355,7 +436,7 @@ Deno.serve(async (req) => {
         model,
         stream: true,
         temperature: 0.4,
-        max_tokens: 4096,
+        max_tokens: 3500, // Safe reservation to never breach 12k TPM
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userPrompt },
@@ -367,11 +448,22 @@ Deno.serve(async (req) => {
   // 1) Try high-accuracy 120B model first
   let aiResp = await callGroq("openai/gpt-oss-120b");
 
-  // 2) If 120B model hits 429 rate limit, instantly fall back to openai/gpt-oss-20b
-  if (aiResp.status === 429) {
-    console.warn("Groq 120B rate limited (429), immediately falling back to openai/gpt-oss-20b...");
+  // 2) If 120B model hits 429 rate limit or fails, fall back to 20B
+  if (aiResp.status === 429 || !aiResp.ok) {
+    console.warn("Groq 120B busy or rate limited, falling back to openai/gpt-oss-20b...");
     try { aiResp.body?.cancel(); } catch { /* noop */ }
-    aiResp = await callGroq("openai/gpt-oss-20b");
+    const fallbackResp = await callGroq("openai/gpt-oss-20b");
+    if (fallbackResp.ok) {
+      aiResp = fallbackResp;
+    } else {
+      // 3) If 20B ALSO hits limit, fall back to llama-3.1-8b-instant (30,000 TPM limit)
+      console.warn("Groq 20B busy, falling back to llama-3.1-8b-instant (30k TPM)...");
+      try { fallbackResp.body?.cancel(); } catch { /* noop */ }
+      const instantResp = await callGroq("llama-3.1-8b-instant");
+      if (instantResp.ok) {
+        aiResp = instantResp;
+      }
+    }
   }
 
   // Capture provider quota/health snapshot

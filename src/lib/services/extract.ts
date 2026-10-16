@@ -5,8 +5,15 @@ import mammoth from "mammoth";
 export async function extractPdfText(file: File): Promise<string> {
   const ab = await file.arrayBuffer();
   const pdf = await getDocumentProxy(new Uint8Array(ab));
-  const { text } = await extractText(pdf, { mergePages: true });
-  const out = Array.isArray(text) ? text.join("\n\n") : String(text ?? "");
+  const { text } = await extractText(pdf, { mergePages: false });
+  if (Array.isArray(text)) {
+    return text
+      .map((pageText, idx) => `--- Slide / Page ${idx + 1} ---\n${String(pageText || "").trim()}`)
+      .join("\n\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .trim();
+  }
+  const out = String(text ?? "");
   return out.replace(/\s+\n/g, "\n").trim();
 }
 
