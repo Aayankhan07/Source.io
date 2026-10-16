@@ -143,7 +143,7 @@ export function TactileTopBar({
         {/* Search Button */}
         <button
           onClick={onOpenSearch}
-          title="Quick search sources and flashcards"
+          title="Quick search sources and flashcards (⌘K / Ctrl+K)"
           className="size-10 rounded-[18px] bg-card/90 backdrop-blur-md border border-border text-muted-foreground hover:text-foreground flex items-center justify-center shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <Search className="size-4.5 stroke-[2]" />

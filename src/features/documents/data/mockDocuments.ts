@@ -40,7 +40,7 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
 
 | Architectural Property | Classical Computers | Quantum Computers |
 | :--- | :--- | :--- |
-| **Core Information Unit** | Bits (deterministic $0$ or $1$) | Qubits (coherent superposition of $|0\\rangle$ and $|1\\rangle$) |
+| **Core Information Unit** | Bits (deterministic $0$ or $1$) | Qubits (coherent superposition of $\\vert 0\\rangle$ and $\\vert 1\\rangle$) |
 | **State Vector Scaling** | Linear ($N$ bits store $N$ states) | Exponential ($N$ qubits span $2^N$ complex amplitudes) |
 | **Entanglement** | Impossible (strictly local) | Supported natively via Bell states |
 | **Error Mechanisms** | Rare bit-flip | Continuous phase errors, amplitude damping, thermal decoherence |

@@ -7,6 +7,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import { AppShellProvider } from "@/features/documents/context/AppShellContext";
 import { TactileLeftDock } from "@/features/dashboard/components/TactileLeftDock";
+import { GlobalCommandPalette } from "@/features/dashboard/components/GlobalCommandPalette";
 import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
 
 export default function AppHome({ children }: { children: React.ReactNode }) {
@@ -75,6 +76,7 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
         </main>
 
         <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
+        <GlobalCommandPalette />
       </div>
     </AppShellProvider>
   );

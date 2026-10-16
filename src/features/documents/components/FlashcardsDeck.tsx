@@ -17,6 +17,7 @@ import {
   Maximize2,
   Minimize2,
   Volume2,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -112,6 +113,25 @@ export function FlashcardsDeck({
     setIsFlipped(false);
     setIsCompleted(false);
   };
+
+  const handleExportAnki = useCallback(() => {
+    if (!deck.length) return;
+    const rows = deck.map((card) => {
+      const cleanFront = card.front.replace(/\t/g, " ").replace(/\r?\n/g, "<br>");
+      const cleanBack = card.back.replace(/\t/g, " ").replace(/\r?\n/g, "<br>");
+      return `${cleanFront}\t${cleanBack}\tSource.io`;
+    });
+    const tsvContent = rows.join("\n");
+    const blob = new Blob([tsvContent], { type: "text/tab-separated-values;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `flashcards-${documentId || "deck"}.tsv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [deck, documentId]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -219,6 +239,15 @@ export function FlashcardsDeck({
             <span>Review Full Deck</span>
           </Button>
 
+          <Button
+            onClick={handleExportAnki}
+            variant="outline"
+            className="rounded-full text-xs h-10 px-5 gap-2 border-border text-foreground hover:bg-muted cursor-pointer"
+          >
+            <Download className="size-3.5" />
+            <span>Export to Anki (.tsv)</span>
+          </Button>
+
           {learningIds.size > 0 && (
             <Button
               onClick={() => handleRestart(true)}
@@ -255,6 +284,15 @@ export function FlashcardsDeck({
             className="size-8 p-0 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
           >
             <Shuffle className="size-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleExportAnki}
+            title="Export deck to Anki (.tsv)"
+            className="size-8 p-0 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+          >
+            <Download className="size-3.5" />
           </Button>
           <Button
             variant="ghost"

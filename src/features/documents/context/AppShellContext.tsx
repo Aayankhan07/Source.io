@@ -9,6 +9,9 @@ type AppShellContextType = {
   setActiveView: (view: "dashboard" | "library") => void;
   copilotOpen: boolean;
   setCopilotOpen: (open: boolean) => void;
+  openSearch: () => void;
+  searchOpen: boolean;
+  setSearchOpen: (open: boolean) => void;
 };
 
 const AppShellContext = createContext<AppShellContextType>({
@@ -18,6 +21,9 @@ const AppShellContext = createContext<AppShellContextType>({
   setActiveView: () => {},
   copilotOpen: false,
   setCopilotOpen: () => {},
+  openSearch: () => {},
+  searchOpen: false,
+  setSearchOpen: () => {},
 });
 
 export function AppShellProvider({
@@ -34,6 +40,7 @@ export function AppShellProvider({
   onSelectView?: (view: "dashboard" | "library") => void;
 }) {
   const [copilotOpen, setCopilotOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <AppShellContext.Provider
@@ -44,6 +51,9 @@ export function AppShellProvider({
         setActiveView: onSelectView,
         copilotOpen,
         setCopilotOpen,
+        openSearch: () => setSearchOpen(true),
+        searchOpen,
+        setSearchOpen,
       }}
     >
       {children}

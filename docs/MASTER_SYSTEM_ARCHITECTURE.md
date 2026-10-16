@@ -354,9 +354,9 @@ export async function consumeSse(
 
 ## 7. Bring-Your-Own-Key (BYOK) Architecture & Zero-Retention Security
 
-Source.io provides a hybrid enterprise/consumer access model:
-1. **Free / Hosted Tier:** 3 documents per day, rate-limited via edge quotas.
-2. **BYOK Supercharged Mode:** Complete bypass of daily document limits, unlimited multi-modal chat queries, and instantaneous priority queues.
+Source.io provides a dual access model:
+1. **Free / Hosted Tier:** 25 daily AI generation actions (notes distillation, flashcards, quiz generation, podcast dialogue) and 3 active document slots, rate-limited via edge quotas.
+2. **BYOK Supercharged Mode:** Complete bypass of daily limits, unlimited multi-modal chat queries, and instantaneous priority queues using student Gemini or Groq API keys.
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -461,9 +461,9 @@ CREATE TABLE public.profiles (
     email TEXT NOT NULL,
     full_name TEXT,
     avatar_url TEXT,
-    tier TEXT DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'enterprise')),
+    tier TEXT DEFAULT 'free' CHECK (tier IN ('free', 'pro')),
     daily_quota_used INTEGER DEFAULT 0,
-    daily_quota_limit INTEGER DEFAULT 3,
+    daily_quota_limit INTEGER DEFAULT 25,
     last_quota_reset TIMESTAMPTZ DEFAULT NOW(),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -543,6 +543,28 @@ CREATE TABLE public.podcasts (
     duration_seconds INTEGER,
     transcript JSONB NOT NULL, -- Array of dialogue turns: {speaker: 'Host A', text: '...', timestamp_ms: 1200}
     generation_status TEXT DEFAULT 'pending' CHECK (generation_status IN ('pending', 'processing', 'completed', 'failed')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. Grounded Synthesized Notes
+CREATE TABLE public.notes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    version INTEGER DEFAULT 1,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 9. Conversational Grounded Copilot Messages
+CREATE TABLE public.chat_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
+    content TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
