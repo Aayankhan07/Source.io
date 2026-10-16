@@ -114,11 +114,21 @@ export default function DocumentWorkspace() {
       }
       const { data, error } = await supabase
         .from("documents")
-        .select("id,title,source_type,status,error_code,created_at")
+        .select("id,title,source_type,status,raw_text,error_code,created_at")
         .eq("id", docId!)
         .maybeSingle();
       if (error) throw error;
-      return (data as DocumentRow) ?? null;
+      const docData = (data as DocumentRow) ?? null;
+      // Self-heal: If document has raw_text extracted (e.g. from PDF/DOCX) but status is still pending/processing, promote to ready
+      if (docData && (docData.status === "pending" || docData.status === "processing") && docData.raw_text && docData.raw_text.trim().length >= 20) {
+        void supabase.from("documents").update({ status: "ready" }).eq("id", docData.id);
+        return { ...docData, status: "ready" as const };
+      }
+      return docData;
+    },
+    refetchInterval: (query) => {
+      const s = query.state.data?.status;
+      return s === "pending" || s === "processing" ? 2000 : false;
     },
   });
 

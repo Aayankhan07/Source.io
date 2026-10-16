@@ -10,6 +10,7 @@ export type DocumentRow = {
   title: string;
   source_type: "pdf" | "docx" | "text" | "audio" | "video" | "youtube";
   status: "pending" | "processing" | "ready" | "failed";
+  raw_text?: string | null;
   error_code: string | null;
   created_at: string;
 };

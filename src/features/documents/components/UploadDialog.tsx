@@ -242,19 +242,20 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
             source_type: sourceType,
             raw_text: text,
             content_hash: hash,
-            status: "pending",
+            status: "ready",
           })
           .select("id")
           .single();
         if (error) throw error;
-        toast({ title: "Document added", description: "Finalizing notes…" });
+        toast({ title: "Document added", description: "Generating study notes…" });
         queryClient.invalidateQueries({ queryKey: queryKeys.documents });
         queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count", user.id] });
         reset(); 
         onOpenChange(false);
         router.push(`/app/doc/${data!.id}`);
+        // Background embed chunks for RAG chat without blocking notes
         triggerIngest(data!.id).catch((e) =>
-          toast({ title: "Ingest failed", description: errorMessage(e), variant: "destructive" }),
+          console.warn("Background ingest sync:", errorMessage(e)),
         );
         return;
       }
