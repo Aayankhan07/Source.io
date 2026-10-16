@@ -30,6 +30,7 @@ import WorkspaceOutline, { extractHeadings } from "@/features/documents/componen
 import { AskPanel } from "@/features/documents/components/AskPanel";
 import NotesSettingsPopover from "@/features/documents/components/NotesSettingsPopover";
 import { useSettings } from "@/features/settings/context/SettingsContext";
+import { TAB_LABELS } from "@/types/customization";
 import { AiFeedbackButtons } from "@/components/common/AiFeedbackButtons";
 import { FlashcardsDeck } from "@/features/documents/components/FlashcardsDeck";
 import { QuizPlayer } from "@/features/documents/components/QuizPlayer";
@@ -76,7 +77,7 @@ export default function DocumentWorkspace() {
   const [focusMode, setFocusMode] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
   const [copiedNotes, setCopiedNotes] = useState(false);
-  const { settings, notesSettings } = useSettings();
+  const { settings, notesSettings, userRole, preferences } = useSettings();
 
   // Active workspace tab state
   const searchParams = useSearchParams();
@@ -249,6 +250,28 @@ export default function DocumentWorkspace() {
     return calculateReadTime(note?.markdown, settings?.readingTargetWpm || 200).readMinutes;
   }, [note?.markdown, settings?.readingTargetWpm]);
 
+  const role = userRole || "undergrad";
+  const roleTabLabels = TAB_LABELS[role] || TAB_LABELS["undergrad"];
+  const enabledModes = preferences?.enabledModes || ["notes", "cards", "quiz", "podcast"];
+
+  const visibleTabs: { id: TabId; label: string; count?: number }[] = useMemo(() => {
+    const allPossibleTabs: { id: TabId; label: string; count?: number }[] = [
+      { id: "notes", label: roleTabLabels.notes || "Notes" },
+      { id: "cards", label: roleTabLabels.cards || "Flashcards", count: cards.length },
+      { id: "quiz", label: roleTabLabels.quiz || "Quiz" },
+      { id: "podcast", label: roleTabLabels.podcast || "Podcast" },
+    ];
+    const filtered = allPossibleTabs.filter((t) => enabledModes.includes(t.id));
+    return filtered.length > 0 ? filtered : allPossibleTabs.slice(0, 1);
+  }, [roleTabLabels, enabledModes, cards.length]);
+
+  // Self-heal active tab if current tab is disabled by the active role preset
+  useEffect(() => {
+    if (visibleTabs.length > 0 && !visibleTabs.some((t) => t.id === currentTab)) {
+      setCurrentTab(visibleTabs[0].id);
+    }
+  }, [visibleTabs, currentTab]);
+
   // Auto-generate notes only once when document becomes ready and no note exists yet
   useEffect(() => {
     if (
@@ -274,6 +297,8 @@ export default function DocumentWorkspace() {
         notesDepth: settings.notesDepth,
         model: settings.preferredModel,
         apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
+        userRole: userRole,
+        workspacePreferences: preferences,
         force: opts?.force,
         onResponse: (resp) => {
           if (settings.apiKeys.groq) {
@@ -389,6 +414,8 @@ export default function DocumentWorkspace() {
         quizDifficulty: settings.quizDifficulty,
         apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
         force: opts?.force,
+        userRole: userRole,
+        workspacePreferences: preferences,
       });
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) }),
@@ -421,7 +448,11 @@ export default function DocumentWorkspace() {
         : prev,
     );
     try {
-      await generatePodcast(docId, { voiceDuo: settings.podcastVoiceDuo });
+      await generatePodcast(docId, {
+        voiceDuo: settings.podcastVoiceDuo,
+        podcastStyle: preferences?.podcastStyle,
+        userRole: userRole,
+      });
       await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
       toast({ title: "Podcast ready", description: "Your audio recap is ready to play." });
     } catch (e: unknown) {
@@ -522,13 +553,6 @@ export default function DocumentWorkspace() {
 
   const isProcessing = doc.status === "pending" || doc.status === "processing";
 
-  const tabs: { id: TabId; label: string; count?: number }[] = [
-    { id: "notes", label: "Notes" },
-    { id: "cards", label: "Flashcards", count: cards.length },
-    { id: "quiz", label: "Quiz" },
-    { id: "podcast", label: "Podcast" },
-  ];
-
   return (
     <div className="h-full flex flex-col bg-tactile-canvas overflow-hidden">
       {/* Workspace Floating Tactile Capsule Bar (Centered with Top-Right Quota Pill) */}
@@ -544,7 +568,7 @@ export default function DocumentWorkspace() {
         )}
 
         <div className="inline-flex items-center gap-1 p-1 sm:p-1.5 rounded-full bg-card/95 backdrop-blur-md border border-border shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-x-auto scrollbar-none max-w-full">
-          {tabs.map((t) => {
+          {visibleTabs.map((t) => {
             const isActive = currentTab === t.id;
             return (
               <button
@@ -707,7 +731,10 @@ export default function DocumentWorkspace() {
                                   </button>
                                 )}
 
-                                <NotesSettingsPopover />
+                                <NotesSettingsPopover
+                                  onRegenerate={() => generate({ force: true })}
+                                  isStreaming={streaming}
+                                />
 
                                 <button
                                   onClick={() => setDeleteOpen(true)}

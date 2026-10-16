@@ -15,14 +15,16 @@ import AIModelSettings from "../components/AIModelSettings";
 import AudioSettings from "../components/AudioSettings";
 import AppearanceSettings from "../components/AppearanceSettings";
 import DataStorageSettings from "../components/DataStorageSettings";
+import CustomizationSettings from "../components/CustomizationSettings";
 
-type SettingsTab = "models" | "audio" | "appearance" | "data";
+type SettingsTab = "customization" | "models" | "audio" | "appearance" | "data";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<SettingsTab>("models");
+  const [activeTab, setActiveTab] = useState<SettingsTab>("customization");
 
   const tabs: { id: SettingsTab; label: string; icon: typeof Bot; desc: string }[] = [
+    { id: "customization", label: "Customization", icon: SettingsIcon, desc: "Academic roles & visible tabs" },
     { id: "models", label: "AI & Models", icon: Bot, desc: "Notes depth & BYOK keys" },
     { id: "audio", label: "Podcast & Audio", icon: Headphones, desc: "Host voices & speed" },
     { id: "appearance", label: "Appearance", icon: Palette, desc: "Theme & reading speed" },

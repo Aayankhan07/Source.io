@@ -11,11 +11,14 @@ import {
   ChevronLeft,
   Sun,
   Moon,
-  Sparkles
+  Sparkles,
+  GraduationCap
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/features/settings/context/SettingsContext";
+import { ROLE_METADATA } from "@/types/customization";
 
 interface TactileLeftDockProps {
   onNewSource?: () => void;
@@ -35,6 +38,8 @@ export function TactileLeftDock({
   const router = useRouter();
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { userRole } = useSettings();
+  const roleMeta = ROLE_METADATA[userRole || "undergrad"];
 
   // Internal state fallback if not controlled from parent
   const [internalExpanded, setInternalExpanded] = useState(false);
@@ -135,6 +140,30 @@ export function TactileLeftDock({
                 </button>
               );
             })}
+          </div>
+
+          {/* Active Persona Pill */}
+          <div className="w-full pt-2 mt-1 border-t border-border">
+            <Link
+              href="/app/settings"
+              title={`Academic Persona: ${roleMeta?.label || "Student"} (Click to customize)`}
+              className={cn(
+                "h-8 rounded-[14px] flex items-center transition-all cursor-pointer relative group",
+                isExpanded
+                  ? "w-full px-3 gap-2 justify-start bg-muted/40 hover:bg-muted text-foreground text-[11px]"
+                  : "w-8 justify-center mx-auto text-muted-foreground hover:text-foreground hover:bg-accent"
+              )}
+            >
+              <GraduationCap className="size-3.5 shrink-0 text-primary" />
+              {isExpanded && (
+                <span className="truncate font-medium">{roleMeta?.label || "Student"}</span>
+              )}
+              {!isExpanded && (
+                <span className="pointer-events-none absolute left-14 px-2.5 py-1 rounded-lg bg-popover text-popover-foreground border border-border text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-50">
+                  {roleMeta?.label || "Student"}
+                </span>
+              )}
+            </Link>
           </div>
 
           {/* Scholar Pass Quick Access */}

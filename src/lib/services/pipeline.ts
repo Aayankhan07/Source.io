@@ -163,6 +163,8 @@ export async function generateDerivatives(
     apiKey?: string;
     idempotencyKey?: string;
     force?: boolean;
+    userRole?: string;
+    workspacePreferences?: Record<string, unknown> | unknown;
   }
 ): Promise<{
   flashcards_count: number; questions_count: number; quiz_id: string | null;
@@ -179,6 +181,8 @@ export async function generateDerivatives(
       api_key: options?.apiKey,
       idempotency_key: idempotencyKey,
       force_regenerate: options?.force,
+      user_role: options?.userRole,
+      workspace_preferences: options?.workspacePreferences,
     });
     if (resp.status !== 429 && resp.status !== 409) break;
     const waitMs = 1500 * Math.pow(1.5, attempt);
@@ -206,10 +210,12 @@ export async function streamNotes({
   model,
   apiKey,
   idempotencyKey,
-  force,
   onDelta,
   onResponse,
   signal,
+  force,
+  userRole,
+  workspacePreferences,
 }: {
   documentId: string;
   tone?: string;
@@ -221,6 +227,8 @@ export async function streamNotes({
   onDelta: (chunk: string) => void;
   onResponse?: (resp: Response) => void;
   signal?: AbortSignal;
+  userRole?: string;
+  workspacePreferences?: Record<string, unknown> | unknown;
 }): Promise<string> {
   const reqIdempotencyKey =
     idempotencyKey ||
@@ -237,6 +245,8 @@ export async function streamNotes({
         api_key: apiKey,
         idempotency_key: reqIdempotencyKey,
         force_regenerate: force,
+        user_role: userRole,
+        workspace_preferences: workspacePreferences,
       },
       { signal }
     );

@@ -19,11 +19,24 @@ import {
   BarChart3,
   PenTool,
   Send,
+  Printer,
+  Copy,
+  FileText,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import MarkdownView from "@/components/common/MarkdownView";
 import type { QuizRow, QuizQuestionRow } from "@/features/documents/types";
+import { useSettings } from "@/features/settings/context/SettingsContext";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface QuizPlayerProps {
   documentId: string;
@@ -76,12 +89,187 @@ export function QuizPlayer({
   onRegenerate,
   loading = false,
 }: QuizPlayerProps) {
+  const { userRole } = useSettings();
+  const { toast } = useToast();
   const [questions, setQuestions] = useState<QuizQuestionRow[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [isCompleted, setIsCompleted] = useState(false);
   const [activeReviewId, setActiveReviewId] = useState<string | null>(null);
   const [shortAnswerInput, setShortAnswerInput] = useState("");
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [exportMode, setExportMode] = useState<"exam" | "rubric">("exam");
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleCopyExamMarkdown = () => {
+    let md = `# Exam: ${quiz?.title || "Quiz"}\n\n`;
+    md += `**Name:** _______________________   **Date:** ____________   **Score:** _____ / ${questions.length}\n\n---\n\n`;
+
+    if (exportMode === "exam") {
+      questions.forEach((q, idx) => {
+        md += `### ${idx + 1}. ${q.question}\n\n`;
+        if (q.type === "mcq" && q.choices) {
+          q.choices.forEach((c, cIdx) => {
+            const letter = String.fromCharCode(65 + cIdx);
+            md += `- [ ] (${letter}) ${c}\n`;
+          });
+          md += `\n`;
+        } else {
+          md += `_Answer: _____________________________________________________________________\n\n`;
+        }
+      });
+    } else {
+      md += `## Instructor Answer Key & Evaluation Rubric\n\n`;
+      questions.forEach((q, idx) => {
+        md += `### Question ${idx + 1}: ${q.question}\n`;
+        md += `**Correct Answer:** ${q.correct}\n\n`;
+        if (q.explanation) {
+          md += `**Pedagogical Rationale / Rubric Criteria:**\n${q.explanation}\n\n`;
+        }
+        md += `---\n\n`;
+      });
+    }
+
+    navigator.clipboard.writeText(md);
+    toast({
+      title: exportMode === "exam" ? "Student Exam Copied" : "Answer Key & Rubric Copied",
+      description: "Ready to paste into Canvas, Google Classroom, or Google Docs.",
+    });
+  };
+
+  const renderExportDialog = () => (
+    <Dialog open={isExportOpen} onOpenChange={setIsExportOpen}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0 rounded-3xl border border-border bg-card">
+        <DialogHeader className="p-5 pb-3 border-b border-border bg-muted/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="text-base font-bold font-display text-foreground flex items-center gap-2">
+                <Printer className="size-4 text-primary" />
+                <span>Teacher Assessment Studio: Export Exam & Rubric</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                Print classroom-ready test sheets or copy markdown to your LMS.
+              </DialogDescription>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/60 border border-border/50 text-xs font-semibold mt-3 w-fit">
+            <button
+              type="button"
+              onClick={() => setExportMode("exam")}
+              className={cn(
+                "px-3 py-1 rounded-lg transition-all cursor-pointer",
+                exportMode === "exam" ? "bg-background text-foreground shadow-2xs" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Student Test Sheet ({questions.length} Qs)
+            </button>
+            <button
+              type="button"
+              onClick={() => setExportMode("rubric")}
+              className={cn(
+                "px-3 py-1 rounded-lg transition-all cursor-pointer",
+                exportMode === "rubric" ? "bg-background text-foreground shadow-2xs" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Answer Key & Evaluation Rubric
+            </button>
+          </div>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm bg-background font-sans print:p-0">
+          <div className="border border-border/80 rounded-2xl p-5 bg-card/60 space-y-4">
+            <div className="border-b border-border/70 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="font-bold text-base text-foreground font-display">
+                  {quiz?.title || "Classroom Examination"}
+                </h3>
+                <p className="text-xs text-muted-foreground">Course / Subject Assessment</p>
+              </div>
+              <div className="text-xs font-mono text-muted-foreground space-y-0.5">
+                <div>Name: ______________________</div>
+                <div>Date: _________ Period: _____</div>
+              </div>
+            </div>
+
+            {exportMode === "exam" ? (
+              <div className="space-y-5 pt-2">
+                {questions.map((q, idx) => (
+                  <div key={q.id || idx} className="space-y-2 text-xs">
+                    <p className="font-semibold text-foreground">
+                      {idx + 1}. {q.question}
+                    </p>
+                    {q.type === "mcq" && q.choices ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pl-3">
+                        {q.choices.map((c, cIdx) => (
+                          <div key={cIdx} className="flex items-center gap-2 text-muted-foreground">
+                            <span className="size-4 rounded-full border border-border inline-flex items-center justify-center text-[10px] font-mono">
+                              {String.fromCharCode(65 + cIdx)}
+                            </span>
+                            <span>{c}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="pt-2 pl-3">
+                        <div className="h-8 border-b border-dashed border-border" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-5 pt-2">
+                <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs space-y-1">
+                  <span className="font-bold text-foreground block">Grading Standard</span>
+                  <p className="text-muted-foreground">Each item is weighted equally. Total score is scaled to 100%.</p>
+                </div>
+                {questions.map((q, idx) => (
+                  <div key={q.id || idx} className="p-3 rounded-xl bg-muted/20 border border-border/60 space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between font-semibold text-foreground">
+                      <span>Question {idx + 1}</span>
+                      <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                        Key: {q.correct}
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground">{q.question}</p>
+                    {q.explanation && (
+                      <div className="pt-1 text-[11px] text-muted-foreground font-mono bg-muted/40 p-2 rounded-lg">
+                        <strong>Rationale & Rubric:</strong> {q.explanation}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopyExamMarkdown}
+            className="rounded-full text-xs font-semibold h-8 px-3 gap-1.5 cursor-pointer"
+          >
+            <Copy className="size-3.5" />
+            <span>Copy LMS Markdown</span>
+          </Button>
+          <Button
+            size="sm"
+            onClick={handlePrint}
+            className="rounded-full text-xs font-semibold h-8 px-4 bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5 cursor-pointer"
+          >
+            <Printer className="size-3.5" />
+            <span>Print {exportMode === "exam" ? "Test Sheet" : "Rubric"}</span>
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   // Sync state whenever quiz changes
   useEffect(() => {
@@ -213,7 +401,8 @@ export function QuizPlayer({
     const isPassing = score >= 70;
 
     return (
-      <div className="max-w-2xl mx-auto my-4 space-y-6">
+      <>
+        <div className="max-w-2xl mx-auto my-4 space-y-6">
         {/* Score Hero Card */}
         <div className="bg-card rounded-3xl border border-border p-8 shadow-tactile-card text-center space-y-5 relative overflow-hidden">
           <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-500" />
@@ -290,6 +479,16 @@ export function QuizPlayer({
               <Sparkles className="size-3.5 mr-2 text-sky-500" />
               <span>Generate New Questions</span>
             </Button>
+            {userRole === "teacher" && (
+              <Button
+                onClick={() => setIsExportOpen(true)}
+                variant="outline"
+                className="rounded-full text-xs font-semibold h-9 px-5 bg-card hover:bg-muted border-border cursor-pointer transition-all active:scale-95"
+              >
+                <Printer className="size-3.5 mr-2 text-primary" />
+                <span>Export Exam & Rubric</span>
+              </Button>
+            )}
           </div>
         </div>
 
@@ -418,7 +617,9 @@ export function QuizPlayer({
           </div>
         </div>
       </div>
-    );
+      {renderExportDialog()}
+    </>
+  );
   }
 
   // Active Stepped Question Runner
@@ -427,31 +628,45 @@ export function QuizPlayer({
     checkQuizAnswerMatch(currentAnswer, currentQ.correct, currentQ.choices, isShortAnswer);
 
   return (
-    <div className="max-w-2xl mx-auto my-4 space-y-5">
-      {/* Top Header: Progress & Question Count */}
-      <div className="bg-card rounded-2xl border border-border p-4 shadow-sm flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-md bg-muted text-foreground border border-border">
-              Question {currentIndex + 1} of {totalQuestions}
-            </span>
-            <span className="text-muted-foreground hidden sm:inline text-xs font-medium">
-              {quiz.title}
-            </span>
-          </div>
+    <>
+      <div className="max-w-2xl mx-auto my-4 space-y-5">
+        {/* Top Header: Progress & Question Count */}
+        <div className="bg-card rounded-2xl border border-border p-4 shadow-sm flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-md bg-muted text-foreground border border-border">
+                Question {currentIndex + 1} of {totalQuestions}
+              </span>
+              <span className="text-muted-foreground hidden sm:inline text-xs font-medium">
+                {quiz.title}
+              </span>
+            </div>
 
-          <div className="flex items-center gap-2 font-mono text-xs">
-            <span className="text-slate-900 dark:text-white font-semibold flex items-center gap-1">
-              <CheckCircle2 className="size-3" />
-              {correctCount}
-            </span>
-            <span className="text-muted-foreground/40">/</span>
-            <span className="text-slate-500 font-semibold flex items-center gap-1">
-              <XCircle className="size-3" />
-              {wrongCount}
-            </span>
+            <div className="flex items-center gap-2">
+              {userRole === "teacher" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsExportOpen(true)}
+                  className="h-7 px-2.5 rounded-full text-[11px] font-semibold border-border hover:bg-muted text-foreground gap-1.5 cursor-pointer"
+                >
+                  <Printer className="size-3 text-primary" />
+                  <span>Export Exam</span>
+                </Button>
+              )}
+              <div className="flex items-center gap-2 font-mono text-xs">
+                <span className="text-slate-900 dark:text-white font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="size-3" />
+                  {correctCount}
+                </span>
+                <span className="text-muted-foreground/40">/</span>
+                <span className="text-slate-500 font-semibold flex items-center gap-1">
+                  <XCircle className="size-3" />
+                  {wrongCount}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
 
         {/* Stepped Progress Bar */}
         <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
@@ -736,5 +951,7 @@ export function QuizPlayer({
         </div>
       </div>
     </div>
-  );
+    {renderExportDialog()}
+  </>
+);
 }

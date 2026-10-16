@@ -485,6 +485,9 @@ export type Database = {
           daily_tts_quota_used: number | null
           daily_tts_quota_limit: number | null
           quota_reset_date: string | null
+          user_role: string | null
+          onboarding_completed: boolean | null
+          workspace_preferences: Json | null
         }
         Insert: {
           avatar_url?: string | null
@@ -499,6 +502,9 @@ export type Database = {
           daily_tts_quota_used?: number | null
           daily_tts_quota_limit?: number | null
           quota_reset_date?: string | null
+          user_role?: string | null
+          onboarding_completed?: boolean | null
+          workspace_preferences?: Json | null
         }
         Update: {
           avatar_url?: string | null
@@ -513,6 +519,9 @@ export type Database = {
           daily_tts_quota_used?: number | null
           daily_tts_quota_limit?: number | null
           quota_reset_date?: string | null
+          user_role?: string | null
+          onboarding_completed?: boolean | null
+          workspace_preferences?: Json | null
         }
         Relationships: []
       }

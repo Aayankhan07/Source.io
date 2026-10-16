@@ -21,6 +21,7 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
 
   const isDocWorkspace = pathname.startsWith("/app/doc/");
   const isSettings = pathname.startsWith("/app/settings");
+  const isOnboarding = pathname.startsWith("/app/onboarding");
 
   // Determine active dock tab based on current route
   const currentDockTab = isSettings
@@ -44,6 +45,14 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
       }
     }
   };
+
+  if (isOnboarding) {
+    return (
+      <div className={cn("luminous-app min-h-screen bg-tactile-canvas text-foreground antialiased font-sans", theme === "dark" && "dark")}>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <AppShellProvider

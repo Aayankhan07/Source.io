@@ -2,7 +2,7 @@ import { callFunction } from "@/lib/services/functions";
 
 export async function generatePodcast(
   documentId: string,
-  options?: { voiceDuo?: string; idempotencyKey?: string }
+  options?: { voiceDuo?: string; idempotencyKey?: string; podcastStyle?: string; userRole?: string }
 ): Promise<{ ok: boolean; status: string }> {
   const idempotencyKey =
     options?.idempotencyKey ||
@@ -11,6 +11,8 @@ export async function generatePodcast(
   const resp = await callFunction("generate_podcast", {
     document_id: documentId,
     voice_duo: options?.voiceDuo,
+    podcast_style: options?.podcastStyle,
+    user_role: options?.userRole,
     idempotency_key: idempotencyKey,
   });
 

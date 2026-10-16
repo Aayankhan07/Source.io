@@ -294,9 +294,15 @@ Deno.serve(async (req) => {
   const trimmed = distillSourceForDerivatives(source, 18_000);
 
   const callGroq = (model: string) => {
+    const userRole = body.user_role;
+    const prefs = body.workspace_preferences;
     const customPromptInstructions = [
       body.flashcard_count ? `Generate approximately ${body.flashcard_count} flashcards.` : null,
       body.quiz_difficulty ? `Cognitive difficulty level: ${body.quiz_difficulty}.` : null,
+      userRole ? `Target Academic Role: ${userRole}.` : null,
+      (prefs?.quizStyle || body.quiz_style) ? `Quiz Assessment Format: ${prefs?.quizStyle || body.quiz_style}.` : null,
+      (prefs?.flashcardAlgorithm || body.flashcard_algorithm) ? `Flashcard Cadence: ${prefs?.flashcardAlgorithm || body.flashcard_algorithm}.` : null,
+      prefs?.rigorLevel ? `Academic Rigor Level: ${prefs.rigorLevel} out of 5.` : null,
     ].filter(Boolean).join(" ");
 
     return fetch("https://api.groq.com/openai/v1/chat/completions", {

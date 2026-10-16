@@ -1,3 +1,5 @@
+import { UserRole, WorkspacePreferences, ROLE_PRESETS } from "@/types/customization";
+
 export type NotesDepth = "comprehensive" | "concise" | "feynman";
 export type QuizDifficulty = "easy" | "moderate" | "challenging";
 export type PreferredModel = "llama-3.3-70b" | "llama-3.1-8b" | "gemini-2.0-flash" | "gpt-4o-mini";
@@ -74,4 +76,12 @@ export interface SettingsContextType {
   notesSettings: NotesViewSettings;
   updateNotesSettings: (partial: Partial<NotesViewSettings>) => void;
   resetSettings: () => void;
+  // Role & Adaptive Workspace Customization
+  userRole: UserRole;
+  preferences: WorkspacePreferences;
+  onboardingCompleted: boolean;
+  setUserRole: (role: UserRole) => Promise<void>;
+  updatePreferences: (partial: Partial<WorkspacePreferences>) => Promise<void>;
+  completeOnboarding: (role: UserRole, prefs?: Partial<WorkspacePreferences>) => Promise<void>;
+  resetToRolePreset: (role: UserRole) => Promise<void>;
 }

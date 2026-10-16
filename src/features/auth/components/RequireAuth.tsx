@@ -7,17 +7,26 @@ import { Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
+import { useSettings } from "@/features/settings/context/SettingsContext";
+import { usePathname } from "next/navigation";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading, error, signInAsGuest } = useAuth();
+  const { onboardingCompleted } = useSettings();
   const router = useRouter();
+  const pathname = usePathname();
   const { theme } = useTheme();
 
   useEffect(() => {
     if (!loading && !user && !error) {
       router.replace("/auth");
+      return;
     }
-  }, [loading, user, error, router]);
+
+    if (!loading && user && !onboardingCompleted && !pathname.startsWith("/app/onboarding")) {
+      router.replace("/app/onboarding");
+    }
+  }, [loading, user, error, onboardingCompleted, pathname, router]);
 
   if (loading) {
     return (

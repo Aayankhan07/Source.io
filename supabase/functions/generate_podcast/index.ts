@@ -216,6 +216,13 @@ export async function handler(req: Request): Promise<Response> {
   }
 
   try {
+    const userRole = body.user_role;
+    const podcastStyle = body.podcast_style;
+    const styleDirective = [
+      userRole ? `Target Audience Persona: ${userRole}.` : null,
+      podcastStyle ? `Episode Format & Pacing Style: ${podcastStyle}.` : null,
+    ].filter(Boolean).join(" ");
+
     const aiResp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -230,7 +237,9 @@ export async function handler(req: Request): Promise<Response> {
           { role: "system", content: SYSTEM_PROMPT },
           {
             role: "user",
-            content: `Document title: ${doc.title}\n\nSource:\n${source.slice(0, MAX_SOURCE_CHARS)}\n\nGenerate the podcast script now.`,
+            content: `Document title: ${doc.title}\n\nSource:\n${source.slice(0, MAX_SOURCE_CHARS)}\n\n${
+              styleDirective ? `${styleDirective}\n\n` : ""
+            }Generate the podcast script now.`,
           },
         ],
       }),

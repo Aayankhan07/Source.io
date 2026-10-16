@@ -8,9 +8,12 @@ import { queryKeys } from "@/lib/queryKeys";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useAppShell } from "@/features/documents/context/AppShellContext";
 import { DocumentRow } from "@/features/documents/types";
-import { Search, X, FileText, BookOpen, Plus, LayoutDashboard, Settings, CornerDownLeft } from "lucide-react";
+import { Search, X, FileText, BookOpen, Plus, LayoutDashboard, Settings, CornerDownLeft, Sliders, GraduationCap } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/features/settings/context/SettingsContext";
+import { useToast } from "@/hooks/use-toast";
+import { ROLE_METADATA, ROLE_PRESETS, UserRole } from "@/types/customization";
 
 export function GlobalCommandPalette() {
   const router = useRouter();
@@ -60,6 +63,31 @@ export function GlobalCommandPalette() {
     },
   });
 
+  const { userRole, setUserRole } = useSettings();
+  const { toast } = useToast();
+
+  const roleActions = useMemo(() => {
+    return (Object.keys(ROLE_METADATA) as UserRole[]).map((r) => {
+      const meta = ROLE_METADATA[r];
+      const isCurrent = userRole === r;
+      const rigor = ROLE_PRESETS[r]?.rigorLevel || 3;
+      return {
+        id: `role-${r}`,
+        title: `Switch Persona: ${meta.label}`,
+        subtitle: `${meta.desc} • Rigor Level ${rigor}/5${isCurrent ? " (Active)" : ""}`,
+        icon: GraduationCap,
+        run: () => {
+          setSearchOpen(false);
+          setUserRole(r);
+          toast({
+            title: `Persona Activated: ${meta.label}`,
+            description: meta.desc,
+          });
+        },
+      };
+    });
+  }, [userRole, setUserRole, toast, setSearchOpen]);
+
   // Built-in workspace navigation actions
   const defaultActions = useMemo(() => [
     {
@@ -92,6 +120,16 @@ export function GlobalCommandPalette() {
         setSearchOpen(false);
         setActiveView("library");
         router.push("/app");
+      },
+    },
+    {
+      id: "action-customization",
+      title: "Workspace Customization & Role Switcher",
+      subtitle: "Tailor study modes, notes layout, and pedagogical rigor",
+      icon: Sliders,
+      run: () => {
+        setSearchOpen(false);
+        router.push("/app/settings");
       },
     },
     {
@@ -130,10 +168,19 @@ export function GlobalCommandPalette() {
     }));
 
     if (!query.trim()) {
-      return [...defaultActions, ...docItems];
+      return [...defaultActions, ...roleActions.slice(0, 3), ...docItems];
     }
-    return docItems;
-  }, [defaultActions, filteredDocs, query, router, setSearchOpen]);
+
+    const q = query.toLowerCase();
+    const matchingRoles = roleActions.filter(
+      (a) => a.title.toLowerCase().includes(q) || a.subtitle.toLowerCase().includes(q)
+    );
+    const matchingActions = defaultActions.filter(
+      (a) => a.title.toLowerCase().includes(q) || a.subtitle.toLowerCase().includes(q)
+    );
+
+    return [...matchingActions, ...matchingRoles, ...docItems];
+  }, [defaultActions, roleActions, filteredDocs, query]);
 
   // Reset selected index when items change
   useEffect(() => {

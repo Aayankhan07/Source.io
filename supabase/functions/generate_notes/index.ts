@@ -6,6 +6,7 @@ import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
 import { consumeDailyQuota, enforceDailyQuota } from "../_shared/quotas.ts";
 import { authenticateRequest } from "../_shared/auth.ts";
+import { buildNotesSystemPrompt, UserRole, WorkspacePreferences } from "../_shared/promptCompiler.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -168,6 +169,8 @@ Deno.serve(async (req) => {
       api_key?: string;
       idempotency_key?: string;
       force_regenerate?: boolean;
+      user_role?: UserRole;
+      workspace_preferences?: WorkspacePreferences;
     };
     try {
       body = await req.json();
@@ -407,6 +410,14 @@ Deno.serve(async (req) => {
     `Source title: ${doc.title}\n\n--- SOURCE START ---\n${source}\n--- SOURCE END ---\n\n` +
     `Generate the study notes now, following the required structure exactly.${toneInstruction}`;
 
+  let activeSystemPrompt = SYSTEM_PROMPT;
+  if (body.user_role || body.workspace_preferences) {
+    activeSystemPrompt = `${buildNotesSystemPrompt(
+      body.user_role || "undergrad",
+      body.workspace_preferences || ({} as WorkspacePreferences)
+    )}\n\n${SYSTEM_PROMPT}`;
+  }
+
   async function callGroq(model: string): Promise<Response> {
     return await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -420,7 +431,7 @@ Deno.serve(async (req) => {
         temperature: 0.4,
         max_tokens: 3500, // Safe reservation to never breach 12k TPM
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: activeSystemPrompt },
           { role: "user", content: userPrompt },
         ],
       }),
