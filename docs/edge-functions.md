@@ -1,6 +1,6 @@
 # Edge functions
 
-Six Deno functions in `supabase/functions/`, deployed to Supabase. They are the only place server-side secrets are used.
+Seven Deno functions in `supabase/functions/`, deployed to Supabase. They are the only place server-side secrets are used.
 
 ## Shared contract
 
@@ -8,21 +8,23 @@ Every function follows the same shape:
 
 - **Method** — `POST`, with `OPTIONS` handled for CORS preflight.
 - **Auth** — an `Authorization: Bearer <access_token>` header is mandatory. The function verifies it with a user-scoped client (`auth.getClaims`) before doing anything, then switches to a service-role client for privileged writes.
-- **Body** — JSON, always containing at least `document_id`.
+- **Body** — JSON, always containing at least `document_id` (except for `billing-webhook`, which receives provider event payloads).
 - **Ownership** — the referenced document is re-read server-side and checked against the caller. A document belonging to someone else returns 404, not 403.
+- **Atomic Quotas** — `generate_notes`, `generate_derivatives`, and `chat` consume quota atomically via PostgreSQL RPC (`consume_daily_quota`) with row-level locks and lazy midnight UTC rollover. Personal BYOK keys (`x-byok-groq`, `x-byok-gemini`) and Scholar Pass subscribers (`tier = 'pro'`) bypass daily free deduction.
 
 ### Status codes
 
 | Code | Meaning |
 | :--- | :--- |
 | 400 | Invalid JSON, or `document_id` missing |
-| 401 | Missing/invalid bearer token |
+| 401 | Missing/invalid bearer token or HMAC signature |
 | 402 | Upstream AI provider credit exhausted |
 | 404 | Document not found, or not owned by the caller |
-| 429 | Rate limited by the AI provider |
+| 409 | Concurrent lock in-flight (duplicate generation prevented) |
+| 429 | Daily quota limit reached or rate limited by provider |
 | 500 | Configuration or unexpected server error |
 
-The client maps 429 and 402 to friendly messages in `functionError` (`src/lib/services/functions.ts`); everything else surfaces the response body text.
+The client maps 429, 409, and 402 to friendly messages in `functionError` (`src/lib/services/functions.ts`); everything else surfaces the response body text.
 
 ### Environment secrets
 
@@ -31,12 +33,11 @@ Set these on the Supabase project, never in `.env`:
 | Secret | Used by | Purpose |
 | :--- | :--- | :--- |
 | `GROQ_API_KEY` | ingest, generate_notes, generate_derivatives, generate_podcast, chat | Whisper transcription and llama chat completions |
+| `LEMONSQUEEZY_WEBHOOK_SECRET` | billing-webhook | HMAC SHA-256 signature verification for subscription webhook events |
 | `SUPABASE_URL` | all | injected automatically by the platform |
 | `SUPABASE_ANON_KEY` | all | injected automatically; used for the caller-scoped client |
 | `SUPABASE_SERVICE_ROLE_KEY` | all | injected automatically; bypasses RLS for server writes |
 | `ALLOWED_ORIGIN` | all | optional CORS lock-down; defaults to `*` |
-
-`ALLOWED_ORIGIN` is read at module load. Set it to your deployed site URL to stop other origins calling the functions from a browser. Leaving it unset preserves the permissive default.
 
 ---
 
@@ -68,94 +69,106 @@ Error codes written to `documents.error_code`: `MISSING_RAW_TEXT`, `EMPTY_OR_TOO
 
 Streams structured markdown study notes.
 
-**Request** `{ "document_id": "uuid" }` → **Response** `text/event-stream`
+**Request** `{ "document_id": "uuid", "tone"?: string, "notes_depth"?: string, "idempotency_key"?: string }` → **Response** `text/event-stream`
 
 - Model: Groq `llama-3.3-70b-versatile`
-- Input cap: 35,000 characters of `raw_text`
-- Emits OpenAI-shaped chunks; the client accumulates them via `streamNotes`
-- On stream completion the function persists the full markdown to `notes` itself — the client's follow-up `SELECT` is a re-read, not the write
-
-The client retries up to 3 times with exponential backoff (2s, 4s, 8s) while the function returns 429, because Groq's free tier rate-limits aggressively.
+- Quota: Calls `consumeDailyQuota` RPC before acquiring job lock.
+- Context distillation: Uses `distillSourceForNotes` for 50–300 page documents to prevent exceeding provider context limits.
+- Emits OpenAI-shaped chunks; the client accumulates them via `streamNotes`.
+- On stream completion the function persists the full markdown to `notes` itself.
 
 ---
 
 ## `generate_derivatives`
 
-Generates flashcards and a quiz from the notes in a single call.
+Generates flashcards and a diagnostic quiz from the notes in a single call.
 
-**Request** `{ "document_id": "uuid" }`
+**Request** `{ "document_id": "uuid", "flashcard_count"?: number, "quiz_difficulty"?: string }`
 
 **Response**
 ```json
 { "ok": true, "flashcards_count": 12, "questions_count": 8, "quiz_id": "uuid" }
 ```
 
-- Model: Groq `llama-3.3-70b-versatile`, 35,000-character input cap
-- Replaces existing flashcards and quiz rows for the document, so re-running regenerates rather than duplicates
-- Question types: `mcq`, `short_answer`, `true_false`
+- Quota: Protected by atomic `consumeDailyQuota` RPC.
+- Replaces existing flashcards and quiz rows for the document.
+- Question types: `mcq`, `short_answer`, `true_false`.
 
 ---
 
 ## `embed_chunks`
 
-Splits the notes into passages and stores hashed embeddings for retrieval.
+Progressive 50-chunk batched passage embedding engine with 768-dimension local hashed embeddings (`halfvec(768)`).
 
-**Request** `{ "document_id": "uuid" }`
+**Request** 
+```json
+{ "document_id": "uuid", "batch_index"?: 0, "batch_size"?: 50 }
+```
 
-**Response** `{ "ok": true, "chunks": 42, "cached": false }`
+**Response**
+```json
+{ "ok": true, "batch_index": 0, "inserted": 50, "total_chunks": 420, "completed": false }
+```
 
-`cached: true` means chunks already existed and nothing was recomputed.
-
-The embedding is **not** produced by a model — it is a deterministic 1536-dimension FNV-1a hashed bag of unigrams and bigrams, L2-normalized. See `embedLocal`. This makes indexing free and instant at the cost of pure lexical (not semantic) matching.
-
-> **Keep in sync:** `embedLocal` here and `embedQuery` in `chat/index.ts:28` must produce identical vectors for the same text. Change one without the other and retrieval silently degrades to noise. Any change requires re-indexing every document.
+- Embedding: Deterministic 768-dimension FNV-1a hashed unigram/bigram vector, L2-normalized. Compatible with `extensions.halfvec(768)` in PostgreSQL.
+- Batched Slicing: Accepts `batch_index` and `batch_size` (default 50) to allow client-side progressive indexing for 300+ page books without hitting Edge Function memory (150 MB) or CPU caps.
 
 ---
 
 ## `chat`
 
-Retrieval-augmented chat over one document's chunks.
+Retrieval-augmented chat over one document's chunks with 768-dimension vector search.
 
 **Request** `{ "document_id": "uuid", "message": "..." }` → **Response** `text/event-stream`
 
-Sequence:
-
-1. Embeds the question with `embedQuery`.
-2. Calls `match_document_chunks` for the top 6 passages (`TOP_K`).
+1. Embeds the question with 768-dimension `embedQuery`.
+2. Calls `match_document_chunks` over `halfvec(768)` composite index for the top 6 passages.
 3. Emits a named SSE frame first:
    ```
    event: citations
-   data: {"citations":[{"n":1,"order_index":4,"similarity":0.83,"text":"..."}]}
+   data: {"citations":[{"chunk_id":"uuid","similarity":0.83,"content":"..."}]}
    ```
-4. Streams the answer as OpenAI-shaped chunks. The model is prompted to cite as `[1]`, `[2]`, which `ChatPanel` renders as clickable chips.
+4. Streams the answer as OpenAI-shaped chunks with citation references.
 5. Persists both the user turn and the assistant reply to `chat_messages`.
-
-Model: Groq `llama-3.1-8b-instant`. History window: the last 10 messages.
 
 ---
 
 ## `generate_podcast`
 
-Produces a two-host audio recap.
+Produces an educational two-host audio lesson with decoupled script vs studio TTS synthesis.
 
-**Request** `{ "document_id": "uuid" }` → **Response** `{ "ok": true, "status": "ready" }`
+**Request** `{ "document_id": "uuid", "voice_duo"?: "rachel-alex" | "emma-daniel", "mode"?: "full" | "script_only" }`
 
-1. Writes a dialogue script from the notes (Groq llama), parsed by `script.ts` into `host_1` / `host_2` segments.
-2. Synthesizes each segment through **Microsoft Edge TTS** over a WebSocket (`tts.ts`) — voices `en-US-ChristopherNeural` and `en-US-AriaNeural`. This is a free service, not a Groq or Azure paid API, and it is the most failure-prone dependency in the system.
-3. Concatenates the MP3 segments, uploads to the `podcasts` bucket, and updates the `podcasts` row.
+**Response** 
+```json
+{ "ok": true, "status": "ready", "script": "...", "audio_url": "https://..." }
+```
 
-The row's `status` moves `generating` → `ready` | `failed`; the workspace watches it over Realtime. Per-segment synthesis has a 30-second timeout (`EDGE_TTS_TIMEOUT`).
+1. Synthesizes dialogue script via Groq (`openai/gpt-oss-20b`).
+2. Quota Guard: Verifies `consume_daily_tts_quota` (capped at 2 studio audio renders/day for free users; unlimited for Scholar Pass and BYOK).
+3. If TTS quota is exceeded or `script_only` requested: saves script with `audio_url: null` and returns `{ tts_quota_exceeded: true }` without failing.
+4. If audio allowed: synthesizes segments with Microsoft Edge TTS, concatenates MP3 binary, uploads to private `podcasts` bucket, and issues long-lived signed URL.
 
-`index_test.ts` sits alongside for Deno-side testing and is not part of the Vitest suite.
+---
+
+## `billing-webhook`
+
+Merchant of Record subscription fulfillment for Lemon Squeezy.
+
+**Request** `POST /functions/v1/billing-webhook` (payload from Lemon Squeezy with `x-signature` header)
+
+- Verification: Verifies HMAC SHA-256 signature using `crypto.subtle` and `LEMONSQUEEZY_WEBHOOK_SECRET`.
+- On `subscription_created`, `order_created`, `subscription_resumed`:
+  Updates `profiles.tier = 'pro'`, `daily_quota_limit = 200`, `daily_tts_quota_limit = 50`.
+- On `subscription_cancelled`, `subscription_expired`:
+  Reverts `profiles.tier = 'free'`, `daily_quota_limit = 25`, `daily_tts_quota_limit = 2`.
 
 ---
 
 ## Local development
 
-Edge functions are **not** covered by `npm run lint`, `npm run typecheck`, or `npm test` — they target Deno, and `eslint.config.js` ignores them deliberately. Use the Supabase CLI:
+Use the Supabase CLI:
 
 ```bash
-supabase functions serve chat --env-file supabase/functions/.env
+npx supabase functions serve chat --env-file supabase/functions/.env
 ```
-
-`supabase/functions/.env` and `supabase/functions/*/.env` are gitignored. `verify_jwt` is left at its default (enabled), which is correct — every function expects a real user token.

@@ -59,8 +59,9 @@ This is the spine of the product. Everything else hangs off it.
 | Notes | `streamNotes` — auto-fires once status is `ready` | `generate_notes` |
 | Flashcards + quiz | `generateDerivatives` | `generate_derivatives` |
 | Podcast | `generatePodcast` in `src/lib/services/podcast.ts` | `generate_podcast` |
-| Vector indexing | `embedChunks` — auto-fires once notes exist | `embed_chunks` |
-| Grounded chat | `streamChat` | `chat` |
+| Vector indexing | `embedChunks` (batched 50 chunks/slice) | `embed_chunks` |
+| Grounded chat | `streamChat` (SSE stream) | `chat` |
+| Billing & Checkout | Lemon Squeezy webhook notification | `billing-webhook` |
 
 ### PDF and DOCX are extracted client-side
 
@@ -128,11 +129,20 @@ TanStack Query is installed and its provider is mounted, but the data flow above
 
 ## Retrieval (RAG)
 
-Worth understanding because it is unusual: **there is no embedding model.** `embed_chunks` and `chat` both compute a deterministic 1536-dimension hashed bag-of-words vector locally — FNV-1a hashing over unigrams and bigrams, signed buckets, L2-normalized. See `embedLocal` in `supabase/functions/embed_chunks/index.ts` and `embedQuery` in `supabase/functions/chat/index.ts:28`.
+Retrieval runs on deterministic 768-dimensional embeddings stored as `extensions.halfvec(768)` in Supabase Postgres. `embed_chunks` and `chat` both compute a deterministic 768-dimension hashed vector locally — FNV-1a hashing over unigrams and bigrams, signed buckets, and L2 normalization:
 
-**The two implementations must stay byte-for-byte equivalent.** If you change tokenization, dimensions, or hashing in one, change it in the other and re-index every document, or retrieval silently returns nonsense.
+- **Database Column:** `document_chunks.embedding extensions.halfvec(768)`.
+- **Indexing:** HNSW index on `document_chunks` using cosine distance ops (`m = 16, ef_construction = 64`).
+- **Batch Processing:** Document ingestion slices chunk embeddings into progressive batches of 50 to avoid edge memory saturation.
+- **Byte-for-byte Parity:** `embedLocal` in `supabase/functions/embed_chunks/index.ts` and `embedQuery` in `supabase/functions/chat/index.ts` are identical in hash seed, tokenization, dimension (`768`), and normalization.
 
 Similarity search runs through the `match_document_chunks` Postgres function using pgvector cosine distance, returning the top 6 chunks. The function is `SECURITY INVOKER`, so RLS still applies.
+
+## Quotas and Monetization
+
+- **Free Tier:** 25 daily actions, 2 studio audio TTS generations, 5-document limit.
+- **Scholar Pass (Pro):** $9.99/mo or $79/yr (handled via Lemon Squeezy Merchant of Record), unlocking 200 daily actions, 50 audio renders, and unlimited documents.
+- **Atomic Enforcement:** `consume_daily_quota` and `consume_daily_tts_quota` RPCs perform atomic test-and-increment operations with automatic UTC midnight rollovers directly inside PostgreSQL.
 
 ## Shared conventions
 

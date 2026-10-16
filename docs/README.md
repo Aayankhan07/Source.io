@@ -4,9 +4,10 @@ Reference documentation for the Source.io codebase. Start with the root [`README
 
 | Page | What it covers |
 | :--- | :--- |
-| [Architecture](./architecture.md) | How the pieces fit together, the end-to-end document lifecycle, state management, streaming |
-| [Data model](./data-model.md) | Every table, enum, index, RLS policy, and storage bucket |
-| [Edge functions](./edge-functions.md) | Request/response contract for all six functions, models used, error codes |
+| [Master System Architecture](./MASTER_SYSTEM_ARCHITECTURE.md) | Single Source of Truth: full engineering specification, BYOK security, SSE streaming resilience, and citation grounded RAG |
+| [Architecture](./architecture.md) | How the pieces fit together, the end-to-end document lifecycle, state management, streaming, and quotas |
+| [Data model](./data-model.md) | Every table, enum, index, RLS policy, storage bucket, and atomic RPC functions |
+| [Edge functions](./edge-functions.md) | Request/response contract for all seven Deno edge functions, models used, error codes |
 | [Development](./development.md) | Environment setup, scripts, conventions, testing, common tasks |
 | [Deployment](./deployment.md) | Deploying the frontend, functions, migrations, and secrets |
 | [Troubleshooting](./troubleshooting.md) | Symptom-to-cause table for the failures you are most likely to hit |

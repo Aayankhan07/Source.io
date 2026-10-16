@@ -62,14 +62,23 @@ A quiz belongs to a document; questions belong to a quiz. `quiz_questions` carri
 | Column | Type | Notes |
 | :--- | :--- | :--- |
 | `chunk_text` | text | the passage |
-| `embedding` | `vector(1536)` | pgvector; see the retrieval section in [architecture](./architecture.md) |
+| `embedding` | `halfvec(768)` | pgvector 16-bit half-precision vector; 75% RAM reduction over float32 |
 | `order_index` | int | position within the document, shown as the citation number |
 
-Indexed with `ivfflat (embedding vector_cosine_ops) WITH (lists = 100)` for cosine similarity search.
+Indexed with `(document_id, embedding)` composite index and `ivfflat (embedding halfvec_cosine_ops) WITH (lists = 100)` for fast cosine similarity search.
 
 ### `profiles`
 
 Created automatically for every new auth user by the `handle_new_user` trigger on `auth.users`. **Readable by everyone** (`USING (true)`) — the only intentionally public table, so do not put anything sensitive in it.
+
+| Column | Type | Notes |
+| :--- | :--- | :--- |
+| `tier` | text | `'free'` (default) or `'pro'` (Scholar Pass $9/mo) |
+| `daily_quota_used` | int | Daily generation counter (resets midnight UTC) |
+| `daily_quota_limit` | int | 25 on free tier, 200 on Scholar Pass |
+| `daily_tts_quota_used` | int | Studio audio renders counter (resets midnight UTC) |
+| `daily_tts_quota_limit` | int | 2 on free tier, 50 on Scholar Pass |
+| `quota_reset_date` | date | Used for automated lazy rollover at midnight UTC |
 
 ### `user_roles`
 
@@ -87,7 +96,9 @@ Cost guardrails and telemetry: logs timestamp, user, `function_name`, `provider`
 
 | Function | Purpose |
 | :--- | :--- |
-| `match_document_chunks(_document_id, _query_embedding, _match_count)` | Cosine similarity search over `document_chunks`. `SECURITY INVOKER`, so RLS applies. Returns `id, chunk_text, order_index, similarity`. |
+| `consume_daily_quota(p_user_id, p_cost)` | Atomic row-level locked quota deduction with lazy midnight UTC rollover. Neutralizes TOCTOU race conditions. Returns boolean. |
+| `consume_daily_tts_quota(p_user_id, p_cost)` | Atomic studio audio TTS quota deduction with lazy midnight UTC rollover. Capped at 2/day on free tier. |
+| `match_document_chunks(_document_id, _query_embedding, _match_count)` | Cosine similarity search over `halfvec(768)` `document_chunks`. `SECURITY INVOKER`, so RLS applies. Returns `id, chunk_text, order_index, similarity`. |
 | `has_role(_user_id, _role)` | Role check. `SECURITY DEFINER` to avoid recursive RLS evaluation. |
 | `handle_new_user()` | Trigger on `auth.users` insert — creates the matching `profiles` row. |
 | `update_updated_at_column()` | Generic `updated_at` trigger, attached to profiles, documents, notes, podcasts. |
@@ -134,5 +145,8 @@ Applied in filename order:
 | `20260601125221_…` | Security tightening: admin-only role writes, private podcasts bucket |
 | `20261005190000_…` | AI cost guardrails: idempotency keys, token ceiling enforcement |
 | `20261005200000_…` | Full free cost plan: `ai_usage_logs` telemetry table and daily quota accounting |
+| `20261016090000_…` | Atomic row-level locked `consume_daily_quota` RPC |
+| `20261016091000_…` | Vector optimization to `halfvec(768)` and composite document index |
+| `20261016092000_…` | Profile tier, daily TTS quota limits, automated midnight UTC lazy rollover, `consume_daily_tts_quota` RPC |
 
 Never edit an applied migration — add a new one. See [deployment](./deployment.md).
