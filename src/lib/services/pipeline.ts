@@ -148,6 +148,7 @@ export async function streamNotes({
   apiKey,
   idempotencyKey,
   onDelta,
+  onResponse,
   signal,
 }: {
   documentId: string;
@@ -157,6 +158,7 @@ export async function streamNotes({
   apiKey?: string;
   idempotencyKey?: string;
   onDelta: (chunk: string) => void;
+  onResponse?: (resp: Response) => void;
   signal?: AbortSignal;
 }): Promise<string> {
   const reqIdempotencyKey =
@@ -187,6 +189,12 @@ export async function streamNotes({
     }
     if (!resp) throw new Error("Notes generation failed (no response)");
     throw await functionError(resp, "Notes generation failed");
+  }
+
+  try {
+    onResponse?.(resp);
+  } catch {
+    // Ignore header inspection errors
   }
 
   let full = "";

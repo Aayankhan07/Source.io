@@ -34,6 +34,7 @@ import { AiFeedbackButtons } from "@/components/common/AiFeedbackButtons";
 import { FlashcardsDeck } from "@/features/documents/components/FlashcardsDeck";
 import { QuizPlayer } from "@/features/documents/components/QuizPlayer";
 import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
+import { useProviderQuota } from "@/features/settings/context/ProviderQuotaContext";
 
 type DocumentAssets = {
   note: NoteRow | null;
@@ -52,6 +53,7 @@ export default function DocumentWorkspace() {
   const { toast } = useToast();
   const { openMobileNav, setCopilotOpen } = useAppShell();
   const queryClient = useQueryClient();
+  const { updateFromHeaders, refreshQuota } = useProviderQuota();
 
   const [streaming, setStreaming] = useState(false);
   const autoStartedRef = useRef<string | null>(null);
@@ -272,6 +274,11 @@ export default function DocumentWorkspace() {
         notesDepth: settings.notesDepth,
         model: settings.preferredModel,
         apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
+        onResponse: (resp) => {
+          if (settings.apiKeys.groq) {
+            updateFromHeaders(resp.headers, "groq");
+          }
+        },
         onDelta: (chunk) => {
           pendingNotesRef.current += chunk;
           if (notesFlushRef.current !== null) return;
@@ -336,8 +343,14 @@ export default function DocumentWorkspace() {
         // 3. Clear draft now that persisted note is safely in React Query cache
         setDraftMarkdown(null);
 
-        // 4. Invalidate to sync server IDs in background
-        await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
+        // 4. Invalidate to sync server IDs in background and update daily quota usage
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) }),
+          queryClient.invalidateQueries({ queryKey: ["daily_ai_actions_usage", user?.id] }),
+        ]);
+        if (settings.apiKeys.groq || settings.apiKeys.gemini) {
+          refreshQuota().catch(() => {});
+        }
       } else {
         setDraftMarkdown(null);
       }
@@ -375,7 +388,10 @@ export default function DocumentWorkspace() {
         quizDifficulty: settings.quizDifficulty,
         apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
       });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) }),
+        queryClient.invalidateQueries({ queryKey: ["daily_ai_actions_usage", user?.id] }),
+      ]);
       toast({ title: "Flashcards & quiz ready" });
     } catch (e: unknown) {
       toast({ title: "Generation failed", description: errorMessage(e), variant: "destructive" });
@@ -416,10 +432,6 @@ export default function DocumentWorkspace() {
 
   useEffect(() => {
     if (!docId || assetsQuery.isLoading) return;
-    if (docStatus === "ready" && !note?.markdown && autoStartedRef.current !== docId && !streaming) {
-      autoStartedRef.current = docId;
-      generate();
-    }
     // Auto-generate podcast if user enabled setting and no podcast exists yet
     if (
       settings.autoGeneratePodcast &&
