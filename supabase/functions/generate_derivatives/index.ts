@@ -143,6 +143,7 @@ Deno.serve(async (req) => {
       quiz_difficulty?: string;
       api_key?: string;
       idempotency_key?: string;
+      force_regenerate?: boolean;
     };
     try { body = await req.json(); } catch {
       return new Response(JSON.stringify({ error: "Invalid JSON" }), {
@@ -175,6 +176,28 @@ Deno.serve(async (req) => {
     });
   }
 
+  const forceRegenerate = body.force_regenerate === true;
+
+  // Fast-path: If flashcards & quiz already exist and force_regenerate is NOT set, return immediately
+  if (!forceRegenerate) {
+    const [{ data: existingCards }, { data: existingQuiz }] = await Promise.all([
+      admin.from("flashcards").select("id").eq("document_id", documentId),
+      admin.from("quizzes").select("id").eq("document_id", documentId).maybeSingle(),
+    ]);
+
+    if ((existingCards && existingCards.length > 0) || existingQuiz) {
+      return new Response(
+        JSON.stringify({
+          flashcards_count: existingCards?.length ?? 0,
+          questions_count: 0,
+          quiz_id: existingQuiz?.id ?? null,
+          cached: true,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+  }
+
   // Prefer notes content, fall back to raw_text
   const { data: noteRow } = await admin
     .from("notes").select("markdown").eq("document_id", documentId).maybeSingle();
@@ -193,11 +216,32 @@ Deno.serve(async (req) => {
     documentId,
     kind: "generate_derivatives",
     idempotencyKey: body.idempotency_key,
+    force: forceRegenerate,
   });
 
   if (!lock.acquired) {
+    // If job in progress, wait briefly (up to 4s) to check if derivatives completed
+    for (let i = 0; i < 4; i++) {
+      await new Promise((r) => setTimeout(r, 1000));
+      const { data: cardsCheck } = await admin
+        .from("flashcards")
+        .select("id")
+        .eq("document_id", documentId);
+      if (cardsCheck && cardsCheck.length > 0) {
+        return new Response(
+          JSON.stringify({
+            flashcards_count: cardsCheck.length,
+            questions_count: 0,
+            quiz_id: null,
+            cached: true,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     return new Response(
-      JSON.stringify({ error: lock.message || "Job already in progress or completed" }),
+      JSON.stringify({ error: lock.message || "A generation job is currently in progress." }),
       {
         status: 409,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

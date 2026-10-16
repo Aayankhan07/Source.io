@@ -263,7 +263,7 @@ export default function DocumentWorkspace() {
     }
   }, [doc?.status, assetsQuery.isLoading, persistedNote?.markdown, streaming, docId]);
 
-  const generate = async () => {
+  const generate = async (opts?: { force?: boolean }) => {
     if (!docId || streaming) return;
     setStreaming(true);
     setDraftMarkdown("");
@@ -274,6 +274,7 @@ export default function DocumentWorkspace() {
         notesDepth: settings.notesDepth,
         model: settings.preferredModel,
         apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
+        force: opts?.force,
         onResponse: (resp) => {
           if (settings.apiKeys.groq) {
             updateFromHeaders(resp.headers, "groq");
@@ -365,7 +366,7 @@ export default function DocumentWorkspace() {
   const [derivLoading, setDerivLoading] = useState(false);
   const [podcastLoading, setPodcastLoading] = useState(false);
 
-  const runDerivatives = async () => {
+  const runDerivatives = async (opts?: { force?: boolean }) => {
     if (!docId || derivLoading) return;
     setDerivLoading(true);
     try {
@@ -387,6 +388,7 @@ export default function DocumentWorkspace() {
         flashcardCount: settings.flashcardBatchSize,
         quizDifficulty: settings.quizDifficulty,
         apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
+        force: opts?.force,
       });
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) }),
@@ -696,7 +698,7 @@ export default function DocumentWorkspace() {
 
                                 {note?.markdown && (
                                   <button
-                                    onClick={generate}
+                                    onClick={() => generate({ force: true })}
                                     disabled={streaming}
                                     className="h-8 px-3 text-xs font-semibold text-foreground bg-muted hover:bg-accent rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                                   >
@@ -748,7 +750,7 @@ export default function DocumentWorkspace() {
                               We've indexed your material. Generate structured teaching notes to begin.
                             </p>
                           </div>
-                          <button onClick={generate} disabled={streaming} className="h-10 px-5 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer flex items-center gap-2 mx-auto">
+                          <button onClick={() => generate()} disabled={streaming} className="h-10 px-5 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-tactile-pill cursor-pointer flex items-center gap-2 mx-auto">
                             {streaming ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
                             <span>Generate Notes</span>
                           </button>
@@ -846,7 +848,7 @@ export default function DocumentWorkspace() {
                   </div>
                 ) : (
                   <div className="p-8 text-center bg-card rounded-2xl border border-border">
-                    <Button onClick={generate} disabled={streaming} className="rounded-full text-xs">
+                    <Button onClick={() => generate()} disabled={streaming} className="rounded-full text-xs">
                       Generate Notes
                     </Button>
                   </div>
@@ -867,13 +869,13 @@ export default function DocumentWorkspace() {
 
         {currentTab === "cards" && (
           <div className="h-full overflow-y-auto p-4 sm:p-8 max-w-4xl mx-auto">
-            <FlashcardsDeck documentId={doc.id} cards={cards} onRegenerate={runDerivatives} loading={derivLoading} />
+            <FlashcardsDeck documentId={doc.id} cards={cards} onRegenerate={() => runDerivatives({ force: true })} loading={derivLoading} />
           </div>
         )}
 
         {currentTab === "quiz" && (
           <div className="h-full overflow-y-auto p-4 sm:p-8 max-w-4xl mx-auto">
-            <QuizPlayer documentId={doc.id} quiz={qz} onRegenerate={runDerivatives} loading={derivLoading} />
+            <QuizPlayer documentId={doc.id} quiz={qz} onRegenerate={() => runDerivatives({ force: true })} loading={derivLoading} />
           </div>
         )}
 

@@ -190,6 +190,7 @@ Deno.serve(async (req) => {
       model?: string;
       api_key?: string;
       idempotency_key?: string;
+      force_regenerate?: boolean;
     };
     try {
       body = await req.json();
@@ -234,17 +235,86 @@ Deno.serve(async (req) => {
     });
   }
 
+  const forceRegenerate = body.force_regenerate === true;
+
+  // Fast-path: If notes already exist in database and force_regenerate is NOT requested,
+  // stream the completed notes immediately without consuming any Groq API limits.
+  if (!forceRegenerate) {
+    const { data: existingNote } = await admin
+      .from("notes")
+      .select("id, markdown")
+      .eq("document_id", documentId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existingNote?.markdown && existingNote.markdown.trim().length > 50) {
+      const encoder = new TextEncoder();
+      const cachedStream = new ReadableStream({
+        start(controller) {
+          const chunk = JSON.stringify({
+            choices: [{ delta: { content: existingNote.markdown } }],
+          });
+          controller.enqueue(encoder.encode(`data: ${chunk}\n\ndata: [DONE]\n\n`));
+          controller.close();
+        },
+      });
+
+      return new Response(cachedStream, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "X-Cache": "HIT",
+        },
+      });
+    }
+  }
+
   // Cost guardrail: acquire concurrency lock to prevent duplicate runs
   const lock = await acquireJobLock(admin, {
     userId,
     documentId,
     kind: "generate_notes",
     idempotencyKey: body.idempotency_key,
+    force: forceRegenerate,
   });
 
   if (!lock.acquired) {
+    // If a job is already in progress, wait briefly (up to 4s) to see if it finishes and writes to notes
+    for (let i = 0; i < 4; i++) {
+      await new Promise((r) => setTimeout(r, 1000));
+      const { data: noteCheck } = await admin
+        .from("notes")
+        .select("markdown")
+        .eq("document_id", documentId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (noteCheck?.markdown && noteCheck.markdown.trim().length > 50) {
+        const encoder = new TextEncoder();
+        const cachedStream = new ReadableStream({
+          start(controller) {
+            const chunk = JSON.stringify({
+              choices: [{ delta: { content: noteCheck.markdown } }],
+            });
+            controller.enqueue(encoder.encode(`data: ${chunk}\n\ndata: [DONE]\n\n`));
+            controller.close();
+          },
+        });
+        return new Response(cachedStream, {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "X-Cache": "HIT",
+          },
+        });
+      }
+    }
+
     return new Response(
-      JSON.stringify({ error: lock.message || "Job already in progress or completed" }),
+      JSON.stringify({ error: lock.message || "A note generation job is currently in progress." }),
       {
         status: 409,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

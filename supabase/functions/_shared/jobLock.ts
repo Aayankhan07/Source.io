@@ -14,34 +14,58 @@ export async function acquireJobLock(
     documentId: string;
     kind: JobKind;
     idempotencyKey?: string | null;
+    force?: boolean;
   }
 ): Promise<{ acquired: boolean; jobId?: string; message?: string }> {
   try {
-    // 1. Check for active running job for this document & kind
-    const { data: running } = await admin
-      .from("jobs")
-      .select("id, status, updated_at")
-      .eq("document_id", opts.documentId)
-      .eq("kind", opts.kind)
-      .eq("status", "running")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // If force is requested, clear any existing running jobs for this document & kind
+    if (opts.force) {
+      await admin
+        .from("jobs")
+        .update({
+          status: "failed",
+          error: "Superseded by user request",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("document_id", opts.documentId)
+        .eq("kind", opts.kind)
+        .eq("status", "running");
+    } else {
+      // 1. Check for active running job for this document & kind
+      const { data: running } = await admin
+        .from("jobs")
+        .select("id, status, updated_at")
+        .eq("document_id", opts.documentId)
+        .eq("kind", opts.kind)
+        .eq("status", "running")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-    if (running) {
-      const ageMs = Date.now() - new Date(running.updated_at).getTime();
-      // If active job was touched within last 90 seconds, treat as in-progress
-      if (ageMs < 90_000) {
-        return {
-          acquired: false,
-          jobId: running.id,
-          message: `A ${opts.kind} generation job is already in progress for this document.`,
-        };
+      if (running) {
+        const ageMs = Date.now() - new Date(running.updated_at).getTime();
+        // If active job was untouched for more than 25 seconds, treat as stale/abandoned
+        if (ageMs > 25_000) {
+          await admin
+            .from("jobs")
+            .update({
+              status: "failed",
+              error: "Stale job timeout",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", running.id);
+        } else {
+          return {
+            acquired: false,
+            jobId: running.id,
+            message: `A ${opts.kind} generation job is already in progress for this document.`,
+          };
+        }
       }
     }
 
     // 2. Check if this exact idempotency key was already completed
-    if (opts.idempotencyKey) {
+    if (opts.idempotencyKey && !opts.force) {
       const { data: existingKey } = await admin
         .from("jobs")
         .select("id, status")
@@ -74,6 +98,17 @@ export async function acquireJobLock(
     if (error) {
       // Postgres error 23505 = unique_violation on idempotency_key
       if (error.code === "23505") {
+        if (opts.force) {
+          await admin
+            .from("jobs")
+            .update({
+              status: "running",
+              progress: 10,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("idempotency_key", opts.idempotencyKey!);
+          return { acquired: true };
+        }
         return { acquired: false, message: "Duplicate concurrent request detected." };
       }
       return { acquired: false, message: error.message };

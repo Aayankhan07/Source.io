@@ -117,27 +117,46 @@ export async function streamChat({
 /** Trigger flashcards + quiz generation. Returns counts. */
 export async function generateDerivatives(
   documentId: string,
-  options?: { flashcardCount?: number; quizDifficulty?: string; apiKey?: string; idempotencyKey?: string }
+  options?: {
+    flashcardCount?: number;
+    quizDifficulty?: string;
+    apiKey?: string;
+    idempotencyKey?: string;
+    force?: boolean;
+  }
 ): Promise<{
   flashcards_count: number; questions_count: number; quiz_id: string | null;
 }> {
   const idempotencyKey =
     options?.idempotencyKey ||
     `${documentId}:derivatives:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
-  const resp = await callFunction("generate_derivatives", {
-    document_id: documentId,
-    flashcard_count: options?.flashcardCount,
-    quiz_difficulty: options?.quizDifficulty,
-    api_key: options?.apiKey,
-    idempotency_key: idempotencyKey,
-  });
-  if (!resp.ok) throw await functionError(resp, "Generation failed");
+  let resp: Response | null = null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    resp = await callFunction("generate_derivatives", {
+      document_id: documentId,
+      flashcard_count: options?.flashcardCount,
+      quiz_difficulty: options?.quizDifficulty,
+      api_key: options?.apiKey,
+      idempotency_key: idempotencyKey,
+      force_regenerate: options?.force,
+    });
+    if (resp.status !== 429 && resp.status !== 409) break;
+    const waitMs = 1500 * Math.pow(1.5, attempt);
+    await new Promise((r) => setTimeout(r, waitMs));
+  }
+  if (!resp || !resp.ok) {
+    if (resp?.status === 409) {
+      throw new Error("Flashcards and quiz generation is currently in progress. Please wait a moment.");
+    }
+    if (!resp) throw new Error("Generation failed (no response)");
+    throw await functionError(resp, "Generation failed");
+  }
   return await resp.json();
 }
 
 /**
  * Stream notes for a document. Calls onDelta for each token chunk.
- * Retries up to 3 times while the function reports a 429.
+ * Retries while the function reports a 429 or 409 (concurrency lock in-flight).
  * Returns the full markdown when done.
  */
 export async function streamNotes({
@@ -147,6 +166,7 @@ export async function streamNotes({
   model,
   apiKey,
   idempotencyKey,
+  force,
   onDelta,
   onResponse,
   signal,
@@ -157,6 +177,7 @@ export async function streamNotes({
   model?: string;
   apiKey?: string;
   idempotencyKey?: string;
+  force?: boolean;
   onDelta: (chunk: string) => void;
   onResponse?: (resp: Response) => void;
   signal?: AbortSignal;
@@ -165,7 +186,7 @@ export async function streamNotes({
     idempotencyKey ||
     `${documentId}:notes:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
   let resp: Response | null = null;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     resp = await callFunction(
       "generate_notes",
       {
@@ -175,17 +196,21 @@ export async function streamNotes({
         model,
         api_key: apiKey,
         idempotency_key: reqIdempotencyKey,
+        force_regenerate: force,
       },
       { signal }
     );
-    if (resp.status !== 429) break;
-    const waitMs = 2000 * Math.pow(2, attempt);
+    if (resp.status !== 429 && resp.status !== 409) break;
+    const waitMs = 1500 * Math.pow(1.5, attempt);
     await new Promise((r) => setTimeout(r, waitMs));
   }
 
   if (!resp || !resp.ok || !resp.body) {
     if (resp?.status === 429) {
       throw new Error("Groq free-tier rate limit reached. Please wait ~30 seconds and try again.");
+    }
+    if (resp?.status === 409) {
+      throw new Error("Note generation is already in progress for this document. Please wait a moment.");
     }
     if (!resp) throw new Error("Notes generation failed (no response)");
     throw await functionError(resp, "Notes generation failed");
