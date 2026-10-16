@@ -31,7 +31,8 @@ This specification details the **definitive, zero-defect engineering blueprint**
        │  - Filter Enabled Tabs│         │ - Role Persona Inject │        │ - SettingsContext     │
        │  - TAB_LABELS Mapping │         │ - Modular Note Blocks │        │ - Supabase profiles   │
        │  - Active Tab Fallback│         │ - Rigor Depth (1-5)   │        │ - LocalStorage Fallback│
-       │  - Role Primitives    │         │ - Citation Formats    │        │ - Command Palette (K) │
+       │  - Role Primitives    │         │ - Citation Formats    │        │ - Command Palette (K) │+
+      
        │  - Per-Doc Overrides  │         │ - Grounding Citations │        │ - Tactile Left Dock   │
        └───────────────────────┘         └───────────────────────┘        └───────────────────────┘
 ```

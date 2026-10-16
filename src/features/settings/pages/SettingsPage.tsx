@@ -9,6 +9,7 @@ import {
   Database,
   ArrowLeft,
   Settings as SettingsIcon,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AIModelSettings from "../components/AIModelSettings";
@@ -16,8 +17,9 @@ import AudioSettings from "../components/AudioSettings";
 import AppearanceSettings from "../components/AppearanceSettings";
 import DataStorageSettings from "../components/DataStorageSettings";
 import CustomizationSettings from "../components/CustomizationSettings";
+import PlanBillingSettings from "../components/PlanBillingSettings";
 
-type SettingsTab = "customization" | "models" | "audio" | "appearance" | "data";
+type SettingsTab = "customization" | "billing" | "models" | "audio" | "appearance" | "data";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -25,6 +27,7 @@ export default function SettingsPage() {
 
   const tabs: { id: SettingsTab; label: string; icon: typeof Bot; desc: string }[] = [
     { id: "customization", label: "Customization", icon: SettingsIcon, desc: "Academic roles & visible tabs" },
+    { id: "billing", label: "Plan & Billing", icon: CreditCard, desc: "Scholar Pass & usage quotas" },
     { id: "models", label: "AI & Models", icon: Bot, desc: "Notes depth & BYOK keys" },
     { id: "audio", label: "Podcast & Audio", icon: Headphones, desc: "Host voices & speed" },
     { id: "appearance", label: "Appearance", icon: Palette, desc: "Theme & reading speed" },
@@ -87,6 +90,10 @@ export default function SettingsPage() {
 
       {/* Active Tab Settings Panels */}
       <div className="w-full pb-16">
+        {activeTab === "customization" && <CustomizationSettings />}
+        {activeTab === "billing" && (
+          <PlanBillingSettings onSwitchToModelsTab={() => setActiveTab("models")} />
+        )}
         {activeTab === "models" && <AIModelSettings />}
         {activeTab === "audio" && <AudioSettings />}
         {activeTab === "appearance" && <AppearanceSettings />}

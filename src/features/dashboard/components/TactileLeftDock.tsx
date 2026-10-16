@@ -11,7 +11,6 @@ import {
   ChevronLeft,
   Sun,
   Moon,
-  Sparkles,
   GraduationCap
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -163,23 +162,6 @@ export function TactileLeftDock({
                   {roleMeta?.label || "Student"}
                 </span>
               )}
-            </Link>
-          </div>
-
-          {/* Scholar Pass Quick Access */}
-          <div className="w-full pt-2 mt-1 border-t border-border">
-            <Link
-              href="/app/settings"
-              title="Scholar Pass ($9/mo)"
-              className={cn(
-                "h-8 rounded-[14px] flex items-center transition-all cursor-pointer",
-                isExpanded
-                  ? "w-full px-3 gap-2 justify-start bg-muted/50 hover:bg-muted text-foreground font-semibold text-[11px]"
-                  : "w-8 justify-center mx-auto text-muted-foreground hover:text-foreground hover:bg-accent"
-              )}
-            >
-              <Sparkles className="size-3.5 shrink-0 text-foreground" />
-              {isExpanded && <span className="truncate">Scholar Pass</span>}
             </Link>
           </div>
 
