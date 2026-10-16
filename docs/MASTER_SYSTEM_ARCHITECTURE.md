@@ -1,5 +1,5 @@
 # Source.io — Master Technical Architecture & System Design Document
-*Version: 3.0.0 • Academic Production Standard • Last Updated: October 2026*
+*Version: 3.1.0 • Academic Production Standard • Last Updated: October 2026*
 
 ---
 
@@ -112,35 +112,35 @@ src/
 │   ├── globals.css                   # Obsidian Monochrome Design System & CSS Variables
 │   ├── layout.tsx                    # Root HTML document, Providers (Query, Auth)
 │   ├── page.tsx                      # High-converting Monochrome Editorial Landing Page
-│   └── (dashboard)/                  # Authenticated application workspace routes
+│   └── app/                          # Authenticated application workspace routes
+│       ├── page.tsx                  # Dashboard with Tactile Workspace & Bento telemetry
+│       └── doc/[docId]/page.tsx      # DocumentWorkspace active study route
 ├── components/                       # Shared UI & Domain Components
-│   ├── common/                       # App Shell, Header, Navigation, Footer, Quota Badge
+│   ├── common/                       # App Shell, Header, Navigation, Footer, DailyQuotaPill
 │   ├── landing/                      # Landing page sections, Motion primitives, Hero demos
 │   └── ui/                           # Radix-backed Atomic UI (Buttons, Modals, Sliders, Cards)
 ├── features/                         # Independent Domain Features
-│   ├── auth/                         # Supabase Auth, Login/Register modal, Session state
-│   ├── dashboard/                    # Tactile Source Cards, Document Ingest modal, Quota status
+│   ├── auth/                         # Supabase Auth, RequireAuth guard, Session context
+│   ├── dashboard/                    # Tactile Source Cards, Performance Charts, Left Dock
+│   │   └── components/               # TactileDashboard, TactilePerformanceChart, TactileSourceCards
 │   ├── documents/                    # Core 5-Study-Mode Workspace Engine
-│   │   ├── components/               # PDF Viewer, Citation Popovers, Leitner Controls
-│   │   ├── pages/                    # DocumentWorkspace.tsx (Workspace container)
-│   │   └── views/                    # The 5 Study Primitives:
-│   │       ├── NotesView.tsx         # Executive study notes with KaTeX & coordinates
-│   │       ├── FlashcardsDeck.tsx    # 3D Flip Flashcards with Leitner spaced repetition
-│   │       ├── QuizPlayer.tsx        # Timed diagnostic assessment engine
-│   │       ├── PodcastPlayer.tsx     # 2-host audio player & synchronized transcript
-│   │       └── AskPanel.tsx          # Real-time grounded RAG chat with streaming citations
-│   └── settings/                     # User preferences, BYOK key vault, Account telemetry
-├── hooks/                            # Custom React Hooks (useMediaQuery, useDebounce, etc.)
-├── lib/                              # Infrastructure & Core Utilities
-│   ├── services/                     # Edge Function & Backend Service Clients
-│   │   ├── pipeline.ts               # Ingestion triggers, SSE parser, Generation callers
-│   │   ├── functions.ts              # Authenticated fetch wrapper with BYOK header injector
-│   │   ├── byokTest.ts               # In-browser zero-latency validation for API keys
-│   │   ├── extract.ts                # Client-side fallback text/pdf parsing
-│   │   └── podcast.ts                # Audio synthesis & dual-voice orchestrator
-│   ├── supabase/                     # Supabase client instantiation & typed DB schemas
-│   └── utils.ts                      # Class variance authority (cn), date & text formatters
-└── types/                            # Global TypeScript contracts (Document, Citation, Card, etc.)
+│   │   ├── components/               # AskPanel, FlashcardsDeck, QuizPlayer, PodcastPlayer, UploadDialog, WorkspaceOutline
+│   │   ├── context/                  # Workspace context & document state
+│   │   ├── data/                     # Mock documents & sample study assets
+│   │   └── pages/                    # DocumentWorkspace.tsx (5-tab workspace shell), AppHome.tsx
+│   └── settings/                     # User preferences, BYOK key vault, DailyQuotaMetrics, ProviderQuotaContext
+├── hooks/                            # Custom React Hooks (use-toast, etc.)
+├── integrations/                     # External service configurations
+│   └── supabase/                     # Typed Supabase client (client.ts) & database contracts (types.ts)
+└── lib/                              # Infrastructure & Core Utilities
+    ├── queryKeys.ts                  # Centralized TanStack Query cache keys
+    ├── services/                     # Edge Function & Backend Service Clients
+    │   ├── pipeline.ts               # Ingestion triggers, SSE parser, Generation callers
+    │   ├── functions.ts              # Authenticated fetch wrapper with BYOK header injector
+    │   ├── byokTest.ts               # In-browser zero-latency validation for API keys
+    │   ├── extract.ts                # Client-side fallback text/pdf parsing
+    │   └── podcast.ts                # Audio synthesis & dual-voice orchestrator
+    └── utils.ts                      # Class variance authority (cn), date & text formatters
 ```
 
 ---
@@ -246,11 +246,11 @@ Hallucination prevention is the central technical achievement of Source.io. The 
 ┌────────────────────────────────────────────────────────────────────────┐
 │                      2. Vectorization & Storage                        │
 │                                                                        │
-│   Semantic Chunking (512 tokens)  ───► text-embedding-3 / Gemini-embed  │
+│   Semantic Chunking (512 tokens)  ───► embedLocal (768d Hashed Vector) │
 │                                                   │                    │
 │                                                   ▼                    │
-│   Stored in Supabase PostgreSQL:              pgvector Table           │
-│   [ id | doc_id | embedding | page | para | text_content | bbox_json ] │
+│   Stored in Supabase PostgreSQL:       pgvector Table (halfvec 768d)   │
+│   [ id | doc_id | user_id | embedding | page | para | text | bbox ]    │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ▼
@@ -883,6 +883,7 @@ All LLM-generated output (study notes, flashcard answers, and chat responses) pa
 | **2.3.0** | 2026-10-02 | Transition to 100% Monochrome Editorial Paper & Obsidian Ink design system | Design Systems Lead |
 | **2.4.0** | 2026-10-15 | Complete master architectural specification, SSE resilience parser, BYOK zero-retention security protocols | Antigravity AI Engineering |
 | **3.0.0** | 2026-10-16 | Production-scale hardening: atomic `consume_daily_quota` RPC (TOCTOU protection), `halfvec(768)` 75% vector RAM compression, progressive 50-chunk ingestion, decoupled podcast TTS quotas, and Lemon Squeezy HMAC MoR webhook fulfillment | Antigravity AI Engineering |
+| **3.1.0** | 2026-10-16 | Full documentation audit: synchronized directory domain structure (Next.js `app/app/` workspace routes, `features/dashboard`), exact `halfvec(768)` RAG vector diagrams, and complete doc cross-references | Antigravity AI Engineering |
 
 ---
 *End of Master Technical Architecture Document • Source.io Engineering*

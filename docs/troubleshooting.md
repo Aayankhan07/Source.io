@@ -76,7 +76,7 @@ Components calling `useSearchParams()` during client-side hydration must be wrap
 It should not — they are in the ignore list, since they are Deno code with different globals. If you see them, `eslint.config.js` lost its `supabase/functions/**` entry.
 
 **`prose-*` classes have no effect.**
-`@tailwindcss/typography` is installed but not registered in `tailwind.config.ts`. Use `.prose-invert-tight` (defined in `src/index.css`), which `MarkdownView` already applies.
+`@tailwindcss/typography` is installed but not registered in `tailwind.config.ts`. Use `.prose-invert-tight` (defined in `app/globals.css`), which `MarkdownView` already applies.
 
 **Realtime updates not arriving.**
 Confirm Realtime is enabled for the table in the Supabase dashboard, and that the channel filter matches (`id=eq.{docId}` for documents, `document_id=eq.{docId}` for podcasts).

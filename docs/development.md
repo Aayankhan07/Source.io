@@ -71,7 +71,7 @@ return await resp.json();
 
 **shadcn/ui.** Files in `src/components/ui/` are generated. Prefer adding a variant (as `button.tsx` does with `size: xs`) over editing the component's structure, so a future regeneration is a smaller merge.
 
-**Styling.** Reach for the semantic CSS variables in `src/index.css` rather than raw hex. Note that the `@tailwindcss/typography` plugin is installed but **not enabled** — `prose-*` classes do nothing. Markdown is styled by `.prose-invert-tight`, which `MarkdownView` applies for you.
+**Styling.** Reach for the semantic CSS variables in `app/globals.css` rather than raw hex. Note that the `@tailwindcss/typography` plugin is installed but **not enabled** — `prose-*` classes do nothing. Markdown is styled by `.prose-invert-tight`, which `MarkdownView` applies for you.
 
 **Database changes.** Never edit an applied migration. Add a new timestamped file, and give every new table its own RLS policies — RLS is on by default and a table without policies is invisible to clients.
 
