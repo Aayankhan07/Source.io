@@ -158,7 +158,7 @@ export default function DocumentWorkspace() {
           .maybeSingle(),
         supabase
           .from("podcasts")
-          .select("id,document_id,title,script,audio_url,status")
+          .select("id,document_id,script,audio_url,status")
           .eq("document_id", docId!)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -236,6 +236,13 @@ export default function DocumentWorkspace() {
   const readTimeMinutes = useMemo(() => {
     return calculateReadTime(note?.markdown, settings?.readingTargetWpm || 200).readMinutes;
   }, [note?.markdown, settings?.readingTargetWpm]);
+
+  // Auto-generate notes if document is ready and no note exists yet
+  useEffect(() => {
+    if (doc?.status === "ready" && !assetsQuery.isLoading && !persistedNote?.markdown && !streaming) {
+      generate();
+    }
+  }, [doc?.status, assetsQuery.isLoading, persistedNote?.markdown, streaming]);
 
   const generate = async () => {
     if (!docId || streaming) return;
