@@ -237,12 +237,19 @@ export default function DocumentWorkspace() {
     return calculateReadTime(note?.markdown, settings?.readingTargetWpm || 200).readMinutes;
   }, [note?.markdown, settings?.readingTargetWpm]);
 
-  // Auto-generate notes if document is ready and no note exists yet
+  // Auto-generate notes only once when document becomes ready and no note exists yet
   useEffect(() => {
-    if (doc?.status === "ready" && !assetsQuery.isLoading && !persistedNote?.markdown && !streaming) {
+    if (
+      doc?.status === "ready" &&
+      !assetsQuery.isLoading &&
+      !persistedNote?.markdown &&
+      !streaming &&
+      autoStartedRef.current !== docId
+    ) {
+      autoStartedRef.current = docId ?? null;
       generate();
     }
-  }, [doc?.status, assetsQuery.isLoading, persistedNote?.markdown, streaming]);
+  }, [doc?.status, assetsQuery.isLoading, persistedNote?.markdown, streaming, docId]);
 
   const generate = async () => {
     if (!docId || streaming) return;
@@ -356,6 +363,7 @@ export default function DocumentWorkspace() {
       await generateDerivatives(docId, {
         flashcardCount: settings.flashcardBatchSize,
         quizDifficulty: settings.quizDifficulty,
+        apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
       });
       await queryClient.invalidateQueries({ queryKey: queryKeys.assets(docId) });
       toast({ title: "Flashcards & quiz ready" });

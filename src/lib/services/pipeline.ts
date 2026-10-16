@@ -117,7 +117,7 @@ export async function streamChat({
 /** Trigger flashcards + quiz generation. Returns counts. */
 export async function generateDerivatives(
   documentId: string,
-  options?: { flashcardCount?: number; quizDifficulty?: string; idempotencyKey?: string }
+  options?: { flashcardCount?: number; quizDifficulty?: string; apiKey?: string; idempotencyKey?: string }
 ): Promise<{
   flashcards_count: number; questions_count: number; quiz_id: string | null;
 }> {
@@ -128,6 +128,7 @@ export async function generateDerivatives(
     document_id: documentId,
     flashcard_count: options?.flashcardCount,
     quiz_difficulty: options?.quizDifficulty,
+    api_key: options?.apiKey,
     idempotency_key: idempotencyKey,
   });
   if (!resp.ok) throw await functionError(resp, "Generation failed");

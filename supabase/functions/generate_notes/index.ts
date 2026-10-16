@@ -154,60 +154,63 @@ Deno.serve(async (req) => {
       });
     }
 
-  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-  const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-  const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
-  if (!GROQ_API_KEY) {
-    return new Response(JSON.stringify({ error: "GROQ_API_KEY not configured" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const envGroqKey = Deno.env.get("GROQ_API_KEY");
 
-  const userClient = createClient(SUPABASE_URL, ANON, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const admin = createClient(SUPABASE_URL, SERVICE);
-
-  const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(
-    authHeader.replace("Bearer ", ""),
-  );
-  if (claimsErr || !claimsData?.claims) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const userClient = createClient(SUPABASE_URL, ANON, {
+      global: { headers: { Authorization: authHeader } },
     });
-  }
-  const userId = claimsData.claims.sub as string;
+    const admin = createClient(SUPABASE_URL, SERVICE);
 
-  // Emergency circuit breaker check
-  const breaker = await checkCircuitBreaker(admin, "ai_requests_enabled");
-  if (!breaker.allowed) {
-    return new Response(JSON.stringify({ error: breaker.message }), {
-      status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
+    const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(
+      authHeader.replace("Bearer ", ""),
+    );
+    if (claimsErr || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = claimsData.claims.sub as string;
 
-  let body: {
-    document_id?: string;
-    tone?: string;
-    notes_depth?: string;
-    model?: string;
-    api_key?: string;
-    idempotency_key?: string;
-  };
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const documentId = body.document_id;
-  if (!documentId) {
-    return new Response(JSON.stringify({ error: "document_id required" }), {
+    // Emergency circuit breaker check
+    const breaker = await checkCircuitBreaker(admin, "ai_requests_enabled");
+    if (!breaker.allowed) {
+      return new Response(JSON.stringify({ error: breaker.message }), {
+        status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    let body: {
+      document_id?: string;
+      tone?: string;
+      notes_depth?: string;
+      model?: string;
+      api_key?: string;
+      idempotency_key?: string;
+    };
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const groqApiKey = body.api_key?.trim() || envGroqKey;
+    if (!groqApiKey) {
+      return new Response(JSON.stringify({ error: "GROQ_API_KEY not configured. Please add your API key in Settings." }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const documentId = body.document_id;
+    if (!documentId) {
+      return new Response(JSON.stringify({ error: "document_id required" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -270,8 +273,6 @@ Deno.serve(async (req) => {
   const userPrompt =
     `Source title: ${doc.title}\n\n--- SOURCE START ---\n${source}\n--- SOURCE END ---\n\n` +
     `Generate the study notes now, following the required structure exactly.${toneInstruction}`;
-
-  const groqApiKey = body.api_key?.trim() || GROQ_API_KEY;
 
   async function callGroq(model = "openai/gpt-oss-120b"): Promise<Response> {
     return await fetch("https://api.groq.com/openai/v1/chat/completions", {
