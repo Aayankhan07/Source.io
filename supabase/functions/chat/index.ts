@@ -1,7 +1,7 @@
 // RAG streaming chat for a document. Embeds the question, retrieves top-k chunks,
 // streams Gemini response, persists messages, and returns citations as a leading SSE event.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { checkDailyQuota } from "../_shared/quotas.ts";
+import { checkDailyQuota, consumeDailyQuota } from "../_shared/quotas.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
 
@@ -19,7 +19,7 @@ const corsHeaders = {
 const CHAT_MODEL = "openai/gpt-oss-20b";
 const TOP_K = 6;
 const HISTORY_LIMIT = 10;
-const EMBED_DIMS = 1536;
+const EMBED_DIMS = 768;
 
 function fnv1a(str: string): number {
   let h = 0x811c9dc5;
@@ -173,16 +173,20 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Cost guardrail: check daily free Copilot question quota (25/day, UTC midnight reset)
-  const quota = await checkDailyQuota(admin, userId, "chat", 25);
-  if (!quota.allowed) {
-    return new Response(
-      JSON.stringify({
-        error: "Daily free Copilot question limit reached (25/day). Your quota will reset at midnight UTC.",
-        quotaExceeded: true,
-      }),
-      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+  // Cost guardrail: atomic daily quota check (25/day, UTC midnight reset)
+  const isByok = !!(req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
+  if (!isByok) {
+    const quota = await consumeDailyQuota(admin, userId, 1);
+    if (!quota.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: "Daily free Copilot question limit reached (25/day). Your quota will reset at midnight UTC.",
+          quotaExceeded: true,
+          code: "QUOTA_EXCEEDED",
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
   }
 
   const requestId = crypto.randomUUID();

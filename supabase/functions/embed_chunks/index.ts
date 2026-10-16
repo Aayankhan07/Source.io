@@ -11,7 +11,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const EMBED_DIMS = 1536;
+const EMBED_DIMS = 768;
 const TARGET_CHARS = 1400; // ~350 tokens
 const OVERLAP = 200;
 const BATCH_SIZE = 32;
@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
   }
   const userId = claimsData.claims.sub as string;
 
-  let body: { document_id?: string };
+  let body: { document_id?: string; batch_index?: number; batch_size?: number };
   try { body = await req.json(); } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -137,7 +137,84 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Skip if already embedded.
+  const allChunks = chunkText(doc.raw_text);
+  const totalChunks = allChunks.length;
+  if (totalChunks === 0) {
+    return new Response(JSON.stringify({ ok: true, chunks: 0, completed: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // --- Progressive Batched Ingestion Branch ---
+  if (body.batch_index !== undefined) {
+    const batchIndex = Math.max(0, Math.floor(body.batch_index));
+    const batchSize = Math.max(10, Math.min(100, body.batch_size ?? 50));
+    const start = batchIndex * batchSize;
+    const end = Math.min(totalChunks, start + batchSize);
+
+    // If batch 0, check if already completed
+    if (batchIndex === 0) {
+      const { count: existing } = await admin
+        .from("document_chunks")
+        .select("id", { count: "exact", head: true })
+        .eq("document_id", documentId);
+
+      if ((existing ?? 0) >= totalChunks) {
+        return new Response(JSON.stringify({
+          ok: true,
+          chunks: existing,
+          total_chunks: totalChunks,
+          cached: true,
+          completed: true,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // If re-embedding or interrupted partial, clear old chunks
+      if ((existing ?? 0) > 0) {
+        await admin.from("document_chunks").delete().eq("document_id", documentId);
+      }
+    }
+
+    if (start >= totalChunks) {
+      return new Response(JSON.stringify({
+        ok: true,
+        batch_index: batchIndex,
+        completed: true,
+        total_chunks: totalChunks,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const batch = allChunks.slice(start, end);
+    const vectors = batch.map((c: string) => embedLocal(c));
+    const rows = batch.map((chunk_text: string, j: number) => ({
+      user_id: userId,
+      document_id: documentId,
+      chunk_text,
+      order_index: start + j,
+      embedding: `[${vectors[j].join(",")}]`,
+    }));
+
+    const { error: insErr } = await admin.from("document_chunks").insert(rows);
+    if (insErr) throw new Error("insert_failed:" + insErr.message);
+
+    const completed = end >= totalChunks;
+
+    return new Response(JSON.stringify({
+      ok: true,
+      batch_index: batchIndex,
+      inserted: batch.length,
+      total_chunks: totalChunks,
+      completed,
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // --- Monolithic Ingestion Branch (Backwards Compatibility) ---
   const { count: existing } = await admin
     .from("document_chunks")
     .select("id", { count: "exact", head: true })
@@ -156,12 +233,9 @@ Deno.serve(async (req) => {
   const jobId = job?.id;
 
   try {
-    const chunks = chunkText(doc.raw_text);
-    if (chunks.length === 0) throw new Error("no_chunks");
-
     let inserted = 0;
-    for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
-      const batch = chunks.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < allChunks.length; i += BATCH_SIZE) {
+      const batch = allChunks.slice(i, i + BATCH_SIZE);
       const vectors = batch.map((c: string) => embedLocal(c));
       const rows = batch.map((chunk_text: string, j: number) => ({
         user_id: userId,
@@ -175,7 +249,7 @@ Deno.serve(async (req) => {
       inserted += rows.length;
       if (jobId) {
         await admin.from("jobs").update({
-          progress: Math.min(95, Math.round((inserted / chunks.length) * 95)),
+          progress: Math.min(95, Math.round((inserted / allChunks.length) * 95)),
         }).eq("id", jobId);
       }
     }

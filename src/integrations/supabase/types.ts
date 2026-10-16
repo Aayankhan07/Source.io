@@ -479,6 +479,12 @@ export type Database = {
           id: string
           updated_at: string
           user_id: string
+          tier: string | null
+          daily_quota_used: number | null
+          daily_quota_limit: number | null
+          daily_tts_quota_used: number | null
+          daily_tts_quota_limit: number | null
+          quota_reset_date: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -487,6 +493,12 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id: string
+          tier?: string | null
+          daily_quota_used?: number | null
+          daily_quota_limit?: number | null
+          daily_tts_quota_used?: number | null
+          daily_tts_quota_limit?: number | null
+          quota_reset_date?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -495,6 +507,12 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+          tier?: string | null
+          daily_quota_used?: number | null
+          daily_quota_limit?: number | null
+          daily_tts_quota_used?: number | null
+          daily_tts_quota_limit?: number | null
+          quota_reset_date?: string | null
         }
         Relationships: []
       }
@@ -641,6 +659,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_daily_quota: {
+        Args: {
+          p_user_id: string
+          p_cost?: number
+        }
+        Returns: boolean
+      }
+      consume_daily_tts_quota: {
+        Args: {
+          p_user_id: string
+          p_cost?: number
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

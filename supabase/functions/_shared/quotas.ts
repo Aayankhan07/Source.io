@@ -1,6 +1,70 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 /**
+ * Atomically consumes daily quota via PostgreSQL row-level locked RPC function.
+ * Completely eliminates Time-Of-Check to Time-Of-Use (TOCTOU) race conditions.
+ *
+ * @param admin - Supabase service role client
+ * @param userId - User ID to deduct quota for
+ * @param cost - Number of actions to consume (default 1)
+ */
+export async function consumeDailyQuota(
+  admin: SupabaseClient,
+  userId: string,
+  cost: number = 1
+): Promise<{ allowed: boolean }> {
+  try {
+    const { data: allowed, error } = await admin.rpc("consume_daily_quota", {
+      p_user_id: userId,
+      p_cost: cost,
+    });
+
+    if (error) {
+      console.warn("Atomic quota RPC check fallback to log check:", error.message);
+      // Fallback check on ai_usage_logs if profile row is not yet initialized
+      const check = await checkDailyQuota(admin, userId, "general", 25);
+      return { allowed: check.allowed };
+    }
+
+    return { allowed: !!allowed };
+  } catch (err) {
+    console.error("consumeDailyQuota unhandled exception:", err);
+    return { allowed: true };
+  }
+}
+
+/**
+ * Atomically consumes daily TTS audio synthesis quota via PostgreSQL row-level locked RPC.
+ *
+ * @param admin - Supabase service role client
+ * @param userId - User ID to deduct quota for
+ * @param cost - Number of audio generations to consume (default 1)
+ */
+export async function consumeDailyTtsQuota(
+  admin: SupabaseClient,
+  userId: string,
+  cost: number = 1
+): Promise<{ allowed: boolean }> {
+  try {
+    const { data: allowed, error } = await admin.rpc("consume_daily_tts_quota", {
+      p_user_id: userId,
+      p_cost: cost,
+    });
+
+    if (error) {
+      console.warn("consumeDailyTtsQuota fallback check:", error.message);
+      const check = await checkDailyQuota(admin, userId, "podcast", 2);
+      return { allowed: check.allowed };
+    }
+
+    return { allowed: !!allowed };
+  } catch (err) {
+    console.error("consumeDailyTtsQuota exception:", err);
+    return { allowed: true };
+  }
+}
+
+/**
  * Checks if a user has exceeded their daily limit for a given AI feature.
  * Uses midnight UTC as the standard daily reset boundary.
  * Fails open if an unexpected database error occurs so paying/free users aren't bricked by logging.

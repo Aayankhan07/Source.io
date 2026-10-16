@@ -455,19 +455,85 @@ The backend schema leverages PostgreSQL's relational integrity and the `pgvector
 -- 1. Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- 2. User Profiles & Daily Quota Management
+-- 2. User Profiles & Daily Quota Management (Hardened with Midnight UTC Lazy Rollover)
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    email TEXT NOT NULL,
-    full_name TEXT,
+    email TEXT,
+    display_name TEXT,
     avatar_url TEXT,
     tier TEXT DEFAULT 'free' CHECK (tier IN ('free', 'pro')),
     daily_quota_used INTEGER DEFAULT 0,
     daily_quota_limit INTEGER DEFAULT 25,
-    last_quota_reset TIMESTAMPTZ DEFAULT NOW(),
+    daily_tts_quota_used INTEGER DEFAULT 0,
+    daily_tts_quota_limit INTEGER DEFAULT 2,
+    quota_reset_date DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Atomic Quota Consumption RPC (TOCTOU race-condition neutralization)
+CREATE OR REPLACE FUNCTION public.consume_daily_quota(
+  p_user_id UUID,
+  p_cost INT DEFAULT 1
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_updated BOOLEAN;
+BEGIN
+  -- Lazy rollover: reset daily counters at midnight UTC if a new day has begun
+  UPDATE public.profiles
+  SET daily_quota_used = 0,
+      daily_tts_quota_used = 0,
+      quota_reset_date = CURRENT_DATE
+  WHERE (id = p_user_id OR user_id = p_user_id)
+    AND (quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE);
+
+  -- Atomic update with row-level locking
+  UPDATE public.profiles
+  SET daily_quota_used = daily_quota_used + p_cost,
+      updated_at = NOW()
+  WHERE (id = p_user_id OR user_id = p_user_id)
+    AND (daily_quota_used + p_cost) <= daily_quota_limit
+  RETURNING TRUE INTO v_updated;
+
+  RETURN COALESCE(v_updated, FALSE);
+END;
+$$;
+
+-- Atomic Studio Audio TTS Quota Consumption RPC
+CREATE OR REPLACE FUNCTION public.consume_daily_tts_quota(
+  p_user_id UUID,
+  p_cost INT DEFAULT 1
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_updated BOOLEAN;
+BEGIN
+  UPDATE public.profiles
+  SET daily_quota_used = 0,
+      daily_tts_quota_used = 0,
+      quota_reset_date = CURRENT_DATE
+  WHERE (id = p_user_id OR user_id = p_user_id)
+    AND (quota_reset_date IS NULL OR quota_reset_date < CURRENT_DATE);
+
+  UPDATE public.profiles
+  SET daily_tts_quota_used = daily_tts_quota_used + p_cost,
+      updated_at = NOW()
+  WHERE (id = p_user_id OR user_id = p_user_id)
+    AND (daily_tts_quota_used + p_cost) <= daily_tts_quota_limit
+  RETURNING TRUE INTO v_updated;
+
+  RETURN COALESCE(v_updated, FALSE);
+END;
+$$;
 
 -- 3. Document Storage & Metadata
 CREATE TABLE public.documents (
@@ -485,7 +551,7 @@ CREATE TABLE public.documents (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Document Chunks & Vector Embeddings
+-- 4. Document Chunks & Optimized Vector Embeddings (halfvec 768d)
 CREATE TABLE public.document_chunks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
@@ -494,16 +560,19 @@ CREATE TABLE public.document_chunks (
     char_start INTEGER,
     char_end INTEGER,
     content TEXT NOT NULL,
-    embedding VECTOR(1536), -- Compatible with OpenAI / Gemini embeddings
+    embedding extensions.halfvec(768), -- 75% RAM reduction over standard 1536 float32
     bounding_box JSONB,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- HNSW Cosine Index for ultra-fast RAG vector retrieval
-CREATE INDEX IF NOT EXISTS document_chunks_embedding_idx 
+-- High-performance composite index optimizing per-document similarity retrieval
+CREATE INDEX IF NOT EXISTS idx_document_chunks_document_id 
+ON public.document_chunks(document_id);
+
+CREATE INDEX IF NOT EXISTS idx_document_chunks_embedding
 ON public.document_chunks 
-USING hnsw (embedding vector_cosine_ops)
-WITH (m = 16, ef_construction = 64);
+USING ivfflat (embedding halfvec_cosine_ops)
+WITH (lists = 100);
 
 -- 5. Spaced Repetition Flashcards & Leitner State
 CREATE TABLE public.flashcards (
@@ -639,10 +708,29 @@ All operations communicate via Supabase Edge Functions. Request headers automati
 ---
 
 ### 10.3 Generation Endpoints: Notes, Flashcards, Quiz & Podcast
-- `POST /functions/v1/generate_notes`: Generates executive study notes with embedded LaTeX math blocks and citation pills.
-- `POST /functions/v1/generate_cards`: Synthesizes question-answer pairs configured for Leitner scheduling.
-- `POST /functions/v1/generate_quiz`: Constructs diagnostic multiple-choice items with plausible cognitive distractors.
-- `POST /functions/v1/podcast`: Synthesizes dual-speaker debate scripts and outputs TTS audio binaries.
+- `POST /functions/v1/generate_notes`: Generates executive study notes with embedded LaTeX math blocks and citation pills. Protected by atomic `consume_daily_quota` RPC.
+- `POST /functions/v1/generate_derivatives`: Synthesizes flashcards and quiz questions with atomic quota protection.
+- `POST /functions/v1/generate_podcast`: Generates 2-host Socratic scripts; decouples script synthesis from TTS audio binaries, capping free-tier studio audio to 2 renders/day via `consume_daily_tts_quota` RPC while keeping BYOK / Scholar Pass unlimited.
+- `POST /functions/v1/embed_chunks`: Progressive 50-chunk batched embedding engine (`batch_index`, `batch_size`), preventing Edge Function CPU/memory timeouts on 300+ page books.
+
+---
+
+### 10.4 Merchant of Record Billing Webhook: `POST /functions/v1/billing-webhook`
+- **Request Headers:**
+  - `x-signature: <HMAC_SHA256_HEX>`
+  - `Content-Type: application/json`
+- **Security:**
+  - Cryptographic validation via Web Crypto API (`crypto.subtle.verify`) using `LEMONSQUEEZY_WEBHOOK_SECRET`.
+  - Forged or unsigned payloads are immediately rejected with HTTP 401 before any database mutation.
+- **Event Handling:**
+  - `subscription_created`, `order_created`, `subscription_resumed`:
+    Atomically updates `profiles.tier = 'pro'`, `daily_quota_limit = 200`, `daily_tts_quota_limit = 50`.
+  - `subscription_cancelled`, `subscription_expired`:
+    Reverts `profiles.tier = 'free'`, `daily_quota_limit = 25`, `daily_tts_quota_limit = 2`.
+- **Response:**
+  ```json
+  { "received": true, "event": "subscription_created" }
+  ```
 
 ---
 
@@ -717,6 +805,7 @@ All LLM-generated output (study notes, flashcard answers, and chat responses) pa
 | **2.0.0** | 2026-09-15 | Addition of 5-Box Leitner spaced repetition engine and Groq RAG streaming | Lead Systems Architect |
 | **2.3.0** | 2026-10-02 | Transition to 100% Monochrome Editorial Paper & Obsidian Ink design system | Design Systems Lead |
 | **2.4.0** | 2026-10-15 | Complete master architectural specification, SSE resilience parser, BYOK zero-retention security protocols | Antigravity AI Engineering |
+| **3.0.0** | 2026-10-16 | Production-scale hardening: atomic `consume_daily_quota` RPC (TOCTOU protection), `halfvec(768)` 75% vector RAM compression, progressive 50-chunk ingestion, decoupled podcast TTS quotas, and Lemon Squeezy HMAC MoR webhook fulfillment | Antigravity AI Engineering |
 
 ---
 *End of Master Technical Architecture Document • Source.io Engineering*

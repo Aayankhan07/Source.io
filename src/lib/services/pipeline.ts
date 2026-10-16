@@ -6,11 +6,51 @@ export async function triggerIngest(documentId: string): Promise<void> {
   if (!resp.ok) throw await functionError(resp, "Ingest failed");
 }
 
-/** Trigger embedding + chunking for RAG chat. */
+/**
+ * Progressive embedding for large documents (300+ pages / 500+ chunks).
+ * Calls embed_chunks in batches of 50 to avoid edge memory limits and timeouts.
+ */
+export async function embedChunksProgressive(
+  documentId: string,
+  onProgress?: (progressPct: number, currentBatch: number, totalBatches: number) => void
+): Promise<{ ok: boolean; chunks: number; cached?: boolean }> {
+  const BATCH_SIZE = 50;
+  let batchIndex = 0;
+  let isDone = false;
+  let totalChunks = 0;
+
+  while (!isDone) {
+    const resp = await callFunction("embed_chunks", {
+      document_id: documentId,
+      batch_index: batchIndex,
+      batch_size: BATCH_SIZE,
+    });
+    if (!resp.ok) {
+      throw await functionError(resp, `Embedding batch ${batchIndex + 1} failed`);
+    }
+    const data = await resp.json();
+    if (data.cached) {
+      onProgress?.(100, 1, 1);
+      return { ok: true, chunks: data.chunks ?? 0, cached: true };
+    }
+    totalChunks = data.total_chunks ?? 0;
+    const totalBatches = Math.max(1, Math.ceil(totalChunks / BATCH_SIZE));
+    const pct = totalChunks > 0 ? Math.min(100, Math.round(((batchIndex + 1) / totalBatches) * 100)) : 100;
+    onProgress?.(pct, batchIndex + 1, totalBatches);
+
+    if (data.completed || totalChunks <= (batchIndex + 1) * BATCH_SIZE) {
+      isDone = true;
+    } else {
+      batchIndex++;
+    }
+  }
+
+  return { ok: true, chunks: totalChunks };
+}
+
+/** Trigger embedding + chunking for RAG chat. Uses progressive batching for resilience. */
 export async function embedChunks(documentId: string): Promise<{ ok: boolean; chunks?: number; cached?: boolean }> {
-  const resp = await callFunction("embed_chunks", { document_id: documentId });
-  if (!resp.ok) throw await functionError(resp, "Embedding failed");
-  return await resp.json();
+  return await embedChunksProgressive(documentId);
 }
 
 export type Citation = { chunk_id: string; similarity: number; content: string };

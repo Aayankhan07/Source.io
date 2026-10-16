@@ -954,6 +954,34 @@ function PodcastPlayer({
           onRegenerate={onGenerate}
           loading={loading}
         />
+      ) : podcast?.status === "ready" && podcast.script ? (
+        <div className="bg-card p-6 sm:p-8 rounded-[28px] border border-border shadow-tactile-card space-y-6">
+          <div className="p-4 rounded-2xl bg-muted/50 border border-border flex items-start gap-3 text-xs">
+            <Headphones className="size-5 shrink-0 mt-0.5 text-muted-foreground" />
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">Studio Voice Audio Cap Reached (2/2 daily limit)</p>
+              <p className="text-muted-foreground leading-relaxed">
+                Your full 2-host Socratic dialogue script was generated and saved below. Upgrade to Scholar Pass ($9/mo) or provide your own BYOK keys in Settings for unlimited neural studio voice rendering.
+              </p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="font-bold text-sm text-foreground">Socratic Dialogue Transcript</h4>
+              <Button onClick={onGenerate} disabled={loading} variant="outline" className="rounded-full text-xs h-8 px-3">
+                {loading ? <Loader2 className="size-3 mr-1.5 animate-spin" /> : <RefreshCw className="size-3 mr-1.5" />}
+                Retry Audio Render
+              </Button>
+            </div>
+            <div className="space-y-3 font-serif text-sm leading-relaxed text-foreground max-h-[500px] overflow-y-auto pr-2">
+              {podcast.script.split("\n\n").map((para, i) => (
+                <div key={i} className="p-3.5 rounded-xl bg-muted/20 border border-border/50">
+                  <p>{para}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="bg-card p-8 rounded-3xl border border-border text-center space-y-4 shadow-tactile-card">
           <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto mb-2 shadow-tactile-pill">

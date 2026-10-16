@@ -24,10 +24,29 @@ import { useSettings } from "../context/SettingsContext";
 import { NotesDepth, PreferredModel, QuizDifficulty } from "../types";
 import { useToast } from "@/hooks/use-toast";
 import { testProviderApiKey, ByokTestResult } from "@/lib/services/byokTest";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function AIModelSettings() {
+  const { user } = useAuth();
   const { settings, updateSettings } = useSettings();
   const { toast } = useToast();
+
+  const { data: userProfile } = useQuery({
+    queryKey: ["user_tier_settings", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("tier, daily_quota_limit, daily_tts_quota_limit")
+        .or(`id.eq.${user!.id},user_id.eq.${user!.id}`)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const isScholarPass = userProfile?.tier === "pro";
 
   const [showGroq, setShowGroq] = useState(false);
   const [showGemini, setShowGemini] = useState(false);
@@ -281,6 +300,53 @@ export default function AIModelSettings() {
                 </button>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3.5 Scholar Pass Subscription Tier */}
+      <div className="rounded-[28px] bg-card border-2 border-border p-6 sm:p-7 shadow-tactile-card space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="p-1 rounded-lg bg-muted text-foreground">
+                <Sparkles className="size-4" />
+              </span>
+              <h3 className="text-base sm:text-lg font-bold font-display text-foreground">
+                Scholar Pass ($9/mo)
+              </h3>
+              {isScholarPass ? (
+                <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                  Active Pro
+                </span>
+              ) : (
+                <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">
+                  Free Tier (25 actions/day)
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
+              For heavy academic semesters and exam preparation. Unlocks 200 daily generation actions, 50 studio audio podcast renders, unlimited saved document slots, and priority high-throughput GPU queuing.
+            </p>
+          </div>
+
+          <div>
+            {isScholarPass ? (
+              <span className="h-10 px-4 rounded-full bg-muted text-xs font-semibold text-foreground flex items-center gap-1.5 select-none">
+                <Check className="size-3.5 text-emerald-500" />
+                <span>Scholar Pass Active</span>
+              </span>
+            ) : (
+              <a
+                href={`https://sourceio.lemonsqueezy.com/buy/scholar-pass?checkout[custom][user_id]=${user?.id || ""}&checkout[email]=${user?.email || ""}`}
+                target="_blank"
+                rel="noreferrer"
+                className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 shadow-tactile-pill transition-all cursor-pointer whitespace-nowrap"
+              >
+                <span>Upgrade to Scholar Pass</span>
+                <ExternalLink className="size-3.5" />
+              </a>
+            )}
           </div>
         </div>
       </div>

@@ -62,7 +62,7 @@
 - Consumes: `auth.uid()` or `p_user_id UUID`, `p_cost INT DEFAULT 1`
 - Produces: `BOOLEAN` (`TRUE` if quota was available and successfully decremented, `FALSE` if limit reached)
 
-- [ ] **Step 1: Write SQL migration file**
+- [x] **Step 1: Write SQL migration file**
 ```sql
 -- Atomic daily quota consumption with row-level locking
 CREATE OR REPLACE FUNCTION public.consume_daily_quota(
@@ -90,13 +90,13 @@ END;
 $$;
 ```
 
-- [ ] **Step 2: Run verification query in Supabase SQL editor**
+- [x] **Step 2: Run verification query in Supabase SQL editor**
 ```sql
 SELECT public.consume_daily_quota('guest-user-01', 1);
 ```
 Expected: Returns `TRUE` when quota remains, `FALSE` once `daily_quota_used >= daily_quota_limit`.
 
-- [ ] **Step 3: Commit migration**
+- [x] **Step 3: Commit migration**
 ```bash
 git add supabase/migrations/20260421000000_atomic_quota_rpc.sql
 git commit -m "feat(db): add atomic consume_daily_quota rpc function"
@@ -113,7 +113,7 @@ git commit -m "feat(db): add atomic consume_daily_quota rpc function"
 - Consumes: `admin.rpc("consume_daily_quota", { p_user_id: user.id, p_cost: 1 })`
 - Produces: HTTP 429 response if `false`, proceeds with streaming if `true`
 
-- [ ] **Step 1: Update `generate_notes/index.ts`**
+- [x] **Step 1: Update `generate_notes/index.ts`**
 Replace naive `SELECT daily_quota_used` check with atomic RPC call:
 ```typescript
 if (!isByok) {
@@ -134,15 +134,15 @@ if (!isByok) {
 }
 ```
 
-- [ ] **Step 2: Update `generate_derivatives/index.ts` with identical atomic check**
+- [x] **Step 2: Update `generate_derivatives/index.ts` with identical atomic check**
 
-- [ ] **Step 3: Deploy updated Edge Functions to Supabase**
+- [x] **Step 3: Deploy updated Edge Functions to Supabase**
 ```bash
 supabase functions deploy generate_notes --project-ref vcevdkggfbhftaegkkkk
 supabase functions deploy generate_derivatives --project-ref vcevdkggfbhftaegkkkk
 ```
 
-- [ ] **Step 4: Commit Edge Function updates**
+- [x] **Step 4: Commit Edge Function updates**
 ```bash
 git add supabase/functions/
 git commit -m "fix(edge): enforce atomic rpc quota consumption across notes and derivatives"
@@ -162,7 +162,7 @@ git commit -m "fix(edge): enforce atomic rpc quota consumption across notes and 
 - Consumes: `EMBED_DIMS = 768` (down from 1536)
 - Produces: 75% reduction in HNSW index RAM footprint with composite index on `(document_id, embedding)`
 
-- [ ] **Step 1: Write SQL migration for `halfvec(768)`**
+- [x] **Step 1: Write SQL migration for `halfvec(768)`**
 ```sql
 -- Ensure pgvector extension version supports halfvec
 CREATE EXTENSION IF NOT EXISTS vector;
@@ -201,13 +201,13 @@ AS $$
 $$;
 ```
 
-- [ ] **Step 2: Update `embed_chunks/index.ts` dimension constant**
+- [x] **Step 2: Update `embed_chunks/index.ts` dimension constant**
 Change `const EMBED_DIMS = 1536;` to `const EMBED_DIMS = 768;`.
 
-- [ ] **Step 3: Update `chat/index.ts` query embedding constant**
+- [x] **Step 3: Update `chat/index.ts` query embedding constant**
 Ensure query embedding vector matches 768 dimensions.
 
-- [ ] **Step 4: Deploy and commit**
+- [x] **Step 4: Deploy and commit**
 ```bash
 git add supabase/migrations/ supabase/functions/
 git commit -m "perf(rag): migrate vector storage to halfvec(768) for 75% ram reduction"
@@ -226,7 +226,7 @@ git commit -m "perf(rag): migrate vector storage to halfvec(768) for 75% ram red
 - Consumes: Extracted document text, splits into batches of 50 chunks
 - Produces: Batched POST requests to `/functions/v1/embed_chunks` with progressive progress bar feedback
 
-- [ ] **Step 1: Implement batch chunking helper in `UploadDialog.tsx`**
+- [x] **Step 1: Implement batch chunking helper in `UploadDialog.tsx`**
 ```typescript
 const CHUNK_BATCH_SIZE = 50;
 
@@ -256,13 +256,13 @@ async function ingestInBatches(documentId: string, chunks: string[], onProgress:
 }
 ```
 
-- [ ] **Step 2: Update `embed_chunks/index.ts` to accept pre-chunked batches**
+- [x] **Step 2: Update `embed_chunks/index.ts` to accept pre-chunked batches**
 Append chunks without clearing existing batches until the final batch index completes.
 
-- [ ] **Step 3: Verify build**
+- [x] **Step 3: Verify build**
 Run `npm run build` to verify zero frontend compilation errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 ```bash
 git add src/features/documents/components/UploadDialog.tsx supabase/functions/embed_chunks/
 git commit -m "feat(ingest): add progressive batched ingestion for 300+ page documents"
@@ -282,17 +282,17 @@ git commit -m "feat(ingest): add progressive batched ingestion for 300+ page doc
 - Script generation: Free (up to 25 daily actions).
 - Studio Audio TTS: Restricted to 2 generations/day on free tier; unlimited on BYOK / Scholar Pass.
 
-- [ ] **Step 1: Add TTS audio quota tracking column**
+- [x] **Step 1: Add TTS audio quota tracking column**
 ```sql
 ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS daily_tts_quota_used INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS daily_tts_quota_limit INTEGER DEFAULT 2;
 ```
 
-- [ ] **Step 2: Guard studio audio generation in Edge Function**
+- [x] **Step 2: Guard studio audio generation in Edge Function**
 Allow script creation unconditionally within the 25 general quota; verify TTS audio quota before synthesizing voice binaries.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add supabase/
 git commit -m "feat(podcast): decouple script generation from tts audio and enforce free-tier quota"
@@ -312,7 +312,7 @@ git commit -m "feat(podcast): decouple script generation from tts audio and enfo
 - Consumes: Lemon Squeezy webhook payloads with `x-signature` HMAC verification
 - Produces: Updates `profiles.tier = 'pro'` and `profiles.daily_quota_limit = 200` on active subscription
 
-- [ ] **Step 1: Write `billing-webhook/index.ts` with HMAC signature check**
+- [x] **Step 1: Write `billing-webhook/index.ts` with HMAC signature check**
 ```typescript
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
@@ -384,10 +384,10 @@ function hexToBytes(hex: string): Uint8Array {
 }
 ```
 
-- [ ] **Step 2: Add Scholar Pass checkout trigger in `TactileLeftDock.tsx` & Settings**
+- [x] **Step 2: Add Scholar Pass checkout trigger in `TactileLeftDock.tsx` & Settings**
 Render monochrome "Scholar Pass ($9/mo)" trigger passing `user.id` as custom checkout parameter.
 
-- [ ] **Step 3: Commit billing infrastructure**
+- [x] **Step 3: Commit billing infrastructure**
 ```bash
 git add supabase/functions/billing-webhook/ src/features/
 git commit -m "feat(billing): add lemon squeezy webhook handler and scholar pass checkout trigger"
@@ -401,10 +401,10 @@ git commit -m "feat(billing): add lemon squeezy webhook handler and scholar pass
 **Files:**
 - Modify: `docs/MASTER_SYSTEM_ARCHITECTURE.md`
 
-- [ ] **Step 1: Document `consume_daily_quota` atomic RPC in Section 7**
-- [ ] **Step 2: Update Section 9 with `halfvec(768)` vector type and indexing strategy**
-- [ ] **Step 3: Add Section 10.4 defining Lemon Squeezy MoR Webhook Contract**
-- [ ] **Step 4: Commit architecture doc**
+- [x] **Step 1: Document `consume_daily_quota` atomic RPC in Section 7**
+- [x] **Step 2: Update Section 9 with `halfvec(768)` vector type and indexing strategy**
+- [x] **Step 3: Add Section 10.4 defining Lemon Squeezy MoR Webhook Contract**
+- [x] **Step 4: Commit architecture doc**
 ```bash
 git add docs/MASTER_SYSTEM_ARCHITECTURE.md
 git commit -m "docs: document production scaling architecture, halfvec rag, and billing webhook"

@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { synthesize } from "./tts.ts";
 import { parseScript } from "./script.ts";
+import { consumeDailyQuota, consumeDailyTtsQuota } from "../_shared/quotas.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -10,7 +11,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version, x-byok-groq, x-byok-gemini",
 };
 
 const HOST_1_VOICE = "en-US-ChristopherNeural";
@@ -118,7 +119,7 @@ export async function handler(req: Request): Promise<Response> {
   if (claimsErr || !claimsData?.claims) return json({ error: "Unauthorized" }, 401);
   const userId = claimsData.claims.sub as string;
 
-  let body: { document_id?: string; voice_duo?: string };
+  let body: { document_id?: string; voice_duo?: string; mode?: "full" | "script_only" };
   try {
     body = await req.json();
   } catch {
@@ -127,6 +128,40 @@ export async function handler(req: Request): Promise<Response> {
 
   const documentId = body.document_id?.trim();
   if (!documentId) return json({ error: "document_id required" }, 400);
+
+  // Check user tier & BYOK
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("tier")
+    .or(`id.eq.${userId},user_id.eq.${userId}`)
+    .maybeSingle();
+
+  const isPro = profile?.tier === "pro";
+  const isByok = !!(req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
+
+  // Check daily general AI quota for free-tier users
+  if (!isPro && !isByok) {
+    const quota = await consumeDailyQuota(admin, userId, 1);
+    if (!quota.allowed) {
+      return json({
+        error: "Daily free generation limit reached (25/25 actions). Upgrade to Scholar Pass ($9/mo) or provide BYOK keys.",
+        code: "QUOTA_EXCEEDED",
+      }, 429);
+    }
+  }
+
+  // Check TTS Audio quota
+  const requestAudio = body.mode !== "script_only";
+  let canSynthesizeAudio = false;
+
+  if (requestAudio) {
+    if (isPro || isByok) {
+      canSynthesizeAudio = true;
+    } else {
+      const ttsQuota = await consumeDailyTtsQuota(admin, userId, 1);
+      canSynthesizeAudio = ttsQuota.allowed;
+    }
+  }
 
   // Configure synthetic voice duo profiles
   let host1Voice = HOST_1_VOICE;
@@ -241,6 +276,26 @@ export async function handler(req: Request): Promise<Response> {
     const script = String(aiJson.choices?.[0]?.message?.content ?? "").trim();
     if (!script) throw new Error("EMPTY_SCRIPT");
 
+    // If audio synthesis is not permitted or script_only was requested:
+    if (!canSynthesizeAudio) {
+      await admin
+        .from("podcasts")
+        .update({ script, audio_url: null, status: "ready" })
+        .eq("id", podcastId);
+
+      return json({
+        ok: true,
+        status: "ready",
+        script,
+        audio_url: null,
+        tts_quota_exceeded: requestAudio && !isPro && !isByok,
+        message: requestAudio
+          ? "Daily studio audio synthesis limit reached (2/2 renders). Script saved successfully. Upgrade to Scholar Pass ($9/mo) or BYOK for unlimited studio renders."
+          : "Script generated successfully.",
+      });
+    }
+
+    // Audio synthesis branch
     const segments = parseScript(script);
     const audioChunks: Uint8Array[] = [];
     for (const segment of segments) {
@@ -270,7 +325,7 @@ export async function handler(req: Request): Promise<Response> {
       .update({ script, audio_url: audioUrl, status: "ready" })
       .eq("id", podcastId);
 
-    return json({ ok: true, status: "ready", audio_url: audioUrl });
+    return json({ ok: true, status: "ready", audio_url: audioUrl, script });
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     console.error("generate_podcast error", message);

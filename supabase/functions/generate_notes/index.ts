@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
+import { consumeDailyQuota } from "../_shared/quotas.ts";
 
 // Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
 // Defaults to "*" so existing deployments keep working.
@@ -268,6 +269,25 @@ Deno.serve(async (req) => {
           "X-Cache": "HIT",
         },
       });
+    }
+  }
+
+  // Atomic Quota Concurrency Guardrail (TOCTOU protection)
+  const isByok = !!(body.api_key?.trim() || req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
+  if (!isByok) {
+    const quota = await consumeDailyQuota(admin, userId, 1);
+    if (!quota.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: "Daily free generation limit reached (25/25 actions). Upgrade to Scholar Pass ($9/mo) or provide personal API keys in Settings.",
+          quotaExceeded: true,
+          code: "QUOTA_EXCEEDED",
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
   }
 
