@@ -1,5 +1,5 @@
 # Source.io — Role-Adaptive & Customization Architecture Specification
-*Document Status: Master Engineering Blueprint • Version 3.0.0 (Definitive Specification) • Target: Source.io Workstation*
+*Document Status: Master Engineering Blueprint • Version 3.2.0 (Production Verified) • Target: Source.io Workstation*
 
 ---
 
@@ -20,8 +20,8 @@ This specification details the **definitive, zero-defect engineering blueprint**
 
 ```
                                  ┌────────────────────────────────────────┐
-                                 │     User Profile & Role Selection      │
-                                 │  (Onboarding or Settings Customization)│
+                                 │     User Intent & Role Calibration     │
+                                 │  (5-Step Onboarding / Settings Wizard) │
                                  └───────────────────┬────────────────────┘
                                                      │
                    ┌─────────────────────────────────┼────────────────────────────────┐
@@ -339,39 +339,48 @@ Following the **Obsidian Paper & Ink** design system (`#FAF9F6`, `#0F172A`, `#E2
 
 ### 5.1 First-Login Onboarding Wizard (`/app/onboarding`)
 
-Rendered fullscreen in a focused, modal-like container with progressive micro-steps:
+Rendered fullscreen in a focused, modal-like container with progressive 5-step tactile micro-steps:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│  Source.io                               Step 1 of 4 • [Skip with Defaults]│
-│  ────────────────────────────────────────░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+│  Source.io                               Step 1 of 5 • [Skip with Defaults]│
+│  ────────────────────────░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
 │                                                                            │
-│  01 / ACADEMIC PROFILE                                                     │
-│  How will you be using Source.io?                                          │
-│  We’ll configure your visible tabs, note structure, and AI rigor.          │
+│  01 / INTENT CALIBRATION                                                   │
+│  What do you want to achieve?                                              │
+│  Select your primary goal to auto-configure your workspace architecture.   │
 │                                                                            │
-│  ┌────────────────────────┐  ┌────────────────────────┐  ┌───────────────┐ │
-│  │ [●] Bachelor's / UG    │  │ [ ] High School        │  │ [ ] School    │ │
-│  │ Lectures, proofs &     │  │ Board exams, Cornell   │  │ Analogies &   │ │
-│  │ exam synthesis         │  │ notes & worked steps   │  │ simple terms  │ │
-│  └────────────────────────┘  └────────────────────────┘  └───────────────┘ │
-│  ┌────────────────────────┐  ┌────────────────────────┐  ┌───────────────┐ │
-│  │ [ ] Scholar / Grad     │  │ [ ] Researcher / PhD   │  │ [ ] Teacher   │ │
-│  │ Dense monographs, law  │  │ Lit critique, methods, │  │ Lesson plans, │ │
-│  │ & medical differentials│  │ limitations & APA/IEEE │  │ rubrics, tests│ │
-│  └────────────────────────┘  └────────────────────────┘  └───────────────┘ │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [1]  Get organized & get higher grades for my classes                │  │
+│  │      Cornell notes, worked examples, and weekly retention decks.     │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [2]  Get ready for a specific exam                                   │  │
+│  │      Diagnostic test papers, distractor traps, and targeted revision.│  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [3]  Memorize something for a personal learning goal                 │  │
+│  │      3D Leitner spaced repetition flashcards and quick active recall.│  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [4]  Take notes and build a note-taking workspace                    │  │
+│  │      Grounded source citations, KaTeX math formulas & chapter outline│  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
 │                                                                            │
-│                                              [ Continue to Tools (Enter) →]│
+│  [Tip: Press 1-4 on keyboard]                [ Continue to Profile (Enter)→]│
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Steps Walkthrough:**
-1. **Step 1: Role Selection:** Auto-populates Steps 2, 3, and 4 with optimal defaults from `ROLE_PRESETS`.
-2. **Step 2: Workspace Tools Switcher:** Tactile interactive toggle cards for each study mode (`Notes`, `Flashcards`, `Quiz`, `Podcast`, `Copilot Ask`).
-3. **Step 3: Note Architecture & Blocks:** Selection of note template and multi-select checkboxes for included note components (Executive Overview, KaTeX Proofs, Comparative Tables, Misconceptions, Analogies, Discussion Prompts).
-4. **Step 4: Citation Format & Rigor Slider:**
+**Steps Walkthrough (5 Progressive Micro-Steps):**
+1. **Step 1: Intent Calibration ("What do you want to achieve?"):** 
+   - 4 high-contrast intent cards with numeric keyboard shortcut badges (<kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd>).
+   - Instant selection pre-calibrates the academic role preset (e.g. `classes` $\rightarrow$ `undergrad`, `exam` $\rightarrow$ `high_school`, `memorize` $\rightarrow$ `scholar`, `notes` $\rightarrow$ `researcher`) while remaining fully customizable in subsequent steps.
+2. **Step 2: Academic Profile:** Fine-tune target persona from the 7 archetypes (`undergrad`, `high_school`, `school_student`, `scholar`, `researcher`, `teacher`, `custom`).
+3. **Step 3: Workspace Tools Switcher:** Tactile interactive toggle cards for each study mode (`Notes`, `Flashcards`, `Quiz`, `Podcast`, `Copilot Ask`).
+4. **Step 4: Note Architecture & Synthesis Blocks:** Selection of note template style and multi-select checkboxes for included note components (Executive Overview, KaTeX Proofs, Comparative Tables, Misconceptions, Analogies, Discussion Prompts, Action Items).
+5. **Step 5: Rigor Depth & Grounded Citations:**
    - Rigor Slider: `1 (Intuitive & Accessible)` $\longleftrightarrow$ `5 (Formal Academic Rigor)`.
-   - Citation Style: `Inline Coordinate Pills` | `Formal APA 7th / IEEE` | `Simple Page Index`.
+   - Citation Style: `Inline Coordinate Pills` | `Formal APA 7th / IEEE` | `Exact Coordinates` | `Simple Page Index`.
    - Finish Action: Writes to Supabase `profiles` with `onboarding_completed: true` and navigates smoothly to `/app`.
 
 ### 5.2 Dynamic Workspace Header Switcher (`DocumentWorkspace.tsx`)
@@ -397,12 +406,12 @@ export const TAB_LABELS: Record<UserRole, Record<StudyModeId, string>> = {
 
 ### 5.3 Settings Console Architecture (`src/features/settings/`)
 
-The Settings view is upgraded to feature a prominent **Customization** tab alongside **AI & Models**, **Audio**, and **Appearance**:
+The Settings view is engineered around 6 dedicated tabs: **Customization**, **Plan & Billing**, **AI & Models**, **Podcast & Audio**, **Appearance**, and **Data & Storage**:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
 │  Settings                                                                  │
-│  [● Customization ]  [ AI & Models (BYOK) ]  [ Audio ]  [ Appearance ]     │
+│  [● Customization] [Plan & Billing] [AI & Models] [Audio] [Appearance] [Data]
 ├────────────────────────────────────────────────────────────────────────────┤
 │                                                                            │
 │  1. ACTIVE PERSONA PRESET                                   [Reset Preset] │
@@ -434,6 +443,23 @@ The Settings view is upgraded to feature a prominent **Customization** tab along
 │                                              [ Save Customization Changes ]│
 └────────────────────────────────────────────────────────────────────────────┘
 ```
+
+#### Plan & Billing Architecture (`PlanBillingSettings.tsx`)
+- **Current Plan Status:** Real-time quota monitoring displaying daily note generations, podcast synthesis limits, and document uploads.
+- **Dynamic UTC Midnight Countdown:** Live countdown timer (`Resets in Xh Ym Zs (00:00 UTC)`) indicating exact replenishment schedule.
+- **Scholar Pass Upgrade:** Tier benefits comparison (Unlimited high-rigor synthesis, high-bitrate dual-host audio, priority queue, early access to new reasoning models) with secure LemonSqueezy checkout modal.
+- **BYOK (Bring Your Own Key) Decoupling:** Clear banner explaining that custom API keys (Gemini / OpenAI / Groq) bypass daily tier quotas altogether.
+
+#### Tactile Left Dock Serenity Architecture (`TactileLeftDock.tsx`)
+In accordance with Source.io's serene scholar aesthetic:
+- **Zero Ad Distractions:** Promotional banners and Scholar Pass upgrade triggers are completely removed from the left dock and restricted to the Landing Page (`/pricing` / `/#pricing`) and Settings (`/app/settings?tab=billing`).
+- **Core Navigation Focus:** The dock houses exclusively primary navigation primitives:
+  1. `Dashboard` (`/app`)
+  2. `Library` (`/app/documents`)
+  3. `Settings` (`/app/settings`)
+  4. `Theme Switcher` (Light / Dark)
+  5. `Collapse / Expand Toggle`
+- **Monochrome Invariant:** Icon badges utilize unified `bg-muted text-foreground border border-border/80` tokens rather than arbitrary pastel colors, maintaining visual calmness.
 
 ### 5.4 Document-Level Overrides (`NotesSettingsPopover.tsx`)
 
@@ -573,10 +599,40 @@ Allows power users to type `Cmd+K` / `Ctrl+K` and switch personas on the fly:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│  Source.io                             Step 1 of 4 • [Skip with Defaults]  │
-│  ─────────────────────────────────────░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
+│  Source.io                               Step 1 of 5 • [Skip with Defaults]│
+│  ────────────────────────░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
 │                                                                            │
-│  01 / ACADEMIC PROFILE                                                     │
+│  01 / INTENT CALIBRATION                                                   │
+│  What do you want to achieve?                                              │
+│  Select your primary goal to auto-configure your workspace architecture.   │
+│                                                                            │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [1]  Get organized & get higher grades for my classes                │  │
+│  │      Cornell notes, worked examples, and weekly retention decks.     │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [2]  Get ready for a specific exam                                   │  │
+│  │      Diagnostic test papers, distractor traps, and targeted revision.│  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [3]  Memorize something for a personal learning goal                 │  │
+│  │      3D Leitner spaced repetition flashcards and quick active recall.│  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ [4]  Take notes and build a note-taking workspace                    │  │
+│  │      Grounded source citations, KaTeX math formulas & chapter outline│  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                                                                            │
+│  [Tip: Press 1-4 on keyboard]                 [ Continue to Profile (Enter)→]
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│  Source.io                               Step 2 of 5 • [Skip with Defaults]│
+│  ────────────────────────████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+│                                                                            │
+│  02 / ACADEMIC PROFILE                                                     │
 │  How will you be using Source.io?                                          │
 │  We’ll tailor your note structures, AI rigor, and workspace tools.         │
 │  You can change these anytime in Settings → Customization.                 │
@@ -592,40 +648,6 @@ Allows power users to type `Cmd+K` / `Ctrl+K` and switch personas on the fly:
 │  │ board vignettes      │ │ methods & citations  │ │ & exam generation   │ │
 │  └──────────────────────┘ └──────────────────────┘ └─────────────────────┘ │
 │                                                                            │
-│                                                       [ Continue (Enter) →]│
-└────────────────────────────────────────────────────────────────────────────┘
-```
-
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│  Source.io                               Step 2 of 4 • [Skip with Defaults]│
-│  ────────────────────────────────────────████████░░░░░░░░░░░░░░░░░░░░░░░░ │
-│                                                                            │
-│  02 / WORKSPACE STUDY TOOLS                                                │
-│  Select which tools appear in your workspace header.                       │
-│  You can always enable or disable these later in Settings.                 │
-│                                                                            │
-│  ┌──────────────────────────────────────────────────────────────────────┐  │
-│  │ [✓] Structured Notes & Synthesis                                     │  │
-│  │     Deep chapter outlines, LaTeX mathematics, and verified citations.│  │
-│  └──────────────────────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────────────────────┐  │
-│  │ [✓] Spaced Repetition Flashcards                                     │  │
-│  │     5-box Leitner memory system and Anki export.                     │  │
-│  └──────────────────────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────────────────────┐  │
-│  │ [✓] Diagnostic Evaluative Quizzes                                    │  │
-│  │     Distractor rationale, difficulty scoring, and exam questions.    │  │
-│  └──────────────────────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────────────────────┐  │
-│  │ [✓] Dual-Host Conversational Audio Podcast                            │  │
-│  │     Analytical debater duo with interactive scrubber and transcripts.│  │
-│  └──────────────────────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────────────────────┐  │
-│  │ [✓] Grounded Source Copilot (RAG Chat)                               │  │
-│  │     Sub-second answers with exact page, paragraph, and line citation.│  │
-│  └──────────────────────────────────────────────────────────────────────┘  │
-│                                                                            │
 │  [← Back]                                             [ Continue (Enter) →]│
 └────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -633,7 +655,7 @@ Allows power users to type `Cmd+K` / `Ctrl+K` and switch personas on the fly:
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
 │  Settings                                                                  │
-│  [● Customization ]  [ AI & Models (BYOK) ]  [ Audio ]  [ Appearance ]     │
+│  [● Customization] [Plan & Billing] [AI & Models] [Audio] [Appearance] [Data]
 ├────────────────────────────────────────────────────────────────────────────┤
 │                                                                            │
 │  1. ACTIVE PERSONA PRESET                                   [Reset Preset] │
@@ -670,33 +692,40 @@ Allows power users to type `Cmd+K` / `Ctrl+K` and switch personas on the fly:
 
 ## 9. Comprehensive Implementation Roadmap & Execution Checklist
 
-### Phase 1: Database Migration & Type Foundation
-- [ ] Run migration `20261017_role_customization_schema.sql` on Supabase to add `user_role`, `onboarding_completed`, and `workspace_preferences`.
-- [ ] Create `src/types/customization.ts` with strict TypeScript types, preset maps, and validation schemas.
-- [ ] Extend `SettingsContext` (`src/features/settings/context/SettingsContext.tsx`) to store, load, and mutate `workspace_preferences` and sync with Supabase `profiles`.
+### Phase 1: Database Migration & Type Foundation (Completed ✓)
+- [x] Run migration `20261017_role_customization_schema.sql` on Supabase to add `user_role`, `onboarding_completed`, and `workspace_preferences`.
+- [x] Create `src/types/customization.ts` with strict TypeScript types, preset maps, and validation schemas.
+- [x] Extend `SettingsContext` (`src/features/settings/context/SettingsContext.tsx`) to store, load, and mutate `workspace_preferences` and sync with Supabase `profiles`.
 
-### Phase 2: First-Login Onboarding Experience
-- [ ] Create `src/features/onboarding/OnboardingWizard.tsx` with 4 tactile steps and keyboard navigation (`Enter` to advance).
-- [ ] Add route `/app/onboarding` under the App Router.
-- [ ] Update `RequireAuth.tsx`: If authenticated user has `onboarding_completed === false`, automatically redirect to `/app/onboarding`.
-- [ ] Add prominent "Skip with Defaults" action that instantly defaults to the Undergraduate preset and sets `onboarding_completed = true`.
+### Phase 2: First-Login Onboarding Experience (Completed ✓)
+- [x] Create `src/features/onboarding/OnboardingWizard.tsx` with 5 tactile progressive steps:
+  - Step 1: Intent Calibration ("What do you want to achieve?", keys <kbd>1</kbd>–<kbd>4</kbd>, auto-preset mapping)
+  - Step 2: Academic Profile (7 archetypes)
+  - Step 3: Workspace Tools Switcher
+  - Step 4: Note Architecture & Included Blocks
+  - Step 5: Academic Rigor Depth & Citation Style
+- [x] Add route `/app/onboarding` under the App Router.
+- [x] Update `RequireAuth.tsx`: If authenticated user has `onboarding_completed === false`, automatically redirect to `/app/onboarding`.
+- [x] Add prominent "Skip with Defaults" action that instantly defaults to the Undergraduate preset and sets `onboarding_completed = true`.
 
-### Phase 3: Settings Console Customization Tab
-- [ ] Create `src/features/settings/components/CustomizationSettings.tsx`.
-- [ ] Add the "Customization" tab as the premier tab in `src/features/settings/pages/SettingsPage.tsx`.
-- [ ] Include preset selector cards, study mode switcher toggles, note section checkboxes, rigor depth slider, citation style dropdown, and custom system directive text area.
-- [ ] Wire save handler with optimistic state updates and Sonner notification toast.
+### Phase 3: Settings Console Customization & Billing Architecture (Completed ✓)
+- [x] Create `src/features/settings/components/CustomizationSettings.tsx`.
+- [x] Add the "Customization" tab as the premier tab in `src/features/settings/pages/SettingsPage.tsx`.
+- [x] Create `src/features/settings/components/PlanBillingSettings.tsx` with live UTC countdown, tier comparison, BYOK card, and LemonSqueezy integration.
+- [x] Streamline `TactileLeftDock.tsx`: Removed Scholar Pass promo button and persistent graduation cap icon to guarantee ad-free serenity.
+- [x] Dedicated Pricing Route: Created canonical `/pricing` and updated landing header navigation with root-relative anchors (`/#pricing`).
+- [x] Unified Theme Tokens: Standardized icon badges across settings, workspace, and onboarding to Obsidian Paper & Ink `bg-muted text-foreground border border-border/80`.
 
-### Phase 4: Dynamic Document Workspace & Overrides
-- [ ] In `DocumentWorkspace.tsx`, filter visible tabs by `preferences.enabledModes`.
-- [ ] Map tab label names using `TAB_LABELS[user_role]`.
-- [ ] Add active tab fallback safety when a tab is disabled by a persona change.
-- [ ] Upgrade `NotesSettingsPopover.tsx` to support document-level overrides for note format, rigor level, and active blocks with a quick "Regenerate Notes" trigger.
+### Phase 4: Dynamic Document Workspace & Overrides (Completed ✓)
+- [x] In `DocumentWorkspace.tsx`, filter visible tabs by `preferences.enabledModes`.
+- [x] Map tab label names using `TAB_LABELS[user_role]`.
+- [x] Add active tab fallback safety when a tab is disabled by a persona change.
+- [x] Upgrade `NotesSettingsPopover.tsx` to support document-level overrides for note format, rigor level, and active blocks with a quick "Regenerate Notes" trigger.
 
-### Phase 5: Edge Function Integration
-- [ ] Implement `supabase/functions/_shared/promptCompiler.ts`.
-- [ ] Update `generate_notes/index.ts` to fetch user preferences from `profiles` (or request payload override) and compile dynamic system prompt.
-- [ ] Update `generate_derivatives/index.ts` and `generate_podcast/index.ts` to respect `quizStyle`, `flashcardAlgorithm`, and `podcastStyle`.
+### Phase 5: Edge Function Integration (Completed ✓)
+- [x] Implement `supabase/functions/_shared/promptCompiler.ts`.
+- [x] Update `generate_notes/index.ts` to fetch user preferences from `profiles` (or request payload override) and compile dynamic system prompt.
+- [x] Update `generate_derivatives/index.ts` and `generate_podcast/index.ts` to respect `quizStyle`, `flashcardAlgorithm`, and `podcastStyle`.
 
 ---
 

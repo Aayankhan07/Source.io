@@ -20,8 +20,10 @@ import {
   ListChecks,
   Headphones,
   MessageSquare,
-  HelpCircle,
   SlidersHorizontal,
+  Brain,
+  ClipboardCheck,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -47,6 +49,57 @@ const ROLE_ICONS: Record<UserRole, typeof GraduationCap> = {
   teacher: Presentation,
   custom: Sliders,
 };
+
+type LearningGoal = "classes" | "exam" | "memorize" | "notes";
+
+interface GoalOption {
+  id: LearningGoal;
+  key: string;
+  icon: typeof GraduationCap;
+  leadText: string;
+  boldText: string;
+  defaultRole: UserRole;
+  desc: string;
+}
+
+const GOAL_OPTIONS: GoalOption[] = [
+  {
+    id: "classes",
+    key: "1",
+    icon: GraduationCap,
+    leadText: "Get organized & get higher grades for my ",
+    boldText: "classes",
+    defaultRole: "undergrad",
+    desc: "Cornell notes, worked examples, and weekly retention decks.",
+  },
+  {
+    id: "exam",
+    key: "2",
+    icon: ClipboardCheck,
+    leadText: "Get ready for a specific ",
+    boldText: "exam",
+    defaultRole: "high_school",
+    desc: "Diagnostic test papers, distractor traps, and targeted revision.",
+  },
+  {
+    id: "memorize",
+    key: "3",
+    icon: Brain,
+    leadText: "Memorize something for a ",
+    boldText: "personal learning goal",
+    defaultRole: "scholar",
+    desc: "3D Leitner spaced repetition flashcards and quick active recall.",
+  },
+  {
+    id: "notes",
+    key: "4",
+    icon: Zap,
+    leadText: "Take notes and build a ",
+    boldText: "note-taking workspace",
+    defaultRole: "researcher",
+    desc: "Grounded source citations, KaTeX math formulas, and chapter outlines.",
+  },
+];
 
 const STUDY_TOOLS_CONFIG: {
   id: StudyModeId;
@@ -92,11 +145,24 @@ export default function OnboardingWizard() {
   const { completeOnboarding, userRole: initialRole, preferences: initialPrefs } = useSettings();
 
   const [step, setStep] = useState<number>(1);
+  const [selectedGoal, setSelectedGoal] = useState<LearningGoal>("classes");
   const [selectedRole, setSelectedRole] = useState<UserRole>(initialRole || "undergrad");
   const [prefs, setPrefs] = useState<WorkspacePreferences>(
     initialPrefs || ROLE_PRESETS[initialRole || "undergrad"]
   );
   const [submitting, setSubmitting] = useState(false);
+
+  // Sync role defaults when goal changes
+  const handleSelectGoal = (goal: GoalOption, autoAdvance = true) => {
+    setSelectedGoal(goal.id);
+    setSelectedRole(goal.defaultRole);
+    setPrefs(ROLE_PRESETS[goal.defaultRole]);
+    if (autoAdvance) {
+      setTimeout(() => {
+        setStep(2);
+      }, 160);
+    }
+  };
 
   // Sync role defaults when role changes
   const handleSelectRole = (role: UserRole) => {
@@ -153,9 +219,27 @@ export default function OnboardingWizard() {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept when focusing inputs
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      // Step 1: 1, 2, 3, 4 keyboard shortcuts
+      if (step === 1) {
+        const match = GOAL_OPTIONS.find((g) => g.key === e.key);
+        if (match) {
+          e.preventDefault();
+          handleSelectGoal(match, true);
+          return;
+        }
+      }
+
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        if (step < 4) {
+        if (step < 5) {
           setStep((s) => s + 1);
         } else {
           void handleFinish();
@@ -164,7 +248,7 @@ export default function OnboardingWizard() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [step, selectedRole, prefs]);
+  }, [step, selectedGoal, selectedRole, prefs]);
 
   const rolesList: UserRole[] = [
     "undergrad",
@@ -191,14 +275,14 @@ export default function OnboardingWizard() {
 
         <div className="flex items-center gap-3">
           <span className="text-xs font-mono font-medium text-muted-foreground">
-            Step {step} of 4
+            Step {step} of 5
           </span>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleSkip}
             disabled={submitting}
-            className="text-xs text-muted-foreground hover:text-foreground rounded-full h-8 px-3"
+            className="text-xs text-muted-foreground hover:text-foreground rounded-full h-8 px-3 cursor-pointer"
           >
             Skip with Defaults
           </Button>
@@ -208,9 +292,110 @@ export default function OnboardingWizard() {
       {/* Main Flow Content */}
       <main className="max-w-3xl w-full mx-auto my-auto py-8">
         <AnimatePresence mode="wait">
+          {/* STEP 1: What do you want to achieve? */}
           {step === 1 && (
             <motion.div
-              key="step-1"
+              key="step-1-goals"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <div className="space-y-1.5 text-center sm:text-left">
+                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+                  01 / Intent Calibration
+                </span>
+                <h1 className="text-3xl sm:text-4xl font-extrabold font-display text-foreground tracking-tight">
+                  What do you want to achieve?
+                </h1>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl">
+                  Choose your primary objective to help us calibrate your initial tools, note architecture, and explanation depth. Press <kbd className="px-1.5 py-0.5 rounded border border-border bg-muted font-mono text-[10px] text-foreground">1</kbd>–<kbd className="px-1.5 py-0.5 rounded border border-border bg-muted font-mono text-[10px] text-foreground">4</kbd> on your keyboard or tap below.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                {GOAL_OPTIONS.map((goal) => {
+                  const Icon = goal.icon;
+                  const isSelected = selectedGoal === goal.id;
+
+                  return (
+                    <button
+                      key={goal.id}
+                      type="button"
+                      onClick={() => handleSelectGoal(goal, true)}
+                      className={cn(
+                        "w-full p-4 sm:p-5 rounded-[22px] border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 select-none group shadow-2xs text-left",
+                        isSelected
+                          ? "bg-primary text-primary-foreground border-transparent shadow-tactile-pill scale-[1.01]"
+                          : "bg-card border-border text-foreground hover:bg-muted/60 hover:border-border/90"
+                      )}
+                    >
+                      <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+                        <div
+                          className={cn(
+                            "size-10 rounded-2xl flex items-center justify-center shrink-0 border transition-colors",
+                            isSelected
+                              ? "bg-primary-foreground/20 text-primary-foreground border-white/20"
+                              : "bg-muted text-foreground border-border/80 group-hover:border-foreground/20"
+                          )}
+                        >
+                          <Icon className="size-5" />
+                        </div>
+
+                        <div className="min-w-0">
+                          <span
+                            className={cn(
+                              "text-sm sm:text-base tracking-tight font-medium block",
+                              isSelected ? "text-primary-foreground" : "text-foreground"
+                            )}
+                          >
+                            {goal.leadText}
+                            <strong
+                              className={cn(
+                                "font-extrabold",
+                                isSelected ? "text-primary-foreground" : "text-foreground"
+                              )}
+                            >
+                              {goal.boldText}
+                            </strong>
+                          </span>
+                          <p
+                            className={cn(
+                              "text-xs mt-0.5 truncate hidden sm:block",
+                              isSelected ? "text-primary-foreground/80" : "text-muted-foreground"
+                            )}
+                          >
+                            {goal.desc}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Keyboard Shortcut Key Badge */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className={cn(
+                            "size-7 rounded-lg border font-mono text-xs font-bold flex items-center justify-center transition-colors",
+                            isSelected
+                              ? "bg-white/25 border-white/30 text-white"
+                              : "bg-muted/80 border-border text-muted-foreground group-hover:text-foreground group-hover:border-foreground/30"
+                          )}
+                          title={`Press ${goal.key} on keyboard`}
+                        >
+                          {goal.key}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 2: Academic Role Profile */}
+          {step === 2 && (
+            <motion.div
+              key="step-2-role"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -219,7 +404,7 @@ export default function OnboardingWizard() {
             >
               <div className="space-y-1.5">
                 <span className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
-                  01 / Academic Profile
+                  02 / Academic Profile
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight">
                   How will you be using Source.io?
@@ -281,7 +466,7 @@ export default function OnboardingWizard() {
                             {meta.label}
                           </span>
                           {isSelected && (
-                            <Check className="size-3.5 text-amber-400 dark:text-amber-500 stroke-[2.5]" />
+                            <Check className="size-3.5 text-primary-foreground stroke-[2.5]" />
                           )}
                         </div>
                         <p
@@ -300,9 +485,10 @@ export default function OnboardingWizard() {
             </motion.div>
           )}
 
-          {step === 2 && (
+          {/* STEP 3: Workspace Study Tools */}
+          {step === 3 && (
             <motion.div
-              key="step-2"
+              key="step-3-tools"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -311,7 +497,7 @@ export default function OnboardingWizard() {
             >
               <div className="space-y-1.5">
                 <span className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
-                  02 / Workspace Study Tools
+                  03 / Workspace Study Tools
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight">
                   Customize Your Study Toolbar
@@ -362,6 +548,7 @@ export default function OnboardingWizard() {
                         checked={isEnabled}
                         onCheckedChange={() => handleToggleMode(tool.id)}
                         onClick={(e) => e.stopPropagation()}
+                        className="cursor-pointer"
                       />
                     </div>
                   );
@@ -370,9 +557,10 @@ export default function OnboardingWizard() {
             </motion.div>
           )}
 
-          {step === 3 && (
+          {/* STEP 4: Note Architecture Blocks */}
+          {step === 4 && (
             <motion.div
-              key="step-3"
+              key="step-4-blocks"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -381,7 +569,7 @@ export default function OnboardingWizard() {
             >
               <div className="space-y-1.5">
                 <span className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
-                  03 / Note Architecture
+                  04 / Note Architecture
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight">
                   Choose Included Synthesis Blocks
@@ -444,6 +632,7 @@ export default function OnboardingWizard() {
                             }))
                           }
                           onClick={(e) => e.stopPropagation()}
+                          className="cursor-pointer"
                         />
                       </div>
                     );
@@ -453,9 +642,10 @@ export default function OnboardingWizard() {
             </motion.div>
           )}
 
-          {step === 4 && (
+          {/* STEP 5: Rigor & Citations */}
+          {step === 5 && (
             <motion.div
-              key="step-4"
+              key="step-5-rigor"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -464,7 +654,7 @@ export default function OnboardingWizard() {
             >
               <div className="space-y-1.5">
                 <span className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
-                  04 / Rigor & Citations
+                  05 / Rigor & Citations
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight">
                   Academic Depth & Grounding
@@ -578,7 +768,7 @@ export default function OnboardingWizard() {
             size="sm"
             onClick={() => setStep((s) => s - 1)}
             disabled={submitting}
-            className="rounded-full text-xs h-9 px-4 border-border text-foreground hover:bg-muted"
+            className="rounded-full text-xs h-9 px-4 border-border text-foreground hover:bg-muted cursor-pointer"
           >
             <ArrowLeft className="size-3.5 mr-1.5" />
             <span>Back</span>
@@ -587,10 +777,10 @@ export default function OnboardingWizard() {
           <div />
         )}
 
-        {step < 4 ? (
+        {step < 5 ? (
           <Button
             onClick={() => setStep((s) => s + 1)}
-            className="rounded-full text-xs font-semibold h-9 px-6 bg-primary text-primary-foreground shadow-tactile-pill hover:scale-105 active:scale-95 transition-all"
+            className="rounded-full text-xs font-semibold h-9 px-6 bg-primary text-primary-foreground shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
             <span>Continue</span>
             <ArrowRight className="size-3.5 ml-1.5" />
@@ -599,9 +789,9 @@ export default function OnboardingWizard() {
           <Button
             onClick={handleFinish}
             disabled={submitting}
-            className="rounded-full text-xs font-semibold h-9 px-6 bg-primary text-primary-foreground shadow-tactile-pill hover:scale-105 active:scale-95 transition-all"
+            className="rounded-full text-xs font-semibold h-9 px-6 bg-primary text-primary-foreground shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
-            <Sparkles className="size-3.5 mr-1.5 text-sky-400" />
+            <Sparkles className="size-3.5 mr-1.5 text-primary-foreground" />
             <span>Launch Workstation</span>
           </Button>
         )}

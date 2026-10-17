@@ -453,7 +453,7 @@ export default function WorkspaceOutline({
       {/* 3.1 Sleek Header Bar */}
       <div className="px-4 py-3 border-b border-border flex items-center justify-between shrink-0 gap-2 bg-muted/30">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="size-6 rounded-lg bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 flex items-center justify-center shrink-0">
+          <div className="size-6 rounded-lg bg-muted text-foreground border border-border flex items-center justify-center shrink-0">
             <ListTree className="size-3.5" />
           </div>
           <span className="text-xs font-bold tracking-tight text-foreground font-display truncate">

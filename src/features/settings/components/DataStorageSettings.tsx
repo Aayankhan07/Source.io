@@ -90,8 +90,8 @@ export default function DataStorageSettings() {
       {/* 1. Export Data */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Download className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
@@ -123,8 +123,8 @@ export default function DataStorageSettings() {
       {/* 2. Storage & Temporary Buffers */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <HardDrive className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">

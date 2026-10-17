@@ -142,8 +142,8 @@ export default function AIModelSettings() {
       {/* 1. Default Notes Depth */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <BookOpen className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
@@ -178,7 +178,7 @@ export default function AIModelSettings() {
                   </p>
                 </div>
                 {isSelected && (
-                  <div className="mt-3 flex items-center gap-1 text-[10.5px] font-mono font-bold text-amber-400 dark:text-amber-600">
+                  <div className="mt-3 flex items-center gap-1 text-[10.5px] font-mono font-bold text-white dark:text-slate-950">
                     <Check className="size-3 stroke-[2.5]" /> Active Default
                   </div>
                 )}
@@ -191,8 +191,8 @@ export default function AIModelSettings() {
       {/* 2. Model & Reasoning Engine */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Bot className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
@@ -236,7 +236,7 @@ export default function AIModelSettings() {
                     {m.desc}
                   </p>
                 </div>
-                {isSelected && <Check className="size-4 shrink-0 mt-0.5 text-amber-400 dark:text-amber-600 stroke-[2.5]" />}
+                {isSelected && <Check className="size-4 shrink-0 mt-0.5 text-white dark:text-slate-950 stroke-[2.5]" />}
               </button>
             );
           })}
@@ -246,8 +246,8 @@ export default function AIModelSettings() {
       {/* 3. Study Derivative Defaults */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-5">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Layers className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
@@ -355,8 +355,8 @@ export default function AIModelSettings() {
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="p-1 rounded-lg bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300">
+            <div className="flex items-center gap-2.5 mb-1">
+              <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
                 <Key className="size-4" />
               </span>
               <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
@@ -371,7 +371,7 @@ export default function AIModelSettings() {
             <button
               type="button"
               onClick={() => setShowGuide(!showGuide)}
-              className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-foreground hover:underline flex items-center gap-1 cursor-pointer"
             >
               <HelpCircle className="size-3.5" />
               <span>{showGuide ? "Hide Setup Guide" : "View Setup Guide"}</span>
@@ -383,18 +383,18 @@ export default function AIModelSettings() {
         </div>
 
         {/* BYOK Warning & Security Notice Banner */}
-        <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 space-y-2 leading-relaxed">
+        <div className="p-4 rounded-2xl bg-muted/40 border border-border text-xs text-foreground space-y-2 leading-relaxed">
           <div className="flex items-center gap-2 font-bold">
-            <AlertTriangle className="size-4 text-amber-600 shrink-0" />
+            <AlertTriangle className="size-4 text-foreground shrink-0" />
             <span>Important BYOK Billing & Security Precautions</span>
           </div>
-          <p className="text-[11px] text-amber-800 dark:text-amber-300">
+          <p className="text-[11px] text-muted-foreground">
             • <strong>No Billing Control:</strong> Source.io does not control provider billing, pricing, quotas, or rate limits. Adding billing or paid models to your provider account may incur charges from that provider.
           </p>
-          <p className="text-[11px] text-amber-800 dark:text-amber-300">
+          <p className="text-[11px] text-muted-foreground">
             • <strong>Browser Environment Disclosure:</strong> Keys are kept only in your local browser memory for this session and disappear on refresh or logout. However, browser extensions, compromised devices, or scripts can inspect browser memory. Never paste a production or unrestricted key.
           </p>
-          <p className="text-[11px] text-amber-800 dark:text-amber-300">
+          <p className="text-[11px] text-muted-foreground">
             • <strong>Revoking Leaked Keys:</strong> If you ever suspect a key was exposed, open your provider dashboard immediately and revoke/delete it.
           </p>
         </div>
@@ -403,7 +403,7 @@ export default function AIModelSettings() {
         {showGuide && (
           <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-white/5 space-y-3.5 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex items-center gap-2 font-bold font-display text-slate-900 dark:text-white">
-              <Sparkles className="size-4 text-purple-600" />
+              <Sparkles className="size-4 text-foreground" />
               <span>How API Keys Work (Student Plain-Language Guide)</span>
             </div>
             
@@ -420,7 +420,7 @@ export default function AIModelSettings() {
                   </p>
                 </div>
                 <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
-                  <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 hover:underline">
+                  <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-foreground font-semibold flex items-center gap-1 hover:underline">
                     <span>Create key: console.groq.com</span>
                     <ExternalLink className="size-2.5" />
                   </a>
@@ -443,7 +443,7 @@ export default function AIModelSettings() {
                   </p>
                 </div>
                 <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
-                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 hover:underline">
+                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-foreground font-semibold flex items-center gap-1 hover:underline">
                     <span>Create key: aistudio.google.com</span>
                     <ExternalLink className="size-2.5" />
                   </a>
@@ -462,7 +462,7 @@ export default function AIModelSettings() {
                   </p>
                 </div>
                 <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
-                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1 hover:underline">
+                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-foreground font-semibold flex items-center gap-1 hover:underline">
                     <span>Create key: platform.openai.com</span>
                     <ExternalLink className="size-2.5" />
                   </a>
@@ -474,7 +474,7 @@ export default function AIModelSettings() {
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/40 text-[11px] space-y-1 text-purple-900 dark:text-purple-200">
+            <div className="p-3 rounded-xl bg-muted/40 border border-border text-[11px] space-y-1 text-foreground">
               <span className="font-bold block">Quick 4-Step Instructions:</span>
               <p>1. Open the provider's official console link above and sign in.</p>
               <p>2. Create a restricted API key and copy it.</p>
@@ -554,7 +554,7 @@ export default function AIModelSettings() {
             <div className="flex items-center justify-between">
               <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                 <span>Google Gemini API Key (AIzaSy...)</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 font-semibold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border font-semibold">
                   Free Tier
                 </span>
               </Label>

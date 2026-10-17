@@ -47,8 +47,8 @@ export default function AudioSettings() {
       {/* 1. Host Voice Selection */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-pink-100 dark:bg-pink-950/50 text-pink-700 dark:text-pink-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Mic className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
@@ -84,7 +84,7 @@ export default function AudioSettings() {
                     )}>
                       {duo.style}
                     </span>
-                    {isSelected && <Check className="size-3.5 text-amber-400 dark:text-amber-600 stroke-[2.5]" />}
+                    {isSelected && <Check className="size-3.5 text-white dark:text-slate-950 stroke-[2.5]" />}
                   </div>
                   <span className={cn("text-xs font-bold block pt-0.5", isSelected ? "text-white dark:text-slate-950" : "text-slate-900 dark:text-white")}>
                     {duo.hosts}
@@ -102,8 +102,8 @@ export default function AudioSettings() {
       {/* 2. Audio Playback Defaults */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-5">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Volume2 className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">

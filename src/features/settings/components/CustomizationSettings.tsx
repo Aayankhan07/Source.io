@@ -222,7 +222,7 @@ export default function CustomizationSettings() {
                       {meta.label}
                     </span>
                     {isSelected && (
-                      <Check className="size-3.5 text-amber-400 dark:text-amber-500 stroke-[2.5]" />
+                      <Check className="size-3.5 text-primary-foreground stroke-[2.5]" />
                     )}
                   </div>
                   <p
@@ -243,8 +243,8 @@ export default function CustomizationSettings() {
       {/* 2. Workspace Study Modes (Visible Tabs) */}
       <div className="rounded-[28px] bg-card border border-border shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <SlidersHorizontal className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-foreground">
@@ -307,8 +307,8 @@ export default function CustomizationSettings() {
       {/* 3. Included Note Architecture Blocks */}
       <div className="rounded-[28px] bg-card border border-border shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <FileText className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-foreground">

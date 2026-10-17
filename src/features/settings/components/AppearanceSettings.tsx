@@ -44,8 +44,8 @@ export default function AppearanceSettings() {
       {/* 1. Theme Mode */}
       <div className="rounded-[28px] bg-card border border-border shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Sun className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-foreground">
@@ -80,7 +80,7 @@ export default function AppearanceSettings() {
                     )}>
                       <Icon className="size-4" />
                     </div>
-                    {isSelected && <Check className="size-3.5 text-amber-400 dark:text-amber-500 stroke-[2.5]" />}
+                    {isSelected && <Check className="size-3.5 text-primary-foreground stroke-[2.5]" />}
                   </div>
                   <span className={cn("text-xs font-bold block pt-1", isSelected ? "text-primary-foreground" : "text-foreground")}>
                     {t.label}
@@ -98,8 +98,8 @@ export default function AppearanceSettings() {
       {/* 2. Reading Speed Calibrator */}
       <div className="rounded-[28px] bg-card border border-border shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-teal-100 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Gauge className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-foreground">
@@ -130,7 +130,7 @@ export default function AppearanceSettings() {
                     <span className={cn("text-xs font-bold block", isSelected ? "text-primary-foreground" : "text-foreground")}>
                       {preset.label}
                     </span>
-                    {isSelected && <Check className="size-3.5 text-amber-400 dark:text-amber-500 stroke-[2.5]" />}
+                    {isSelected && <Check className="size-3.5 text-primary-foreground stroke-[2.5]" />}
                   </div>
                   <p className={cn("text-[11px] leading-relaxed", isSelected ? "text-primary-foreground/80" : "text-muted-foreground")}>
                     {preset.desc}
@@ -145,8 +145,8 @@ export default function AppearanceSettings() {
       {/* 3. Accent Tone */}
       <div className="rounded-[28px] bg-card border border-border shadow-tactile-card p-6 sm:p-7 space-y-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-violet-100 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300">
+          <div className="flex items-center gap-2.5 mb-1">
+            <span className="p-1.5 rounded-xl bg-muted text-foreground border border-border/80">
               <Palette className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-foreground">

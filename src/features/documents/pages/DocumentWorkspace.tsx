@@ -768,7 +768,7 @@ export default function DocumentWorkspace() {
                         </div>
                       ) : doc.status === "ready" ? (
                         <div className="rounded-[28px] border border-border p-10 text-center space-y-4 max-w-md mx-auto mt-12 bg-card shadow-tactile-card animate-fade-in no-print">
-                          <div className="size-12 rounded-2xl bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center text-amber-700 dark:text-amber-400 mx-auto">
+                          <div className="size-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground mx-auto">
                             <Sparkles className="size-6" />
                           </div>
                           <div className="space-y-1">

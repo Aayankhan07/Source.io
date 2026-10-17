@@ -142,7 +142,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 mt-6 border-t border-border">
           <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-              <Zap className="size-3.5 text-amber-500" />
+              <Zap className="size-3.5 text-foreground" />
               <span>Daily AI Generation</span>
             </div>
             <div className="text-lg font-bold font-mono text-foreground">
@@ -152,7 +152,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
 
           <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-              <Headphones className="size-3.5 text-sky-500" />
+              <Headphones className="size-3.5 text-foreground" />
               <span>Studio Voice Renders</span>
             </div>
             <div className="text-lg font-bold font-mono text-foreground">
@@ -162,7 +162,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
 
           <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-              <Clock className="size-3.5 text-emerald-500" />
+              <Clock className="size-3.5 text-foreground" />
               <span>Quota Resets In</span>
             </div>
             <div className="text-lg font-bold font-mono text-foreground">
@@ -198,23 +198,23 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
 
             <ul className="space-y-2.5 pt-2 border-t border-border text-xs text-foreground">
               <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-500 shrink-0" />
+                <Check className="size-3.5 text-foreground shrink-0" />
                 <span><strong>25 daily AI actions</strong> (resets nightly at 00:00 UTC)</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-500 shrink-0" />
+                <Check className="size-3.5 text-foreground shrink-0" />
                 <span>All 7 Role-Adaptive Presets & Cornell Note blocks</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-500 shrink-0" />
+                <Check className="size-3.5 text-foreground shrink-0" />
                 <span>KaTeX formula & mathematical proof rendering</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-500 shrink-0" />
+                <Check className="size-3.5 text-foreground shrink-0" />
                 <span>Page-and-line citation proofs & coordinate viewers</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-500 shrink-0" />
+                <Check className="size-3.5 text-foreground shrink-0" />
                 <span><strong>Unlimited zero-cost BYOK</strong> (Gemini, OpenAI, Groq)</span>
               </li>
             </ul>
@@ -302,7 +302,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
       {/* 3. Honest BYOK Notice (Don't want to pay? Bring Your Own Key) */}
       <div className="rounded-[24px] bg-muted/40 border border-border p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="p-2 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
+          <span className="p-2 rounded-xl bg-muted text-foreground border border-border/80 shrink-0 mt-0.5">
             <Key className="size-4" />
           </span>
           <div className="space-y-1">
@@ -334,7 +334,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
       {/* 4. Security & Guarantee Badges */}
       <div className="flex flex-wrap items-center justify-between gap-4 px-2 text-xs text-muted-foreground">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="size-4 text-emerald-500" />
+          <ShieldCheck className="size-4 text-foreground" />
           <span>Encrypted payment processing via LemonSqueezy</span>
         </div>
         <div className="flex items-center gap-4">
