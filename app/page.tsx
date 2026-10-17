@@ -29,7 +29,7 @@ export default function HomePage() {
         "@id": "https://sourceio.app/#webapp",
         "name": "Source.io",
         "url": "https://sourceio.app",
-        "description": "AI study workspace that converts textbooks, lecture recordings, and research papers into verified study notes, flashcards, quizzes, and podcasts with exact source citations.",
+        "description": "Role-adaptive AI study & teaching workspace that converts textbooks, lecture recordings, and research papers into verified study notes, Cornell outlines, KaTeX proofs, IMRaD critiques, flashcards, quizzes, and podcasts with exact source citations.",
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "All modern web browsers",
         "offers": [
@@ -47,11 +47,14 @@ export default function HomePage() {
           }
         ],
         "featureList": [
+          "7 calibrated academic personas (School to PhD & Teacher)",
+          "Role-adaptive workspace with adjustable rigor (Level 1–5)",
           "Page and line-level citation proofs",
           "5 coordinated study modes (Notes, Cards, Quiz, Audio, Chat)",
           "KaTeX formula and LaTeX math rendering",
           "Audio podcast recap with synchronized waveforms",
-          "3D Leitner spaced repetition flashcards"
+          "3D Leitner spaced repetition flashcards",
+          "IMRaD methodology critiques & printable exam rubrics"
         ]
       }
     ]

@@ -91,7 +91,7 @@ export function PricingComparisonSection() {
             </div>
 
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
-              Designed for students and independent researchers reviewing course syllabi, articles, and exam preps.
+              Includes 5-step role onboarding, all 7 academic personas, modular note customization, and 25 daily AI actions that reset every night at 00:00 UTC.
             </p>
 
             <ul className="space-y-3 text-xs sm:text-[13px] text-slate-700 border-t border-slate-100 pt-6">
@@ -159,7 +159,7 @@ export function PricingComparisonSection() {
 
           {/* Top Floating Badge */}
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-black text-white text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap z-30 group-hover:scale-105 transition-transform">
-            Most Popular for Full-Time Students
+            BUILT FOR SCHOLARS, RESEARCHERS & EDUCATORS
           </div>
 
           <div className="relative z-10">
@@ -190,6 +190,10 @@ export function PricingComparisonSection() {
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
                 <span className="font-semibold text-slate-900">Unlimited AI generations with priority queue</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
+                <span className="font-semibold text-slate-900">Unlimited Level-5 IMRaD critiques, printable teacher exam rubrics, and per-document rigor overrides</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />

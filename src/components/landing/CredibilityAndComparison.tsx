@@ -2,49 +2,235 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, X, ArrowRight, BookOpen, GraduationCap, Microscope, Briefcase, Users } from "lucide-react";
+import {
+  Check,
+  X,
+  ArrowRight,
+  BookOpen,
+  GraduationCap,
+  Microscope,
+  Smile,
+  Library,
+  Presentation,
+  Sliders,
+  SlidersHorizontal,
+  ListChecks,
+  FileCheck,
+  Activity,
+  FileText,
+  Printer,
+  Download,
+} from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SectionHeading } from "./SectionHeading";
 import { motion, useReducedMotion } from "motion/react";
+import { cn } from "@/lib/utils";
+import { UserRole } from "@/types/customization";
+
+interface PersonaConfig {
+  id: UserRole;
+  title: string;
+  badge: string;
+  icon: React.ElementType;
+  sourceDoc: string;
+  description: string;
+  noteTemplate: string;
+  rigorLevel: 1 | 2 | 3 | 4 | 5;
+  rigorLabel: string;
+  citationBadge: string;
+  tabsShown: string[];
+  activeBlocks: string[];
+  signatureAction: {
+    label: string;
+    icon: React.ElementType;
+    badge: string;
+  };
+  sampleExcerpt: string;
+}
+
+const PERSONAS_DATA: Record<UserRole, PersonaConfig> = {
+  school_student: {
+    id: "school_student",
+    title: "School Student",
+    badge: "Grades 6–8",
+    icon: Smile,
+    sourceDoc: "Earth Science & Planetary Orbits (Middle School Core Science, 18 pp.)",
+    description: "Visual, story-driven scaffolding with everyday analogies (ELI12), bold definitions, and zero dense jargon. Keeps young learners confident and engaged.",
+    noteTemplate: "Visual & Story-Driven (ELI12)",
+    rigorLevel: 1,
+    rigorLabel: "Level 1: Intuitive & Accessible",
+    citationBadge: "[Page 4]",
+    tabsShown: ["Study Guide", "Word Cards", "Practice Check", "Ask Tutor"],
+    activeBlocks: [
+      "Executive Overview",
+      "Real-World Analogies",
+      "Bold Vocabulary Definitions",
+      "Key Milestones Checklist",
+    ],
+    signatureAction: {
+      label: "3-Choice Diagnostic Quizzes with Hints",
+      icon: ListChecks,
+      badge: "Cheerfully Grounded",
+    },
+    sampleExcerpt: "Electrons orbit the nucleus much like planets revolve around the sun, bound by electrical attraction rather than gravity.",
+  },
+  high_school: {
+    id: "high_school",
+    title: "High School",
+    badge: "AP / IB / A-Level",
+    icon: BookOpen,
+    sourceDoc: "Campbell Biology: Cellular Respiration & ATP Synthase (Ch. 9, 32 pp.)",
+    description: "Cornell study architecture with high-yield cue terms on the left, structured summaries on the right, worked step-by-step solutions, and exam traps.",
+    noteTemplate: "Cornell Notes & Exam Syllabus",
+    rigorLevel: 2,
+    rigorLabel: "Level 2: Foundational & Exam-Oriented",
+    citationBadge: "[p. 14, §1.2]",
+    tabsShown: ["Cornell Notes", "Flashcards", "Exam Practice", "Audio Recap", "Ask Copilot"],
+    activeBlocks: [
+      "Cornell Cue Column",
+      "Structured Chapter Summaries",
+      "Step-by-Step Worked Problems",
+      "Common Standardized Exam Traps",
+    ],
+    signatureAction: {
+      label: "Board-Style MCQs with Marking Keys",
+      icon: FileCheck,
+      badge: "Syllabus Aligned",
+    },
+    sampleExcerpt: "Exam Trap: Glycolysis occurs in the cytoplasm and requires 2 ATP of activation energy, yielding a net gain of 2 ATP and 2 NADH.",
+  },
+  undergrad: {
+    id: "undergrad",
+    title: "Bachelor's / Undergrad",
+    badge: "College Default",
+    icon: GraduationCap,
+    sourceDoc: "MIT 6.824: Distributed Systems & Raft Consensus Protocol (42 pp.)",
+    description: "Collegiate synthesis with formal axiomatic definitions, step-by-step KaTeX math derivations ($$...$$), comparative evaluation tables, and Bloom's evaluative checks.",
+    noteTemplate: "Executive Lecture Outline & Proofs",
+    rigorLevel: 3,
+    rigorLabel: "Level 3: Standard Collegiate Rigor",
+    citationBadge: "[p. 14, ¶3]",
+    tabsShown: ["Notes", "Flashcards", "Quiz", "Podcast", "Ask Copilot"],
+    activeBlocks: [
+      "Executive Summary & Thesis",
+      "Step-by-Step KaTeX Math Proofs",
+      "Comparative Evaluation Tables",
+      "Critical Misconceptions & Edge Cases",
+    ],
+    signatureAction: {
+      label: "Export to Anki Deck (.tsv)",
+      icon: Download,
+      badge: "5-Box Spaced Cadence",
+    },
+    sampleExcerpt: "State Safety Invariant: If a leader has applied an entry at log index i, no other server will ever apply a different log entry for index i.",
+  },
+  scholar: {
+    id: "scholar",
+    title: "Scholar / Postgrad",
+    badge: "Grad / Med / Law",
+    icon: Library,
+    sourceDoc: "Robbins & Cotran: Glomerular Pathology & Nephrotic Differentials (68 pp.)",
+    description: "High-density synthesis designed for medical, legal, and postgraduate scholarship. Focuses on theoretical paradigms, differential diagnoses, and statutory precedents.",
+    noteTemplate: "High-Density Synthesis & Differentials",
+    rigorLevel: 4,
+    rigorLabel: "Level 4: Advanced Graduate Synthesis",
+    citationBadge: "[p. 14, ¶3:L12]",
+    tabsShown: ["Synthesis", "Leitner Deck", "Board Quiz", "Seminar Audio", "Ask Copilot"],
+    activeBlocks: [
+      "Core Theoretical Paradigms",
+      "Clinical / Legal Differentials",
+      "Axiomatic KaTeX Derivations",
+      "Multi-Variable Boundary Limitations",
+    ],
+    signatureAction: {
+      label: "USMLE / Bar Case Vignette Diagnostic",
+      icon: Activity,
+      badge: "High Density",
+    },
+    sampleExcerpt: "Minimal Change Disease presents with selective proteinuria and effacement of podocyte foot processes on electron microscopy without immune deposits.",
+  },
+  researcher: {
+    id: "researcher",
+    title: "Researcher / PhD",
+    badge: "Faculty / PI",
+    icon: Microscope,
+    sourceDoc: "Vaswani et al.: Attention Is All You Need & Transformer Complexity (15 pp.)",
+    description: "Literature review mode deconstructing papers using the IMRaD framework. Evaluates research questions, methodology, statistical validity, and explicit literature gaps. Flashcards & beginner quizzes hidden.",
+    noteTemplate: "IMRaD Literature Critique & Methodology Audit",
+    rigorLevel: 5,
+    rigorLabel: "Level 5: Peer-Review Rigor",
+    citationBadge: "(Vaswani et al., 2017, p. 4) / IEEE [1]",
+    tabsShown: ["Lit Review", "Paper Colloquium", "Query Corpus"],
+    activeBlocks: [
+      "IMRaD Structural Deconstruction",
+      "Methodology & Statistical Validity Audit",
+      "Sample Size & Bias Critique",
+      "Explicit Research Gaps & Citations",
+    ],
+    signatureAction: {
+      label: "Export Formal BibTeX & APA 7th Tree",
+      icon: FileText,
+      badge: "Zotero / Mendeley Ready",
+    },
+    sampleExcerpt: "Self-attention computational complexity per layer scales as O(n² · d), creating a quadratic memory bottleneck with long context sequences.",
+  },
+  teacher: {
+    id: "teacher",
+    title: "Teacher / Educator",
+    badge: "Curriculum Architect",
+    icon: Presentation,
+    sourceDoc: "AP Physics C: Electromagnetic Induction & Faraday's Law (24 pp.)",
+    description: "Transforms dense source material into classroom-ready 45/60-minute lesson plans, lecture pacing schedules, chalkboard derivation notes, and student discussion prompts.",
+    noteTemplate: "Instructional 60-Min Lesson Plan",
+    rigorLevel: 3,
+    rigorLabel: "Level 3: Master Curriculum Structure",
+    citationBadge: "[Source p. 14]",
+    tabsShown: ["Lesson Plan", "Handout Cards", "Exam Builder", "Curriculum Assistant"],
+    activeBlocks: [
+      "Bloom's Taxonomy Learning Objectives",
+      "Timed 60-Minute Lecture Pacing Schedule",
+      "Chalkboard KaTeX Derivations",
+      "Socratic Classroom Discussion Prompts",
+    ],
+    signatureAction: {
+      label: "Export Printable Exam & Rubric Key",
+      icon: Printer,
+      badge: "Student & Teacher Keys",
+    },
+    sampleExcerpt: "Pacing (Minutes 15-30): Board derivation of Lenz's law ε = -dΦB/dt. Prompt class: 'Why does the minus sign guarantee conservation of energy?'",
+  },
+  custom: {
+    id: "custom",
+    title: "Custom / Modular",
+    badge: "Polymath",
+    icon: Sliders,
+    sourceDoc: "User-Defined Multidisciplinary Research Monograph",
+    description: "Complete modular sovereignty. Choose your exact visible tabs, toggle individual note sections on or off, set explanation rigor (1–5), and inject custom system directives.",
+    noteTemplate: "Modular Block Custom Builder",
+    rigorLevel: 3,
+    rigorLabel: "Level 1–5: Fully User-Adjustable",
+    citationBadge: "User Choice (Pills, APA, IEEE, Coordinates)",
+    tabsShown: ["Custom Workspace Selection"],
+    activeBlocks: [
+      "User-Toggled Note Sections",
+      "Custom System Directives",
+      "Flexible Citation Anchoring",
+      "Per-Document Notes Overrides",
+    ],
+    signatureAction: {
+      label: "In-Document ⚙ Notes Settings Overrides",
+      icon: SlidersHorizontal,
+      badge: "Full Sovereignty",
+    },
+    sampleExcerpt: "Custom Prompt Injection: 'Always format algorithms in Python pseudocode with Big-O time and space complexity annotations.'",
+  },
+};
 
 export function CredibilityAndComparison() {
   const shouldReduceMotion = useReducedMotion();
-  const [activePersona, setActivePersona] = useState<"students" | "researchers" | "professionals" | "teams">("students");
-
-  const personas = {
-    students: {
-      title: "Students Preparing for Exams",
-      icon: GraduationCap,
-      source: "Introduction to Distributed Systems (MIT 6.824, 42 pp.)",
-      description: "Turn dense semester textbooks and recorded lectures into high-yield flashcards, practice quizzes, and audio recaps you can listen to on your commute.",
-      extracted: "Raft consensus election safety proofs, RPC log replication diagrams, and timeout equations.",
-      citation: "Page 18 • §4.2 • 98% match",
-    },
-    researchers: {
-      title: "Researchers Reviewing Papers",
-      icon: Microscope,
-      source: "Attention Is All You Need (Vaswani et al., 15 pp.)",
-      description: "Digest complex preprints and doctoral papers rapidly. Extract mathematical equations, cross-reference citations, and trace every claim back to the original paragraph.",
-      extracted: "Multi-head scaled dot-product attention equations, positional encoding matrices, and BLEU benchmarks.",
-      citation: "Page 4 • §3.2 • 99% match",
-    },
-    professionals: {
-      title: "Technical Professionals",
-      icon: Briefcase,
-      source: "RFC 7540: Hypertext Transfer Protocol Version 2 (HTTP/2, 96 pp.)",
-      description: "Transform dense API documentation, regulatory statutes, and system architecture specifications into structured, verifiable reference guides.",
-      extracted: "Stream multiplexing state machine, HPACK compression headers, and flow control frames.",
-      citation: "Page 22 • §5.1 • 97% match",
-    },
-    teams: {
-      title: "Teams & Study Groups",
-      icon: Users,
-      source: "System Architecture & Security Runbook (58 pp.)",
-      description: "Turn recorded onboarding sessions, recorded engineering talks, and company playbooks into interactive learning modules with verifiable references.",
-      extracted: "Disaster recovery failover sequences, token encryption guidelines, and incident response checklists.",
-      citation: "Page 14 • §2.3 • 96% match",
-    },
-  };
+  const [activeRole, setActiveRole] = useState<UserRole>("undergrad");
+  const persona = PERSONAS_DATA[activeRole];
+  const SignatureIcon = persona.signatureAction.icon;
 
   const comparisonRows = [
     {
@@ -60,6 +246,13 @@ export function CredibilityAndComparison() {
       chatgpt: false,
       notebooklm: "Partial",
       note: "Synchronized playback linked to written transcript moments",
+    },
+    {
+      feature: "Role-adaptive workspace & rigor (1–5)",
+      source: true,
+      chatgpt: "Requires manual prompt",
+      notebooklm: false,
+      note: "Morphs tabs, note blocks & citations for School, Undergrad, PhD & Teachers",
     },
     {
       feature: "Active spaced repetition (Leitner)",
@@ -101,6 +294,14 @@ export function CredibilityAndComparison() {
       a: "When Source ingests your document, it splits passages into vector embedding chunks with immutable page numbers, paragraph positions, and audio timestamps. Every answer, flashcard, and quiz question computes similarity against these chunks and displays the exact coordinate.",
     },
     {
+      q: "Is Source.io only for university students, or can teachers and PhD researchers use it?",
+      a: "Source.io adapts to 7 distinct profiles during your 60-second onboarding (School Student, High School, Bachelor's, Scholar, PhD Researcher, Teacher/Educator, and Custom). Researchers get IMRaD methodology critiques and APA/IEEE/BibTeX citations with flashcard clutter hidden; Teachers get 60-minute lesson plans and printable exam rubrics; students get Cornell notes, KaTeX proofs, and 5-box Leitner flashcards.",
+    },
+    {
+      q: "Am I locked into the role I pick during sign-up?",
+      a: "Never. You can switch personas, toggle workspace tabs (Notes, Flashcards, Quiz, Podcast, Copilot) on or off, check or uncheck individual note modules, and adjust your rigor slider (1–5) anytime in Settings → Customization—or override them for a single PDF using the in-document ⚙ Notes Settings popover.",
+    },
+    {
       q: "Are my research papers or documents used to train AI models?",
       a: "No. Your documents and audio files are parsed strictly in isolated sessions with zero retention for model training. Your research and coursework remain strictly yours.",
     },
@@ -116,32 +317,33 @@ export function CredibilityAndComparison() {
 
   return (
     <div className="py-12 sm:py-20 space-y-16 md:space-y-24 scroll-mt-20">
-      {/* 1. Use Cases Across Disciplines */}
-      <section className="mx-auto text-left w-full">
+      {/* 1. Role-Adaptive Architecture Showcase */}
+      <section id="personas" className="mx-auto text-left w-full scroll-mt-24">
         <SectionHeading
-          badge="Use Cases"
+          badge="Role-Adaptive Architecture"
           badgeTone="amber"
-          line1="Built for serious learning across every discipline."
-          description="From doctoral research papers to undergraduate exams, Source.io adapts to rigorous source material."
+          line1="One engine. Seven calibrated academic workspaces."
+          description="Choose your persona during onboarding—or toggle any tab, note block, rigor level (1–5), and citation format anytime in Settings → Customization."
           align="left"
         />
 
-        {/* Persona Selector Tabs with Gliding Obsidian Pill */}
-        <div className="flex flex-wrap gap-2.5 mb-6">
-          {(["students", "researchers", "professionals", "teams"] as const).map((key) => {
-            const item = personas[key];
+        {/* 7-Persona Selector Tabs with Gliding Obsidian Pill */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {(Object.keys(PERSONAS_DATA) as UserRole[]).map((key) => {
+            const item = PERSONAS_DATA[key];
             const Icon = item.icon;
-            const isSelected = activePersona === key;
+            const isSelected = activeRole === key;
             return (
               <button
                 key={key}
                 type="button"
-                onClick={() => setActivePersona(key)}
-                className={`relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs select-none ${
+                onClick={() => setActiveRole(key)}
+                className={cn(
+                  "relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs select-none",
                   isSelected
                     ? "text-white"
                     : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200"
-                }`}
+                )}
               >
                 {isSelected && (
                   <motion.div
@@ -153,78 +355,135 @@ export function CredibilityAndComparison() {
                 <span className="relative z-10 flex items-center gap-2">
                   <Icon className="size-3.5" />
                   <span>{item.title}</span>
+                  <span
+                    className={cn(
+                      "text-[10px] font-mono px-1.5 py-0.2 rounded-md hidden lg:inline-block",
+                      isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                    )}
+                  >
+                    {item.badge}
+                  </span>
                 </span>
               </button>
             );
           })}
         </div>
 
-        {/* Active Persona Card */}
-        <div className="bg-white rounded-[32px] sm:rounded-[36px] border border-slate-200 p-7 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-8 items-center relative overflow-hidden">
-          <div className="lg:col-span-7 space-y-3.5 relative z-10">
-            <span className="text-xs font-mono text-slate-500 font-medium block">
-              Sample source workflow
-            </span>
-            <h3 className="text-xl font-bold font-display text-slate-900">
-              {personas[activePersona].source}
-            </h3>
-            <p className="text-[14px] leading-relaxed text-slate-700">
-              {personas[activePersona].description}
-            </p>
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
-              <strong className="text-slate-900 block mb-1">Extracted key topics:</strong>
-              {personas[activePersona].extracted}
-            </div>
-            <div className="pt-2 flex flex-wrap items-center gap-2.5">
-              <span className="text-xs font-mono px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-900 font-semibold">
-                {personas[activePersona].citation}
+        {/* Active Persona Morphing Card */}
+        <div className="bg-white rounded-[32px] sm:rounded-[36px] border border-slate-200 p-7 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-8 items-start relative overflow-hidden">
+          {/* Left Column: Role Intelligence, Exemplar Source & Rigor Depth (7 Cols) */}
+          <div className="lg:col-span-7 space-y-4 relative z-10">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider font-semibold">
+                Exemplar Source Material
               </span>
-              <span className="text-xs text-slate-500 font-medium">
-                Verified against original source
+              <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-semibold">
+                {persona.badge}
+              </span>
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-900 tracking-tight">
+              {persona.sourceDoc}
+            </h3>
+
+            <p className="text-[14px] leading-relaxed text-slate-600">
+              {persona.description}
+            </p>
+
+            {/* Rigor Depth Gauge (5-pip tactile meter) */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-500 font-medium">Academic Rigor Level:</span>
+                <span className="text-slate-900 font-bold">{persona.rigorLabel}</span>
+              </div>
+              <div className="grid grid-cols-5 gap-1.5 pt-1">
+                {[1, 2, 3, 4, 5].map((lvl) => (
+                  <div
+                    key={lvl}
+                    className={cn(
+                      "h-2 rounded-full transition-colors",
+                      lvl <= persona.rigorLevel ? "bg-slate-900" : "bg-slate-200"
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Citation & Sample Excerpt */}
+            <div className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-slate-500 text-[11px] uppercase tracking-wider font-semibold">
+                  Citation Format Preview:
+                </span>
+                <span className="font-mono font-bold text-slate-900 px-2 py-0.5 rounded-md bg-white border border-slate-200 shadow-2xs">
+                  {persona.citationBadge}
+                </span>
+              </div>
+              <blockquote className="italic text-slate-700 border-l-2 border-slate-300 pl-3 text-[13px] leading-relaxed">
+                "{persona.sampleExcerpt}"
+              </blockquote>
+            </div>
+
+            {/* Role Signature Action Highlight */}
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-xs">
+                <SignatureIcon className="size-3.5" />
+                <span>{persona.signatureAction.label}</span>
+              </div>
+              <span className="text-xs text-slate-500 font-mono">
+                • {persona.signatureAction.badge}
               </span>
             </div>
           </div>
 
-          <div className="lg:col-span-5 bg-slate-50 rounded-[24px] border border-slate-200 p-6 space-y-3 text-xs relative z-10 shadow-xs">
-            <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 text-xs font-mono text-slate-500">
-              <span>Derived study assets</span>
-              <span className="text-slate-900 font-semibold font-mono">Ready</span>
+          {/* Right Column: Morphing Workspace Header & Blocks (5 Cols) */}
+          <div className="lg:col-span-5 bg-slate-50 rounded-[24px] border border-slate-200 p-6 space-y-4 text-xs relative z-10 shadow-xs">
+            {/* Live TAB_LABELS Header Simulation */}
+            <div>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs font-mono text-slate-500 mb-2.5">
+                <span>Active Workspace Header</span>
+                <span className="text-slate-900 font-bold font-mono">TAB_LABELS</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {persona.tabsShown.map((tab, idx) => (
+                  <span
+                    key={tab}
+                    className={cn(
+                      "px-2.5 py-1 rounded-full font-medium text-[11px] border transition-colors",
+                      idx === 0
+                        ? "bg-slate-900 text-white border-transparent shadow-xs"
+                        : "bg-white text-slate-700 border-slate-200"
+                    )}
+                  >
+                    {tab}
+                  </span>
+                ))}
+              </div>
             </div>
-            
-            {/* Staggered Derived Asset Rows */}
-            <motion.div 
-              key={activePersona}
-              initial="hidden"
-              animate="show"
-              variants={{
-                hidden: { opacity: 0 },
-                show: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.045 }
-                }
-              }}
-              className="space-y-2.5 text-slate-700 font-medium"
-            >
-              {[
-                "1. Structured Markdown Outline",
-                "2. Active Recall Flashcards",
-                "3. Practice Quiz with Explanations",
-                "4. Conversational Audio Recap",
-                "5. Grounded Source Chat"
-              ].map((asset) => (
-                <motion.div 
-                  key={asset}
-                  variants={{
-                    hidden: { opacity: 0, x: -6 },
-                    show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 450, damping: 28 } }
-                  }}
-                  className="flex items-center justify-between"
-                >
-                  <span>{asset}</span>
-                  <Check className="size-4 text-slate-900" />
-                </motion.div>
-              ))}
-            </motion.div>
+
+            {/* Enabled Note Architecture Modules */}
+            <div>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs font-mono text-slate-500 mb-2.5">
+                <span>Included Synthesis Blocks</span>
+                <span className="text-slate-900 font-semibold font-mono">Calibrated</span>
+              </div>
+              <div className="space-y-2 text-slate-700 font-medium">
+                {persona.activeBlocks.map((block) => (
+                  <div key={block} className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <span className="size-1.5 rounded-full bg-slate-900" />
+                      <span>{block}</span>
+                    </span>
+                    <Check className="size-3.5 text-slate-900" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Note Settings Override Notice */}
+            <div className="pt-2 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed font-mono">
+              <span>⚙ Override template, blocks, or rigor per-document in <strong className="text-slate-900">Notes Settings</strong>.</span>
+            </div>
           </div>
         </div>
       </section>
@@ -234,8 +493,8 @@ export function CredibilityAndComparison() {
         <SectionHeading
           badge="Comparison"
           badgeTone="blue"
-          line1="Why general AI chatbots fall short for exam prep"
-          description="How Source.io compares with generic AI chat windows when studying dense sources."
+          line1="Why generic AI chat falls short for rigorous study, research, and teaching."
+          description="How Source.io compares with generic AI chat windows when analyzing dense, verifiable academic sources."
           align="left"
         />
 

@@ -112,7 +112,7 @@ export function TactileHeroPrototype() {
           <h1 className="text-[clamp(32px,3.8vw,50px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 font-display text-balance">
             Turn textbooks, lectures, and research papers into{" "}
             <span className="relative inline-block pb-1 text-slate-900">
-              verified study materials.
+              verified study & teaching materials.
               <svg
                 className="absolute -bottom-1 left-0 w-full h-2 text-slate-900/60"
                 viewBox="0 0 100 20"
@@ -134,7 +134,7 @@ export function TactileHeroPrototype() {
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg leading-[1.7] text-slate-600 w-full max-w-lg">
-            Extract notes, test comprehension, and cite every fact. Source.io converts dense documents and recordings into structured notes, flashcards, quizzes, audio recaps, and grounded chat—with every answer linked back to its source.
+            One source engine calibrated to your exact academic tier. Source.io converts dense documents and recordings into grounded notes, flashcards, quizzes, audio recaps, lesson plans, and literature audits—with modular blocks, adjustable rigor (Level 1–5), and every claim linked to its exact coordinate.
           </p>
 
           {/* Action CTAs: Consistent Start free & See a live demo with Tactile Button Physics */}
@@ -165,6 +165,29 @@ export function TactileHeroPrototype() {
                 <span>See a live demo</span>
               </Link>
             </motion.div>
+          </div>
+
+          {/* Academic Tier Trust Strip */}
+          <div className="pt-1 flex flex-wrap items-center gap-2 text-xs font-mono text-slate-600">
+            <span className="text-slate-400 font-semibold uppercase tracking-wider text-[11px] mr-0.5">
+              Calibrated For:
+            </span>
+            {[
+              { label: "School", badge: "Grades 6–8" },
+              { label: "High School", badge: "AP / IB" },
+              { label: "Undergrad", badge: "College" },
+              { label: "Scholar", badge: "Grad / Med / Law" },
+              { label: "Researcher / PhD", badge: "Faculty" },
+              { label: "Teacher", badge: "Educator" },
+            ].map((item) => (
+              <span
+                key={item.label}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/90 border border-slate-200/90 text-slate-800 text-[11px] font-medium shadow-2xs hover:bg-slate-200/80 transition-colors cursor-default"
+              >
+                <span>{item.label}</span>
+                <span className="text-[10px] text-slate-400 font-mono">({item.badge})</span>
+              </span>
+            ))}
           </div>
 
           {/* Trust Guarantees */}

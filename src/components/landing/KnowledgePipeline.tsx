@@ -44,10 +44,10 @@ const STAGES: Stage[] = [
   {
     id: "synthesis",
     step: "03",
-    eyebrow: "SYNTHESIS",
-    title: "Generate study modes",
-    desc: "Derives structured notes, spaced repetition flashcard decks, practice quizzes, and 2-host conversational recaps.",
-    metric: "5 Coordinated Modes",
+    eyebrow: "CALIBRATION & SYNTHESIS",
+    title: "Calibrate role, blocks & rigor (1–5)",
+    desc: "Tailors output to your preset—ELI12, Cornell Notes, KaTeX Proofs, IMRaD Critique, or 60-Min Lesson Plans—with customizable rigor depth and modular blocks.",
+    metric: "7 Calibrated Personas",
   },
   {
     id: "verification",

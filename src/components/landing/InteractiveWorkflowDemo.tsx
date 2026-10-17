@@ -212,6 +212,14 @@ export function InteractiveWorkflowDemo({
         align="center"
       />
 
+      {/* Modular & Toggleable indicator */}
+      <div className="flex items-center justify-center gap-2 mb-8 -mt-4">
+        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100/90 border border-slate-200/90 text-[11px] font-mono text-slate-700 shadow-2xs">
+          <span className="size-2 rounded-full bg-slate-900 animate-pulse" />
+          <span><strong>Modular & Toggleable:</strong> Visible tabs rename dynamically (<code className="font-semibold text-slate-900">TAB_LABELS</code>) and unneeded modes can be hidden in Settings.</span>
+        </span>
+      </div>
+
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         {/* Tab Switcher */}
         <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
