@@ -88,7 +88,7 @@ export function TactileHeroPrototype() {
   }, [shouldReduceMotion]);
 
   return (
-    <section className="relative w-full min-h-0 lg:min-h-[100dvh] flex flex-col justify-center pt-20 sm:pt-24 lg:pt-20 pb-4 sm:pb-12 select-none overflow-hidden">
+    <section className="relative w-full min-h-[100dvh] flex flex-col justify-between lg:justify-center pt-20 xs:pt-22 sm:pt-24 lg:pt-20 pb-5 xs:pb-7 sm:pb-12 select-none overflow-hidden">
       {/* Ambient Subtle Shadow Background */}
       <div
         className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-40"
@@ -99,17 +99,17 @@ export function TactileHeroPrototype() {
         aria-hidden="true"
       />
 
-      <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full lg:my-auto">
+      <div className="grid lg:grid-cols-12 gap-3.5 xs:gap-4 sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full flex-1 flex flex-col lg:grid justify-between lg:justify-center my-auto lg:my-auto">
         {/* Left Column: Copy & Value Proposition */}
         <motion.div 
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: shouldReduceMotion ? 0.3 : 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-left space-y-3 sm:space-y-6 lg:space-y-8"
+          className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-left space-y-2.5 xs:space-y-3.5 sm:space-y-6 lg:space-y-8 w-full"
         >
 
           {/* Headline with Animated Ink-Stroke Underline */}
-          <h1 className="text-[23px] xs:text-[26px] sm:text-[clamp(30px,3.4vw,46px)] font-extrabold tracking-[-0.025em] leading-[1.2] sm:leading-[1.22] text-slate-900 font-display text-balance">
+          <h1 className="text-[23px] xs:text-[25px] sm:text-[clamp(30px,3.4vw,46px)] font-extrabold tracking-[-0.025em] leading-[1.2] sm:leading-[1.22] text-slate-900 font-display text-balance">
             Turn textbooks, lectures, and research papers into{" "}
             <span className="relative inline-block pb-1 text-slate-900">
               verified study & teaching tools.
@@ -133,7 +133,7 @@ export function TactileHeroPrototype() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[13px] xs:text-[14px] sm:text-base lg:text-lg leading-[1.55] sm:leading-[1.7] text-slate-600 w-full max-w-lg">
+          <p className="text-[12.5px] xs:text-[13.5px] sm:text-base lg:text-lg leading-[1.55] sm:leading-[1.7] text-slate-600 w-full max-w-lg">
             <span className="sm:hidden">
               One source engine calibrated to your academic tier. Convert textbooks, papers, and recordings into verified study notes and coordinate citations.
             </span>
@@ -198,7 +198,7 @@ export function TactileHeroPrototype() {
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: shouldReduceMotion ? 0.3 : 0.85, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end [perspective:1000px] relative"
+          className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end [perspective:1000px] relative mt-2 xs:mt-3 sm:mt-0"
         >
           <motion.div 
             style={{
@@ -225,7 +225,7 @@ export function TactileHeroPrototype() {
             </div>
 
             {/* Tight UI Preview Graphic */}
-            <div className="relative overflow-hidden rounded-lg sm:rounded-xl border border-slate-100 bg-slate-50 aspect-[16/10] sm:aspect-[16/10]">
+            <div className="relative overflow-hidden rounded-lg sm:rounded-xl border border-slate-100 bg-slate-50 aspect-[4/3] xs:aspect-[16/11] sm:aspect-[16/10] max-h-[300px] xs:max-h-[340px] sm:max-h-none">
               <img
                 src="/notes-preview.png"
                 alt="Source.io study workspace preview showing verified notes and citations"
