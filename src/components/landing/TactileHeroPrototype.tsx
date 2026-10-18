@@ -88,7 +88,7 @@ export function TactileHeroPrototype() {
   }, [shouldReduceMotion]);
 
   return (
-    <section className="relative w-full min-h-[100dvh] flex flex-col justify-between lg:justify-center pt-16 sm:pt-24 lg:pt-20 pb-4 sm:pb-12 select-none overflow-hidden">
+    <section className="relative w-full min-h-0 lg:min-h-[100dvh] flex flex-col justify-center pt-20 sm:pt-24 lg:pt-20 pb-4 sm:pb-12 select-none overflow-hidden">
       {/* Ambient Subtle Shadow Background */}
       <div
         className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-40"
@@ -99,7 +99,7 @@ export function TactileHeroPrototype() {
         aria-hidden="true"
       />
 
-      <div className="grid lg:grid-cols-12 gap-4 sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full my-auto">
+      <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full lg:my-auto">
         {/* Left Column: Copy & Value Proposition */}
         <motion.div 
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
@@ -133,8 +133,13 @@ export function TactileHeroPrototype() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[12.5px] xs:text-[13.5px] sm:text-base lg:text-lg leading-[1.55] sm:leading-[1.7] text-slate-600 w-full max-w-lg line-clamp-2 sm:line-clamp-none">
-            One source engine calibrated to your exact academic tier. Source.io converts textbooks, papers, and recordings into grounded study notes, flashcards, quizzes, audio recaps, and lesson plans—with modular blocks, adjustable rigor (Level 1–5), and exact coordinate proofs.
+          <p className="text-[13px] xs:text-[14px] sm:text-base lg:text-lg leading-[1.55] sm:leading-[1.7] text-slate-600 w-full max-w-lg">
+            <span className="sm:hidden">
+              One source engine calibrated to your academic tier. Convert textbooks, papers, and recordings into verified study notes and coordinate citations.
+            </span>
+            <span className="hidden sm:inline">
+              One source engine calibrated to your exact academic tier. Source.io converts textbooks, papers, and recordings into grounded study notes, flashcards, quizzes, audio recaps, and lesson plans—with modular blocks, adjustable rigor (Level 1–5), and exact coordinate proofs.
+            </span>
           </p>
 
           {/* Action CTAs: Compact Side-by-Side on Mobile, Full on Desktop */}
@@ -220,7 +225,7 @@ export function TactileHeroPrototype() {
             </div>
 
             {/* Tight UI Preview Graphic */}
-            <div className="relative overflow-hidden rounded-lg sm:rounded-xl border border-slate-100 bg-slate-50 aspect-[16/9] sm:aspect-[16/10]">
+            <div className="relative overflow-hidden rounded-lg sm:rounded-xl border border-slate-100 bg-slate-50 aspect-[16/10] sm:aspect-[16/10]">
               <img
                 src="/notes-preview.png"
                 alt="Source.io study workspace preview showing verified notes and citations"
@@ -248,7 +253,7 @@ export function TactileHeroPrototype() {
                   <p className="text-[10px] sm:text-xs text-slate-200 mt-0.5 sm:mt-1 font-medium leading-tight truncate sm:line-clamp-2">
                     "Decoherence is induced by environmental thermal vibrations..."
                   </p>
-                  <div className="mt-0.5 sm:mt-1.5 text-[8.5px] sm:text-[10px] text-slate-400 font-mono hidden xs:block">
+                  <div className="mt-0.5 sm:mt-1 text-[8.5px] sm:text-[10px] text-slate-400 font-mono">
                     Linked to <span className="text-white font-medium">Page 14, ¶3</span> in source PDF
                   </div>
                 </div>

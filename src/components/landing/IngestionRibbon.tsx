@@ -15,7 +15,7 @@ const INGESTION_FORMATS = [
 
 export function IngestionRibbon() {
   return (
-    <section className="py-8 sm:py-12 px-0 relative z-10 w-full flex flex-col items-center justify-center overflow-hidden">
+    <section className="py-4 sm:py-12 px-0 relative z-10 w-full flex flex-col items-center justify-center overflow-hidden">
       <p className="text-xs sm:text-sm font-medium text-slate-600 mb-3.5 text-center px-4">
         Ingest textbooks, lecture recordings, papers, and notes with automatic coordinate mapping.
       </p>
