@@ -88,7 +88,7 @@ export function TactileHeroPrototype() {
   }, [shouldReduceMotion]);
 
   return (
-    <section className="relative w-full min-h-[100dvh] flex flex-col justify-between lg:justify-center pt-20 xs:pt-22 sm:pt-24 lg:pt-20 pb-5 xs:pb-7 sm:pb-12 select-none overflow-hidden">
+    <section className="relative w-full min-h-[100dvh] flex flex-col justify-center pt-18 xs:pt-20 sm:pt-24 lg:pt-20 pb-8 xs:pb-10 sm:pb-12 select-none overflow-hidden">
       {/* Ambient Subtle Shadow Background */}
       <div
         className="absolute top-10 right-0 w-full lg:w-[60%] h-[550px] -z-10 pointer-events-none opacity-40"
@@ -99,7 +99,7 @@ export function TactileHeroPrototype() {
         aria-hidden="true"
       />
 
-      <div className="grid lg:grid-cols-12 gap-3.5 xs:gap-4 sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full flex-1 flex flex-col lg:grid justify-between lg:justify-center my-auto lg:my-auto">
+      <div className="grid lg:grid-cols-12 gap-5 xs:gap-6 sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full my-auto lg:my-auto">
         {/* Left Column: Copy & Value Proposition */}
         <motion.div 
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
@@ -198,7 +198,7 @@ export function TactileHeroPrototype() {
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: shouldReduceMotion ? 0.3 : 0.85, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end [perspective:1000px] relative mt-2 xs:mt-3 sm:mt-0"
+          className="lg:col-span-6 xl:col-span-6 w-full flex items-center justify-center lg:justify-end [perspective:1000px] relative"
         >
           <motion.div 
             style={{
