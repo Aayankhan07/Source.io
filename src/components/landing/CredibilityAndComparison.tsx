@@ -242,7 +242,7 @@ export function AcademicPersonasSection() {
       />
 
       {/* 7-Persona Selector Tabs with Gliding Obsidian Pill - Clean Single Row */}
-      <div className="flex flex-wrap lg:flex-nowrap items-center gap-1.5 sm:gap-2 mb-6 overflow-x-auto pb-1 max-w-full">
+      <div className="flex flex-wrap lg:flex-nowrap items-center gap-1.5 sm:gap-2 mb-6 overflow-x-auto scrollbar-none pb-1 max-w-full">
         {(Object.keys(PERSONAS_DATA) as UserRole[]).map((key) => {
           const item = PERSONAS_DATA[key];
           const Icon = item.icon;
@@ -493,9 +493,12 @@ export function ComparisonTableSection() {
                       whileInView={{ scale: 1, opacity: 1 }}
                       viewport={{ once: true, amount: 0.2 }}
                       transition={{ delay: idx * 0.05, type: "spring", stiffness: 450, damping: 25 }}
-                      className="inline-flex items-center gap-1.5 bg-slate-900 text-white border border-slate-900 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs"
+                      className="inline-flex items-center gap-2 text-slate-900 font-semibold font-mono text-xs"
                     >
-                      <Check className="size-3.5 text-white stroke-[2.5]" /> Native
+                      <span className="size-5 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                        <Check className="size-3 text-white stroke-[2.5]" />
+                      </span>
+                      <span>Native</span>
                     </motion.span>
                   ) : (
                     <span className="font-medium text-slate-900">{row.source}</span>

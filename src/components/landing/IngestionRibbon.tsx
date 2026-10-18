@@ -36,7 +36,7 @@ export function IngestionRibbon() {
                 <span className="whitespace-nowrap group-hover:text-slate-950 font-medium transition-colors">
                   {item.label}
                 </span>
-                <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-800 whitespace-nowrap transition-colors">
+                <span className="text-[10px] font-mono text-slate-500 group-hover:text-slate-900 whitespace-nowrap transition-colors">
                   {item.tag}
                 </span>
               </div>

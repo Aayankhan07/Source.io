@@ -134,7 +134,7 @@ export function TactileHeroPrototype() {
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg leading-[1.7] text-slate-600 w-full max-w-lg">
-            One source engine calibrated to your exact academic tier. Source.io converts dense documents and recordings into grounded notes, flashcards, quizzes, audio recaps, lesson plans, and literature audits—with modular blocks, adjustable rigor (Level 1–5), and every claim linked to its exact coordinate.
+            One source engine calibrated to your exact academic tier. Source.io converts textbooks, papers, and recordings into grounded study notes, flashcards, quizzes, audio recaps, and lesson plans—with modular blocks, adjustable rigor (Level 1–5), and exact coordinate proofs.
           </p>
 
           {/* Action CTAs: Consistent Start free & See a live demo with Tactile Button Physics */}
@@ -168,7 +168,7 @@ export function TactileHeroPrototype() {
           </div>
 
           {/* Trust Guarantees */}
-          <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-500 font-medium">
+          <div className="pt-3.5 sm:pt-4 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-600 font-medium">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-slate-900" />
               <span>Built for Students, PhDs &amp; Educators</span>
