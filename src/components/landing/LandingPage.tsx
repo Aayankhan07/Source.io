@@ -7,7 +7,11 @@ import { IngestionRibbon } from "./IngestionRibbon";
 import { KnowledgePipeline } from "./KnowledgePipeline";
 import { InteractiveWorkflowDemo } from "./InteractiveWorkflowDemo";
 import { PricingComparisonSection } from "./PricingComparisonSection";
-import { CredibilityAndComparison } from "./CredibilityAndComparison";
+import { 
+  AcademicPersonasSection, 
+  ComparisonTableSection, 
+  FaqAndFinalCtaSection 
+} from "./CredibilityAndComparison";
 import { LandingFooter } from "./LandingFooter";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -58,17 +62,23 @@ export function LandingPage() {
         {/* Section 2: Supported Ingestion Formats */}
         <IngestionRibbon />
 
-        {/* Section 4: How It Works (4-Step Workflow) */}
+        {/* Section 3: How It Works (4-Step Workflow) */}
         <KnowledgePipeline />
 
-        {/* Section 5: Product Demo (5 Benefit-Driven Study Modes with sc switcher & placeholders) */}
+        {/* Section 4: Product Demo (5 Coordinated Study Modes) */}
         <InteractiveWorkflowDemo />
 
-        {/* Section 6: Unified Pricing & BYOK Comparison */}
+        {/* Section 5: Role-Adaptive Architecture (7 Calibrated Workspaces) */}
+        <AcademicPersonasSection />
+
+        {/* Section 6: Capability Comparison Table */}
+        <ComparisonTableSection />
+
+        {/* Section 7: Transparent Pricing & Free Plan */}
         <PricingComparisonSection />
 
-        {/* Section 8: Use Cases, Capability Comparison, 5 Core FAQs & Final CTA */}
-        <CredibilityAndComparison />
+        {/* Section 8: Frequently Asked Questions & Final CTA */}
+        <FaqAndFinalCtaSection />
 
         {/* Section 9: Modern Tactile Footer */}
         <LandingFooter />

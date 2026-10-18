@@ -26,11 +26,11 @@ export function LandingHeader() {
   }, []);
 
   const navLinks = [
-    { href: "/#modes", label: "Study Modes" },
     { href: "/#how-it-works", label: "How it works" },
+    { href: "/#modes", label: "Study Modes" },
     { href: "/#personas", label: "Personas" },
-    { href: "/#pricing", label: "Pricing" },
     { href: "/#comparison", label: "Comparison" },
+    { href: "/#pricing", label: "Pricing" },
     { href: "/#faq", label: "FAQ" },
   ];
 
@@ -67,7 +67,7 @@ export function LandingHeader() {
         </Link>
 
         {/* Center Floating Navigation Links with Sliding Ghost Pill */}
-        <nav 
+        <nav
           onMouseLeave={() => setHoveredLink(null)}
           className="hidden md:flex items-center gap-0.5 lg:gap-1 text-[13px] font-medium text-slate-600 relative"
         >

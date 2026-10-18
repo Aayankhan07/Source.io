@@ -22,11 +22,11 @@ export function LandingFooter() {
             <div>
               <span className="font-medium text-foreground block mb-2.5">Product</span>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#modes" className="hover:text-foreground transition-colors">Study Modes</a></li>
                 <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+                <li><a href="#modes" className="hover:text-foreground transition-colors">Study Modes</a></li>
                 <li><a href="#personas" className="hover:text-foreground transition-colors">Personas</a></li>
-                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing &amp; Free Plan</a></li>
                 <li><a href="#comparison" className="hover:text-foreground transition-colors">Comparison</a></li>
+                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing &amp; Free Plan</a></li>
                 <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
               </ul>
             </div>

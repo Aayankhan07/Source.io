@@ -2,18 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import katex from "katex";
 import { 
   FileText, 
   Layers, 
   HelpCircle, 
   Headphones, 
   BookmarkCheck, 
-  ExternalLink,
-  ChevronRight,
-  ScanLine,
-  Check
+  ExternalLink, 
+  ChevronRight, 
+  ScanLine, 
+  Check 
 } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
+
+const EQUATION_HTML = katex.renderToString("P(a \\le x \\le b) = \\int_a^b |\\Psi(x, t)|^2 \\, dx = 1", {
+  displayMode: true,
+  throwOnError: false,
+});
+const PSI_HTML = katex.renderToString("\\Psi(x, t)", { displayMode: false, throwOnError: false });
+const PSI_SQ_HTML = katex.renderToString("|\\Psi(x, t)|^2", { displayMode: false, throwOnError: false });
+const X_HTML = katex.renderToString("x", { displayMode: false, throwOnError: false });
+const T_HTML = katex.renderToString("t", { displayMode: false, throwOnError: false });
 
 interface Stage {
   id: string;
@@ -223,7 +233,11 @@ export function KnowledgePipeline() {
                         [Key Concept: Born Rule]
                       </span>
                     )}{" "}
-                    What is the physical interpretation of the wave function $\Psi(x, t)$? Born&apos;s statistical interpretation asserts that $|\Psi(x, t)|^2$ gives the probability density of finding the particle at point $x$ at time $t$.
+                    What is the physical interpretation of the wave function{" "}
+                    <span className="inline-block text-slate-950 font-serif" dangerouslySetInnerHTML={{ __html: PSI_HTML }} />? Born&apos;s statistical interpretation asserts that{" "}
+                    <span className="inline-block text-slate-950 font-serif" dangerouslySetInnerHTML={{ __html: PSI_SQ_HTML }} /> gives the probability density of finding the particle at point{" "}
+                    <span className="inline-block text-slate-950 font-serif" dangerouslySetInnerHTML={{ __html: X_HTML }} /> at time{" "}
+                    <span className="inline-block text-slate-950 font-serif" dangerouslySetInnerHTML={{ __html: T_HTML }} />.
                   </div>
 
                   {/* Paragraph 2 - Equation & Math */}
@@ -242,12 +256,15 @@ export function KnowledgePipeline() {
                     )}
 
                     {/* Step 2 Structured Highlight (Equation) */}
-                    <div className={`p-3 rounded-lg text-center font-mono text-xs sm:text-sm transition-colors duration-200 ${
+                    <div className={`p-3 rounded-lg text-center transition-colors duration-200 overflow-x-auto ${
                       activeStep >= 1 
                         ? "bg-slate-100 border border-slate-300 text-slate-950 font-semibold" 
                         : "bg-slate-50 border border-slate-100 text-slate-800"
                     }`}>
-                      $$P(a \le x \le b) = \int_a^b |\Psi(x, t)|^2 \, dx = 1$$
+                      <div 
+                        className="py-1 text-sm sm:text-base text-slate-900"
+                        dangerouslySetInnerHTML={{ __html: EQUATION_HTML }} 
+                      />
                       {activeStep >= 1 && (
                         <span className="block mt-1 text-[10px] text-slate-600 font-sans uppercase font-bold tracking-wider">
                           Equation 1.3 • Normalization Condition
@@ -280,7 +297,8 @@ export function KnowledgePipeline() {
                     )}
 
                     <span className={activeStep === 3 ? "relative z-10 font-medium text-slate-950" : ""}>
-                      The wave function itself is not an observable; only its modulus squared corresponds to measurable physical probability. Prior to projective measurement, the particle does not &quot;have&quot; a definite position $x$ in any classical sense.
+                      The wave function itself is not an observable; only its modulus squared corresponds to measurable physical probability. Prior to projective measurement, the particle does not &quot;have&quot; a definite position{" "}
+                      <span className="inline-block text-slate-950 font-serif" dangerouslySetInnerHTML={{ __html: X_HTML }} /> in any classical sense.
                     </span>
 
                     {/* Step 4 Target Coordinate Pin */}

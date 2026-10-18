@@ -109,10 +109,10 @@ export function TactileHeroPrototype() {
         >
 
           {/* Headline with Animated Ink-Stroke Underline */}
-          <h1 className="text-[clamp(32px,3.8vw,50px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 font-display text-balance">
+          <h1 className="text-[clamp(30px,3.4vw,46px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 font-display text-balance">
             Turn textbooks, lectures, and research papers into{" "}
             <span className="relative inline-block pb-1 text-slate-900">
-              verified study & teaching materials.
+              verified study & teaching tools.
               <svg
                 className="absolute -bottom-1 left-0 w-full h-2 text-slate-900/60"
                 viewBox="0 0 100 20"
@@ -167,34 +167,11 @@ export function TactileHeroPrototype() {
             </motion.div>
           </div>
 
-          {/* Academic Tier Trust Strip */}
-          <div className="pt-1 flex flex-wrap items-center gap-2 text-xs font-mono text-slate-600">
-            <span className="text-slate-400 font-semibold uppercase tracking-wider text-[11px] mr-0.5">
-              Calibrated For:
-            </span>
-            {[
-              { label: "School", badge: "Grades 6–8" },
-              { label: "High School", badge: "AP / IB" },
-              { label: "Undergrad", badge: "College" },
-              { label: "Scholar", badge: "Grad / Med / Law" },
-              { label: "Researcher / PhD", badge: "Faculty" },
-              { label: "Teacher", badge: "Educator" },
-            ].map((item) => (
-              <span
-                key={item.label}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/90 border border-slate-200/90 text-slate-800 text-[11px] font-medium shadow-2xs hover:bg-slate-200/80 transition-colors cursor-default"
-              >
-                <span>{item.label}</span>
-                <span className="text-[10px] text-slate-400 font-mono">({item.badge})</span>
-              </span>
-            ))}
-          </div>
-
           {/* Trust Guarantees */}
-          <div className="pt-3 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-500 font-medium">
+          <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-500 font-medium">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-slate-900" />
-              <span>No credit card required</span>
+              <span>Built for Students, PhDs &amp; Educators</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-slate-900" />

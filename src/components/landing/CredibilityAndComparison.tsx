@@ -105,7 +105,7 @@ const PERSONAS_DATA: Record<UserRole, PersonaConfig> = {
     badge: "College Default",
     icon: GraduationCap,
     sourceDoc: "MIT 6.824: Distributed Systems & Raft Consensus Protocol (42 pp.)",
-    description: "Collegiate synthesis with formal axiomatic definitions, step-by-step KaTeX math derivations ($$...$$), comparative evaluation tables, and Bloom's evaluative checks.",
+    description: "Collegiate synthesis with formal axiomatic definitions, step-by-step KaTeX math derivations, comparative evaluation tables, and Bloom's evaluative checks.",
     noteTemplate: "Executive Lecture Outline & Proofs",
     rigorLevel: 3,
     rigorLabel: "Level 3: Standard Collegiate Rigor",
@@ -226,12 +226,186 @@ const PERSONAS_DATA: Record<UserRole, PersonaConfig> = {
   },
 };
 
-export function CredibilityAndComparison() {
-  const shouldReduceMotion = useReducedMotion();
+export function AcademicPersonasSection() {
   const [activeRole, setActiveRole] = useState<UserRole>("undergrad");
   const persona = PERSONAS_DATA[activeRole];
   const SignatureIcon = persona.signatureAction.icon;
 
+  return (
+    <section id="personas" className="py-12 sm:py-20 mx-auto text-left w-full scroll-mt-24">
+      <SectionHeading
+        badge="Role-Adaptive Architecture"
+        badgeTone="amber"
+        line1="One engine. Seven calibrated academic workspaces."
+        description="Choose your persona during onboarding—or toggle any tab, note block, rigor level (1–5), and citation format anytime in Settings → Customization."
+        align="left"
+      />
+
+      {/* 7-Persona Selector Tabs with Gliding Obsidian Pill - Clean Single Row */}
+      <div className="flex flex-wrap lg:flex-nowrap items-center gap-1.5 sm:gap-2 mb-6 overflow-x-auto pb-1 max-w-full">
+        {(Object.keys(PERSONAS_DATA) as UserRole[]).map((key) => {
+          const item = PERSONAS_DATA[key];
+          const Icon = item.icon;
+          const isSelected = activeRole === key;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setActiveRole(key)}
+              className={cn(
+                "relative inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs select-none shrink-0 whitespace-nowrap",
+                isSelected
+                  ? "text-white"
+                  : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200"
+              )}
+            >
+              {isSelected && (
+                <motion.div
+                  layoutId="activePersonaPill"
+                  className="absolute inset-0 rounded-full bg-slate-900 -z-0 shadow-sm"
+                  transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                <Icon className="size-3.5 shrink-0" />
+                <span>{item.title}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Active Persona Morphing Card */}
+      <div className="bg-white rounded-[32px] sm:rounded-[36px] border border-slate-200 p-7 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-8 items-stretch relative overflow-hidden">
+        {/* Left Column: Role Intelligence, Exemplar Source & Rigor Depth (7 Cols) */}
+        <div className="lg:col-span-7 space-y-4 relative z-10 flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider font-semibold">
+                Exemplar Source Material
+              </span>
+              <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-semibold">
+                {persona.badge}
+              </span>
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-900 tracking-tight">
+              {persona.sourceDoc}
+            </h3>
+
+            <p className="text-[14px] leading-relaxed text-slate-600">
+              {persona.description}
+            </p>
+
+            {/* Rigor Depth Gauge (5-pip tactile meter) */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-500 font-medium">Academic Rigor Level:</span>
+                <span className="text-slate-900 font-bold">{persona.rigorLabel}</span>
+              </div>
+              <div className="grid grid-cols-5 gap-1.5 pt-1">
+                {[1, 2, 3, 4, 5].map((lvl) => (
+                  <div
+                    key={lvl}
+                    className={cn(
+                      "h-2 rounded-full transition-colors",
+                      lvl <= persona.rigorLevel ? "bg-slate-900" : "bg-slate-200"
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Citation & Sample Excerpt */}
+            <div className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-slate-500 text-[11px] uppercase tracking-wider font-semibold">
+                  Citation Format Preview:
+                </span>
+                <span className="font-mono font-bold text-slate-900 px-2 py-0.5 rounded-md bg-white border border-slate-200 shadow-2xs">
+                  {persona.citationBadge}
+                </span>
+              </div>
+              <blockquote className="italic text-slate-700 border-l-2 border-slate-300 pl-3 text-[13px] leading-relaxed">
+                &quot;{persona.sampleExcerpt}&quot;
+              </blockquote>
+            </div>
+          </div>
+
+          {/* Role Signature Action Metadata Footer + Interactive Demo Link */}
+          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-medium shadow-2xs">
+              <SignatureIcon className="size-3.5 text-slate-700 shrink-0" />
+              <span>Signature Output: <strong className="font-semibold text-slate-900">{persona.signatureAction.label}</strong></span>
+              <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">({persona.signatureAction.badge})</span>
+            </div>
+            <Link
+              href="/app/doc/demo-quantum"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-950 transition-colors group cursor-pointer"
+            >
+              <span>Try this preset in live demo</span>
+              <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Column: Morphing Workspace Header & Blocks (5 Cols) - Aligned Flush */}
+        <div className="lg:col-span-5 bg-slate-50 rounded-[24px] border border-slate-200 p-6 text-xs relative z-10 shadow-xs h-full flex flex-col justify-between">
+          <div className="space-y-4">
+            {/* Live Dynamic Tabs Header Simulation */}
+            <div>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs font-mono text-slate-500 mb-2.5">
+                <span>Active Workspace Header</span>
+                <span className="text-slate-900 font-bold font-mono">Dynamic Tabs</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {persona.tabsShown.map((tab, idx) => (
+                  <span
+                    key={tab}
+                    className={cn(
+                      "px-2.5 py-1 rounded-full font-medium text-[11px] border transition-colors",
+                      idx === 0
+                        ? "bg-slate-900 text-white border-transparent shadow-xs"
+                        : "bg-white text-slate-700 border-slate-200"
+                    )}
+                  >
+                    {tab}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Enabled Note Architecture Modules */}
+            <div>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs font-mono text-slate-500 mb-2.5">
+                <span>Included Synthesis Blocks</span>
+                <span className="text-slate-900 font-semibold font-mono">Calibrated</span>
+              </div>
+              <div className="space-y-2 text-slate-700 font-medium">
+                {persona.activeBlocks.map((block) => (
+                  <div key={block} className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <span className="size-1.5 rounded-full bg-slate-900" />
+                      <span>{block}</span>
+                    </span>
+                    <Check className="size-3.5 text-slate-900" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Note Settings Override Notice */}
+          <div className="pt-3 mt-4 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed font-mono">
+            <span>⚙ Override template, blocks, or rigor per-document in <strong className="text-slate-900">Notes Settings</strong>.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function ComparisonTableSection() {
   const comparisonRows = [
     {
       feature: "Page & line-level citations",
@@ -284,6 +458,127 @@ export function CredibilityAndComparison() {
     },
   ];
 
+  return (
+    <section id="comparison" className="py-12 sm:py-20 mx-auto text-left w-full scroll-mt-24">
+      <SectionHeading
+        badge="Comparison"
+        badgeTone="blue"
+        line1="Why generic AI chat falls short for rigorous study, research, and teaching."
+        description="How Source.io compares with generic AI chat windows when analyzing dense, verifiable academic sources."
+        align="left"
+      />
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto rounded-[32px] border border-slate-200 bg-white shadow-tactile-card">
+        <table className="w-full text-left border-collapse text-[13px]">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50 text-slate-900 font-mono text-xs">
+              <th className="h-12 px-6 font-semibold">Capability</th>
+              <th className="h-12 px-5 font-bold text-slate-900">Source.io</th>
+              <th className="h-12 px-5 font-normal text-slate-500">Generic ChatGPT</th>
+              <th className="h-12 px-6 font-normal text-slate-500">NotebookLM</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {comparisonRows.map((row, idx) => (
+              <tr key={row.feature} className="h-12 hover:bg-slate-50/70 transition-colors">
+                <td className="px-6 py-3.5 font-medium text-slate-900">
+                  <div>{row.feature}</div>
+                  <div className="text-slate-500 text-xs font-mono font-normal mt-0.5">{row.note}</div>
+                </td>
+                <td className="px-5 py-3.5">
+                  {row.source === true ? (
+                    <motion.span 
+                      initial={{ scale: 0.86, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      viewport={{ once: true, amount: 0.2 }}
+                      transition={{ delay: idx * 0.05, type: "spring", stiffness: 450, damping: 25 }}
+                      className="inline-flex items-center gap-1.5 bg-slate-900 text-white border border-slate-900 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs"
+                    >
+                      <Check className="size-3.5 text-white stroke-[2.5]" /> Native
+                    </motion.span>
+                  ) : (
+                    <span className="font-medium text-slate-900">{row.source}</span>
+                  )}
+                </td>
+                <td className="px-5 py-3.5 text-slate-500 text-xs font-mono">
+                  {row.chatgpt === false ? (
+                    <span className="inline-flex items-center gap-1 text-slate-400 font-mono text-xs">
+                      <X className="size-4 text-slate-400" /> None
+                    </span>
+                  ) : (
+                    <span>{row.chatgpt}</span>
+                  )}
+                </td>
+                <td className="px-6 py-3.5 text-slate-500 text-xs font-mono">
+                  {row.notebooklm === false ? (
+                    <span className="inline-flex items-center gap-1 text-slate-400 font-mono text-xs">
+                      <X className="size-4 text-slate-400" /> None
+                    </span>
+                  ) : row.notebooklm === true ? (
+                    <span className="inline-flex items-center gap-1 text-slate-900 font-mono text-xs font-medium">
+                      <Check className="size-4 text-slate-900" /> Yes
+                    </span>
+                  ) : (
+                    <span>{row.notebooklm}</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile View */}
+      <div className="md:hidden space-y-3">
+        {comparisonRows.map((row) => (
+          <div key={row.feature} className="bg-white border border-slate-200 rounded-[22px] p-4 space-y-2 shadow-xs">
+            <div>
+              <h3 className="font-semibold text-slate-900 text-xs">{row.feature}</h3>
+              <p className="text-slate-500 text-[11px] mt-0.5">{row.note}</p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-mono">
+              <div className="p-2 rounded-[12px] bg-slate-900 text-white text-center">
+                <span className="text-slate-300 font-semibold block text-[10px] mb-0.5">Source.io</span>
+                <span className="text-white font-bold">Native</span>
+              </div>
+              <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
+                <span className="text-slate-500 block text-[10px] mb-0.5">ChatGPT</span>
+                <span className="text-slate-600 font-medium">
+                  {row.chatgpt === false ? (
+                    <span className="text-slate-400">None</span>
+                  ) : (
+                    <span>{row.chatgpt}</span>
+                  )}
+                </span>
+              </div>
+              <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
+                <span className="text-slate-500 block text-[10px] mb-0.5">NotebookLM</span>
+                <span className="text-slate-600 font-medium">
+                  {row.notebooklm === false ? (
+                    <span className="text-slate-400">None</span>
+                  ) : row.notebooklm === true ? (
+                    <span className="text-slate-900 font-bold">Yes</span>
+                  ) : (
+                    <span>{row.notebooklm}</span>
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-center text-xs text-slate-500 mt-6 font-medium">
+        Built with feedback from students, researchers, and technical learners.
+      </p>
+    </section>
+  );
+}
+
+export function FaqAndFinalCtaSection() {
+  const shouldReduceMotion = useReducedMotion();
+
   const faqs = [
     {
       q: "What file types and sizes are supported?",
@@ -294,20 +589,12 @@ export function CredibilityAndComparison() {
       a: "When Source ingests your document, it splits passages into vector embedding chunks with immutable page numbers, paragraph positions, and audio timestamps. Every answer, flashcard, and quiz question computes similarity against these chunks and displays the exact coordinate.",
     },
     {
-      q: "Is Source.io only for university students, or can teachers and PhD researchers use it?",
-      a: "Source.io adapts to 7 distinct profiles during your 60-second onboarding (School Student, High School, Bachelor's, Scholar, PhD Researcher, Teacher/Educator, and Custom). Researchers get IMRaD methodology critiques and APA/IEEE/BibTeX citations with flashcard clutter hidden; Teachers get 60-minute lesson plans and printable exam rubrics; students get Cornell notes, KaTeX proofs, and 5-box Leitner flashcards.",
-    },
-    {
-      q: "Am I locked into the role I pick during sign-up?",
-      a: "Never. You can switch personas, toggle workspace tabs (Notes, Flashcards, Quiz, Podcast, Copilot) on or off, check or uncheck individual note modules, and adjust your rigor slider (1–5) anytime in Settings → Customization—or override them for a single PDF using the in-document ⚙ Notes Settings popover.",
+      q: "Can teachers and PhD researchers use Source.io, and can I customize or switch my persona?",
+      a: "Yes. Source.io adapts to 7 distinct academic profiles during onboarding—from Middle School through PhD Researchers and Educators. Researchers get IMRaD methodology critiques and formal citations with flashcards hidden; Teachers get 60-minute lesson plans and printable exam rubrics; students get Cornell notes, KaTeX proofs, and 5-box Leitner flashcards. You are never locked in: you can switch personas, toggle workspace tabs on or off, and adjust explanation rigor (1–5) anytime in Settings or per-document in Notes Settings.",
     },
     {
       q: "Are my research papers or documents used to train AI models?",
       a: "No. Your documents and audio files are parsed strictly in isolated sessions with zero retention for model training. Your research and coursework remain strictly yours.",
-    },
-    {
-      q: "Is there really a free plan?",
-      a: "Yes. Every registered user gets 25 free AI actions every 24 hours and 3 active source workspace slots. No credit card is required to sign up, and allowances refresh daily at 00:00 UTC.",
     },
     {
       q: "Can I export my notes and flashcards?",
@@ -317,293 +604,6 @@ export function CredibilityAndComparison() {
 
   return (
     <div className="py-12 sm:py-20 space-y-16 md:space-y-24 scroll-mt-20">
-      {/* 1. Role-Adaptive Architecture Showcase */}
-      <section id="personas" className="mx-auto text-left w-full scroll-mt-24">
-        <SectionHeading
-          badge="Role-Adaptive Architecture"
-          badgeTone="amber"
-          line1="One engine. Seven calibrated academic workspaces."
-          description="Choose your persona during onboarding—or toggle any tab, note block, rigor level (1–5), and citation format anytime in Settings → Customization."
-          align="left"
-        />
-
-        {/* 7-Persona Selector Tabs with Gliding Obsidian Pill */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {(Object.keys(PERSONAS_DATA) as UserRole[]).map((key) => {
-            const item = PERSONAS_DATA[key];
-            const Icon = item.icon;
-            const isSelected = activeRole === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setActiveRole(key)}
-                className={cn(
-                  "relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs select-none",
-                  isSelected
-                    ? "text-white"
-                    : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200"
-                )}
-              >
-                {isSelected && (
-                  <motion.div
-                    layoutId="activePersonaPill"
-                    className="absolute inset-0 rounded-full bg-slate-900 -z-0 shadow-sm"
-                    transition={{ type: "spring", stiffness: 420, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-2">
-                  <Icon className="size-3.5" />
-                  <span>{item.title}</span>
-                  <span
-                    className={cn(
-                      "text-[10px] font-mono px-1.5 py-0.2 rounded-md hidden lg:inline-block",
-                      isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
-                    )}
-                  >
-                    {item.badge}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active Persona Morphing Card */}
-        <div className="bg-white rounded-[32px] sm:rounded-[36px] border border-slate-200 p-7 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-8 items-start relative overflow-hidden">
-          {/* Left Column: Role Intelligence, Exemplar Source & Rigor Depth (7 Cols) */}
-          <div className="lg:col-span-7 space-y-4 relative z-10">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider font-semibold">
-                Exemplar Source Material
-              </span>
-              <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-semibold">
-                {persona.badge}
-              </span>
-            </div>
-
-            <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-900 tracking-tight">
-              {persona.sourceDoc}
-            </h3>
-
-            <p className="text-[14px] leading-relaxed text-slate-600">
-              {persona.description}
-            </p>
-
-            {/* Rigor Depth Gauge (5-pip tactile meter) */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-slate-500 font-medium">Academic Rigor Level:</span>
-                <span className="text-slate-900 font-bold">{persona.rigorLabel}</span>
-              </div>
-              <div className="grid grid-cols-5 gap-1.5 pt-1">
-                {[1, 2, 3, 4, 5].map((lvl) => (
-                  <div
-                    key={lvl}
-                    className={cn(
-                      "h-2 rounded-full transition-colors",
-                      lvl <= persona.rigorLevel ? "bg-slate-900" : "bg-slate-200"
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Citation & Sample Excerpt */}
-            <div className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200 text-xs space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-slate-500 text-[11px] uppercase tracking-wider font-semibold">
-                  Citation Format Preview:
-                </span>
-                <span className="font-mono font-bold text-slate-900 px-2 py-0.5 rounded-md bg-white border border-slate-200 shadow-2xs">
-                  {persona.citationBadge}
-                </span>
-              </div>
-              <blockquote className="italic text-slate-700 border-l-2 border-slate-300 pl-3 text-[13px] leading-relaxed">
-                "{persona.sampleExcerpt}"
-              </blockquote>
-            </div>
-
-            {/* Role Signature Action Highlight */}
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-xs">
-                <SignatureIcon className="size-3.5" />
-                <span>{persona.signatureAction.label}</span>
-              </div>
-              <span className="text-xs text-slate-500 font-mono">
-                • {persona.signatureAction.badge}
-              </span>
-            </div>
-          </div>
-
-          {/* Right Column: Morphing Workspace Header & Blocks (5 Cols) */}
-          <div className="lg:col-span-5 bg-slate-50 rounded-[24px] border border-slate-200 p-6 space-y-4 text-xs relative z-10 shadow-xs">
-            {/* Live TAB_LABELS Header Simulation */}
-            <div>
-              <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs font-mono text-slate-500 mb-2.5">
-                <span>Active Workspace Header</span>
-                <span className="text-slate-900 font-bold font-mono">TAB_LABELS</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {persona.tabsShown.map((tab, idx) => (
-                  <span
-                    key={tab}
-                    className={cn(
-                      "px-2.5 py-1 rounded-full font-medium text-[11px] border transition-colors",
-                      idx === 0
-                        ? "bg-slate-900 text-white border-transparent shadow-xs"
-                        : "bg-white text-slate-700 border-slate-200"
-                    )}
-                  >
-                    {tab}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Enabled Note Architecture Modules */}
-            <div>
-              <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs font-mono text-slate-500 mb-2.5">
-                <span>Included Synthesis Blocks</span>
-                <span className="text-slate-900 font-semibold font-mono">Calibrated</span>
-              </div>
-              <div className="space-y-2 text-slate-700 font-medium">
-                {persona.activeBlocks.map((block) => (
-                  <div key={block} className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-slate-900" />
-                      <span>{block}</span>
-                    </span>
-                    <Check className="size-3.5 text-slate-900" />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Note Settings Override Notice */}
-            <div className="pt-2 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed font-mono">
-              <span>⚙ Override template, blocks, or rigor per-document in <strong className="text-slate-900">Notes Settings</strong>.</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. Capability Comparison */}
-      <section id="comparison" className="mx-auto text-left w-full scroll-mt-24">
-        <SectionHeading
-          badge="Comparison"
-          badgeTone="blue"
-          line1="Why generic AI chat falls short for rigorous study, research, and teaching."
-          description="How Source.io compares with generic AI chat windows when analyzing dense, verifiable academic sources."
-          align="left"
-        />
-
-        {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto rounded-[32px] border border-slate-200 bg-white shadow-tactile-card">
-          <table className="w-full text-left border-collapse text-[13px]">
-            <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-slate-900 font-mono text-xs">
-                <th className="h-12 px-6 font-semibold">Capability</th>
-                <th className="h-12 px-5 font-bold text-slate-900">Source.io</th>
-                <th className="h-12 px-5 font-normal text-slate-500">Generic ChatGPT</th>
-                <th className="h-12 px-6 font-normal text-slate-500">NotebookLM</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {comparisonRows.map((row, idx) => (
-                <tr key={row.feature} className="h-12 hover:bg-slate-50/70 transition-colors">
-                  <td className="px-6 py-3.5 font-medium text-slate-900">
-                    <div>{row.feature}</div>
-                    <div className="text-slate-500 text-xs font-mono font-normal mt-0.5">{row.note}</div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    {row.source === true ? (
-                      <motion.span 
-                        initial={{ scale: 0.86, opacity: 0 }}
-                        whileInView={{ scale: 1, opacity: 1 }}
-                        viewport={{ once: true, amount: 0.2 }}
-                        transition={{ delay: idx * 0.05, type: "spring", stiffness: 450, damping: 25 }}
-                        className="inline-flex items-center gap-1.5 bg-slate-900 text-white border border-slate-900 px-2.5 py-0.5 rounded-md font-semibold font-mono text-xs shadow-2xs"
-                      >
-                        <Check className="size-3.5 text-white stroke-[2.5]" /> Native
-                      </motion.span>
-                    ) : (
-                      <span className="font-medium text-slate-900">{row.source}</span>
-                    )}
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-500 text-xs font-mono">
-                    {row.chatgpt === false ? (
-                      <span className="inline-flex items-center gap-1 text-slate-400 font-mono text-xs">
-                        <X className="size-4 text-slate-400" /> None
-                      </span>
-                    ) : (
-                      <span>{row.chatgpt}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-3.5 text-slate-500 text-xs font-mono">
-                    {row.notebooklm === false ? (
-                      <span className="inline-flex items-center gap-1 text-slate-400 font-mono text-xs">
-                        <X className="size-4 text-slate-400" /> None
-                      </span>
-                    ) : row.notebooklm === true ? (
-                      <span className="inline-flex items-center gap-1 text-slate-900 font-mono text-xs font-medium">
-                        <Check className="size-4 text-slate-900" /> Yes
-                      </span>
-                    ) : (
-                      <span>{row.notebooklm}</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile View */}
-        <div className="md:hidden space-y-3">
-          {comparisonRows.map((row) => (
-            <div key={row.feature} className="bg-white border border-slate-200 rounded-[22px] p-4 space-y-2 shadow-xs">
-              <div>
-                <h3 className="font-semibold text-slate-900 text-xs">{row.feature}</h3>
-                <p className="text-slate-500 text-[11px] mt-0.5">{row.note}</p>
-              </div>
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-mono">
-                <div className="p-2 rounded-[12px] bg-slate-900 text-white text-center">
-                  <span className="text-slate-300 font-semibold block text-[10px] mb-0.5">Source.io</span>
-                  <span className="text-white font-bold">Native</span>
-                </div>
-                <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
-                  <span className="text-slate-500 block text-[10px] mb-0.5">ChatGPT</span>
-                  <span className="text-slate-600 font-medium">
-                    {row.chatgpt === false ? (
-                      <span className="text-slate-400">None</span>
-                    ) : (
-                      <span>{row.chatgpt}</span>
-                    )}
-                  </span>
-                </div>
-                <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
-                  <span className="text-slate-500 block text-[10px] mb-0.5">NotebookLM</span>
-                  <span className="text-slate-600 font-medium">
-                    {row.notebooklm === false ? (
-                      <span className="text-slate-400">None</span>
-                    ) : row.notebooklm === true ? (
-                      <span className="text-slate-900 font-bold">Yes</span>
-                    ) : (
-                      <span>{row.notebooklm}</span>
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <p className="text-center text-xs text-slate-500 mt-6 font-medium">
-          Built with feedback from students, researchers, and technical learners.
-        </p>
-      </section>
-
       {/* 3. Frequently Asked Questions */}
       <section 
         id="faq" 
@@ -722,5 +722,15 @@ export function CredibilityAndComparison() {
         </div>
       </motion.section>
     </div>
+  );
+}
+
+export function CredibilityAndComparison() {
+  return (
+    <>
+      <AcademicPersonasSection />
+      <ComparisonTableSection />
+      <FaqAndFinalCtaSection />
+    </>
   );
 }
