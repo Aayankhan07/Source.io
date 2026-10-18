@@ -99,7 +99,7 @@ export function TactileHeroPrototype() {
         aria-hidden="true"
       />
 
-      <div className="grid lg:grid-cols-12 gap-5 xs:gap-6 sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full my-auto lg:my-auto">
+      <div className="grid lg:grid-cols-12 gap-[50px] sm:gap-8 lg:gap-12 xl:gap-16 items-center w-full my-auto lg:my-auto">
         {/* Left Column: Copy & Value Proposition */}
         <motion.div 
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
