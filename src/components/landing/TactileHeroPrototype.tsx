@@ -109,7 +109,7 @@ export function TactileHeroPrototype() {
         >
 
           {/* Headline with Animated Ink-Stroke Underline */}
-          <h1 className="text-[clamp(30px,3.4vw,46px)] font-extrabold tracking-[-0.025em] leading-[1.22] text-slate-900 font-display text-balance">
+          <h1 className="text-[28px] sm:text-[clamp(30px,3.4vw,46px)] font-extrabold tracking-[-0.025em] leading-[1.2] sm:leading-[1.22] text-slate-900 font-display text-balance">
             Turn textbooks, lectures, and research papers into{" "}
             <span className="relative inline-block pb-1 text-slate-900">
               verified study & teaching tools.
@@ -133,20 +133,21 @@ export function TactileHeroPrototype() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg leading-[1.7] text-slate-600 w-full max-w-lg">
+          <p className="text-[14.5px] sm:text-base lg:text-lg leading-[1.65] sm:leading-[1.7] text-slate-600 w-full max-w-lg">
             One source engine calibrated to your exact academic tier. Source.io converts textbooks, papers, and recordings into grounded study notes, flashcards, quizzes, audio recaps, and lesson plans—with modular blocks, adjustable rigor (Level 1–5), and exact coordinate proofs.
           </p>
 
           {/* Action CTAs: Consistent Start free & See a live demo with Tactile Button Physics */}
-          <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 w-full sm:w-auto">
             <motion.div
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.965, y: 0.5 }}
               transition={{ type: "spring", stiffness: 450, damping: 25 }}
+              className="w-full sm:w-auto"
             >
               <Link
                 href={mounted && user ? "/app" : "/auth?mode=signup"}
-                className="relative px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18),0_16px_32px_-8px_rgba(0,0,0,0.22)] border-t border-white/20 flex items-center justify-center gap-2 group cursor-pointer transition-[background-color,box-shadow] duration-200"
+                className="w-full sm:w-auto relative px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-[0_2px_8px_rgba(0,0,0,0.12),0_12px_24px_-8px_rgba(0,0,0,0.18)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18),0_16px_32px_-8px_rgba(0,0,0,0.22)] border-t border-white/20 flex items-center justify-center gap-2 group cursor-pointer transition-[background-color,box-shadow] duration-200"
               >
                 <span>{mounted && user ? "Open workspace" : "Start free"}</span>
                 <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
@@ -157,10 +158,11 @@ export function TactileHeroPrototype() {
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.965, y: 0.5 }}
               transition={{ type: "spring", stiffness: 450, damping: 25 }}
+              className="w-full sm:w-auto"
             >
               <Link
                 href="/app/doc/demo-quantum"
-                className="px-5 py-3.5 rounded-full bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm border border-slate-200/90 hover:border-slate-300 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer group transition-[background-color,border-color,box-shadow] duration-200"
+                className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm border border-slate-200/90 hover:border-slate-300 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer group transition-[background-color,border-color,box-shadow] duration-200"
               >
                 <span>See a live demo</span>
               </Link>
@@ -168,17 +170,17 @@ export function TactileHeroPrototype() {
           </div>
 
           {/* Trust Guarantees */}
-          <div className="pt-3.5 sm:pt-4 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-slate-600 font-medium">
+          <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-xs text-slate-600 font-medium">
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-slate-900" />
-              <span>Built for Students, PhDs &amp; Educators</span>
+              <CheckCircle2 className="size-3.5 text-slate-900 shrink-0" />
+              <span>Students, PhDs &amp; Educators</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-slate-900" />
+              <CheckCircle2 className="size-3.5 text-slate-900 shrink-0" />
               <span>25 free actions daily</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-slate-900" />
+              <CheckCircle2 className="size-3.5 text-slate-900 shrink-0" />
               <span>Zero-data retention</span>
             </div>
           </div>
@@ -231,20 +233,20 @@ export function TactileHeroPrototype() {
                     : { y: 0, scale: 1, borderColor: "rgba(51,65,85,0.8)" }
                 }
                 transition={{ type: "spring", stiffness: 450, damping: 24 }}
-                className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-[340px] bg-slate-900/95 backdrop-blur-md text-white p-3 sm:p-3.5 rounded-xl border shadow-2xl flex items-start gap-3 transition-colors duration-300"
+                className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-[340px] bg-slate-900/95 backdrop-blur-md text-white p-2.5 sm:p-3.5 rounded-xl border shadow-2xl flex items-start gap-2.5 sm:gap-3 transition-colors duration-300"
               >
-                <div className="size-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shrink-0 text-white">
-                  <ShieldCheck className="size-4" />
+                <div className="size-7 sm:size-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shrink-0 text-white">
+                  <ShieldCheck className="size-3.5 sm:size-4" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-mono text-slate-300 font-semibold uppercase tracking-wider">Citation Coordinate</span>
-                    <span className="text-[10px] font-mono bg-white/10 text-white border border-white/20 px-1.5 py-0.2 rounded">96% match</span>
+                    <span className="text-[10px] sm:text-[11px] font-mono text-slate-300 font-semibold uppercase tracking-wider">Citation Coordinate</span>
+                    <span className="text-[9px] sm:text-[10px] font-mono bg-white/10 text-white border border-white/20 px-1.5 py-0.2 rounded">96% match</span>
                   </div>
-                  <p className="text-xs text-slate-200 mt-1 font-medium leading-snug line-clamp-2">
+                  <p className="text-[11px] sm:text-xs text-slate-200 mt-0.5 sm:mt-1 font-medium leading-snug line-clamp-1 sm:line-clamp-2">
                     "Decoherence is induced by environmental thermal vibrations and stray fields."
                   </p>
-                  <div className="mt-1.5 text-[10px] text-slate-400 font-mono">
+                  <div className="mt-1 sm:mt-1.5 text-[9px] sm:text-[10px] text-slate-400 font-mono">
                     Linked to <span className="text-white font-medium">Page 14, ¶3</span> in source PDF
                   </div>
                 </div>

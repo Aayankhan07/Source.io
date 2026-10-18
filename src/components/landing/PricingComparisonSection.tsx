@@ -69,7 +69,7 @@ export function PricingComparisonSection() {
           <div 
             className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
             style={{
-              background: "radial-gradient(400px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(14, 165, 233, 0.08), transparent 70%)"
+              background: "radial-gradient(400px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(15, 23, 42, 0.04), transparent 70%)"
             }}
           />
 
@@ -153,7 +153,7 @@ export function PricingComparisonSection() {
           <div 
             className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0 overflow-hidden"
             style={{
-              background: "radial-gradient(450px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(245, 158, 11, 0.09), transparent 70%)"
+              background: "radial-gradient(450px circle at var(--card-x, 150px) var(--card-y, 150px), rgba(15, 23, 42, 0.04), transparent 70%)"
             }}
           />
 
@@ -238,16 +238,16 @@ export function PricingComparisonSection() {
 
       {/* Bottom BYOK (Bring Your Own Key) Callout Banner */}
       <div className="max-w-4xl mx-auto mt-8">
-        <div className="p-4 sm:p-5 rounded-[22px] bg-white border border-slate-200 shadow-tactile-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="size-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 shrink-0">
+        <div className="p-4 sm:p-5 rounded-[22px] bg-white border border-slate-200 shadow-tactile-card flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="size-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 shrink-0 mt-0.5 sm:mt-0">
               <Key className="size-4" />
             </div>
             <div>
               <p className="text-xs sm:text-sm font-bold text-slate-900 font-display">
-                Developer & Hacker Friendly: Bring Your Own API Key (BYOK)
+                Developer &amp; Hacker Friendly: Bring Your Own API Key (BYOK)
               </p>
-              <p className="text-[11px] sm:text-xs text-slate-500">
+              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
                 Have your own Groq or Gemini API key? Plug it in under Settings and bypass all daily rate limits for free forever.
               </p>
             </div>
@@ -255,7 +255,7 @@ export function PricingComparisonSection() {
 
           <Link
             href="/auth?redirect=/app/settings"
-            className="group inline-flex items-center gap-1.5 text-xs font-semibold text-slate-900 hover:text-slate-950 whitespace-nowrap shrink-0 self-end sm:self-center cursor-pointer"
+            className="group inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-900 hover:text-slate-950 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 sm:border-transparent sm:bg-transparent sm:p-0 whitespace-nowrap shrink-0 cursor-pointer transition-colors"
           >
             <span>Configure in Settings</span>
             <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform duration-200" />

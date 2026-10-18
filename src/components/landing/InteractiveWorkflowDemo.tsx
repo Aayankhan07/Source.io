@@ -213,8 +213,8 @@ export function InteractiveWorkflowDemo({
       />
 
       <Tabs value={currentTab} onValueChange={handleTabChange}>
-        {/* Tab Switcher */}
-        <div className="flex justify-center mb-8 overflow-x-auto max-w-full pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+        {/* Tab Switcher: Swipeable single track on mobile, centered on desktop */}
+        <div className="flex justify-start sm:justify-center mb-6 sm:mb-8 overflow-x-auto max-w-full pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none snap-x">
           <TabsList className="bg-white/80 backdrop-blur-md border border-slate-200 p-1.5 rounded-full h-auto gap-1 inline-flex shrink-0 shadow-tactile-pill relative">
             {tabsList.map((tab) => {
               const Icon = tab.icon;
@@ -223,7 +223,7 @@ export function InteractiveWorkflowDemo({
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="relative rounded-full text-[12px] font-semibold gap-2 px-3.5 py-1.5 transition-all focus-visible:outline-none group cursor-pointer data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none text-slate-600 hover:text-slate-900 hover:bg-black/[0.04]"
+                  className="relative rounded-full text-[12px] font-semibold gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 transition-all focus-visible:outline-none group cursor-pointer data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none text-slate-600 hover:text-slate-900 hover:bg-black/[0.04] shrink-0 snap-center whitespace-nowrap"
                   title={tab.title}
                 >
                   {isActive && (
@@ -237,8 +237,8 @@ export function InteractiveWorkflowDemo({
                       }
                     />
                   )}
-                  <span className="relative z-10 inline-flex items-center gap-2">
-                    <Icon className="size-4 shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="relative z-10 inline-flex items-center gap-1.5 sm:gap-2">
+                    <Icon className="size-3.5 sm:size-4 shrink-0 group-hover:scale-110 transition-transform duration-200" />
                     <span className="font-medium tracking-tight">{tab.label}</span>
                   </span>
                 </TabsTrigger>
@@ -342,11 +342,37 @@ export function InteractiveWorkflowDemo({
                 <TabsContent value="notes" forceMount={currentTab === "notes" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "notes" && (
                     <div className="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-white">
+                      {/* Desktop View: Full-Resolution Workspace Screenshot */}
                       <img
                         src="/notes-preview.png"
                         alt="Source.io Structured Notes Preview"
-                        className="w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-cover object-top select-none"
+                        className="hidden sm:block w-full h-auto max-h-[500px] sm:max-h-[600px] lg:max-h-[680px] object-cover object-top select-none"
                       />
+
+                      {/* Mobile View: High-Legibility Editorial Excerpt Card */}
+                      <div className="sm:hidden p-4 bg-white space-y-3.5 text-left">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                          <span className="font-mono text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+                            Verified Study Note
+                          </span>
+                          <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold">
+                            Rigor Level 3
+                          </span>
+                        </div>
+                        <h4 className="font-bold text-base font-display text-slate-900 leading-snug">
+                          Quantum Superposition &amp; Wave Function
+                        </h4>
+                        <p className="text-xs text-slate-700 leading-relaxed font-serif">
+                          A qubit exists in an arbitrary normalized linear combination <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-[11px] font-semibold text-slate-900">|ψ⟩ = α|0⟩ + β|1⟩</span> where <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-[11px] font-semibold text-slate-900">|α|² + |β|² = 1</span>.
+                        </p>
+                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
+                          <ShieldCheck className="size-4 text-slate-900 shrink-0 mt-0.5" />
+                          <div className="text-[11px] leading-relaxed">
+                            <span className="font-semibold text-slate-900 block font-mono">Anchored Citation Coordinate:</span>
+                            <span className="text-slate-600">Source: <strong className="text-slate-900">Griffiths Ch. 1, p. 14, ¶3</strong> (98% match)</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </TabsContent>
@@ -456,7 +482,7 @@ export function InteractiveWorkflowDemo({
                 <TabsContent value="quiz" forceMount={currentTab === "quiz" ? true : undefined} className="mt-0 focus-visible:outline-none">
                   {currentTab === "quiz" && (
                     <div className="max-w-xl mx-auto py-8 px-4 text-center space-y-4">
-                      <div className="size-16 rounded-2xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto shadow-xs">
+                      <div className="size-16 rounded-2xl bg-slate-800 text-white border border-slate-700 flex items-center justify-center mx-auto shadow-xs">
                         <ListChecks className="size-8" />
                       </div>
                       <h4 className="text-xl font-bold text-white font-display">Self-Grading Practice Quizzes</h4>
@@ -464,8 +490,8 @@ export function InteractiveWorkflowDemo({
                         AI-generated multiple choice and diagnostic quiz questions with instant verification and direct passage coordinates.
                       </p>
                       <div className="pt-2">
-                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-xs font-mono font-medium text-amber-300 border border-amber-500/30">
-                          <span className="size-2 rounded-full bg-amber-400 animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-xs font-mono font-medium text-slate-200 border border-slate-700">
+                          <span className="size-2 rounded-full bg-white animate-pulse" />
                           Diagnostic Exam Mode Ready
                         </span>
                       </div>

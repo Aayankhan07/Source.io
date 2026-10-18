@@ -241,8 +241,8 @@ export function AcademicPersonasSection() {
         align="left"
       />
 
-      {/* 7-Persona Selector Tabs with Gliding Obsidian Pill - Clean Single Row */}
-      <div className="flex flex-wrap lg:flex-nowrap items-center gap-1.5 sm:gap-2 mb-6 overflow-x-auto scrollbar-none pb-1 max-w-full">
+      {/* 7-Persona Selector Tabs with Gliding Obsidian Pill - Swipeable on mobile, flex row on desktop */}
+      <div className="flex flex-nowrap overflow-x-auto scrollbar-none snap-x lg:flex-wrap items-center gap-1.5 sm:gap-2 mb-6 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 max-w-full">
         {(Object.keys(PERSONAS_DATA) as UserRole[]).map((key) => {
           const item = PERSONAS_DATA[key];
           const Icon = item.icon;
@@ -253,7 +253,7 @@ export function AcademicPersonasSection() {
               type="button"
               onClick={() => setActiveRole(key)}
               className={cn(
-                "relative inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs select-none shrink-0 whitespace-nowrap",
+                "relative inline-flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs select-none shrink-0 snap-center whitespace-nowrap",
                 isSelected
                   ? "text-white"
                   : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200"
@@ -276,7 +276,7 @@ export function AcademicPersonasSection() {
       </div>
 
       {/* Active Persona Morphing Card */}
-      <div className="bg-white rounded-[32px] sm:rounded-[36px] border border-slate-200 p-7 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-8 items-stretch relative overflow-hidden">
+      <div className="bg-white rounded-[28px] sm:rounded-[36px] border border-slate-200 p-5 sm:p-9 shadow-tactile-card grid lg:grid-cols-12 gap-6 sm:gap-8 items-stretch relative overflow-hidden">
         {/* Left Column: Role Intelligence, Exemplar Source & Rigor Depth (7 Cols) */}
         <div className="lg:col-span-7 space-y-4 relative z-10 flex flex-col justify-between">
           <div className="space-y-4">
@@ -532,40 +532,58 @@ export function ComparisonTableSection() {
         </table>
       </div>
 
-      {/* Mobile View */}
+      {/* Mobile View: High-Legibility Verdict Cards (No 90px cramped columns) */}
       <div className="md:hidden space-y-3">
         {comparisonRows.map((row) => (
-          <div key={row.feature} className="bg-white border border-slate-200 rounded-[22px] p-4 space-y-2 shadow-xs">
+          <div key={row.feature} className="bg-white border border-slate-200/90 rounded-2xl p-4 space-y-2.5 shadow-xs">
             <div>
-              <h3 className="font-semibold text-slate-900 text-xs">{row.feature}</h3>
-              <p className="text-slate-500 text-[11px] mt-0.5">{row.note}</p>
+              <h3 className="font-bold text-slate-900 text-[13px] font-display">{row.feature}</h3>
+              <p className="text-slate-500 text-[11px] mt-0.5 leading-normal">{row.note}</p>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-mono">
-              <div className="p-2 rounded-[12px] bg-slate-900 text-white text-center">
-                <span className="text-slate-300 font-semibold block text-[10px] mb-0.5">Source.io</span>
-                <span className="text-white font-bold">Native</span>
-              </div>
-              <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
-                <span className="text-slate-500 block text-[10px] mb-0.5">ChatGPT</span>
-                <span className="text-slate-600 font-medium">
-                  {row.chatgpt === false ? (
-                    <span className="text-slate-400">None</span>
-                  ) : (
-                    <span>{row.chatgpt}</span>
-                  )}
+
+            <div className="pt-2 border-t border-slate-100 space-y-1.5 font-mono text-xs">
+              {/* Source.io Row - Dominant & Crisp */}
+              <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 text-white shadow-2xs">
+                <span className="font-semibold text-slate-200 text-[11px]">Source.io</span>
+                <span className="inline-flex items-center gap-1.5 font-bold text-white text-[11px]">
+                  <span className="size-4 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                    <Check className="size-2.5 text-white stroke-[2.5]" />
+                  </span>
+                  <span>Native</span>
                 </span>
               </div>
-              <div className="p-2 rounded-[12px] bg-slate-50 border border-slate-200 text-center">
-                <span className="text-slate-500 block text-[10px] mb-0.5">NotebookLM</span>
-                <span className="text-slate-600 font-medium">
-                  {row.notebooklm === false ? (
-                    <span className="text-slate-400">None</span>
-                  ) : row.notebooklm === true ? (
-                    <span className="text-slate-900 font-bold">Yes</span>
-                  ) : (
-                    <span>{row.notebooklm}</span>
-                  )}
-                </span>
+
+              {/* Competitors Row - Readable without hyphenation */}
+              <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
+                  <span className="text-slate-400 font-semibold block text-[10px] uppercase">ChatGPT</span>
+                  <span className="text-slate-700 font-medium block truncate" title={String(row.chatgpt)}>
+                    {row.chatgpt === false ? (
+                      <span className="inline-flex items-center gap-1 text-slate-400">
+                        <X className="size-3 text-slate-400" /> None
+                      </span>
+                    ) : (
+                      <span>{row.chatgpt}</span>
+                    )}
+                  </span>
+                </div>
+
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
+                  <span className="text-slate-400 font-semibold block text-[10px] uppercase">NotebookLM</span>
+                  <span className="text-slate-700 font-medium block truncate" title={String(row.notebooklm)}>
+                    {row.notebooklm === false ? (
+                      <span className="inline-flex items-center gap-1 text-slate-400">
+                        <X className="size-3 text-slate-400" /> None
+                      </span>
+                    ) : row.notebooklm === true ? (
+                      <span className="inline-flex items-center gap-1 text-slate-900 font-bold">
+                        <Check className="size-3 text-slate-900" /> Yes
+                      </span>
+                    ) : (
+                      <span>{row.notebooklm}</span>
+                    )}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -644,9 +662,9 @@ export function FaqAndFinalCtaSection() {
             <AccordionItem 
               key={idx} 
               value={`item-${idx}`}
-              className="group border border-slate-200/90 hover:border-slate-300 data-[state=open]:border-amber-200/60 data-[state=open]:shadow-[0_4px_24px_-4px_rgba(245,158,11,0.08)] rounded-2xl sm:rounded-[22px] bg-white data-[state=open]:bg-amber-50/30 px-6 sm:px-7 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
+              className="group border border-slate-200/90 hover:border-slate-300 data-[state=open]:border-slate-400 data-[state=open]:shadow-[0_4px_24px_-4px_rgba(15,23,42,0.06)] rounded-2xl sm:rounded-[22px] bg-white data-[state=open]:bg-white px-4 sm:px-7 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
             >
-              <AccordionTrigger className="min-h-[58px] sm:min-h-[64px] text-left font-bold text-sm sm:text-[15px] leading-normal text-slate-900 group-hover:text-amber-600 py-4 sm:py-5 hover:no-underline font-display cursor-pointer flex items-center justify-between gap-4 transition-colors">
+              <AccordionTrigger className="min-h-[52px] sm:min-h-[64px] text-left font-bold text-sm sm:text-[15px] leading-normal text-slate-900 group-hover:text-slate-950 py-3.5 sm:py-5 hover:no-underline font-display cursor-pointer flex items-center justify-between gap-3 sm:gap-4 transition-colors">
                 <span className="flex-1 py-0.5">{faq.q}</span>
               </AccordionTrigger>
               <AccordionContent className="text-[13.5px] sm:text-sm leading-[1.75] text-slate-700 pb-5 sm:pb-6 pt-0 mt-0">
@@ -674,11 +692,11 @@ export function FaqAndFinalCtaSection() {
             e.currentTarget.style.setProperty("--cta-x", `${e.clientX - rect.left}px`);
             e.currentTarget.style.setProperty("--cta-y", `${e.clientY - rect.top}px`);
           }}
-          className="relative rounded-[36px] sm:rounded-[44px] bg-slate-950 text-white p-8 sm:p-16 shadow-2xl border border-slate-800 overflow-hidden group hover:border-slate-700 transition-colors duration-300"
+          className="relative rounded-[32px] sm:rounded-[44px] bg-slate-950 text-white p-6 sm:p-16 shadow-2xl border border-slate-800 overflow-hidden group hover:border-slate-700 transition-colors duration-300"
         >
           {/* Tactile Cursor Ink Spotlight Glow */}
           <div
-            className="pointer-events-none absolute -inset-px rounded-[36px] sm:rounded-[44px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+            className="pointer-events-none absolute -inset-px rounded-[32px] sm:rounded-[44px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
             style={{
               background: "radial-gradient(550px circle at var(--cta-x, 250px) var(--cta-y, 150px), rgba(255, 255, 255, 0.07), transparent 70%)",
             }}
@@ -686,19 +704,20 @@ export function FaqAndFinalCtaSection() {
 
           {/* Central Content */}
           <div className="relative z-10 max-w-3xl mx-auto space-y-4">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-white text-balance">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-white text-balance">
               Stop skimming. Start mastering.
             </h2>
 
-            <p className="text-base sm:text-lg leading-relaxed text-slate-300 max-w-[540px] mx-auto text-balance">
+            <p className="text-sm sm:text-lg leading-relaxed text-slate-300 max-w-[540px] mx-auto text-balance">
               Upload your first document or lecture recording and see what Source.io can generate.
             </p>
 
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+            <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-3.5 w-full sm:w-auto">
               <motion.div
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.965, y: 0.5 }}
                 transition={{ type: "spring", stiffness: 450, damping: 25 }}
+                className="w-full sm:w-auto"
               >
                 <Link
                   href="/auth?mode=signup"
@@ -712,6 +731,7 @@ export function FaqAndFinalCtaSection() {
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.965, y: 0.5 }}
                 transition={{ type: "spring", stiffness: 450, damping: 25 }}
+                className="w-full sm:w-auto"
               >
                 <Link
                   href="/app/doc/demo-quantum"

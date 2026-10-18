@@ -94,13 +94,58 @@ export function KnowledgePipeline() {
       />
 
       <div className="mt-12 sm:mt-16 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
           
-          {/* Left Column: Interactive Flow Steps */}
+          {/* Mobile-Only Segmented Stepper (Synchronized in single viewport, zero scroll fatigue) */}
+          <div className="lg:hidden col-span-1 space-y-3">
+            <div className="grid grid-cols-4 gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200">
+              {STAGES.map((stage, idx) => {
+                const isActive = activeStep === idx;
+                return (
+                  <button
+                    key={stage.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveStep(idx);
+                      setIsPaused(true);
+                    }}
+                    className={`py-2 px-1 text-center rounded-xl text-xs font-mono font-semibold transition-all relative cursor-pointer ${
+                      isActive
+                        ? "text-white"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="mobilePipelineStep"
+                        className="absolute inset-0 rounded-xl bg-slate-900 shadow-sm -z-0"
+                        transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10 block text-[11px] truncate">
+                      {stage.step} {stage.eyebrow.split(" ")[0]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Mobile Active Stage Summary Callout */}
+            <div className="p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl text-left">
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-1">
+                <span className="font-bold text-slate-900 tracking-wider uppercase">{STAGES[activeStep].eyebrow}</span>
+                <span className="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded-full font-medium">{STAGES[activeStep].metric}</span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 font-display">{STAGES[activeStep].title}</h3>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">{STAGES[activeStep].desc}</p>
+            </div>
+          </div>
+
+          {/* Desktop Left Column: Interactive Flow Steps (Hidden on mobile) */}
           <div 
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="lg:col-span-5 flex flex-col divide-y divide-slate-100"
+            className="hidden lg:flex lg:col-span-5 flex-col divide-y divide-slate-100"
           >
             {STAGES.map((stage, idx) => {
               const isActive = activeStep === idx;
@@ -174,7 +219,7 @@ export function KnowledgePipeline() {
             <div className="relative h-full">
               
               {/* Document Sheet (Grounded on Canvas - No nested cards, subtle hairline paper aesthetic) */}
-              <div className="relative rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(15,23,42,0.04)] overflow-hidden h-full min-h-[480px] sm:min-h-[520px] p-6 sm:p-8 flex flex-col justify-between">
+              <div className="relative rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(15,23,42,0.04)] overflow-hidden h-full min-h-[440px] sm:min-h-[520px] p-4 sm:p-8 flex flex-col justify-between">
                 
                 {/* Real Document Running Header */}
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100 text-[11px] font-mono text-slate-400">

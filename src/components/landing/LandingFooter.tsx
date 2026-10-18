@@ -41,9 +41,9 @@ export function LandingFooter() {
               </ul>
             </div>
 
-            <div>
+            <div className="col-span-2 sm:col-span-1 pt-3 sm:pt-0 border-t border-border/40 sm:border-0">
               <span className="font-medium text-foreground block mb-2.5">Platform</span>
-              <ul className="space-y-2 text-muted-foreground">
+              <ul className="flex flex-wrap sm:flex-col gap-x-4 gap-y-2 text-muted-foreground">
                 <li><Link href="/auth?mode=signin" className="hover:text-foreground transition-colors">Sign in</Link></li>
                 <li><Link href="/auth?mode=signup" className="hover:text-foreground transition-colors">Create account</Link></li>
                 <li><span className="text-muted-foreground">Zero-Data Retention</span></li>

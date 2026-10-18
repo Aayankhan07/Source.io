@@ -25,27 +25,27 @@ export function LandingPage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#FAF9F6] text-slate-950 antialiased selection:bg-slate-900 selection:text-white font-sans relative overflow-x-clip transition-colors duration-200">
-      {/* Ambient Continuous Atmospheric Halos (Soft, subtle sky and warm amber accents) */}
+      {/* Ambient Continuous Atmospheric Halos (Subtle neutral monochrome ink) */}
       <div
-        className="absolute top-0 right-0 w-full lg:w-[65%] h-[700px] -z-10 pointer-events-none opacity-50"
+        className="absolute top-0 right-0 w-full lg:w-[65%] h-[700px] -z-10 pointer-events-none opacity-60"
         style={{
-          background: "radial-gradient(ellipse 90% 70% at 75% 25%, rgba(14,165,233,0.1) 0%, rgba(245,158,11,0.06) 45%, transparent 75%)",
+          background: "radial-gradient(ellipse 90% 70% at 75% 25%, rgba(15,23,42,0.03) 0%, transparent 75%)",
           filter: "blur(60px)",
         }}
         aria-hidden="true"
       />
       <div
-        className="absolute top-[1400px] left-0 w-full lg:w-[55%] h-[650px] -z-10 pointer-events-none opacity-40"
+        className="absolute top-[1400px] left-0 w-full lg:w-[55%] h-[650px] -z-10 pointer-events-none opacity-50"
         style={{
-          background: "radial-gradient(ellipse 80% 60% at 20% 50%, rgba(245,158,11,0.06) 0%, rgba(14,165,233,0.05) 50%, transparent 75%)",
+          background: "radial-gradient(ellipse 80% 60% at 20% 50%, rgba(15,23,42,0.025) 0%, transparent 75%)",
           filter: "blur(70px)",
         }}
         aria-hidden="true"
       />
       <div
-        className="absolute top-[2800px] right-0 w-full lg:w-[60%] h-[700px] -z-10 pointer-events-none opacity-40"
+        className="absolute top-[2800px] right-0 w-full lg:w-[60%] h-[700px] -z-10 pointer-events-none opacity-50"
         style={{
-          background: "radial-gradient(ellipse 85% 65% at 80% 50%, rgba(14,165,233,0.07) 0%, rgba(245,158,11,0.05) 50%, transparent 80%)",
+          background: "radial-gradient(ellipse 85% 65% at 80% 50%, rgba(15,23,42,0.025) 0%, transparent 80%)",
           filter: "blur(70px)",
         }}
         aria-hidden="true"

@@ -114,7 +114,7 @@ export function LandingHeader() {
             <div className="flex items-center gap-1.5">
               <Link
                 href="/auth?mode=signin"
-                className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-colors"
+                className="hidden sm:inline-block text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-colors"
               >
                 Sign in
               </Link>
@@ -125,7 +125,7 @@ export function LandingHeader() {
               >
                 <Link
                   href="/auth?mode=signup"
-                  className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill hover:shadow-md border-t border-white/20 transition-all inline-flex items-center justify-center cursor-pointer"
+                  className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-tactile-pill hover:shadow-md border-t border-white/20 transition-all inline-flex items-center justify-center cursor-pointer whitespace-nowrap"
                 >
                   Start free
                 </Link>
@@ -137,7 +137,7 @@ export function LandingHeader() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden size-8 flex items-center justify-center rounded-full text-slate-600 hover:bg-black/[0.05] transition-colors cursor-pointer"
+            className="md:hidden size-9 sm:size-8 flex items-center justify-center rounded-full text-slate-600 hover:bg-black/[0.05] transition-colors cursor-pointer p-1"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -148,39 +148,40 @@ export function LandingHeader() {
 
       {/* Floating Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 p-4 rounded-[28px] bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-tactile-dock flex flex-col gap-2 animate-in fade-in-50 slide-in-from-top-2 duration-150">
+        <div className="md:hidden mt-2 p-4 rounded-[28px] bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-tactile-dock flex flex-col gap-1.5 animate-in fade-in-50 slide-in-from-top-2 duration-150">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
+              className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 hover:bg-slate-100 transition-colors flex items-center justify-between"
             >
-              {link.label}
+              <span>{link.label}</span>
+              <ArrowRight className="size-3 text-slate-400" />
             </a>
           ))}
-          <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+          <div className="pt-3 mt-1 border-t border-slate-100 flex items-center gap-2">
             {user ? (
               <Link
                 href="/app"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 text-center rounded-full text-xs font-semibold bg-slate-900 text-white"
+                className="w-full py-2.5 text-center rounded-full text-xs font-semibold bg-slate-900 text-white shadow-tactile-pill"
               >
                 Open workspace
               </Link>
             ) : (
               <>
                 <Link
-                  href="/auth"
+                  href="/auth?mode=signin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-100 text-slate-800"
+                  className="flex-1 py-2.5 text-center rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors"
                 >
                   Sign in
                 </Link>
                 <Link
-                  href="/auth"
+                  href="/auth?mode=signup"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 text-center rounded-full text-xs font-semibold bg-slate-900 text-white"
+                  className="flex-1 py-2.5 text-center rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-tactile-pill transition-colors"
                 >
                   Start free
                 </Link>

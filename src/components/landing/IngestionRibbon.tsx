@@ -20,15 +20,15 @@ export function IngestionRibbon() {
         Ingest textbooks, lecture recordings, papers, and notes with automatic coordinate mapping.
       </p>
 
-      {/* Centered Static Array of Tactile Format Chips */}
+      {/* Centered Static Array on Desktop / Smooth Horizontal Swipe Track on Mobile */}
       <div className="w-full max-w-6xl mx-auto px-4 pt-2">
-        <div className="flex flex-wrap lg:flex-nowrap items-center justify-center gap-2 sm:gap-2.5 lg:gap-3">
+        <div className="flex flex-nowrap overflow-x-auto scrollbar-none snap-x lg:overflow-x-visible items-center justify-start lg:justify-center gap-2 sm:gap-2.5 lg:gap-3 pb-2 lg:pb-0 px-1 lg:px-0">
           {INGESTION_FORMATS.map((item) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.label}
-                className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400 hover:bg-white transition-all duration-200 select-none cursor-pointer"
+                className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/90 bg-white/95 text-slate-800 text-xs font-medium leading-none shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400 hover:bg-white transition-all duration-200 select-none cursor-pointer shrink-0 snap-center"
               >
                 <div className="size-6 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-colors duration-200">
                   <Icon className="size-3.5 group-hover:scale-110 transition-transform duration-200" />
