@@ -53,11 +53,11 @@ export function LandingPage() {
       {/* 1. Floating Capsule App-Style Navigation Header */}
       <LandingHeader />
 
-      {/* Main Fluid Container (Clean rhythmic vertical spacing) */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-2">
-        {/* Section 1: Hero Section with clear promise, CTAs, trust line & quantum computing preview */}
-        <TactileHeroPrototype />
+      {/* Hero Section: Full-width atmospheric stage with full-bleed side fade */}
+      <TactileHeroPrototype />
 
+      {/* Main Fluid Container (Clean rhythmic vertical spacing) */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Section 2: Supported Ingestion Formats */}
         <IngestionRibbon />
 

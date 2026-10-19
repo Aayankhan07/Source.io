@@ -147,17 +147,6 @@ export function TactileHeroPrototype() {
         aria-hidden="true"
       />
 
-      {/* Top Center Eyebrow Pill */}
-      <motion.div
-        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: shouldReduceMotion ? 0.3 : 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/[0.04] border border-slate-900/10 text-[11px] sm:text-xs font-mono uppercase tracking-wider text-slate-700 shadow-2xs mb-3 sm:mb-4"
-      >
-        <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <span>Academic Intelligence • 100% Grounded</span>
-      </motion.div>
-
       {/* Monumental Centered Headline */}
       <motion.h1
         initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -270,20 +259,36 @@ export function TactileHeroPrototype() {
         </div>
       </div>
 
-      {/* 3D Side-Swiping Physical Card Deck Showcase */}
+      {/* 3D Side-Swiping Physical Card Deck Showcase (Full-Bleed Stage with Soft Edge Fades) */}
       <div
-        className="relative w-full max-w-[1440px] mx-auto h-[420px] xs:h-[460px] sm:h-[540px] md:h-[600px] lg:h-[640px] flex items-center justify-center [perspective:1400px] overflow-hidden"
+        className="relative w-full h-[420px] xs:h-[460px] sm:h-[540px] md:h-[600px] lg:h-[650px] flex items-center justify-center [perspective:1400px] overflow-hidden"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onTouchStart={() => setIsPaused(true)}
         onTouchEnd={() => setIsPaused(false)}
       >
+        {/* Full-width continuous atmospheric glow behind cards */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl h-[500px] -z-10 pointer-events-none opacity-50"
+          style={{
+            background: "radial-gradient(ellipse 75% 55% at 50% 50%, rgba(15,23,42,0.04) 0%, rgba(15,23,42,0.01) 60%, transparent 85%)",
+            filter: "blur(60px)",
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Left Edge Soft Gradient Fade Scrim */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 lg:w-56 bg-gradient-to-r from-[#FAF9F6] via-[#FAF9F6]/80 to-transparent z-35 pointer-events-none" />
+
+        {/* Right Edge Soft Gradient Fade Scrim */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 lg:w-56 bg-gradient-to-l from-[#FAF9F6] via-[#FAF9F6]/80 to-transparent z-35 pointer-events-none" />
+
         {/* Subtle Left Chevron Button */}
         <button
           type="button"
           onClick={prevCard}
           aria-label="Previous card"
-          className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-40 size-10 sm:size-12 rounded-full bg-white/95 hover:bg-white text-slate-700 hover:text-slate-950 shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-slate-200/90 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 backdrop-blur-md"
+          className="absolute left-3 sm:left-6 lg:left-10 xl:left-16 top-1/2 -translate-y-1/2 z-40 size-10 sm:size-12 rounded-full bg-white/95 hover:bg-white text-slate-700 hover:text-slate-950 shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-slate-200/90 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 backdrop-blur-md"
         >
           <ChevronLeft className="size-5 sm:size-6" />
         </button>
@@ -293,13 +298,19 @@ export function TactileHeroPrototype() {
           type="button"
           onClick={nextCard}
           aria-label="Next card"
-          className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-40 size-10 sm:size-12 rounded-full bg-white/95 hover:bg-white text-slate-700 hover:text-slate-950 shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-slate-200/90 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 backdrop-blur-md"
+          className="absolute right-3 sm:right-6 lg:right-10 xl:right-16 top-1/2 -translate-y-1/2 z-40 size-10 sm:size-12 rounded-full bg-white/95 hover:bg-white text-slate-700 hover:text-slate-950 shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-slate-200/90 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 backdrop-blur-md"
         >
           <ChevronRight className="size-5 sm:size-6" />
         </button>
 
-        {/* Cards Deck Track */}
-        <div className="relative w-full h-full flex items-center justify-center">
+        {/* Cards Deck Track with Bilateral Mask */}
+        <div 
+          className="relative w-full h-full flex items-center justify-center"
+          style={{
+            maskImage: "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
+          }}
+        >
           {FEATURE_MODES.map((mode, idx) => {
             let diff = (idx - activeIdx + 4) % 4;
             if (diff === 3) diff = -1;
@@ -318,14 +329,14 @@ export function TactileHeroPrototype() {
 
             if (isRight) {
               targetX = "calc(-50% + 72%)";
-              targetScale = 0.86;
-              targetOpacity = 0.52;
+              targetScale = 0.88;
+              targetOpacity = 0.62;
               targetZIndex = 20;
               targetBlur = "blur(0.5px)";
             } else if (isLeft) {
               targetX = "calc(-50% - 72%)";
-              targetScale = 0.86;
-              targetOpacity = 0.52;
+              targetScale = 0.88;
+              targetOpacity = 0.62;
               targetZIndex = 20;
               targetBlur = "blur(0.5px)";
             } else if (isHidden) {
@@ -369,7 +380,7 @@ export function TactileHeroPrototype() {
                   if (isLeft) prevCard();
                 }}
                 className={cn(
-                  "absolute top-1/2 left-1/2 w-[88vw] max-w-[390px] xs:max-w-[430px] sm:w-[740px] sm:max-w-[740px] md:w-[820px] md:max-w-[820px] lg:w-[900px] lg:max-w-[900px] rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.12),0_1px_3px_rgba(0,0,0,0.05)] bg-white p-2 sm:p-2.5 transition-shadow duration-300",
+                  "absolute top-1/2 left-1/2 w-[88vw] max-w-[390px] xs:max-w-[430px] sm:w-[740px] sm:max-w-[740px] md:w-[840px] md:max-w-[840px] lg:w-[940px] lg:max-w-[940px] xl:w-[1000px] xl:max-w-[1000px] rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.12),0_1px_3px_rgba(0,0,0,0.05)] bg-white p-2 sm:p-2.5 transition-shadow duration-300",
                   isCenter ? "shadow-[0_25px_60px_rgba(15,23,42,0.16)] cursor-grab active:cursor-grabbing" : "cursor-pointer hover:opacity-75"
                 )}
                 style={{
