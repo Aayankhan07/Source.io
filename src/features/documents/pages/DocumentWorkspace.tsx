@@ -257,13 +257,19 @@ export default function DocumentWorkspace() {
   const visibleTabs: { id: TabId; label: string; count?: number }[] = useMemo(() => {
     const allPossibleTabs: { id: TabId; label: string; count?: number }[] = [
       { id: "notes", label: roleTabLabels.notes || "Notes" },
-      { id: "cards", label: roleTabLabels.cards || "Flashcards", count: cards.length },
+      { id: "cards", label: roleTabLabels.cards || roleTabLabels.flashcards || "Flashcards", count: cards.length },
       { id: "quiz", label: roleTabLabels.quiz || "Quiz" },
       { id: "podcast", label: roleTabLabels.podcast || "Podcast" },
     ];
-    const filtered = allPossibleTabs.filter((t) => enabledModes.includes(t.id));
-    return filtered.length > 0 ? filtered : allPossibleTabs.slice(0, 1);
-  }, [roleTabLabels, enabledModes, cards.length]);
+    const filtered = allPossibleTabs.filter((t) => {
+      if (isDemo) return true;
+      if (t.id === "cards") {
+        return enabledModes.includes("cards") || enabledModes.includes("flashcards");
+      }
+      return enabledModes.includes(t.id as any);
+    });
+    return filtered.length > 0 ? filtered : allPossibleTabs;
+  }, [roleTabLabels, enabledModes, cards.length, isDemo]);
 
   // Self-heal active tab if current tab is disabled by the active role preset
   useEffect(() => {

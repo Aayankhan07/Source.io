@@ -5,7 +5,6 @@ import { LandingHeader } from "./LandingHeader";
 import { TactileHeroPrototype } from "./TactileHeroPrototype";
 import { IngestionRibbon } from "./IngestionRibbon";
 import { KnowledgePipeline } from "./KnowledgePipeline";
-import { InteractiveWorkflowDemo } from "./InteractiveWorkflowDemo";
 import { PricingComparisonSection } from "./PricingComparisonSection";
 import { 
   AcademicPersonasSection, 
@@ -65,10 +64,7 @@ export function LandingPage() {
         {/* Section 3: How It Works (4-Step Workflow) */}
         <KnowledgePipeline />
 
-        {/* Section 4: Product Demo (5 Coordinated Study Modes) */}
-        <InteractiveWorkflowDemo />
-
-        {/* Section 5: Role-Adaptive Architecture (7 Calibrated Workspaces) */}
+        {/* Section 4: Role-Adaptive Architecture (7 Calibrated Workspaces) */}
         <AcademicPersonasSection />
 
         {/* Section 6: Capability Comparison Table */}
