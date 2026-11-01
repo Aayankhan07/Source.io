@@ -41,5 +41,13 @@ describe("SEO & Crawl Assets", () => {
       expect(content).toContain("User-agent: PerplexityBot");
     });
   });
-});
 
+  describe("app/layout.tsx AI discovery link", () => {
+    it("declares alternate markdown link for /llms.txt in head", () => {
+      const layoutPath = path.resolve(__dirname, "../../app/layout.tsx");
+      const content = fs.readFileSync(layoutPath, "utf-8");
+
+      expect(content).toMatch(/<link\s+[^>]*rel="alternate"[^>]*type="text\/markdown"[^>]*href="\/llms\.txt"/);
+    });
+  });
+});
