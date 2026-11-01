@@ -13,7 +13,7 @@ test.describe("Source.io End-to-End User Journeys", () => {
     await expect(heading).toContainText("Skip the Grind.");
 
     // 3. Verify Mode tabs and switch to Flashcards
-    const flashcardsTab = page.getByRole("button", { name: "Flashcards" });
+    const flashcardsTab = page.locator("#modes").getByRole("button", { name: /Flashcards/i });
     await expect(flashcardsTab).toBeVisible();
     await flashcardsTab.click();
     await expect(page.getByText(/Leitner Spaced Repetition/i)).toBeVisible();
@@ -66,7 +66,7 @@ test.describe("Source.io End-to-End User Journeys", () => {
 
     // RequireAuth redirects guest to /auth
     await page.waitForURL(/\/auth/);
-    await expect(page.locator("h2, h1")).toContainText(/Welcome back|Sign in|Source\.io/i);
+    await expect(page.getByRole("heading", { name: /Welcome back|Sign in/i })).toBeVisible();
   });
 
   test("Non-existent URL renders custom 404 recovery screen", async ({ page }) => {
