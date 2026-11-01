@@ -5,14 +5,14 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export const metadata: Metadata = {
-  title: "Source.io vs Google NotebookLM: Feature Comparison & Alternatives (2026)",
+  title: "Source.io vs NotebookLM: Feature & Citation Comparison",
   description:
     "Detailed comparison between Source.io and Google NotebookLM for students, researchers, and engineers. Compare citation accuracy, spaced repetition flashcards, and KaTeX math formulas.",
   alternates: {
     canonical: "/vs-notebooklm",
   },
   openGraph: {
-    title: "Source.io vs Google NotebookLM: The Complete 2026 Comparison",
+    title: "Source.io vs NotebookLM: Feature & Citation Comparison",
     description:
       "Looking for a NotebookLM alternative with 3D flashcards, practice quizzes, and page-and-line citation proofs? See how Source.io compares.",
   },
@@ -72,15 +72,38 @@ export default function VsNotebookLMPage() {
 
   const comparisonSchema = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Source.io vs Google NotebookLM: Feature & Capability Comparison",
-    "url": "https://sourceio.app/vs-notebooklm",
-    "description": "Comprehensive side-by-side comparison between Source.io and Google NotebookLM for academic study, research analysis, and active recall.",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Source.io",
-      "url": "https://sourceio.app"
-    }
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://sourceio.app/vs-notebooklm#webpage",
+        "name": "Source.io vs Google NotebookLM: Feature & Capability Comparison",
+        "url": "https://sourceio.app/vs-notebooklm",
+        "description": "Comprehensive side-by-side comparison between Source.io and Google NotebookLM for academic study, research analysis, and active recall.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Source.io",
+          "url": "https://sourceio.app"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://sourceio.app/vs-notebooklm#breadcrumbs",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://sourceio.app"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Comparisons",
+            "item": "https://sourceio.app/vs-notebooklm"
+          }
+        ]
+      }
+    ]
   };
 
   return (
