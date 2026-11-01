@@ -50,4 +50,21 @@ describe("SEO & Crawl Assets", () => {
       expect(content).toMatch(/<link\s+[^>]*rel="alternate"[^>]*type="text\/markdown"[^>]*href="\/llms\.txt"/);
     });
   });
+
+  describe("app/vs-notebooklm/page.tsx AEO FAQ and Schema", () => {
+    it("defines FAQPage schema and visible conversational Q&A section", () => {
+      const vsPagePath = path.resolve(__dirname, "../../app/vs-notebooklm/page.tsx");
+      const content = fs.readFileSync(vsPagePath, "utf-8");
+
+      // Verify FAQPage Schema presence
+      expect(content).toContain('"@type": "FAQPage"');
+      expect(content).toContain("What is the difference between Source.io and Google NotebookLM?");
+      expect(content).toContain("Does Source.io render LaTeX and complex math formulas?");
+      expect(content).toContain("Can I generate Leitner flashcards and quizzes from PDF textbooks?");
+
+      // Verify visual FAQ section exists
+      expect(content).toContain('id="faq"');
+      expect(content).toContain("Frequently Asked Questions");
+    });
+  });
 });

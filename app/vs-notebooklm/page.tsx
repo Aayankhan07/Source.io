@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, X, ArrowRight, ShieldCheck, Zap, Sparkles, BookOpen } from "lucide-react";
+import { Check, X, ArrowRight, ShieldCheck, Zap, Sparkles, BookOpen, HelpCircle } from "lucide-react";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -70,6 +70,24 @@ export default function VsNotebookLMPage() {
     },
   ];
 
+  const faqs = [
+    {
+      question: "What is the difference between Source.io and Google NotebookLM?",
+      answer:
+        "Source.io provides coordinate-accurate, line-level citations linking directly into an interactive split-view reader with cosine similarity verification, whereas NotebookLM offers document-level citation tags. Additionally, Source.io includes 3D Leitner spaced repetition flashcards, customizable diagnostic practice quizzes, and full KaTeX formula rendering, while NotebookLM focuses primarily on passive dual-host audio overviews.",
+    },
+    {
+      question: "Does Source.io render LaTeX and complex math formulas?",
+      answer:
+        "Yes. Source.io features native sub-second KaTeX rendering for complex mathematical equations, physics notations, and algorithmic proofs extracted from research papers and textbooks. In contrast, Google NotebookLM renders equations as standard markdown text, which often breaks multi-line derivations, matrix alignments, and symbolic expressions essential for engineering and scientific analysis.",
+    },
+    {
+      question: "Can I generate Leitner flashcards and quizzes from PDF textbooks?",
+      answer:
+        "Yes. Source.io automatically converts textbooks, research papers, and lecture slides into 3D Leitner-box flashcards with adaptive memory retention intervals, as well as multi-choice diagnostic quizzes with answer rationales and source proofs. NotebookLM generates textual study guides and audio discussions, but lacks interactive spaced repetition and diagnostic testing tools.",
+    },
+  ];
+
   const comparisonSchema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -102,6 +120,18 @@ export default function VsNotebookLMPage() {
             "item": "https://sourceio.app/vs-notebooklm"
           }
         ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://sourceio.app/vs-notebooklm#faq",
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
       }
     ]
   };
@@ -208,6 +238,38 @@ export default function VsNotebookLMPage() {
             </p>
           </section>
         </div>
+
+        {/* Conversational Q&A Section (AEO & GEO) */}
+        <section id="faq" className="mt-20 pt-12 border-t border-slate-200 max-w-3xl space-y-8">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-amber-700">
+              <HelpCircle className="size-3.5" />
+              <span>Direct Answers</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-900">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm text-slate-600">
+              Concise, factual comparisons to help you choose the right research and study system.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-3 hover:border-slate-300 transition-colors"
+              >
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                  {faq.question}
+                </h3>
+                <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Bottom CTA Box */}
         <div className="mt-16 p-8 sm:p-12 rounded-3xl bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800">
