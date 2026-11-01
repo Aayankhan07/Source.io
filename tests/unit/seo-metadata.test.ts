@@ -1,0 +1,45 @@
+import { describe, it, expect } from "vitest";
+import sitemap from "../../app/sitemap";
+import fs from "node:fs";
+import path from "node:path";
+
+describe("SEO & Crawl Assets", () => {
+  describe("sitemap.ts", () => {
+    it("returns indexable URLs and excludes private auth routes", () => {
+      const urls = sitemap();
+      expect(Array.isArray(urls)).toBe(true);
+
+      const paths = urls.map((entry) => entry.url);
+      expect(paths).toContain("https://sourceio.app/");
+      expect(paths).toContain("https://sourceio.app/vs-notebooklm");
+      expect(paths).toContain("https://sourceio.app/pricing");
+
+      // /auth must NOT be in the sitemap
+      const authEntry = urls.find((entry) => entry.url.includes("/auth"));
+      expect(authEntry).toBeUndefined();
+    });
+
+    it("uses stable, valid Date timestamps for lastModified", () => {
+      const urls = sitemap();
+      urls.forEach((entry) => {
+        expect(entry.lastModified).toBeInstanceOf(Date);
+        expect(isNaN(entry.lastModified!.getTime())).toBe(false);
+      });
+    });
+  });
+
+  describe("robots.txt", () => {
+    it("configures search bot permissions and sitemap URL correctly", () => {
+      const robotsPath = path.resolve(__dirname, "../../public/robots.txt");
+      const content = fs.readFileSync(robotsPath, "utf-8");
+
+      expect(content).toContain("Sitemap: https://sourceio.app/sitemap.xml");
+      expect(content).toContain("Disallow: /auth");
+      expect(content).toContain("Disallow: /app/settings");
+      expect(content).toContain("User-agent: Googlebot");
+      expect(content).toContain("User-agent: OAI-SearchBot");
+      expect(content).toContain("User-agent: PerplexityBot");
+    });
+  });
+});
+
