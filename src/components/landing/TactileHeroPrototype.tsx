@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -16,8 +16,15 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  Play,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface FeatureMode {
   id: "notes" | "cards" | "quiz" | "podcast";
@@ -102,6 +109,14 @@ export function TactileHeroPrototype() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isPaused, setIsPaused] = useState(false);
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!isVideoOpen && videoRef.current) {
+      videoRef.current.pause();
+    }
+  }, [isVideoOpen]);
 
   const nextCard = useCallback(() => {
     setDirection(1);
@@ -147,6 +162,26 @@ export function TactileHeroPrototype() {
         aria-hidden="true"
       />
 
+      {/* Launch Film Announcement Pill */}
+      <motion.div
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: shouldReduceMotion ? 0.3 : 0.6, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
+        className="mb-4 sm:mb-5"
+      >
+        <button
+          type="button"
+          onClick={() => setIsVideoOpen(true)}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 hover:bg-white text-slate-700 hover:text-slate-950 text-xs font-medium border border-slate-200/90 hover:border-slate-300 shadow-2xs hover:shadow-xs transition-[background-color,border-color,transform,color] hover:scale-[1.02] cursor-pointer group"
+        >
+          <span className="flex items-center justify-center size-3.5 rounded-full bg-slate-900 text-white">
+            <Play className="size-2 fill-current translate-x-px" />
+          </span>
+          <span>Watch the 20s launch film</span>
+          <span className="text-slate-400 group-hover:text-slate-900 transition-colors">→</span>
+        </button>
+      </motion.div>
+
       {/* Monumental Centered Headline */}
       <motion.h1
         initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -173,7 +208,7 @@ export function TactileHeroPrototype() {
         initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-6 sm:mt-7 flex flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto"
+        className="mt-6 sm:mt-7 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto px-4"
       >
         <motion.div
           whileHover={{ scale: 1.02, y: -1 }}
@@ -200,6 +235,26 @@ export function TactileHeroPrototype() {
           >
             <span>Test live demo</span>
           </Link>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 450, damping: 25 }}
+        >
+          <button
+            type="button"
+            onClick={() => setIsVideoOpen(true)}
+            className="px-4.5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-white/90 hover:bg-white text-slate-700 hover:text-slate-950 font-semibold text-xs sm:text-sm border border-slate-200/90 hover:border-slate-300 shadow-2xs hover:shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-[background-color,border-color,color,box-shadow] duration-200 whitespace-nowrap group"
+          >
+            <span className="flex items-center justify-center size-4 sm:size-4.5 rounded-full bg-slate-900 text-white group-hover:scale-105 transition-transform">
+              <Play className="size-2 sm:size-2.5 fill-current translate-x-px" />
+            </span>
+            <span>Watch tour</span>
+            <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200/60">
+              20s
+            </span>
+          </button>
         </motion.div>
       </motion.div>
 
@@ -463,6 +518,38 @@ export function TactileHeroPrototype() {
           })}
         </div>
       </div>
+
+      {/* 20s Product Launch Video Modal */}
+      <Dialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
+        <DialogContent className="sm:max-w-4xl p-0 border border-slate-800/80 bg-slate-950 text-white overflow-hidden shadow-2xl rounded-2xl sm:rounded-3xl gap-0">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-3.5 bg-slate-900/90 border-b border-white/10 select-none pr-12">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <span className="flex size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <DialogTitle className="text-xs sm:text-sm font-semibold tracking-tight text-slate-100">
+                Source.io in 20 Seconds
+              </DialogTitle>
+              <span className="hidden xs:inline-block text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                HD • Audio On
+              </span>
+            </div>
+            <DialogDescription className="sr-only">
+              Product launch film demonstrating Source.io converting a 400-page textbook into structured notes, Leitner flashcards, a diagnostic quiz, and a podcast with citation coordinates.
+            </DialogDescription>
+          </div>
+
+          <div className="relative aspect-video w-full bg-black flex items-center justify-center">
+            <video
+              ref={videoRef}
+              src="/videos/brag.mp4"
+              poster="/videos/brag.jpg"
+              controls
+              autoPlay
+              playsInline
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
