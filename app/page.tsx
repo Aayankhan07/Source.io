@@ -1,7 +1,11 @@
-"use client";
-
-import { motion } from "motion/react";
+import type { Metadata } from "next";
 import { LandingPage } from "@/components/landing/LandingPage";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function HomePage() {
   const softwareSchema = {
@@ -66,14 +70,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
       />
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 1.3 }}
-      >
-        <LandingPage />
-      </motion.div>
+      <LandingPage />
     </>
   );
 }
