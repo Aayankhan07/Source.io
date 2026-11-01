@@ -36,7 +36,7 @@ test.describe("Source.io End-to-End User Journeys", () => {
     await expect(modalTitle).not.toBeVisible();
   });
 
-  test("Comparison page (/vs-notebooklm) displays feature table and breadcrumbs", async ({ page }) => {
+  test("Comparison page (/vs-notebooklm) displays feature table, breadcrumbs, and AEO FAQ", async ({ page }) => {
     await page.goto("/vs-notebooklm");
 
     // Verify title optimized for SERPs
@@ -51,6 +51,15 @@ test.describe("Source.io End-to-End User Journeys", () => {
     await expect(table).toBeVisible();
     await expect(table).toContainText("Learning Capability");
     await expect(table).toContainText("Page & Line-Level Citations");
+
+    // Verify AEO FAQ section exists and renders direct answers
+    const faqSection = page.locator("#faq");
+    await expect(faqSection).toBeVisible();
+    await expect(faqSection.getByRole("heading", { name: /Frequently Asked Questions/i })).toBeVisible();
+    await expect(faqSection.getByText(/What is the difference between Source.io and Google NotebookLM\?/i)).toBeVisible();
+    await expect(faqSection.getByText(/coordinate-accurate, line-level citations/i)).toBeVisible();
+    await expect(faqSection.getByText(/Does Source.io render LaTeX and complex math formulas\?/i)).toBeVisible();
+    await expect(faqSection.getByText(/Can I generate Leitner flashcards and quizzes from PDF textbooks\?/i)).toBeVisible();
   });
 
   test("Pricing page (/pricing) displays plans and features", async ({ page }) => {
@@ -84,4 +93,3 @@ test.describe("Source.io End-to-End User Journeys", () => {
     await expect(page).toHaveTitle(/Source.io/i);
   });
 });
-
