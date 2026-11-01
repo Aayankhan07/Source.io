@@ -189,6 +189,7 @@ export function TactileHeroPrototype() {
         transition={{ duration: shouldReduceMotion ? 0.3 : 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
         className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-[-0.035em] leading-[1.05] sm:leading-[1.04] text-slate-900 font-display text-balance max-w-4xl mx-auto"
       >
+        <span className="sr-only">AI Study Notes & Workspace — </span>
         <span className="block text-slate-900">Master the Text.</span>
         <span className="block text-slate-900 mt-1">Skip the Grind.</span>
       </motion.h1>
