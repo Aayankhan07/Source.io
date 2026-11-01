@@ -21,18 +21,14 @@ const MOCK_CARDS: FlashcardRow[] = [
     document_id: "doc-1",
     front: "What is Quantum Superposition?",
     back: "A principle of quantum mechanics where a system can exist in multiple states simultaneously.",
-    citation_quote: "Normalized linear combination of eigenstates.",
-    page_number: 14,
-    created_at: new Date().toISOString(),
+    order_index: 0,
   },
   {
     id: "card-2",
     document_id: "doc-1",
     front: "What is Wavefunction Collapse?",
     back: "The physical reduction of quantum superposition to a single definite eigenstate upon measurement.",
-    citation_quote: "Copenhagen interpretation measurement postulate.",
-    page_number: 22,
-    created_at: new Date().toISOString(),
+    order_index: 1,
   },
 ];
 

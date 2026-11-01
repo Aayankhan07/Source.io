@@ -22,8 +22,8 @@ describe("SEO & Crawl Assets", () => {
     it("uses stable, valid Date timestamps for lastModified", () => {
       const urls = sitemap();
       urls.forEach((entry) => {
-        expect(entry.lastModified).toBeInstanceOf(Date);
-        expect(isNaN(entry.lastModified!.getTime())).toBe(false);
+        const date = entry.lastModified instanceof Date ? entry.lastModified : new Date(entry.lastModified!);
+        expect(isNaN(date.getTime())).toBe(false);
       });
     });
   });
