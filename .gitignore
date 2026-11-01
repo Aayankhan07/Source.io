@@ -103,3 +103,16 @@ screenshot*.jpg
 /public/screenshot*.png
 strip-dark.js
 .fallow/
+
+# Video & Brag Renders
+brag-output/
+brag-output-*/
+*.mp4
+*.mov
+*.webm
+!public/*.mp4
+!public/**/*.mp4
+!public/*.mov
+!public/**/*.mov
+!public/*.webm
+!public/**/*.webm
