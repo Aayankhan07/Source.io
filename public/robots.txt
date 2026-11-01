@@ -49,6 +49,7 @@ Allow: /app/doc/demo-linalg
 Allow: /app/doc/demo-networking
 Disallow: /api/
 Disallow: /app/settings
+Disallow: /auth
 
 # Canonical XML Sitemap
-Sitemap: https://source-io.vercel.app/sitemap.xml
+Sitemap: https://sourceio.app/sitemap.xml
