@@ -37,12 +37,12 @@
 - Modify: `app/layout.tsx`
 - Modify: `tests/unit/seo-metadata.test.ts`
 
-- [ ] **Step 1: Write failing unit test in `tests/unit/seo-metadata.test.ts`**
+- [x] **Step 1: Write failing unit test in `tests/unit/seo-metadata.test.ts`**
   Add a test verifying `app/layout.tsx` source code or HTML renders `<link rel="alternate" type="text/markdown" href="/llms.txt" ... />`.
-- [ ] **Step 2: Run unit test to verify failure**
+- [x] **Step 2: Run unit test to verify failure**
   Run: `npm run test -- tests/unit/seo-metadata.test.ts`
   Verify the test fails because the link is missing.
-- [ ] **Step 3: Add `<link>` to `app/layout.tsx`**
+- [x] **Step 3: Add `<link>` to `app/layout.tsx`**
   In `app/layout.tsx`, inside `<head>`:
   ```tsx
   <link
@@ -52,10 +52,10 @@
     title="AI Context Specification"
   />
   ```
-- [ ] **Step 4: Run unit test to verify pass**
+- [x] **Step 4: Run unit test to verify pass**
   Run: `npm run test -- tests/unit/seo-metadata.test.ts`
   Confirm all tests pass.
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
   Commit message: `feat(seo): add machine-readable /llms.txt discovery link to layout head`
 
 ---
@@ -66,23 +66,23 @@
 - Modify: `app/vs-notebooklm/page.tsx`
 - Modify: `tests/unit/seo-metadata.test.ts`
 
-- [ ] **Step 1: Add schema & structure unit test in `tests/unit/seo-metadata.test.ts`**
+- [x] **Step 1: Add schema & structure unit test in `tests/unit/seo-metadata.test.ts`**
   Write a test reading `app/vs-notebooklm/page.tsx` content and verifying:
   - Inclusion of `@type": "FAQPage"`
   - Questions for "What is the difference between Source.io and Google NotebookLM?", "Does Source.io render LaTeX and complex math formulas?", and "Can I generate Leitner flashcards and quizzes from PDF textbooks?"
   - Answer text presence in the code.
-- [ ] **Step 2: Run unit test to verify failure**
+- [x] **Step 2: Run unit test to verify failure**
   Run: `npm run test -- tests/unit/seo-metadata.test.ts`
   Verify test fails as expected.
-- [ ] **Step 3: Update `comparisonSchema` and add FAQ Section in `app/vs-notebooklm/page.tsx`**
+- [x] **Step 3: Update `comparisonSchema` and add FAQ Section in `app/vs-notebooklm/page.tsx`**
   1. Add `FAQPage` object into `comparisonSchema["@graph"]` with the 3 questions and 40–60 word answers.
-  2. Add an `<section id="faq" className="space-y-8 mt-16 max-w-3xl">` before the Bottom CTA box containing:
+  2. Add an `<section id="faq" className="mt-20 pt-12 border-t border-slate-200 max-w-3xl space-y-8">` before the Bottom CTA box containing:
      - Section heading: `Frequently Asked Questions`
      - 3 cleanly styled card/accordion answer blocks with `<h3>` questions and `<p>` 40–60 word answers.
-- [ ] **Step 4: Run unit tests to verify pass**
+- [x] **Step 4: Run unit tests to verify pass**
   Run: `npm run test -- tests/unit/seo-metadata.test.ts`
   Confirm tests pass.
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
   Commit message: `feat(geo): add AEO conversational Q&A blocks and FAQPage schema to /vs-notebooklm`
 
 ---
@@ -92,19 +92,18 @@
 **Files:**
 - Modify: `tests/e2e/smoke.spec.ts`
 
-- [ ] **Step 1: Update E2E test in `tests/e2e/smoke.spec.ts`**
+- [x] **Step 1: Update E2E test in `tests/e2e/smoke.spec.ts`**
   In the `/vs-notebooklm` test, add assertions checking:
   - The FAQ section is visible (`page.locator("#faq")`).
   - The FAQ questions and answers are present and visible on screen.
-- [ ] **Step 2: Run full unit test suite**
+- [x] **Step 2: Run full unit test suite**
   Run: `npm run test`
   Confirm all unit/component tests pass.
-- [ ] **Step 3: Run TypeScript typecheck**
+- [x] **Step 3: Run TypeScript typecheck**
   Run: `npm run typecheck`
   Confirm 0 errors.
-- [ ] **Step 4: Run Playwright E2E test suite**
+- [x] **Step 4: Run Playwright E2E test suite**
   Run: `npm run test:e2e`
   Confirm all E2E tests pass.
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
   Commit message: `test(e2e): verify FAQ and AI SEO elements on comparison page`
-
