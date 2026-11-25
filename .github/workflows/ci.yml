@@ -53,6 +53,9 @@ jobs:
     name: Edge functions (deno check + deno test)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      # The repo's package.json would make Deno expect a node_modules folder; edge functions use URL imports only.
+      DENO_NO_PACKAGE_JSON: "1"
     steps:
       - uses: actions/checkout@v4
 
@@ -119,6 +122,10 @@ jobs:
       - name: Run pgTAP tests
         if: steps.guard.outputs.has_tests == 'true'
         run: supabase test db
+
+      - name: Print database logs on failure
+        if: failure() && steps.guard.outputs.has_tests == 'true'
+        run: docker ps -a --format '{{.Names}}' | grep -E 'supabase_db' | xargs -r -I{} docker logs --tail 200 {}
 
       - name: Stop local database
         if: always() && steps.guard.outputs.has_tests == 'true'

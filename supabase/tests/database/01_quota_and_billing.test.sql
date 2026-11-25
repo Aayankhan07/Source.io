@@ -41,15 +41,15 @@ SELECT lives_ok(
   'user can still update non-billing profile fields'
 );
 
-SELECT throws_ok(
-  $$ SELECT public.consume_daily_quota('11111111-1111-4111-8111-111111111111', 1) $$,
-  '42501', NULL,
+-- Privilege check instead of executing the function: asserts the REVOKE without running the body.
+SELECT ok(
+  NOT has_function_privilege('authenticated', 'public.consume_daily_quota(uuid, integer)', 'EXECUTE'),
   'authenticated users cannot call consume_daily_quota'
 );
 
-SELECT throws_ok(
-  $$ SELECT public.refund_daily_quota('11111111-1111-4111-8111-111111111111', 1) $$,
-  '42501', NULL,
+-- Privilege check instead of executing the function: asserts the REVOKE without running the body.
+SELECT ok(
+  NOT has_function_privilege('authenticated', 'public.refund_daily_quota(uuid, integer)', 'EXECUTE'),
   'authenticated users cannot call refund_daily_quota'
 );
 

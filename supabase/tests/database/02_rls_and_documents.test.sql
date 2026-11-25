@@ -100,10 +100,9 @@ SELECT throws_ok(
   'client cannot insert document_chunks'
 );
 
-SELECT throws_ok(
-  $$ SELECT public.replace_document_derivatives('d0c0a000-0000-4000-8000-00000000000a',
-       'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', '[]'::jsonb, '{}'::jsonb, '[]'::jsonb) $$,
-  '42501', NULL,
+-- Privilege check instead of executing the function: asserts the REVOKE without running the body.
+SELECT ok(
+  NOT has_function_privilege('authenticated', 'public.replace_document_derivatives(uuid, uuid, jsonb, jsonb, jsonb)', 'EXECUTE'),
   'client cannot call replace_document_derivatives'
 );
 

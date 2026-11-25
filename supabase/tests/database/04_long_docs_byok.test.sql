@@ -105,9 +105,9 @@ SELECT results_eq(
 SET LOCAL role anon;
 SET LOCAL request.jwt.claims = '{"role":"anon"}';
 
-SELECT throws_ok(
-  $$ SELECT public.list_my_api_keys() $$,
-  '42501', NULL,
+-- Privilege check instead of executing the function: asserts the REVOKE without running the body.
+SELECT ok(
+  NOT has_function_privilege('anon', 'public.list_my_api_keys()', 'EXECUTE'),
   'anon cannot call list_my_api_keys'
 );
 
