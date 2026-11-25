@@ -1,12 +1,14 @@
-import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 export type UsageRecord = {
   userId: string;
   documentId: string;
   requestId: string;
   idempotencyKey?: string | null;
-  feature: "notes" | "derivatives" | "chat" | "podcast" | "transcribe";
-  provider: "groq" | "gemini" | "openai" | "edge-tts";
+  // "embed" (local hashed embeddings) and "tts" (audio render) are logged for cost/latency
+  // visibility only; daily_ai_usage weights them at 0 credits.
+  feature: "notes" | "derivatives" | "chat" | "podcast" | "transcribe" | "embed" | "tts";
+  provider: "groq" | "gemini" | "openai" | "edge-tts" | "local";
   model: string;
   inputTokens?: number;
   outputTokens?: number;
@@ -23,7 +25,7 @@ export type UsageRecord = {
  */
 export async function logAiUsage(admin: SupabaseClient, record: UsageRecord): Promise<void> {
   try {
-    await admin.from("ai_usage_logs").insert({
+    const { error } = await admin.from("ai_usage_logs").insert({
       user_id: record.userId,
       document_id: record.documentId,
       request_id: record.requestId,
@@ -37,8 +39,9 @@ export async function logAiUsage(admin: SupabaseClient, record: UsageRecord): Pr
       estimated_cost_usd: record.estimatedCostUsd || 0,
       status: record.status,
       duration_ms: record.durationMs || 0,
-      error_message: record.errorMessage || null,
+      error_message: record.errorMessage ? record.errorMessage.slice(0, 1000) : null,
     });
+    if (error) console.error("Failed to log AI usage telemetry:", error.message);
   } catch (err) {
     console.error("Failed to log AI usage telemetry:", err);
   }

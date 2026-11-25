@@ -24,8 +24,9 @@ Source.io converts arbitrary source material into a set of study assets a person
 can actually use. Input: PDF, DOCX, audio, video, YouTube link, or pasted text.
 Output, all derived from that one source:
 
-- streamed markdown study notes
-- spaced-repetition flashcards
+- streamed markdown study notes covering the whole document, written section by
+  section for long sources
+- spaced-repetition flashcards (Leitner 5-box, progress saved)
 - a mixed-type quiz with explanations
 - a two-host conversational audio "podcast recap"
 - a chat that answers from the document and cites the passages it used
@@ -57,17 +58,26 @@ with a similarity score, not free-floating model output.
 
 ## Capabilities and Constraints
 
-- **Stack:** Vite + React 18 + TypeScript + Tailwind + shadcn/ui (Radix), Supabase
-  (Postgres + pgvector, Auth, Storage, Deno edge functions), Groq (llama-3.3-70b
-  for notes/derivatives, llama-3.1-8b for chat, whisper-large-v3 for
-  transcription), Microsoft Edge TTS for speech.
-- Five routes only: `/`, `/auth`, `/app`, `/app/doc/:docId`, and a 404.
-- 50MB upload ceiling. PDF/DOCX text is extracted in the browser; audio/video is
+- **Stack:** Next.js 16 (App Router) + React 18 + TypeScript + Tailwind +
+  shadcn/ui (Radix), Supabase (Postgres + pgvector, Auth, Storage, Deno edge
+  functions), Groq (chat, podcast scripts, short-document notes, Whisper
+  transcription), Gemini Flash-Lite for long documents, Supabase `gte-small`
+  embeddings. Podcast audio is generated **in the user's browser** (Kokoro-82M),
+  with device voices as a fallback.
+- Routes: public `/`, `/pricing`, `/demo` (static sample workspaces), use-case,
+  alternatives and comparison pages, `/changelog`, legal pages (`/privacy`,
+  `/terms`, `/refunds`), `/auth`; signed-in `/app`, `/app/onboarding`,
+  `/app/settings`, `/app/doc/[docId]`. See `docs/architecture.md`.
+- Plan limits come from `src/lib/plans.ts`: Free 25 AI actions/day, 3 documents,
+  25 pages per document, 50 MB uploads; Scholar Pass ($9/mo) 200 actions/day,
+  100 documents, 50 pages, 100 MB; a user's own API key allows 300 pages.
+  Never advertise a limit that differs from that file.
+- Long documents are read in full, section by section (about 5 pages each), not
+  truncated. PDF/DOCX text is extracted in the browser; audio/video is
   transcribed server-side.
 - Realtime subscriptions drive document status and podcast progress.
-- Authorization is Postgres RLS, not middleware.
-- **No `.env` is currently present**, so the app runs against placeholder Supabase
-  credentials; signed-in surfaces cannot be exercised locally without one.
+- Authorization is Postgres RLS plus server-owned columns, with `proxy.ts`
+  gating the signed-in routes.
 
 ## Brand Commitments
 
@@ -84,12 +94,13 @@ is in play.
 ## Evidence on Hand
 
 - Real, working product with all five generation paths implemented.
-- `docs/` contains six accurate technical documents (architecture, data model,
-  edge functions, development, deployment, troubleshooting).
-- The landing page ships a working interactive simulator using **synthetic**
-  quantum-computing demo content. It is illustrative, not a real user document.
-- **No real customers, testimonials, benchmarks, pricing, or usage numbers
-  exist.** Future work must not fabricate them.
+- `docs/` contains the technical documents (architecture, data model, edge
+  functions, development, deployment, runbook, troubleshooting).
+- The public `/demo` pages show **sample** workspaces built from static data.
+  They are illustrative, not real user documents, and are labelled as samples.
+- Pricing exists (Free and Scholar Pass, defined in `src/lib/plans.ts`). **No
+  real customers, testimonials, benchmarks, or usage numbers exist.** Future
+  work must not fabricate them.
 
 ## Product Principles
 

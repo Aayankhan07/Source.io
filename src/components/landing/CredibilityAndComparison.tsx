@@ -284,7 +284,7 @@ export function AcademicPersonasSection() {
               <span className="text-xs font-mono text-slate-500 uppercase tracking-wider font-semibold">
                 Exemplar Source Material
               </span>
-              <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-semibold">
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-semibold">
                 {persona.badge}
               </span>
             </div>
@@ -319,7 +319,7 @@ export function AcademicPersonasSection() {
             {/* Citation & Sample Excerpt */}
             <div className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200 text-xs space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-slate-500 text-[11px] uppercase tracking-wider font-semibold">
+                <span className="font-mono text-slate-500 text-xs uppercase tracking-wider font-semibold">
                   Citation Format Preview:
                 </span>
                 <span className="font-mono font-bold text-slate-900 px-2 py-0.5 rounded-md bg-white border border-slate-200 shadow-2xs">
@@ -337,10 +337,10 @@ export function AcademicPersonasSection() {
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-medium shadow-2xs">
               <SignatureIcon className="size-3.5 text-slate-700 shrink-0" />
               <span>Signature Output: <strong className="font-semibold text-slate-900">{persona.signatureAction.label}</strong></span>
-              <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">({persona.signatureAction.badge})</span>
+              <span className="text-xs text-slate-500 font-mono hidden sm:inline">({persona.signatureAction.badge})</span>
             </div>
             <Link
-              href="/app/doc/demo-quantum"
+              href="/demo/quantum"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-950 transition-colors group cursor-pointer"
             >
               <span>Try this preset in live demo</span>
@@ -363,7 +363,7 @@ export function AcademicPersonasSection() {
                   <span
                     key={tab}
                     className={cn(
-                      "px-2.5 py-1 rounded-full font-medium text-[11px] border transition-colors",
+                      "px-2.5 py-1 rounded-full font-medium text-xs border transition-colors",
                       idx === 0
                         ? "bg-slate-900 text-white border-transparent shadow-xs"
                         : "bg-white text-slate-700 border-slate-200"
@@ -396,7 +396,7 @@ export function AcademicPersonasSection() {
           </div>
 
           {/* Note Settings Override Notice */}
-          <div className="pt-3 mt-4 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed font-mono">
+          <div className="pt-3 mt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed font-mono">
             <span>⚙ Override template, blocks, or rigor per-document in <strong className="text-slate-900">Notes Settings</strong>.</span>
           </div>
         </div>
@@ -538,14 +538,14 @@ export function ComparisonTableSection() {
           <div key={row.feature} className="bg-white border border-slate-200/90 rounded-2xl p-4 space-y-2.5 shadow-xs">
             <div>
               <h3 className="font-bold text-slate-900 text-[13px] font-display">{row.feature}</h3>
-              <p className="text-slate-500 text-[11px] mt-0.5 leading-normal">{row.note}</p>
+              <p className="text-slate-500 text-xs mt-0.5 leading-normal">{row.note}</p>
             </div>
 
             <div className="pt-2 border-t border-slate-100 space-y-1.5 font-mono text-xs">
               {/* Source.io Row - Dominant & Crisp */}
               <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 text-white shadow-2xs">
-                <span className="font-semibold text-slate-200 text-[11px]">Source.io</span>
-                <span className="inline-flex items-center gap-1.5 font-bold text-white text-[11px]">
+                <span className="font-semibold text-slate-200 text-xs">Source.io</span>
+                <span className="inline-flex items-center gap-1.5 font-bold text-white text-xs">
                   <span className="size-4 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                     <Check className="size-2.5 text-white stroke-[2.5]" />
                   </span>
@@ -555,8 +555,8 @@ export function ComparisonTableSection() {
 
               {/* Competitors Row - Readable without hyphenation */}
               <div className="grid grid-cols-2 gap-1.5 pt-0.5">
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
-                  <span className="text-slate-400 font-semibold block text-[10px] uppercase">ChatGPT</span>
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <span className="text-slate-400 font-semibold block text-xs uppercase">ChatGPT</span>
                   <span className="text-slate-700 font-medium block truncate" title={String(row.chatgpt)}>
                     {row.chatgpt === false ? (
                       <span className="inline-flex items-center gap-1 text-slate-400">
@@ -568,8 +568,8 @@ export function ComparisonTableSection() {
                   </span>
                 </div>
 
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
-                  <span className="text-slate-400 font-semibold block text-[10px] uppercase">NotebookLM</span>
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <span className="text-slate-400 font-semibold block text-xs uppercase">NotebookLM</span>
                   <span className="text-slate-700 font-medium block truncate" title={String(row.notebooklm)}>
                     {row.notebooklm === false ? (
                       <span className="inline-flex items-center gap-1 text-slate-400">
@@ -734,7 +734,7 @@ export function FaqAndFinalCtaSection() {
                 className="w-full sm:w-auto"
               >
                 <Link
-                  href="/app/doc/demo-quantum"
+                  href="/demo/quantum"
                   className="w-full sm:w-auto border border-white/20 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-md transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:shadow-md"
                 >
                   <span>See a live demo</span>

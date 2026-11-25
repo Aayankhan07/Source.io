@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 
 export function LandingFooter() {
@@ -34,7 +32,7 @@ export function LandingFooter() {
             <div>
               <span className="font-medium text-foreground block mb-2.5">Resources</span>
               <ul className="space-y-2 text-muted-foreground">
-                <li><Link href="/app/doc/demo-quantum" className="hover:text-foreground transition-colors">Interactive Demo</Link></li>
+                <li><Link href="/demo" className="hover:text-foreground transition-colors">Interactive Demo</Link></li>
                 <li><Link href="/vs-notebooklm" className="hover:text-foreground transition-colors">vs NotebookLM</Link></li>
                 <li><Link href="/pricing.md" className="hover:text-foreground transition-colors">Pricing (Markdown)</Link></li>
                 <li><Link href="/llms.txt" className="hover:text-foreground transition-colors">llms.txt</Link></li>
@@ -46,16 +44,17 @@ export function LandingFooter() {
               <ul className="flex flex-wrap sm:flex-col gap-x-4 gap-y-2 text-muted-foreground">
                 <li><Link href="/auth?mode=signin" className="hover:text-foreground transition-colors">Sign in</Link></li>
                 <li><Link href="/auth?mode=signup" className="hover:text-foreground transition-colors">Create account</Link></li>
-                <li><span className="text-muted-foreground">Zero-Data Retention</span></li>
-                <li><span className="text-muted-foreground">MIT License</span></li>
+                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link></li>
+                <li><Link href="/refunds" className="hover:text-foreground transition-colors">Refunds</Link></li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="pt-5 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground">
+        <div className="pt-5 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span>Isolated sessions • Zero model training</span>
+            <span>Your documents are never sold or used to train our models</span>
           </div>
           <div className="font-mono">
             &copy; {new Date().getFullYear()} Source.io • Built for anyone with a document

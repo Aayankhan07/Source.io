@@ -69,3 +69,11 @@ describe("utils", () => {
   });
 });
 
+
+describe("errorMessage", () => {
+  it("reads Error and PostgREST-style objects and strips trigger codes", () => {
+    expect(errorMessage(new Error("boom"))).toBe("boom");
+    expect(errorMessage({ message: "DOCUMENT_TOO_LONG: This document is about 30 pages." })).toBe("This document is about 30 pages.");
+    expect(errorMessage("plain")).toBe("plain");
+  });
+});

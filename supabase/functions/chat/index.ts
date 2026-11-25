@@ -1,51 +1,23 @@
+/// <reference types="https://esm.sh/@supabase/functions-js@2.4.1/src/edge-runtime.d.ts" />
 // RAG streaming chat for a document. Embeds the question, retrieves top-k chunks,
 // streams Gemini response, persists messages, and returns citations as a leading SSE event.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { enforceDailyQuota } from "../_shared/quotas.ts";
+import { enforceDailyQuota, refundDailyQuota } from "../_shared/quotas.ts";
+import { fetchWithTimeout, isUpstreamTimeout, UPSTREAM_TIMEOUTS } from "../_shared/http.ts";
+import { createLogger } from "../_shared/log.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
 import { authenticateRequest } from "../_shared/auth.ts";
 import { corsHeadersFor } from "../_shared/cors.ts";
+import { acquireJobLock, completeJob, startJobHeartbeat } from "../_shared/jobLock.ts";
+import { chunkText, missingOrderIndexes, toVectorLiteral } from "../_shared/chunking.ts";
+import { embeddedOrderIndexes, embedText, indexDocument } from "../_shared/embeddings.ts";
 
 
 const CHAT_MODEL = "openai/gpt-oss-20b";
 const TOP_K = 6;
 const HISTORY_LIMIT = 10;
-const EMBED_DIMS = 768;
-
-function fnv1a(str: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
-  }
-  return h >>> 0;
-}
-function tokenize(text: string): string[] {
-  return text.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/)
-    .filter((t) => t.length >= 2 && t.length <= 40);
-}
-// Must match embed_chunks.embedLocal exactly.
-function embedQuery(text: string): number[] {
-  const v = new Float64Array(EMBED_DIMS);
-  const toks = tokenize(text);
-  const add = (term: string) => {
-    const h = fnv1a(term);
-    const idx = h % EMBED_DIMS;
-    const sign = (h >>> 31) & 1 ? -1 : 1;
-    v[idx] += sign;
-  };
-  for (let i = 0; i < toks.length; i++) {
-    add(toks[i]);
-    if (i + 1 < toks.length) add(toks[i] + "_" + toks[i + 1]);
-  }
-  let norm = 0;
-  for (let i = 0; i < EMBED_DIMS; i++) norm += v[i] * v[i];
-  norm = Math.sqrt(norm) || 1;
-  const out = new Array<number>(EMBED_DIMS);
-  for (let i = 0; i < EMBED_DIMS; i++) out[i] = v[i] / norm;
-  return out;
-}
+/** Wall-clock budget for re-indexing a document inline before answering. */
+const INLINE_INDEX_BUDGET_MS = 60_000;
 
 export function buildChatSystemPrompt(docTitle: string, contextBlock: string): string {
   const passages =
@@ -102,6 +74,7 @@ Deno.serve(async (req) => {
   const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  const log = createLogger("chat");
   const auth = await authenticateRequest(req, corsHeaders, {
     requireApiKey: {
       envVar: "GROQ_API_KEY",
@@ -109,7 +82,8 @@ Deno.serve(async (req) => {
     },
   });
   if (auth.errorResponse) return auth.errorResponse;
-  const { admin, userClient, userId, apiKey: GROQ_API_KEY } = auth;
+  const { admin, userId, apiKey: GROQ_API_KEY } = auth;
+  log.userId = userId;
 
   // Emergency circuit breaker check
   const breaker = await checkCircuitBreaker(admin, "ai_requests_enabled");
@@ -134,7 +108,7 @@ Deno.serve(async (req) => {
 
   const { data: doc } = await admin
     .from("documents")
-    .select("id,user_id,title")
+    .select("id,user_id,title,raw_text")
     .eq("id", document_id)
     .maybeSingle();
   if (!doc || doc.user_id !== userId) {
@@ -147,26 +121,96 @@ Deno.serve(async (req) => {
   const isByok = false; // always the platform key; client headers are never trusted
   const quotaResponse = await enforceDailyQuota(admin, userId, corsHeaders, {
     isByok,
-    errorMessage: "Daily free Copilot question limit reached (25/day). Your quota will reset at midnight UTC.",
+    errorMessage: "You've used today's AI actions for your plan. They reset at midnight UTC.",
   });
   if (quotaResponse) return quotaResponse;
+  let quotaCharged = !isByok;
+  // Give the action back when the AI produced no answer for this request.
+  const refundOnce = async (reason: string) => {
+    if (!quotaCharged) return;
+    quotaCharged = false;
+    const refunded = await refundDailyQuota(admin, userId, 1);
+    log.info("quota refund", { reason, refunded });
+  };
 
-  const requestId = crypto.randomUUID();
+  const requestId = log.requestId;
   const startTime = Date.now();
+  const jsonError = (status: number, payload: Record<string, unknown>) =>
+    new Response(JSON.stringify(payload), {
+      status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
+  // 0) Make sure the document has a semantic index. Documents indexed before the gte-small
+  //    migration (embeddings nulled) or whose indexing was interrupted are (re)indexed inline,
+  //    under the same job lock embed_chunks uses. Resumable: only missing chunks are embedded.
+  try {
+    const rawText: string = doc.raw_text ?? "";
+    const totalChunks = rawText.trim().length >= 40 ? chunkText(rawText).length : 0;
+    if (totalChunks > 0) {
+      const embedded = await embeddedOrderIndexes(admin, document_id);
+      if (missingOrderIndexes(totalChunks, embedded).length > 0) {
+        const lock = await acquireJobLock(admin, { userId, documentId: document_id, kind: "embed_chunks" });
+        if (lock.acquired) {
+          const stopHeartbeat = startJobHeartbeat(admin, lock.jobId);
+          try {
+            const result = await indexDocument(admin, {
+              userId, documentId: document_id, rawText,
+              deadline: Date.now() + INLINE_INDEX_BUDGET_MS,
+            });
+            await completeJob(admin, lock.jobId, true);
+            log.info("inline index", { documentId: document_id, ...result });
+          } catch (e) {
+            await completeJob(admin, lock.jobId, false, e instanceof Error ? e.message.slice(0, 200) : "index_failed");
+            throw e;
+          } finally {
+            stopHeartbeat();
+          }
+        } else if (lock.unavailable) {
+          await refundOnce("index_lock_unavailable");
+          return jsonError(503, { error: lock.message, code: "JOB_LOCK_UNAVAILABLE", retryable: true });
+        } else if (embedded.length === 0) {
+          // Someone else is indexing right now and nothing is searchable yet.
+          await refundOnce("index_in_progress");
+          return jsonError(409, {
+            error: "This document is still being prepared for chat. Please try again in a moment.",
+            code: "DOCUMENT_INDEXING",
+            retryable: true,
+          });
+        }
+        // else: another request is finishing the index; answer from what is indexed so far.
+      }
+    }
+  } catch (e) {
+    log.error("inline index failed", { err: e, documentId: document_id });
+    await refundOnce("index_failed");
+    return jsonError(500, {
+      error: "We couldn't prepare this document for chat. Please try again.",
+      code: "INDEX_FAILED",
+      retryable: true,
+    });
+  }
 
   try {
-    // 1) Embed query and retrieve top-k chunks via RPC.
-    const queryEmbedding = embedQuery(message);
+    // 1) Embed query (gte-small, same model as the index) and retrieve top-k chunks via RPC.
+    const queryEmbedding = await embedText(message);
     const { data: matches, error: rpcErr } = await admin.rpc("match_document_chunks", {
       _document_id: document_id,
-      _query_embedding: `[${queryEmbedding.join(",")}]`,
+      _query_embedding: toVectorLiteral(queryEmbedding),
       _match_count: TOP_K,
     });
-    if (rpcErr) console.error("rpc error", rpcErr);
+    if (rpcErr) log.error("match_document_chunks failed", { err: rpcErr });
 
     const passages = (matches ?? []) as Array<{
       id: string; chunk_text: string; order_index: number; similarity: number;
     }>;
+
+    // Citation n matches the [n] tag in the prompt; streamed first and stored on the answer.
+    const citations = passages.map((p, i) => ({
+      n: i + 1,
+      order_index: p.order_index,
+      similarity: p.similarity,
+      text: p.chunk_text,
+    }));
 
     // 2) Build context block with citation tags [n].
     const contextBlock = passages
@@ -190,7 +234,8 @@ Deno.serve(async (req) => {
 
     const systemPrompt = buildChatSystemPrompt(doc.title, contextBlock);
 
-    const aiResp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    // Streaming: the timeout covers the wait for response headers only.
+    const aiResp = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -204,7 +249,7 @@ Deno.serve(async (req) => {
           { role: "user", content: message },
         ],
       }),
-    });
+    }, UPSTREAM_TIMEOUTS.groqStreamStart, { headersOnly: true });
 
     // Capture Groq rate-limit snapshot into provider_usage
     await captureProviderUsage(admin, "groq", CHAT_MODEL, aiResp.headers);
@@ -212,7 +257,8 @@ Deno.serve(async (req) => {
     if (!aiResp.ok || !aiResp.body) {
       const status = aiResp.status;
       const t = await aiResp.text().catch(() => "");
-      console.error("groq error", status, t);
+      log.error("groq error", { status, body: t.slice(0, 500) });
+      await refundOnce("upstream_error");
 
       await logAiUsage(admin, {
         userId,
@@ -241,14 +287,7 @@ Deno.serve(async (req) => {
       async start(controller) {
         const encoder = new TextEncoder();
         // Emit citations first so the client can render them immediately.
-        const citationsPayload = JSON.stringify({
-          citations: passages.map((p, i) => ({
-            n: i + 1,
-            order_index: p.order_index,
-            similarity: p.similarity,
-            text: p.chunk_text,
-          })),
-        });
+        const citationsPayload = JSON.stringify({ citations });
         controller.enqueue(encoder.encode(`event: citations\ndata: ${citationsPayload}\n\n`));
 
         const reader = aiResp.body!.getReader();
@@ -278,12 +317,15 @@ Deno.serve(async (req) => {
           }
           if (buf) controller.enqueue(encoder.encode(buf));
         } catch (e) {
-          console.error("stream error", e);
+          log.error("stream error", { err: e });
         } finally {
           // Persist assistant message.
-          if (assistantText.trim()) {
+          if (!assistantText.trim()) {
+            await refundOnce("empty_stream");
+          } else {
+            quotaCharged = false;
             await admin.from("chat_messages").insert({
-              user_id: userId, document_id, role: "assistant", content: assistantText,
+              user_id: userId, document_id, role: "assistant", content: assistantText, citations,
             });
 
             const inputTokensEst = Math.round((contextBlock.length + message.length) / 4);
@@ -302,7 +344,7 @@ Deno.serve(async (req) => {
               durationMs: Date.now() - startTime,
             });
           }
-          controller.close();
+          try { controller.close(); } catch { /* already closed */ }
         }
       },
     });
@@ -311,9 +353,18 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error("chat error", msg);
-    return new Response(JSON.stringify({ error: msg }), {
+    log.error("unhandled error", { err: e });
+    await refundOnce(isUpstreamTimeout(e) ? "upstream_timeout" : "unhandled_error");
+    if (isUpstreamTimeout(e)) {
+      return new Response(JSON.stringify({
+        error: "The AI provider did not respond in time. Please try again.",
+        code: "UPSTREAM_TIMEOUT",
+        retryable: true,
+      }), {
+        status: 504, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    return new Response(JSON.stringify({ error: "Internal Server Error", code: "INTERNAL" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

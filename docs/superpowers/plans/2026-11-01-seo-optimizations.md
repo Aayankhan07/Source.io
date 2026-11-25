@@ -1,5 +1,7 @@
 # SEO Optimizations Implementation Plan
 
+> **Status (verified against code 2026-11-26):** all steps shipped (commits `8e59c97`, `4e0f451`, `f72f638`, `89a5158`). The sitemap has since grown to include `/demo`, `/use-cases`, `/alternatives` and `/changelog`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Resolve critical root canonical inheritance, optimize SERP CTR on high-intent pages, add crawler-accessible H1 context, noindex private/auth surfaces, and enrich structured data with breadcrumbs and static sitemap timestamps.
@@ -34,14 +36,14 @@
 
 **Context:** Currently, `app/layout.tsx` defines `alternates: { canonical: "/" }`. In Next.js App Router, this cascades to all sub-routes unless overridden. Because `app/page.tsx` was marked `"use client"`, it could not export metadata. Making `app/page.tsx` a Server Component lets it own its metadata and canonical URL cleanly.
 
-- [ ] **Step 1:** Modify `app/layout.tsx` to remove `alternates: { canonical: "/" }`. Ensure `metadataBase` points to `process.env.NEXT_PUBLIC_SITE_URL || "https://sourceio.app"`.
-- [ ] **Step 2:** Refactor `app/page.tsx`:
+- [x] **Step 1:** Modify `app/layout.tsx` to remove `alternates: { canonical: "/" }`. Ensure `metadataBase` points to `process.env.NEXT_PUBLIC_SITE_URL || "https://sourceio.app"`.
+- [x] **Step 2:** Refactor `app/page.tsx`:
   - Remove `"use client";`.
   - Export `metadata: Metadata = { alternates: { canonical: "/" } };`.
   - Keep the JSON-LD `<script>` tag.
   - Render `<LandingPage />` (which is already a client component).
-- [ ] **Step 3:** Run `npx tsc --noEmit` to verify type safety.
-- [ ] **Step 4:** Commit changes with message `fix(seo): remove root canonical inheritance and server-render homepage metadata`.
+- [x] **Step 3:** Run `npx tsc --noEmit` to verify type safety.
+- [x] **Step 4:** Commit changes with message `fix(seo): remove root canonical inheritance and server-render homepage metadata`.
 
 ---
 
@@ -49,9 +51,9 @@
 
 **Context:** `/vs-notebooklm` has a 74-character title (`Source.io vs Google NotebookLM: Feature Comparison & Alternatives (2026)`), which is truncated in Google SERPs (limit is ~55–60 characters). It also displays visual breadcrumbs (`Home / Comparisons`) without structured `BreadcrumbList` schema.
 
-- [ ] **Step 1:** Update `metadata.title` in `app/vs-notebooklm/page.tsx` to:
+- [x] **Step 1:** Update `metadata.title` in `app/vs-notebooklm/page.tsx` to:
   `"Source.io vs NotebookLM: Feature & Citation Comparison"` (54 chars).
-- [ ] **Step 2:** Add `BreadcrumbList` JSON-LD schema alongside the existing `WebPage` schema in `app/vs-notebooklm/page.tsx`:
+- [x] **Step 2:** Add `BreadcrumbList` JSON-LD schema alongside the existing `WebPage` schema in `app/vs-notebooklm/page.tsx`:
   ```json
   {
     "@context": "https://schema.org",
@@ -72,8 +74,8 @@
     ]
   }
   ```
-- [ ] **Step 3:** Run `npx tsc --noEmit` to verify syntax.
-- [ ] **Step 4:** Commit changes with message `feat(seo): optimize vs-notebooklm title and inject breadcrumb schema`.
+- [x] **Step 3:** Run `npx tsc --noEmit` to verify syntax.
+- [x] **Step 4:** Commit changes with message `feat(seo): optimize vs-notebooklm title and inject breadcrumb schema`.
 
 ---
 
@@ -81,7 +83,7 @@
 
 **Context:** The visual H1 in `TactileHeroPrototype.tsx` contains *"Master the Text. Skip the Grind."*, which is a strong emotional hook but lacks the topical keywords ("AI Study Workspace", "Study Notes") that Google uses for primary query matching.
 
-- [ ] **Step 1:** In `src/components/landing/TactileHeroPrototype.tsx`, update the `<h1>` element:
+- [x] **Step 1:** In `src/components/landing/TactileHeroPrototype.tsx`, update the `<h1>` element:
   ```tsx
   <motion.h1
     initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -94,8 +96,8 @@
     <span className="block text-slate-900 mt-1">Skip the Grind.</span>
   </motion.h1>
   ```
-- [ ] **Step 2:** Verify that `.sr-only` is rendered accessibly in the DOM without changing visual layout.
-- [ ] **Step 3:** Commit changes with message `feat(seo): anchor homepage h1 with accessible study workspace context`.
+- [x] **Step 2:** Verify that `.sr-only` is rendered accessibly in the DOM without changing visual layout.
+- [x] **Step 3:** Commit changes with message `feat(seo): anchor homepage h1 with accessible study workspace context`.
 
 ---
 
@@ -103,7 +105,7 @@
 
 **Context:** Googlebot should not index authentication forms (`/auth`) or the private user dashboard (`/app/*`). Crawling these causes redirect warnings and wasted crawl budget.
 
-- [ ] **Step 1:** In `app/auth/page.tsx`, export `metadata`:
+- [x] **Step 1:** In `app/auth/page.tsx`, export `metadata`:
   ```ts
   import type { Metadata } from "next";
 
@@ -115,7 +117,7 @@
     },
   };
   ```
-- [ ] **Step 2:** In `app/app/layout.tsx`, export `metadata`:
+- [x] **Step 2:** In `app/app/layout.tsx`, export `metadata`:
   ```ts
   import type { Metadata } from "next";
 
@@ -126,9 +128,9 @@
     },
   };
   ```
-- [ ] **Step 3:** In `app/sitemap.ts`, remove the `${siteUrl}/auth` URL entry.
-- [ ] **Step 4:** Run `npx tsc --noEmit` to verify type validity.
-- [ ] **Step 5:** Commit changes with message `fix(seo): noindex auth and app routes, remove auth from sitemap`.
+- [x] **Step 3:** In `app/sitemap.ts`, remove the `${siteUrl}/auth` URL entry.
+- [x] **Step 4:** Run `npx tsc --noEmit` to verify type validity.
+- [x] **Step 5:** Commit changes with message `fix(seo): noindex auth and app routes, remove auth from sitemap`.
 
 ---
 
@@ -136,14 +138,14 @@
 
 **Context:** Returning `new Date()` dynamically for all URLs in `app/sitemap.ts` leads Googlebot to disregard `lastmod` signals. Setting stable dates accurately reflects content updates.
 
-- [ ] **Step 1:** In `app/sitemap.ts`, replace dynamic `new Date()` calls with static ISO dates representing recent content milestones:
+- [x] **Step 1:** In `app/sitemap.ts`, replace dynamic `new Date()` calls with static ISO dates representing recent content milestones:
   - Homepage (`/`): `new Date("2026-11-01")`
   - `/vs-notebooklm`: `new Date("2026-10-22")`
   - `/pricing`: `new Date("2026-10-18")`
   - Interactive demos: `new Date("2026-10-19")`
   - Markdown/docs (`/pricing.md`, `/llms.txt`, `/llms-full.txt`): `new Date("2026-10-15")`
-- [ ] **Step 2:** Run `npm run build` or `npx tsc --noEmit` to verify build passes.
-- [ ] **Step 3:** Commit changes with message `feat(seo): stabilize sitemap lastModified timestamps`.
+- [x] **Step 2:** Run `npm run build` or `npx tsc --noEmit` to verify build passes.
+- [x] **Step 3:** Commit changes with message `feat(seo): stabilize sitemap lastModified timestamps`.
 
 ---
 

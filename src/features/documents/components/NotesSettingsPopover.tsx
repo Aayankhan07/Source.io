@@ -20,7 +20,6 @@ import {
   BookMarked,
   RefreshCw,
   Sliders,
-  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/features/settings/context/SettingsContext";
@@ -34,7 +33,6 @@ import {
   UserRole,
   CitationStyle,
   ROLE_METADATA,
-  ROLE_PRESETS,
 } from "@/types/customization";
 
 interface NotesSettingsPopoverProps {
@@ -178,6 +176,7 @@ export default function NotesSettingsPopover({
               }
             }}
             title={popoverTab === "typography" ? "Reset typography" : "Reset role defaults"}
+            aria-label={popoverTab === "typography" ? "Reset typography" : "Reset role defaults"}
             className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -190,16 +189,16 @@ export default function NotesSettingsPopover({
             <>
               {/* 1. Typography */}
               <div className="space-y-2.5">
-                <div className="flex items-center gap-1.5 font-medium text-[11px] text-muted-foreground font-mono">
+                <div className="flex items-center gap-1.5 font-medium text-xs text-muted-foreground font-mono">
                   <Type className="h-3 w-3 text-primary" />
                   <span>Typography</span>
                 </div>
 
                 {/* Font Size */}
                 <div className="space-y-1.5">
-                  <div className="flex justify-between text-[11px] text-muted-foreground">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Font size</span>
-                    <span className="font-mono text-[11px]">
+                    <span className="font-mono text-xs">
                       {fontSizes.find((f) => f.value === notesSettings.fontSize)?.desc}
                     </span>
                   </div>
@@ -226,7 +225,7 @@ export default function NotesSettingsPopover({
 
                 {/* Font Family */}
                 <div className="space-y-1.5">
-                  <span className="text-[11px] text-muted-foreground">Typeface</span>
+                  <span className="text-xs text-muted-foreground">Typeface</span>
                   <div className="grid grid-cols-3 gap-1 p-0.5 bg-muted/50 rounded-lg border border-border/60">
                     {fontFamilies.map((ff) => {
                       const isActive = notesSettings.fontFamily === ff.value;
@@ -252,7 +251,7 @@ export default function NotesSettingsPopover({
 
                 {/* Line Spacing */}
                 <div className="space-y-1.5">
-                  <span className="text-[11px] text-muted-foreground">Line spacing</span>
+                  <span className="text-xs text-muted-foreground">Line spacing</span>
                   <div className="grid grid-cols-3 gap-1 p-0.5 bg-muted/50 rounded-lg border border-border/60">
                     {lineHeights.map((lh) => {
                       const isActive = notesSettings.lineHeight === lh.value;
@@ -279,7 +278,7 @@ export default function NotesSettingsPopover({
 
               {/* 2. Math & Formulas */}
               <div className="space-y-2.5">
-                <div className="flex items-center gap-1.5 font-medium text-[11px] text-muted-foreground font-mono">
+                <div className="flex items-center gap-1.5 font-medium text-xs text-muted-foreground font-mono">
                   <Sigma className="h-3 w-3 text-sky-500" />
                   <span>Formulas & math</span>
                 </div>
@@ -289,7 +288,7 @@ export default function NotesSettingsPopover({
                     <Label htmlFor="katex-switch" className="text-xs font-medium cursor-pointer">
                       Render KaTeX equations
                     </Label>
-                    <p className="text-[11px] text-muted-foreground">Format LaTeX math symbols and proofs</p>
+                    <p className="text-xs text-muted-foreground">Format LaTeX math symbols and proofs</p>
                   </div>
                   <Switch
                     id="katex-switch"
@@ -303,7 +302,7 @@ export default function NotesSettingsPopover({
 
               {/* 3. Document Workspace Layout */}
               <div className="space-y-2.5">
-                <div className="flex items-center gap-1.5 font-medium text-[11px] text-muted-foreground font-mono">
+                <div className="flex items-center gap-1.5 font-medium text-xs text-muted-foreground font-mono">
                   <Layout className="h-3 w-3 text-emerald-500" />
                   <span>Layout & rails</span>
                 </div>
@@ -314,7 +313,7 @@ export default function NotesSettingsPopover({
                     <Label htmlFor="banner-switch" className="text-xs font-medium cursor-pointer">
                       "On this page" summary
                     </Label>
-                    <p className="text-[11px] text-muted-foreground">Show top chapter overview banner</p>
+                    <p className="text-xs text-muted-foreground">Show top chapter overview banner</p>
                   </div>
                   <Switch
                     id="banner-switch"
@@ -329,7 +328,7 @@ export default function NotesSettingsPopover({
                     <Label htmlFor="spy-switch" className="text-xs font-medium cursor-pointer">
                       Auto-scroll outline
                     </Label>
-                    <p className="text-[11px] text-muted-foreground">Sync outline highlight to scroll</p>
+                    <p className="text-xs text-muted-foreground">Sync outline highlight to scroll</p>
                   </div>
                   <Switch
                     id="spy-switch"
@@ -343,7 +342,7 @@ export default function NotesSettingsPopover({
 
               {/* 4. Generation Tone */}
               <div className="space-y-2">
-                <div className="flex items-center gap-1.5 font-medium text-[11px] text-muted-foreground font-mono">
+                <div className="flex items-center gap-1.5 font-medium text-xs text-muted-foreground font-mono">
                   <Sparkles className="h-3 w-3 text-amber-500" />
                   <span>Regeneration tone</span>
                 </div>
@@ -363,7 +362,7 @@ export default function NotesSettingsPopover({
                         )}
                       >
                         <span className={cn(isActive && "text-primary font-semibold")}>{t.label}</span>
-                        <span className="text-[11px] text-muted-foreground">{t.desc}</span>
+                        <span className="text-xs text-muted-foreground">{t.desc}</span>
                       </button>
                     );
                   })}
@@ -374,7 +373,7 @@ export default function NotesSettingsPopover({
             <>
               {/* Persona Selector */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
+                <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
                   <span className="flex items-center gap-1.5">
                     <GraduationCap className="h-3 w-3 text-primary" />
                     Academic Persona
@@ -401,7 +400,7 @@ export default function NotesSettingsPopover({
                         )}
                       >
                         <span className="text-xs truncate">{meta.label}</span>
-                        <span className="text-[10px] text-muted-foreground truncate">{meta.desc}</span>
+                        <span className="text-xs text-muted-foreground truncate">{meta.desc}</span>
                       </button>
                     );
                   })}
@@ -412,7 +411,7 @@ export default function NotesSettingsPopover({
 
               {/* Rigor Depth Slider */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-xs">
                   <span className="font-mono text-muted-foreground flex items-center gap-1.5">
                     <Sliders className="size-3 text-sky-500" />
                     Rigor Level ({currentRigor}/5)
@@ -432,7 +431,7 @@ export default function NotesSettingsPopover({
                   className="w-full accent-primary cursor-pointer h-2 bg-muted rounded-lg"
                 />
 
-                <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
+                <div className="flex justify-between text-xs font-mono text-muted-foreground">
                   <span>1 Intuitive</span>
                   <span>3 Balanced</span>
                   <span>5 Exhaustive</span>
@@ -443,7 +442,7 @@ export default function NotesSettingsPopover({
 
               {/* Citation Format */}
               <div className="space-y-2">
-                <div className="flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
                   <BookMarked className="size-3 text-emerald-500" />
                   <span>Citation Style</span>
                 </div>

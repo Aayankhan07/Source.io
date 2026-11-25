@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect } from "react";
 import { LandingHeader } from "./LandingHeader";
 import { TactileHeroPrototype } from "./TactileHeroPrototype";
 import { IngestionRibbon } from "./IngestionRibbon";
@@ -12,18 +9,13 @@ import {
   FaqAndFinalCtaSection 
 } from "./CredibilityAndComparison";
 import { LandingFooter } from "./LandingFooter";
-import { useTheme } from "@/hooks/use-theme";
 
+// Server Component. The landing is always light: it is scoped with the `.light`
+// class (app/globals.css + tailwind darkMode) instead of calling setTheme, so
+// visiting it never overwrites the user's saved app theme.
 export function LandingPage() {
-  const { setTheme } = useTheme();
-
-  useEffect(() => {
-    setTheme("light");
-    document.documentElement.classList.remove("dark");
-  }, [setTheme]);
-
   return (
-    <div className="min-h-[100dvh] bg-[#FAF9F6] text-slate-950 antialiased selection:bg-slate-900 selection:text-white font-sans relative overflow-x-clip transition-colors duration-200">
+    <div data-theme="light" className="light min-h-[100dvh] bg-[#FAF9F6] text-slate-950 antialiased selection:bg-slate-900 selection:text-white font-sans relative overflow-x-clip transition-colors duration-200">
       {/* Ambient Continuous Atmospheric Halos (Subtle neutral monochrome ink) */}
       <div
         className="absolute top-0 right-0 w-full lg:w-[65%] h-[700px] -z-10 pointer-events-none opacity-60"

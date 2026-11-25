@@ -8,6 +8,33 @@
 
 ---
 
+## Implementation status (2026-11-26)
+
+Derived from the code in the working tree on branch `fix/phase0-security`. Commit `4bd2a7f` contains part of Phase 0; everything else listed as "in code" is **uncommitted** and **not yet applied to any Supabase project**. Nothing below has been verified against a live database: the pgTAP tests in `supabase/tests/database/` run only in CI or with a local `supabase db start`.
+
+**Phase 0: in code.** Billing-column trigger, private profiles, quota RPCs on `user_id`, header BYOK removed (server decides), webhook HMAC fail-closed with UUID-validated `user_id`, quotas fail closed (503), `GROQ_API_KEY`/TDZ crash fixes, `daily_ai_usage` security invoker, embedding column fixed, CORS allow-list. *By design:* `checkCircuitBreaker` fails **open** on a DB error. It is a manual kill switch, and the quota RPC already fails closed, so spending is still capped during an outage. `podcasts_enabled` is now enforced by `generate_podcast` and enabled by migration `20261126160000`. *Open:* `supabase/.temp/` and `tsconfig.tsbuildinfo` are still tracked by git (0.9).
+
+**Phase 1: mostly in code.** CI workflow (lint, typecheck, Vitest, build, `deno check`/`deno test`, pgTAP, Playwright); staging→production deploy workflow (1.2); Sentry for Next.js, Vercel Analytics/Speed Insights, JSON logs with request id (1.3, no Sentry in edge functions); pgTAP tests for quotas, billing, RLS, documents, BYOK, learning progress and length cap (1.4); authenticated Playwright journey, skipped unless `E2E_USER_*` is set (1.5); upstream timeouts and one supabase-js version (1.6); atomic derivatives RPC (1.7); job lock with partial unique index, heartbeat and 120 s stale reaping (1.8); quota refunds (1.9); uniques, indexes, `REPLICA IDENTITY DEFAULT` (1.10); RLS tightening for documents/jobs/chunks (1.11); `logAiUsage` in every function (1.13). TypeScript `strict: true` with 0 errors, and `no-unused-vars` re-enabled with 0 lint errors (1.12). *Open:* `_shared` coverage is not measured.
+
+**Phase 2: mostly in code.** Plans single source `src/lib/plans.ts` with a consistency test and plan-aware document limit (2.3); real export and account deletion (2.2); `flashcard_reviews` (Leitner), quiz attempts and chat history saved (2.4); chat citations streamed and stored with similarity, citation regex fixed (2.5); gte-small `halfvec(384)` retrieval (2.6); `subscriptions` + `billing_events` ledger, out-of-order and idempotent handling, `order_created` no longer grants pro (2.7, tier is set by the `apply_billing_event` RPC rather than a trigger); privacy, terms and refund pages linked from the footer and signup (2.8); in-browser Kokoro audio with `speechSynthesis` fallback, server TTS code deleted, YouTube labelled beta with a paste-transcript fallback (2.9); static public `/demo/[slug]` and `GUEST_USER` removed (2.10); BYOK keys encrypted server-side (AES-256-GCM with `BYOK_ENCRYPTION_KEY`, not Supabase Vault) (2.11); section-by-section notes with Gemini routing, `note_sections`, page cap trigger (2.13). Fabricated dashboard data removed, including the quiz "98% Grounded Proof" line (2.1; checked with a repo grep). Settings are stored per user and cleared on sign-out, profile sync runs on every auth change, and onboarding ends at `/app?upload=1` (2.11, 2.12; covered by unit tests but not yet exercised in a browser against a real account). *Open:* the Recall@K eval set (2.6).
+
+**Phase 3: partly in code.** `proxy.ts` + `@supabase/ssr` server auth; `next/font` (Outfit/Geist); no-flash theme script; `InteractiveWorkflowDemo` and unused public media deleted; prompt fields capped at 300 characters. `DocumentWorkspace` split into `src/features/documents/workspace/` (965 → 130 lines, one notes view mounted); Radix Tabs for workspace and settings (`?tab=` deep links); command palette is a Radix Dialog; 12px floor applied in landing, workspace, settings, flashcards and quiz. *Open:* axe in CI, a repo-wide 12px sweep of the remaining files, and LLM-judge evals for notes and flashcards.
+
+**Phase 4: partly in code.** PostHog funnel events (no-op without a key); use-case, alternatives and changelog pages; sitemap and robots from `NEXT_PUBLIC_SITE_URL`; docs rewritten, root duplicate plans deleted, `docs/runbook.md` added. *Open:* cost-per-user dashboard and margin alert, review-reminder emails, streaks from real reviews.
+
+**Needs owner action before any of this is live**
+
+1. Commit the working tree (in logical commits) and open a PR; let CI run.
+2. Create the staging Supabase project; add GitHub secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF_*`, `SUPABASE_DB_PASSWORD_*`; create the `staging`/`production` environments (required reviewers on production) and make the CI checks required on `main` (`docs/deployment.md`).
+3. Back up production, then apply migrations `20261126090000` → `20261126160000` to staging first. Two are destructive: duplicate notes/podcasts/quizzes are deleted and all embeddings are nulled (re-embedded lazily).
+4. Set Supabase secrets: `GROQ_API_KEY`, `GEMINI_API_KEY`, `BYOK_ENCRYPTION_KEY` (`openssl rand -base64 32`, keep a copy), `ALLOWED_ORIGIN`, `LEMONSQUEEZY_WEBHOOK_SECRET`, optionally `NOTES_TIME_BUDGET_MS`. Deploy all 11 functions.
+5. Vercel env: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CONTACT_EMAIL`, Sentry and PostHog keys. Add `<origin>/auth/callback` to Supabase Auth redirect URLs. (Migration `20261126160000` adds `podcasts` to the Realtime publication.)
+6. Run the smoke tests in `docs/deployment.md` (self-upgrade blocked, forged webhook 401, header BYOK still charges, free user chat, long-document notes, audio render), then promote to production.
+7. Review the legal pages' wording (they state that Google's free tier may use data sent to Gemini) and set a real contact email.
+8. `git rm --cached -r supabase/.temp tsconfig.tsbuildinfo`.
+
+---
+
 ## 1. Executive summary
 
 Source.io has a strong product idea: one source, five renderings, each grounded in citations. It has polished marketing and a real AI pipeline. But it is **not production-safe today**, and several core paths are **broken at the code level**:

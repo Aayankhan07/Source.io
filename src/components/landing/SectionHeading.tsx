@@ -1,9 +1,5 @@
-"use client";
-
 import * as React from "react";
-import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { reveal, revealStagger, VIEWPORT } from "./motion";
 
 type BadgeTone = "blue" | "darkBlue" | "cyan" | "amber" | "slate";
 
@@ -20,13 +16,13 @@ interface SectionHeadingProps {
 }
 
 const badgeToneStyles: Record<string, string> = {
-  blue: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
-  darkBlue: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
-  cyan: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
-  amber: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
-  slate: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
-  emerald: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
-  violet: "bg-white text-slate-900 border border-slate-300 font-mono text-[11px] uppercase tracking-wider shadow-2xs",
+  blue: "bg-white text-slate-900 border border-slate-300 font-mono text-xs uppercase tracking-wider shadow-2xs",
+  darkBlue: "bg-white text-slate-900 border border-slate-300 font-mono text-xs uppercase tracking-wider shadow-2xs",
+  cyan: "bg-white text-slate-900 border border-slate-300 font-mono text-xs uppercase tracking-wider shadow-2xs",
+  amber: "bg-white text-slate-900 border border-slate-300 font-mono text-xs uppercase tracking-wider shadow-2xs",
+  slate: "bg-white text-slate-900 border border-slate-300 font-mono text-xs uppercase tracking-wider shadow-2xs",
+  emerald: "bg-white text-slate-900 border border-slate-300 font-mono text-xs uppercase tracking-wider shadow-2xs",
+  violet: "bg-white text-slate-900 border border-slate-300 font-mono text-xs uppercase tracking-wider shadow-2xs",
 };
 
 export function SectionHeading({

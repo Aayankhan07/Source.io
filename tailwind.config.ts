@@ -2,7 +2,9 @@ import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
-  darkMode: ["class"],
+  // `.dark` on <html> enables dark variants, except inside a `.light` subtree
+  // (the always-light marketing landing page).
+  darkMode: ["variant", "&:is(.dark *):not(.light, .light *)"],
   content: [
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
@@ -12,9 +14,9 @@ export default {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
     extend: {
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
-        display: ["Plus Jakarta Sans", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["Fira Code", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+        sans: ["var(--font-geist)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+        display: ["var(--font-outfit)", "var(--font-geist)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
         reading: ["Literata", "Georgia", "ui-serif", "serif"],
       },
       colors: {

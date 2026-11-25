@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   GraduationCap,
   BookOpen,
@@ -17,7 +16,6 @@ import {
   ListChecks,
   Headphones,
   MessageSquare,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -28,7 +26,6 @@ import {
   UserRole,
   StudyModeId,
   CitationStyle,
-  ROLE_PRESETS,
   ROLE_METADATA,
   WorkspacePreferences,
 } from "@/types/customization";
@@ -85,7 +82,6 @@ const STUDY_TOOLS_CONFIG: {
 export default function CustomizationSettings() {
   const { userRole, preferences, setUserRole, updatePreferences, resetToRolePreset } = useSettings();
   const { toast } = useToast();
-  const [saving, setSaving] = useState(false);
 
   const handleRoleChange = async (role: UserRole) => {
     await setUserRole(role);
@@ -201,7 +197,7 @@ export default function CustomizationSettings() {
                   </div>
                   <span
                     className={cn(
-                      "text-[10px] font-mono px-2 py-0.5 rounded-md border",
+                      "text-xs font-mono px-2 py-0.5 rounded-md border",
                       isSelected
                         ? "bg-white/20 border-white/30 text-white"
                         : "bg-muted border-border text-muted-foreground"
@@ -227,7 +223,7 @@ export default function CustomizationSettings() {
                   </div>
                   <p
                     className={cn(
-                      "text-[11px] leading-relaxed",
+                      "text-xs leading-relaxed",
                       isSelected ? "text-primary-foreground/80" : "text-muted-foreground"
                     )}
                   >
@@ -287,7 +283,7 @@ export default function CustomizationSettings() {
                     <span className="text-xs font-bold text-foreground font-display block">
                       {tool.label}
                     </span>
-                    <p className="text-[11px] text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground truncate">
                       {tool.desc}
                     </p>
                   </div>
@@ -347,7 +343,7 @@ export default function CustomizationSettings() {
                   <span className="text-xs font-bold text-foreground block">
                     {block.label}
                   </span>
-                  <span className="text-[11px] text-muted-foreground leading-tight block">
+                  <span className="text-xs text-muted-foreground leading-tight block">
                     {block.desc}
                   </span>
                 </div>
@@ -370,7 +366,7 @@ export default function CustomizationSettings() {
               <span className="text-xs font-bold text-foreground block font-display">
                 Explanation Rigor Depth: Level {preferences.rigorLevel} / 5
               </span>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {preferences.rigorLevel === 1 && "Simple, approachable everyday language (ELI12)"}
                 {preferences.rigorLevel === 2 && "Exam-focused clarity with syllabus definitions"}
                 {preferences.rigorLevel === 3 && "Standard collegiate depth with formal derivations"}
@@ -393,7 +389,7 @@ export default function CustomizationSettings() {
             className="w-full cursor-pointer"
           />
 
-          <div className="flex justify-between text-[10px] font-mono text-muted-foreground px-1">
+          <div className="flex justify-between text-xs font-mono text-muted-foreground px-1">
             <span>1: Intuitive</span>
             <span>3: Collegiate</span>
             <span>5: Peer Review</span>
@@ -408,7 +404,7 @@ export default function CustomizationSettings() {
             <span className="text-xs font-bold text-foreground block font-display">
               Citation Badge Style
             </span>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               Format for verified grounding tags in study notes.
             </span>
           </div>
@@ -438,7 +434,7 @@ export default function CustomizationSettings() {
                   </span>
                   <span
                     className={cn(
-                      "text-[10px] font-mono px-2 py-0.5 rounded-md border max-w-max",
+                      "text-xs font-mono px-2 py-0.5 rounded-md border max-w-max",
                       isSelected
                         ? "bg-white/20 border-white/30 text-white"
                         : "bg-muted border-border text-muted-foreground"
@@ -460,7 +456,7 @@ export default function CustomizationSettings() {
             <span className="text-xs font-bold text-foreground block font-display">
               Custom AI Directive (Optional)
             </span>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               Always append a custom rule to AI generation (e.g. &quot;Include Python snippets where relevant&quot;).
             </span>
           </div>

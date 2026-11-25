@@ -1,14 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { useSettings } from "@/features/settings/context/SettingsContext";
 import { useProviderQuota } from "@/features/settings/context/ProviderQuotaContext";
 import { supabase } from "@/integrations/supabase/client";
+import { accountKeys } from "@/lib/queryKeys";
 
 export const DAILY_FREE_LIMIT = 25;
 
+/** Features that consume a daily AI action (see consume_daily_quota callers). */
+const BILLABLE_FEATURES = new Set(["chat", "notes", "derivatives", "podcast"]);
+
 export interface DailyUsageStats {
+  /** Actions used today, from profiles.daily_quota_used (the number the server enforces). */
   total: number;
+  /** Today's limit for this user's plan, from profiles.daily_quota_limit. */
+  limit: number;
   chat: number;
   notes: number;
   derivatives: number;
@@ -16,8 +22,7 @@ export interface DailyUsageStats {
 
 export function useDailyQuotaMetrics() {
   const { user } = useAuth();
-  const { settings } = useSettings();
-  const { quota: providerQuota, refreshQuota } = useProviderQuota();
+  const providerKey = useProviderQuota();
 
   // Live countdown to midnight UTC
   const [timeUntilReset, setTimeUntilReset] = useState<string>("");
@@ -45,14 +50,10 @@ export function useDailyQuotaMetrics() {
   }, []);
 
   // Fetch count of today's user actions from ai_usage_logs
-  const { data: usageStats = { total: 0, chat: 0, notes: 0, derivatives: 0 } } = useQuery<DailyUsageStats>({
-    queryKey: ["daily_ai_actions_usage", user?.id],
+  const { data: usageStats = { total: 0, limit: DAILY_FREE_LIMIT, chat: 0, notes: 0, derivatives: 0 } } = useQuery<DailyUsageStats>({
+    queryKey: accountKeys.dailyUsage(user?.id),
     enabled: !!user?.id,
     queryFn: async () => {
-      if (user?.id === "guest-user-01") {
-        return { total: 0, chat: 0, notes: 0, derivatives: 0 };
-      }
-
       const todayUtc = new Date();
       todayUtc.setUTCHours(0, 0, 0, 0);
 
@@ -63,8 +64,17 @@ export function useDailyQuotaMetrics() {
         .gte("created_at", todayUtc.toISOString())
         .neq("status", "failed");
 
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("daily_quota_used, daily_quota_limit, quota_reset_date")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      const todayStr = todayUtc.toISOString().slice(0, 10);
+      const limit = profile?.daily_quota_limit ?? DAILY_FREE_LIMIT;
+      const enforcedUsed = profile?.quota_reset_date === todayStr ? (profile?.daily_quota_used ?? 0) : 0;
+
       if (error || !data) {
-        return { total: 0, chat: 0, notes: 0, derivatives: 0 };
+        return { total: enforcedUsed, limit, chat: 0, notes: 0, derivatives: 0 };
       }
 
       let chat = 0;
@@ -72,13 +82,15 @@ export function useDailyQuotaMetrics() {
       let derivatives = 0;
 
       for (const row of data) {
+        if (!BILLABLE_FEATURES.has(row.feature)) continue;
         if (row.feature === "chat") chat++;
         else if (row.feature === "notes") notes++;
         else if (row.feature === "derivatives") derivatives++;
       }
 
       return {
-        total: data.length,
+        total: enforcedUsed,
+        limit,
         chat,
         notes,
         derivatives,
@@ -87,40 +99,17 @@ export function useDailyQuotaMetrics() {
     refetchInterval: 15_000,
   });
 
-  const activeByokProvider = useMemo(() => {
-    if (settings?.apiKeys?.groq?.trim()) return "Groq";
-    if (settings?.apiKeys?.gemini?.trim()) return "Google Gemini";
-    if (settings?.apiKeys?.openai?.trim()) return "OpenAI";
-    return null;
-  }, [settings?.apiKeys]);
-
-  const hasByok = Boolean(activeByokProvider);
+  const activeByokProvider = providerKey.providerLabel;
+  const hasByok = providerKey.hasByok;
   const usageCount = usageStats.total;
-  const remaining = Math.max(0, DAILY_FREE_LIMIT - usageCount);
-  const percentUsed = Math.min(100, Math.round((usageCount / DAILY_FREE_LIMIT) * 100));
+  const dailyLimit = usageStats.limit || DAILY_FREE_LIMIT;
+  const remaining = Math.max(0, dailyLimit - usageCount);
+  const percentUsed = Math.min(100, Math.round((usageCount / dailyLimit) * 100));
   const percentAllowanceRemaining = Math.max(0, 100 - percentUsed);
 
-  const displayPercentage = useMemo(() => {
-    if (hasByok && providerQuota.percentRemaining != null) {
-      return providerQuota.percentRemaining;
-    }
-    return percentAllowanceRemaining;
-  }, [hasByok, providerQuota.percentRemaining, percentAllowanceRemaining]);
-
-  const pillText = useMemo(() => {
-    if (hasByok) {
-      if (providerQuota.percentRemaining != null) {
-        return `${activeByokProvider} ${providerQuota.percentRemaining}% limit left`;
-      }
-      if (providerQuota.remainingTokens != null && providerQuota.limitTokens != null) {
-        const remK = Math.round(providerQuota.remainingTokens / 1000);
-        const limK = Math.round(providerQuota.limitTokens / 1000);
-        return `${remK}k/${limK}k tokens left`;
-      }
-      return `${activeByokProvider} Connected`;
-    }
-    return `${displayPercentage}% limit left`;
-  }, [hasByok, providerQuota, activeByokProvider, displayPercentage]);
+  // With their own key the provider's limits apply, which the browser can't see: show the key, not a %.
+  const displayPercentage = hasByok ? 100 : percentAllowanceRemaining;
+  const pillText = hasByok ? `Your ${activeByokProvider} key` : `${percentAllowanceRemaining}% limit left`;
 
   const glowClasses = useMemo(() => {
     if (hasByok) {
@@ -138,6 +127,7 @@ export function useDailyQuotaMetrics() {
   return {
     usageStats,
     usageCount,
+    dailyLimit,
     remaining,
     percentAllowanceRemaining,
     displayPercentage,
@@ -145,8 +135,7 @@ export function useDailyQuotaMetrics() {
     glowClasses,
     hasByok,
     activeByokProvider,
-    providerQuota,
-    refreshQuota,
+    byokLast4: providerKey.last4,
     timeUntilReset,
   };
 }

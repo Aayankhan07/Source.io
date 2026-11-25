@@ -15,14 +15,11 @@ import {
   ChevronRight,
   Check,
   X,
-  Layers,
   BarChart3,
   PenTool,
   Send,
   Printer,
   Copy,
-  FileText,
-  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,6 +27,7 @@ import MarkdownView from "@/components/common/MarkdownView";
 import type { QuizRow, QuizQuestionRow } from "@/features/documents/types";
 import { useSettings } from "@/features/settings/context/SettingsContext";
 import { useToast } from "@/hooks/use-toast";
+import { useQuizAttempts, type QuizBest } from "@/features/learning/useQuizAttempts";
 import {
   Dialog,
   DialogContent,
@@ -84,7 +82,7 @@ export function checkQuizAnswerMatch(
 }
 
 export function QuizPlayer({
-  documentId,
+  documentId: _documentId,
   quiz,
   onRegenerate,
   loading = false,
@@ -99,6 +97,9 @@ export function QuizPlayer({
   const [shortAnswerInput, setShortAnswerInput] = useState("");
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportMode, setExportMode] = useState<"exam" | "rubric">("exam");
+  const { best, recordAttempt } = useQuizAttempts(quiz?.id);
+  /** Best score as it was before the attempt just finished (shown on the summary). */
+  const [previousBest, setPreviousBest] = useState<QuizBest | null>(null);
 
   const handlePrint = () => {
     window.print();
@@ -206,7 +207,7 @@ export function QuizPlayer({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pl-3">
                         {q.choices.map((c, cIdx) => (
                           <div key={cIdx} className="flex items-center gap-2 text-muted-foreground">
-                            <span className="size-4 rounded-full border border-border inline-flex items-center justify-center text-[10px] font-mono">
+                            <span className="size-4 rounded-full border border-border inline-flex items-center justify-center text-xs font-mono">
                               {String.fromCharCode(65 + cIdx)}
                             </span>
                             <span>{c}</span>
@@ -237,7 +238,7 @@ export function QuizPlayer({
                     </div>
                     <p className="text-muted-foreground">{q.question}</p>
                     {q.explanation && (
-                      <div className="pt-1 text-[11px] text-muted-foreground font-mono bg-muted/40 p-2 rounded-lg">
+                      <div className="pt-1 text-xs text-muted-foreground font-mono bg-muted/40 p-2 rounded-lg">
                         <strong>Rationale & Rubric:</strong> {q.explanation}
                       </div>
                     )}
@@ -344,11 +345,29 @@ export function QuizPlayer({
     }));
   };
 
+  const finishQuiz = () => {
+    setPreviousBest(best);
+    recordAttempt({
+      score: correctCount,
+      total: totalQuestions,
+      answers: questions.map((q) => {
+        const answer = selectedAnswers[q.id] ?? "";
+        const isShort = q.type === "short_answer" || (!q.choices?.length && q.type !== "true_false");
+        return {
+          question_id: q.id,
+          answer,
+          correct: checkQuizAnswerMatch(answer, q.correct, q.choices, isShort),
+        };
+      }),
+    });
+    setIsCompleted(true);
+  };
+
   const handleNext = () => {
     if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      setIsCompleted(true);
+      finishQuiz();
     }
   };
 
@@ -423,7 +442,7 @@ export function QuizPlayer({
           </div>
 
           <div className="space-y-2">
-            <span className="text-[11px] font-mono font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-muted border border-border text-muted-foreground">
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-muted border border-border text-muted-foreground">
               Quiz Completed
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground tracking-tight">
@@ -433,18 +452,25 @@ export function QuizPlayer({
               You scored <span className="font-semibold text-foreground font-mono">{score}%</span> on{" "}
               <span className="italic font-medium">{quiz.title}</span>. Review your answers below to solidify any missed concepts.
             </p>
+            {previousBest && (
+              <p className="text-xs text-muted-foreground font-mono">
+                {score > previousBest.percent
+                  ? `New personal best! Previous best: ${previousBest.percent}%`
+                  : `Previous best: ${previousBest.percent}% (${previousBest.score}/${previousBest.total})`}
+              </p>
+            )}
           </div>
 
           {/* Metric Stats Pills */}
           <div className="grid grid-cols-3 gap-3 pt-2 max-w-md mx-auto">
             <div className="bg-muted/40 rounded-2xl p-3 border border-border/60 text-center">
-              <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block mb-0.5">
+              <span className="text-xs uppercase font-mono tracking-wider text-muted-foreground block mb-0.5">
                 Score
               </span>
               <span className="text-xl font-bold font-mono text-foreground">{score}%</span>
             </div>
             <div className="bg-emerald-500/10 rounded-2xl p-3 border border-emerald-500/20 text-center">
-              <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-600 dark:text-emerald-400 block mb-0.5">
+              <span className="text-xs uppercase font-mono tracking-wider text-emerald-600 dark:text-emerald-400 block mb-0.5">
                 Correct
               </span>
               <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
@@ -452,7 +478,7 @@ export function QuizPlayer({
               </span>
             </div>
             <div className="bg-rose-500/10 rounded-2xl p-3 border border-rose-500/20 text-center">
-              <span className="text-[10px] uppercase font-mono tracking-wider text-rose-600 dark:text-rose-400 block mb-0.5">
+              <span className="text-xs uppercase font-mono tracking-wider text-rose-600 dark:text-rose-400 block mb-0.5">
                 Incorrect
               </span>
               <span className="text-xl font-bold font-mono text-rose-600 dark:text-rose-400">
@@ -522,6 +548,7 @@ export function QuizPlayer({
                 >
                   <button
                     onClick={() => setActiveReviewId(isExpanded ? null : q.id)}
+                    aria-expanded={isExpanded}
                     className="w-full text-left p-4 flex items-start justify-between gap-3 cursor-pointer select-none"
                   >
                     <div className="flex items-start gap-3 min-w-0">
@@ -538,12 +565,12 @@ export function QuizPlayer({
 
                       <div className="min-w-0 space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono uppercase text-muted-foreground font-semibold">
+                          <span className="text-xs font-mono uppercase text-muted-foreground font-semibold">
                             Q{idx + 1}
                           </span>
                           <span
                             className={cn(
-                              "text-[10px] font-mono px-2 py-0.5 rounded-full font-bold",
+                              "text-xs font-mono px-2 py-0.5 rounded-full font-bold",
                               isCorrect
                                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                                 : "bg-rose-500/10 text-rose-600 dark:text-rose-400",
@@ -571,7 +598,7 @@ export function QuizPlayer({
                     <div className="p-4 pt-1 border-t border-border/50 bg-muted/20 space-y-3 text-xs">
                       <div className="grid gap-2 sm:grid-cols-2 pt-2">
                         <div className="p-2.5 rounded-xl bg-card border border-border/60">
-                          <span className="text-[10px] font-mono uppercase text-muted-foreground block mb-1">
+                          <span className="text-xs font-mono uppercase text-muted-foreground block mb-1">
                             Your Answer
                           </span>
                           <span
@@ -589,7 +616,7 @@ export function QuizPlayer({
                         </div>
 
                         <div className="p-2.5 rounded-xl bg-card border border-border/60">
-                          <span className="text-[10px] font-mono uppercase text-muted-foreground block mb-1">
+                          <span className="text-xs font-mono uppercase text-muted-foreground block mb-1">
                             Correct Answer
                           </span>
                           <span className="font-semibold text-emerald-600 dark:text-emerald-400">
@@ -600,7 +627,7 @@ export function QuizPlayer({
 
                       {q.explanation && (
                         <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-900 dark:text-sky-200">
-                          <span className="font-semibold block mb-1 text-[11px] text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                          <span className="font-semibold block mb-1 text-xs text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
                             <BookOpen className="size-3.5" />
                             Explanation & Reference
                           </span>
@@ -634,12 +661,17 @@ export function QuizPlayer({
         <div className="bg-card rounded-2xl border border-border p-4 shadow-sm flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-md bg-muted text-foreground border border-border">
+              <span className="text-xs font-mono font-bold uppercase px-2.5 py-0.5 rounded-md bg-muted text-foreground border border-border">
                 Question {currentIndex + 1} of {totalQuestions}
               </span>
               <span className="text-muted-foreground hidden sm:inline text-xs font-medium">
                 {quiz.title}
               </span>
+              {best && (
+                <span className="text-xs font-mono text-muted-foreground px-2 py-0.5 rounded-md bg-muted/60 border border-border">
+                  Best: {best.percent}%
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -648,7 +680,7 @@ export function QuizPlayer({
                   size="sm"
                   variant="outline"
                   onClick={() => setIsExportOpen(true)}
-                  className="h-7 px-2.5 rounded-full text-[11px] font-semibold border-border hover:bg-muted text-foreground gap-1.5 cursor-pointer"
+                  className="h-7 px-2.5 rounded-full text-xs font-semibold border-border hover:bg-muted text-foreground gap-1.5 cursor-pointer"
                 >
                   <Printer className="size-3 text-primary" />
                   <span>Export Exam</span>
@@ -697,7 +729,7 @@ export function QuizPlayer({
       <div className="bg-card rounded-3xl border border-border p-6 sm:p-8 shadow-tactile-card space-y-6">
         {/* Question Text */}
         <div className="space-y-3">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+          <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
             {currentQ.type === "true_false" ? (
               <>
                 <HelpCircle className="size-3.5 text-slate-900 dark:text-white" />
@@ -756,11 +788,11 @@ export function QuizPlayer({
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-                  <span className="text-[11px] font-mono">Press Enter ↵ to submit</span>
+                  <span className="text-xs font-mono">Press Enter ↵ to submit</span>
                   <button
                     type="button"
                     onClick={() => handleSelectChoice("[Skipped]")}
-                    className="text-[11px] font-mono text-muted-foreground hover:text-foreground underline underline-offset-2 cursor-pointer transition-colors"
+                    className="text-xs font-mono text-muted-foreground hover:text-foreground underline underline-offset-2 cursor-pointer transition-colors"
                   >
                     I don't know (reveal answer)
                   </button>
@@ -776,7 +808,7 @@ export function QuizPlayer({
                 )}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider opacity-70">
+                  <span className="text-xs font-mono uppercase font-bold tracking-wider opacity-70">
                     Your Response
                   </span>
                   <span className="flex items-center gap-1 text-xs font-mono font-bold">
@@ -904,16 +936,6 @@ export function QuizPlayer({
               </p>
             )}
 
-            {/* Grounded Citation Reference Proof */}
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] font-mono">
-              <span className="inline-flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
-                <span className="size-1.5 rounded-full bg-slate-900 dark:bg-white" />
-                Verified from source: p. {((currentIndex % 4) + 1) * 3 + 2}, ¶{((currentIndex % 3) + 1)}
-              </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-mono font-bold">
-                98% Grounded Proof
-              </span>
-            </div>
           </div>
         )}
 
@@ -939,7 +961,7 @@ export function QuizPlayer({
               <ArrowRight className="size-3.5 ml-1.5" />
             </Button>
           ) : (
-            <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/40 border border-border/60">
+            <div className="text-xs font-mono text-muted-foreground flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/40 border border-border/60">
               <span className="size-1.5 rounded-full bg-sky-500 animate-pulse" />
               <span>
                 {isShortAnswer

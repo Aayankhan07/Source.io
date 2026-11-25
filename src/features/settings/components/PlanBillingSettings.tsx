@@ -1,25 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { accountKeys } from "@/lib/queryKeys";
+import { SCHOLAR_CHECKOUT_BASE, openScholarCheckout } from "../checkout";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  Sparkles, 
-  Check, 
-  ExternalLink, 
-  Clock, 
-  Key, 
-  ShieldCheck, 
-  Zap, 
-  Headphones, 
-  FileText, 
-  HelpCircle,
+import {
+  Sparkles,
+  Check,
+  ExternalLink,
+  Clock,
+  Key,
+  ShieldCheck,
+  Zap,
+  Headphones,
   CreditCard,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 
 interface PlanBillingSettingsProps {
   onSwitchToModelsTab?: () => void;
@@ -53,8 +53,8 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
   }, []);
 
   // Fetch user subscription tier & quotas from Supabase
-  const { data: userProfile, isLoading } = useQuery({
-    queryKey: ["user_tier_billing", user?.id],
+  const { data: userProfile } = useQuery({
+    queryKey: accountKeys.profileQuotas(user?.id),
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
@@ -70,7 +70,6 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
   const dailyQuota = userProfile?.daily_quota_limit ?? (isScholarPass ? 200 : 25);
   const dailyTtsQuota = userProfile?.daily_tts_quota_limit ?? (isScholarPass ? 50 : 2);
 
-  const checkoutUrl = `https://sourceio.lemonsqueezy.com/buy/scholar-pass?checkout[custom][user_id]=${user?.id || ""}&checkout[email]=${encodeURIComponent(user?.email || "")}`;
 
   return (
     <div className="space-y-6 sm:space-y-8 max-w-4xl">
@@ -86,11 +85,11 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
                 Current Plan
               </span>
               {isScholarPass ? (
-                <span className="text-[11px] font-mono px-3 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 flex items-center gap-1">
+                <span className="text-xs font-mono px-3 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 flex items-center gap-1">
                   <Check className="size-3" /> Scholar Pass Active
                 </span>
               ) : (
-                <span className="text-[11px] font-mono px-3 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold border border-border">
+                <span className="text-xs font-mono px-3 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold border border-border">
                   Free Forever Plan
                 </span>
               )}
@@ -101,8 +100,8 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
               {isScholarPass
-                ? "You have full Scholar Pass privileges with 200 daily generation actions, 50 studio podcast renders, and priority high-throughput GPU queuing."
-                : "Every account receives 25 daily AI actions that reset every night at 00:00 UTC. Bring your own API keys anytime for unlimited zero-cost usage."}
+                ? "You have Scholar Pass: 200 AI actions and 50 audio recaps per day, and up to 100 documents of 50 pages each."
+                : "Every account receives 25 AI actions per day, reset at 00:00 UTC. Add your own API key in AI & Models and generations on your key have no daily cap."}
             </p>
           </div>
 
@@ -119,7 +118,8 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
               </a>
             ) : (
               <a
-                href={checkoutUrl}
+                href={SCHOLAR_CHECKOUT_BASE}
+                onClick={(e) => openScholarCheckout(user, "billing_header", e)}
                 target="_blank"
                 rel="noreferrer"
                 className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 shadow-tactile-pill transition-all cursor-pointer whitespace-nowrap"
@@ -131,7 +131,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
             )}
             <Link
               href="/#pricing"
-              className="text-center text-[11px] text-muted-foreground hover:text-foreground font-medium transition-colors py-1"
+              className="text-center text-xs text-muted-foreground hover:text-foreground font-medium transition-colors py-1"
             >
               View public comparison &rarr;
             </Link>
@@ -179,7 +179,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+                <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
                   Standard Tier
                 </span>
                 <h3 className="text-xl font-bold font-display text-foreground mt-0.5">
@@ -215,7 +215,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
               </li>
               <li className="flex items-center gap-2">
                 <Check className="size-3.5 text-foreground shrink-0" />
-                <span><strong>Unlimited zero-cost BYOK</strong> (Gemini, OpenAI, Groq)</span>
+                <span><strong>Your own API key</strong>: no daily cap on your key (Groq, Gemini, OpenAI)</span>
               </li>
             </ul>
           </div>
@@ -229,14 +229,14 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
 
         {/* Tier 2: Scholar Pass */}
         <div className="rounded-[28px] bg-card border-2 border-primary/40 p-6 sm:p-7 shadow-tactile-card flex flex-col justify-between space-y-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-mono font-bold uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-xs">
+          <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-mono font-bold uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-xs">
             Recommended for Exams
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-primary font-bold">
+                <span className="text-xs font-mono uppercase tracking-wider text-primary font-bold">
                   Power Academic
                 </span>
                 <h3 className="text-xl font-bold font-display text-foreground mt-0.5">
@@ -256,7 +256,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
             <ul className="space-y-2.5 pt-2 border-t border-border text-xs text-foreground">
               <li className="flex items-center gap-2">
                 <Check className="size-3.5 text-primary shrink-0" />
-                <span><strong>200 daily AI actions</strong> with priority GPU routing</span>
+                <span><strong>200 AI actions per day</strong> and 50 audio recaps</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="size-3.5 text-primary shrink-0" />
@@ -264,7 +264,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
               </li>
               <li className="flex items-center gap-2">
                 <Check className="size-3.5 text-primary shrink-0" />
-                <span>Unlimited document slots & monographs up to 250 pages</span>
+                <span>100 documents, up to 50 pages each</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="size-3.5 text-primary shrink-0" />
@@ -285,7 +285,8 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
               </div>
             ) : (
               <a
-                href={checkoutUrl}
+                href={SCHOLAR_CHECKOUT_BASE}
+                onClick={(e) => openScholarCheckout(user, "billing_plan_card", e)}
                 target="_blank"
                 rel="noreferrer"
                 className="w-full h-10 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 shadow-tactile-pill transition-all cursor-pointer"
@@ -310,7 +311,7 @@ export default function PlanBillingSettings({ onSwitchToModelsTab }: PlanBilling
               Don't want to subscribe? Bring Your Own Key (BYOK)
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Source.io supports direct client-side provider keys. Paste your personal Gemini, OpenAI, Anthropic, or Groq API key in the AI & Models tab for 100% free unlimited synthesis.
+              Paste your personal Groq, Gemini or OpenAI API key in the AI & Models tab. Generations that run on your key have no daily cap and documents can be up to 300 pages.
             </p>
           </div>
         </div>

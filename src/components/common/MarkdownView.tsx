@@ -7,21 +7,42 @@ import rehypeKatex from "rehype-katex";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/features/settings/context/SettingsContext";
 
-// Matches citations like [p. 14, §1.2], [p. 18], [Page 4, §2], [§3.4], [Passage §1.1]
-const CITATION_REGEX = /(\[(?:p\.|pp\.|page|passage|§)[\w\s.,§\-]+\])/gi;
+// Matches textual citations like [p. 14, §1.2], [p. 18], [Page 4, §2], [§3.4], [Passage §1.1]
+const TEXT_CITATION = /\[(?:p\.|pp\.|page|passage|§)[\w\s.,§-]+\]/i;
+// Matches numbered passage citations emitted by chat: [1], [2], [12]
+const NUMBERED_CITATION = /\[\d{1,2}\]/;
+// Split patterns must be global + capturing. They are only used with String.split,
+// which ignores lastIndex, so the /g flag cannot leak state between calls.
+const SPLIT_TEXT = /(\[(?:p\.|pp\.|page|passage|§)[\w\s.,§-]+\])/gi;
+const SPLIT_ALL = /(\[(?:p\.|pp\.|page|passage|§)[\w\s.,§-]+\]|\[\d{1,2}\])/gi;
 
-function renderWithCitations(node: ReactNode): ReactNode {
+type CitationClick = (n: number) => void;
+
+function renderWithCitations(node: ReactNode, onCitationClick?: CitationClick): ReactNode {
   if (typeof node === "string") {
-    if (!CITATION_REGEX.test(node)) return node;
-    const parts = node.split(CITATION_REGEX);
+    const hasText = TEXT_CITATION.test(node);
+    const hasNumbered = !!onCitationClick && NUMBERED_CITATION.test(node);
+    if (!hasText && !hasNumbered) return node;
+    const parts = node.split(onCitationClick ? SPLIT_ALL : SPLIT_TEXT);
     return parts.map((part, i) => {
-      if (CITATION_REGEX.test(part)) {
+      const numbered = onCitationClick ? /^\[(\d{1,2})\]$/.exec(part) : null;
+      if (numbered) {
+        const n = Number(numbered[1]);
         return (
-          <span
+          <button
             key={i}
-            className="citation-chip cursor-default"
-            title="Source Grounded Citation"
+            type="button"
+            className="citation-chip cursor-pointer align-baseline"
+            onClick={() => onCitationClick?.(n)}
+            aria-label={`Show source passage ${n}`}
           >
+            {n}
+          </button>
+        );
+      }
+      if (TEXT_CITATION.test(part) && /^\[.*\]$/.test(part)) {
+        return (
+          <span key={i} className="citation-chip cursor-default" title="Source citation">
             {part}
           </span>
         );
@@ -32,7 +53,7 @@ function renderWithCitations(node: ReactNode): ReactNode {
 
   if (Array.isArray(node)) {
     return node.map((child, i) => (
-      <React.Fragment key={i}>{renderWithCitations(child)}</React.Fragment>
+      <React.Fragment key={i}>{renderWithCitations(child, onCitationClick)}</React.Fragment>
     ));
   }
 
@@ -40,7 +61,7 @@ function renderWithCitations(node: ReactNode): ReactNode {
     const element = node as React.ReactElement<{ children?: ReactNode }>;
     if (element.props && element.props.children) {
       return React.cloneElement(element, {
-        children: renderWithCitations(element.props.children),
+        children: renderWithCitations(element.props.children, onCitationClick),
       });
     }
   }
@@ -55,6 +76,8 @@ interface MarkdownViewProps {
   fontFamily?: "sans" | "serif" | "mono";
   lineHeight?: "tight" | "normal" | "relaxed";
   renderKaTeX?: boolean;
+  /** When set, numbered citations like [1] render as buttons that call this with the passage number. */
+  onCitationClick?: CitationClick;
 }
 
 export default function MarkdownView({
@@ -64,6 +87,7 @@ export default function MarkdownView({
   fontFamily: propFontFamily,
   lineHeight: propLineHeight,
   renderKaTeX: propRenderKaTeX,
+  onCitationClick,
 }: MarkdownViewProps) {
   const { notesSettings } = useSettings();
 
@@ -122,21 +146,21 @@ export default function MarkdownView({
           p: ({ children, ...props }) => {
             return (
               <p {...props}>
-                {renderWithCitations(children)}
+                {renderWithCitations(children, onCitationClick)}
               </p>
             );
           },
           li: ({ children, ...props }) => {
             return (
               <li {...props}>
-                {renderWithCitations(children)}
+                {renderWithCitations(children, onCitationClick)}
               </li>
             );
           },
           blockquote: ({ children, ...props }) => {
             return (
               <blockquote {...props}>
-                {renderWithCitations(children)}
+                {renderWithCitations(children, onCitationClick)}
               </blockquote>
             );
           },

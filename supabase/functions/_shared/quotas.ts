@@ -43,6 +43,40 @@ export function consumeDailyTtsQuota(admin: SupabaseClient, userId: string, cost
   return consumeViaRpc(admin, "consume_daily_tts_quota", userId, cost);
 }
 
+async function refundViaRpc(
+  admin: SupabaseClient,
+  rpcName: "refund_daily_quota" | "refund_daily_tts_quota",
+  userId: string,
+  cost: number,
+): Promise<boolean> {
+  if (!Number.isInteger(cost) || cost <= 0) return false;
+  try {
+    const { data, error } = await admin.rpc(rpcName, { p_user_id: userId, p_cost: cost });
+    if (error) {
+      console.error(`${rpcName} RPC failed; quota not refunded:`, error.message);
+      return false;
+    }
+    return data === true;
+  } catch (err) {
+    console.error(`${rpcName} threw; quota not refunded:`, err);
+    return false;
+  }
+}
+
+/**
+ * Gives back daily AI actions after an upstream AI failure that happened after the quota
+ * was consumed. The RPC never takes usage below 0 and only refunds today's usage.
+ * Never throws; returns true when a refund was applied.
+ */
+export function refundDailyQuota(admin: SupabaseClient, userId: string, cost: number = 1): Promise<boolean> {
+  return refundViaRpc(admin, "refund_daily_quota", userId, cost);
+}
+
+/** Gives back daily TTS renders after a failed audio synthesis. Never throws. */
+export function refundDailyTtsQuota(admin: SupabaseClient, userId: string, cost: number = 1): Promise<boolean> {
+  return refundViaRpc(admin, "refund_daily_tts_quota", userId, cost);
+}
+
 /**
  * Skips the quota for genuine BYOK requests (decided server-side), otherwise consumes 1 action.
  * Returns null if allowed, 429 if the quota is exceeded, 503 if the quota check is unavailable.

@@ -5,8 +5,10 @@ export interface DemoDocumentData {
   note: NoteRow;
   cards: FlashcardRow[];
   quiz: QuizRow;
-  podcast: PodcastRow;
+  podcast: PodcastRow | null;
   citations: { n: number; sim: number; text: string }[];
+  /** Pre-written chat exchange shown read-only on the public demo. Answers cite `citations` by number. */
+  sampleChat: { question: string; answer: string }[];
 }
 
 export const DEMO_DOCUMENTS: Record<string, DemoDocumentData> = {
@@ -133,6 +135,18 @@ Quantum Computing leverages the unique principles of quantum physics to solve co
       { n: 2, sim: 0.78, text: "Most superconducting designs operate near absolute zero (~15 millikelvin) to limit thermal noise." },
       { n: 3, sim: 0.62, text: "Quantum error correction schemes distribute logical qubits across multiple entangled physical qubits." },
     ],
+    sampleChat: [
+      {
+        question: "Why do quantum computers need to be kept so cold?",
+        answer:
+          "To limit decoherence. Qubits lose their quantum state when they interact with the environment [1], so most superconducting designs run near absolute zero (about 15 millikelvin) to keep thermal noise down [2].",
+      },
+      {
+        question: "How do engineers deal with the errors that still happen?",
+        answer:
+          "With quantum error correction: one logical qubit is spread across several entangled physical qubits, so an error on one of them can be detected and corrected [3].",
+      },
+    ],
   },
   "demo-linalg": {
     document: {
@@ -207,6 +221,13 @@ Here, $\\lambda$ is the **eigenvalue** and $v$ is the non-zero **eigenvector**.
     },
     citations: [
       { n: 1, sim: 0.91, text: "Eigenvectors satisfy Av = λv and define the invariant axes of linear maps." },
+    ],
+    sampleChat: [
+      {
+        question: "What makes a vector an eigenvector?",
+        answer:
+          "Applying the matrix only scales it: it satisfies Av = λv, so it stays on its own line and defines an invariant axis of the transformation [1].",
+      },
     ],
   },
   "demo-networking": {
@@ -329,6 +350,13 @@ Orthogonal chip sequences are generated recursively via Walsh tables (Hadamard m
     podcast: null,
     citations: [
       { n: 1, sim: 0.95, text: "CSMA requires that each station first sense the medium before attempting transmission." },
+    ],
+    sampleChat: [
+      {
+        question: "What does CSMA do differently from ALOHA?",
+        answer:
+          "It listens before it talks: each station senses the medium before transmitting [1], instead of sending whenever it has data as pure ALOHA does.",
+      },
     ],
   },
 };

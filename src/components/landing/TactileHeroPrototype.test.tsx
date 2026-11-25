@@ -12,7 +12,7 @@ vi.mock("@/hooks/use-theme", () => ({
 
 // Mock Next.js Link
 vi.mock("next/link", () => ({
-  default: ({ children, href, ...rest }: any) => (
+  default: ({ children, href, ...rest }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a href={href} {...rest}>
       {children}
     </a>

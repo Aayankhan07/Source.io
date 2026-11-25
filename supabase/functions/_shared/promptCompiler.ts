@@ -33,7 +33,79 @@ export interface WorkspacePreferences {
   customSystemInstruction?: string;
 }
 
-export function buildNotesSystemPrompt(role: UserRole, prefs: WorkspacePreferences): string {
+/** Maximum length of any user-supplied text that is placed inside a prompt (S9). */
+export const MAX_PROMPT_FIELD_CHARS = 300;
+
+const USER_ROLES: readonly UserRole[] = [
+  "school_student",
+  "high_school",
+  "undergrad",
+  "scholar",
+  "researcher",
+  "teacher",
+  "custom",
+];
+
+/**
+ * Caps a user-supplied prompt field: non-strings become undefined, control characters are
+ * stripped (newlines collapse to spaces so a field cannot open a new prompt section) and the
+ * result is cut to `max` characters.
+ */
+export function capPromptField(value: unknown, max: number = MAX_PROMPT_FIELD_CHARS): string | undefined {
+  if (typeof value !== "string") return undefined;
+  // deno-lint-ignore no-control-regex
+  const cleaned = value.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
+  if (!cleaned) return undefined;
+  return cleaned.length > max ? cleaned.slice(0, max).trimEnd() : cleaned;
+}
+
+/** Returns a known UserRole, or undefined for anything else. */
+export function sanitizeUserRole(value: unknown): UserRole | undefined {
+  return typeof value === "string" && (USER_ROLES as readonly string[]).includes(value)
+    ? (value as UserRole)
+    : undefined;
+}
+
+/**
+ * Copies only the known workspace preference fields, capping every string to
+ * MAX_PROMPT_FIELD_CHARS (including enabledModes entries) and clamping rigorLevel to 1..5.
+ */
+export function sanitizeWorkspacePreferences(input: unknown): WorkspacePreferences {
+  const p = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+  const sectionsIn = (p.noteSections && typeof p.noteSections === "object" ? p.noteSections : {}) as Record<
+    string,
+    unknown
+  >;
+  const bool = (v: unknown) => (typeof v === "boolean" ? v : undefined);
+  const rigorRaw = Number(p.rigorLevel);
+  const rigor = Number.isFinite(rigorRaw) ? Math.min(5, Math.max(1, Math.round(rigorRaw))) : 3;
+  return {
+    enabledModes: Array.isArray(p.enabledModes)
+      ? p.enabledModes.slice(0, 20).map((m) => capPromptField(m, 60)).filter((m): m is string => !!m)
+      : [],
+    defaultMode: capPromptField(p.defaultMode) ?? "",
+    noteFormat: capPromptField(p.noteFormat) ?? "",
+    noteSections: {
+      executiveOverview: bool(sectionsIn.executiveOverview) ?? true,
+      mathProofs: bool(sectionsIn.mathProofs) ?? false,
+      contrastTables: bool(sectionsIn.contrastTables) ?? false,
+      misconceptions: bool(sectionsIn.misconceptions) ?? false,
+      analogies: bool(sectionsIn.analogies) ?? false,
+      discussionPrompts: bool(sectionsIn.discussionPrompts) ?? false,
+      actionItems: bool(sectionsIn.actionItems) ?? false,
+    },
+    rigorLevel: rigor as WorkspacePreferences["rigorLevel"],
+    citationStyle: capPromptField(p.citationStyle, 40) ?? "",
+    quizStyle: capPromptField(p.quizStyle) ?? "",
+    flashcardAlgorithm: capPromptField(p.flashcardAlgorithm) ?? "",
+    podcastStyle: capPromptField(p.podcastStyle) ?? "",
+    customSystemInstruction: capPromptField(p.customSystemInstruction),
+  };
+}
+
+export function buildNotesSystemPrompt(role: UserRole, rawPrefs: WorkspacePreferences): string {
+  // Callers may pass request JSON straight through; cap every user-controlled string here (S9).
+  const prefs = sanitizeWorkspacePreferences(rawPrefs);
   const roleDirectives: Record<UserRole, string> = {
     school_student: `You are an exceptionally engaging middle-school educator.
 Use simple everyday words, relatable analogies, short active sentences, and bold key vocabulary definitions.
@@ -98,7 +170,7 @@ Include explicit Learning Objectives (Bloom's Taxonomy), a timed Lecture Pacing 
 You are the active intelligence engine of "Source.io".
 
 ## ROLE & PEDAGOGICAL PERSONA
-${roleDirectives[role] || roleDirectives.undergrad}
+${roleDirectives[sanitizeUserRole(role) ?? "undergrad"]}
 
 ## ACADEMIC RIGOR LEVEL
 Level ${prefs?.rigorLevel || 3} out of 5: ${rigorDescriptions[prefs?.rigorLevel || 3] || "Standard Collegiate Rigor"}

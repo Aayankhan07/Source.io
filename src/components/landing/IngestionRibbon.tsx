@@ -1,7 +1,5 @@
-"use client";
-
 import { 
-  FileText, Mic, Video, FileCode, Globe, Database, BookOpen 
+  FileText, Mic, Video, FileCode, Globe, Database 
 } from "lucide-react";
 
 const INGESTION_FORMATS = [
@@ -36,7 +34,7 @@ export function IngestionRibbon() {
                 <span className="whitespace-nowrap group-hover:text-slate-950 font-medium transition-colors">
                   {item.label}
                 </span>
-                <span className="text-[10px] font-mono text-slate-500 group-hover:text-slate-900 whitespace-nowrap transition-colors">
+                <span className="text-xs font-mono text-slate-500 group-hover:text-slate-900 whitespace-nowrap transition-colors">
                   {item.tag}
                 </span>
               </div>

@@ -20,7 +20,6 @@ import {
   ListChecks,
   Headphones,
   MessageSquare,
-  SlidersHorizontal,
   Brain,
   ClipboardCheck,
   Zap,
@@ -28,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { track } from "@/lib/analytics/track";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/features/settings/context/SettingsContext";
 import {
@@ -139,6 +139,9 @@ const STUDY_TOOLS_CONFIG: {
   },
 ];
 
+/** Onboarding ends at the first upload: /app opens the upload dialog (drop a PDF or paste text). */
+const FIRST_UPLOAD_ROUTE = "/app?upload=1";
+
 export default function OnboardingWizard() {
   const router = useRouter();
   const { toast } = useToast();
@@ -192,13 +195,14 @@ export default function OnboardingWizard() {
     setSubmitting(true);
     try {
       await completeOnboarding(selectedRole, prefs);
+      track("onboarding_completed");
       toast({
         title: "Workspace customized",
         description: `Your workstation has been tailored to the ${ROLE_METADATA[selectedRole].label} preset.`,
       });
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } catch {
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } finally {
       setSubmitting(false);
     }
@@ -208,9 +212,9 @@ export default function OnboardingWizard() {
     setSubmitting(true);
     try {
       await completeOnboarding("undergrad", ROLE_PRESETS.undergrad);
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } catch {
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } finally {
       setSubmitting(false);
     }
@@ -792,7 +796,7 @@ export default function OnboardingWizard() {
             className="rounded-full text-xs font-semibold h-9 px-6 bg-primary text-primary-foreground shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
             <Sparkles className="size-3.5 mr-1.5 text-primary-foreground" />
-            <span>Launch Workstation</span>
+            <span>Next: add your first document</span>
           </Button>
         )}
       </footer>

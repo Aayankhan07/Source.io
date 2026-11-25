@@ -4,8 +4,8 @@ import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  // supabase/functions/** targets Deno and is typechecked by the Supabase CLI,
-  // not by this browser toolchain.
+  // supabase/functions/** targets Deno; CI type-checks it with `deno check` and tests it with
+  // `deno test` / vitest (see .github/workflows/ci.yml), not with this browser toolchain.
   { ignores: ["dist", ".next/**", "supabase/functions/**"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
@@ -19,7 +19,10 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_", ignoreRestSiblings: true },
+      ],
     },
   },
 );

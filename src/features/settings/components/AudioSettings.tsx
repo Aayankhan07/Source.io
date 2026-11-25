@@ -5,40 +5,13 @@ import { Switch } from "@/components/ui/switch";
 import { Mic, Volume2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettings } from "../context/SettingsContext";
-import { PodcastVoiceDuo } from "../types";
+import { VOICE_DUOS } from "@/features/podcast/voices";
 
 export default function AudioSettings() {
   const { settings, updateSettings } = useSettings();
 
-  const voiceDuos: {
-    value: PodcastVoiceDuo;
-    title: string;
-    hosts: string;
-    desc: string;
-    style: string;
-  }[] = [
-    {
-      value: "chen-marcus",
-      title: "Academic & Analytical",
-      hosts: "Dr. Sarah Chen & Marcus",
-      desc: "Deep-dive explanatory dynamic with balanced pacing and analytical rigor.",
-      style: "Default Co-hosts",
-    },
-    {
-      value: "rachel-alex",
-      title: "Fast-Paced Tech Interview",
-      hosts: "Rachel & Alex",
-      desc: "Energetic dialogue focused on real-world engineering intuition and shortcuts.",
-      style: "Dynamic",
-    },
-    {
-      value: "emma-daniel",
-      title: "Warm & Conversational",
-      hosts: "Emma & Daniel",
-      desc: "Calm, narrative walkthrough ideal for passive revision and long commutes.",
-      style: "Calm Review",
-    },
-  ];
+  // Kokoro-82M voice pairs; audio is rendered on the user's device (see src/features/podcast).
+  const voiceDuos = VOICE_DUOS;
 
   const speeds = [1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -52,11 +25,11 @@ export default function AudioSettings() {
               <Mic className="size-4" />
             </span>
             <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
-              Podcast Host Duo Profiles
+              Podcast Host Voices
             </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Choose the synthetic speech profile and conversational dynamic for the 2-host audio recap.
+            Choose the two voices used when you create podcast audio. Audio is generated on your device, so your script never leaves Source.io for a voice service.
           </p>
         </div>
 
@@ -65,7 +38,9 @@ export default function AudioSettings() {
             const isSelected = settings.podcastVoiceDuo === duo.value;
             return (
               <button
+                type="button"
                 key={duo.value}
+                aria-pressed={isSelected}
                 onClick={() => updateSettings({ podcastVoiceDuo: duo.value })}
                 className={cn(
                   "p-4 rounded-[20px] border text-left transition-all cursor-pointer flex flex-col justify-between select-none",
@@ -77,7 +52,7 @@ export default function AudioSettings() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className={cn(
-                      "text-[10px] font-mono px-2 py-0.5 rounded-md border",
+                      "text-xs font-mono px-2 py-0.5 rounded-md border",
                       isSelected
                         ? "bg-white/20 dark:bg-slate-950/10 border-white/20 text-white dark:text-slate-950 font-semibold"
                         : "bg-slate-100 dark:bg-white/10 border-slate-200 dark:border-white/10 text-slate-500"
@@ -87,9 +62,12 @@ export default function AudioSettings() {
                     {isSelected && <Check className="size-3.5 text-white dark:text-slate-950 stroke-[2.5]" />}
                   </div>
                   <span className={cn("text-xs font-bold block pt-0.5", isSelected ? "text-white dark:text-slate-950" : "text-slate-900 dark:text-white")}>
+                    {duo.title}
+                  </span>
+                  <span className={cn("text-xs block", isSelected ? "text-slate-200 dark:text-slate-700" : "text-slate-600 dark:text-slate-300")}>
                     {duo.hosts}
                   </span>
-                  <p className={cn("text-[11px] leading-relaxed", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
+                  <p className={cn("text-xs leading-relaxed", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
                     {duo.desc}
                   </p>
                 </div>
@@ -121,7 +99,9 @@ export default function AudioSettings() {
           <div className="flex items-center gap-1.5 p-1 bg-slate-100/70 dark:bg-white/[0.04] rounded-[16px] border border-slate-200/80 dark:border-white/10 max-w-md">
             {speeds.map((s) => (
               <button
+                type="button"
                 key={s}
+                aria-pressed={settings.playbackSpeed === s}
                 onClick={() => updateSettings({ playbackSpeed: s })}
                 className={cn(
                   "flex-1 py-2 text-xs font-mono font-medium rounded-[12px] transition-all cursor-pointer text-center",
@@ -140,10 +120,10 @@ export default function AudioSettings() {
         <div className="flex items-center justify-between gap-4 p-4 rounded-[20px] bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10">
           <div className="space-y-0.5">
             <Label htmlFor="auto-pod" className="text-xs font-bold text-slate-900 dark:text-white cursor-pointer">
-              Auto-compile audio recap on document upload
+              Auto-write podcast script on document upload
             </Label>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              When enabled, synthesizing the two-host podcast script will kick off automatically after notes compile.
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              When enabled, the two-host podcast script is written automatically after notes compile (uses one AI action). Audio is created when you choose.
             </p>
           </div>
           <Switch

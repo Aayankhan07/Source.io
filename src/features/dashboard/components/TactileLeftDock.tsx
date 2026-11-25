@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { 
   Home, 
   Folder, 
@@ -25,14 +25,13 @@ interface TactileLeftDockProps {
 }
 
 export function TactileLeftDock({ 
-  onNewSource, 
+  onNewSource: _onNewSource,
   activeTab = "dashboard", 
   onSelectTab,
   isExpanded: controlledExpanded,
   onToggleExpand: controlledToggleExpand
 }: TactileLeftDockProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
   // Internal state fallback if not controlled from parent
