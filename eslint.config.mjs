@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
   // supabase/functions/** targets Deno; CI type-checks it with `deno check` and tests it with
   // `deno test` / vitest (see .github/workflows/ci.yml), not with this browser toolchain.
-  { ignores: ["dist", ".next/**", "supabase/functions/**"] },
+  { ignores: ["dist", ".next/**", "coverage/**", "playwright-report/**", "test-results/**", "supabase/functions/**", "evals/**"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
