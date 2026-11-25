@@ -4,22 +4,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
-import { consumeDailyQuota, enforceDailyQuota } from "../_shared/quotas.ts";
+import { enforceDailyQuota } from "../_shared/quotas.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
+import { resolveGroqKey } from "../_shared/byok.ts";
 import { authenticateRequest } from "../_shared/auth.ts";
 
-// Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
-// Defaults to "*" so existing deployments keep working.
-function getCorsHeaders(req: Request) {
-  const origin = req.headers.get("Origin") ?? "*";
-  const allowed = Deno.env.get("ALLOWED_ORIGIN");
-  const allowOrigin = allowed ? (allowed === "*" || allowed === origin ? origin : allowed) : "*";
-  return {
-    "Access-Control-Allow-Origin": allowOrigin,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers":
-      "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-  };
-}
 
 export const DERIVATIVES_SYSTEM_PROMPT = String.raw`You are the assessment and active-recall engine of "Source.io", a learning platform. You turn any learning material (lecture transcripts, YouTube transcripts, slides, PDFs, textbook pages, or a student's notes) into flashcards and a practice quiz that help a student truly understand the subject and pass exams.
 
@@ -101,7 +90,7 @@ Write all card, question, choice, and explanation text in the language the stude
 const SYSTEM_PROMPT = DERIVATIVES_SYSTEM_PROMPT;
 
 Deno.serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const auth = await authenticateRequest(req, corsHeaders);
@@ -123,6 +112,10 @@ Deno.serve(async (req) => {
       api_key?: string;
       idempotency_key?: string;
       force_regenerate?: boolean;
+      user_role?: string;
+      quiz_style?: string;
+      flashcard_algorithm?: string;
+      workspace_preferences?: { quizStyle?: string; flashcardAlgorithm?: string; rigorLevel?: number | string };
     };
     try { body = await req.json(); } catch {
       return new Response(JSON.stringify({ error: "Invalid JSON" }), {
@@ -130,7 +123,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const groqApiKey = body.api_key?.trim() || Deno.env.get("GROQ_API_KEY");
+    const { apiKey: groqApiKey, isByok } = resolveGroqKey(body.api_key, Deno.env.get("GROQ_API_KEY"));
     if (!groqApiKey) {
       return new Response(JSON.stringify({ error: "GROQ_API_KEY not configured. Please add your API key in Settings." }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -190,7 +183,6 @@ Deno.serve(async (req) => {
   }
 
   // Atomic Quota Concurrency Guardrail (TOCTOU protection)
-  const isByok = !!(body.api_key?.trim() || req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
   const quotaResponse = await enforceDailyQuota(admin, userId, corsHeaders, { isByok });
   if (quotaResponse) return quotaResponse;
 

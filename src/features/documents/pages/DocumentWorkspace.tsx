@@ -302,7 +302,7 @@ export default function DocumentWorkspace() {
         tone: notesSettings.regenerationTone,
         notesDepth: settings.notesDepth,
         model: settings.preferredModel,
-        apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
+        apiKey: settings.apiKeys.groq || undefined,
         userRole: userRole,
         workspacePreferences: preferences,
         force: opts?.force,
@@ -418,7 +418,7 @@ export default function DocumentWorkspace() {
       await generateDerivatives(docId, {
         flashcardCount: settings.flashcardBatchSize,
         quizDifficulty: settings.quizDifficulty,
-        apiKey: settings.apiKeys.gemini || settings.apiKeys.groq,
+        apiKey: settings.apiKeys.groq || undefined,
         force: opts?.force,
         userRole: userRole,
         workspacePreferences: preferences,

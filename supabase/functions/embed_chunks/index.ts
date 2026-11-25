@@ -1,16 +1,8 @@
 // Chunk a document's raw_text and embed via deterministic local hashed n-gram embeddings.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { authenticateRequest } from "../_shared/auth.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-// Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
-// Defaults to "*" so existing deployments keep working.
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") ?? "*";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 const EMBED_DIMS = 768;
 const TARGET_CHARS = 1400; // ~350 tokens
@@ -78,6 +70,7 @@ function chunkText(raw: string | null | undefined): string[] {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const auth = await authenticateRequest(req, corsHeaders);

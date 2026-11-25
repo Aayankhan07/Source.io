@@ -34,19 +34,20 @@ Rules:
 
 ```bash
 supabase functions deploy chat
-supabase functions deploy --no-verify-jwt=false   # all of them
+supabase functions deploy   # all of them (verify_jwt comes from supabase/config.toml)
 ```
 
 Set secrets once per project:
 
 ```bash
 supabase secrets set GROQ_API_KEY=...
-supabase secrets set ALLOWED_ORIGIN=https://your-site.example
+supabase secrets set ALLOWED_ORIGIN=https://sourceio.app
+supabase secrets set LEMONSQUEEZY_WEBHOOK_SECRET=...
 ```
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are injected by the platform — do not set them yourself.
 
-Leave `verify_jwt` at its default (enabled). Every function expects a real user token and re-checks document ownership on top of that.
+`supabase/config.toml` sets `verify_jwt = false` on purpose. The user-facing functions verify the caller's JWT in code through `authenticateRequest` (`supabase/functions/_shared/auth.ts`, or the equivalent inline check in `generate_podcast`) and then re-check document ownership. `billing-webhook` is called by Lemon Squeezy, not by a user, so it is authenticated by its HMAC signature instead and refuses every event when `LEMONSQUEEZY_WEBHOOK_SECRET` is unset.
 
 ### Ordering for a change that spans layers
 

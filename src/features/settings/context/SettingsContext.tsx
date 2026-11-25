@@ -77,7 +77,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         supabase
           .from("profiles")
           .select("user_role, onboarding_completed, workspace_preferences")
-          .eq("id", session.user.id)
+          .eq("user_id", session.user.id)
           .maybeSingle()
           .then(({ data, error }) => {
             if (!error && data) {
@@ -152,7 +152,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           user_role: role,
           workspace_preferences: newPreset as unknown as Json,
         })
-        .eq("id", session.user.id);
+        .eq("user_id", session.user.id);
     }
   }, []);
 
@@ -177,7 +177,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       void supabase
         .from("profiles")
         .update({ workspace_preferences: nextPrefs as unknown as Json })
-        .eq("id", session.user.id);
+        .eq("user_id", session.user.id);
     }
   }, []);
 
@@ -216,7 +216,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             onboarding_completed: true,
             workspace_preferences: mergedPrefs as unknown as Json,
           })
-          .eq("id", session.user.id);
+          .eq("user_id", session.user.id);
       }
     },
     []
@@ -242,7 +242,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           user_role: role,
           workspace_preferences: preset as unknown as Json,
         })
-        .eq("id", session.user.id);
+        .eq("user_id", session.user.id);
     }
   }, []);
 

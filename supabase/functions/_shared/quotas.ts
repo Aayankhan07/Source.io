@@ -1,41 +1,51 @@
-import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 /**
- * Atomically consumes daily quota via PostgreSQL row-level locked RPC function.
- * Completely eliminates Time-Of-Check to Time-Of-Use (TOCTOU) race conditions.
- *
- * @param admin - Supabase service role client
- * @param userId - User ID to deduct quota for
- * @param cost - Number of actions to consume (default 1)
+ * Result of an atomic quota consumption.
+ * `unavailable` is set when the quota could not be checked (DB/RPC error). Quotas
+ * fail CLOSED: an unavailable check never grants an action, because an outage here
+ * would otherwise mean unlimited AI spend.
  */
-export async function consumeDailyQuota(
+export interface QuotaResult {
+  allowed: boolean;
+  unavailable?: true;
+}
+
+async function consumeViaRpc(
   admin: SupabaseClient,
+  rpcName: "consume_daily_quota" | "consume_daily_tts_quota",
   userId: string,
-  cost: number = 1
-): Promise<{ allowed: boolean }> {
+  cost: number,
+): Promise<QuotaResult> {
   try {
-    const { data: allowed, error } = await admin.rpc("consume_daily_quota", {
+    const { data: allowed, error } = await admin.rpc(rpcName, {
       p_user_id: userId,
       p_cost: cost,
     });
-
     if (error) {
-      console.warn("Atomic quota RPC check fallback to log check:", error.message);
-      // Fallback check on ai_usage_logs if profile row is not yet initialized
-      const check = await checkDailyQuota(admin, userId, "general", 25);
-      return { allowed: check.allowed };
+      console.error(`${rpcName} RPC failed; denying (fail closed):`, error.message);
+      return { allowed: false, unavailable: true };
     }
-
-    return { allowed: !!allowed };
+    return allowed ? { allowed: true } : { allowed: false };
   } catch (err) {
-    console.error("consumeDailyQuota unhandled exception:", err);
-    return { allowed: true };
+    console.error(`${rpcName} threw; denying (fail closed):`, err);
+    return { allowed: false, unavailable: true };
   }
 }
 
+/** Atomically consumes daily AI actions via the row-locked `consume_daily_quota` RPC. */
+export function consumeDailyQuota(admin: SupabaseClient, userId: string, cost: number = 1): Promise<QuotaResult> {
+  return consumeViaRpc(admin, "consume_daily_quota", userId, cost);
+}
+
+/** Atomically consumes daily TTS renders via the row-locked `consume_daily_tts_quota` RPC. */
+export function consumeDailyTtsQuota(admin: SupabaseClient, userId: string, cost: number = 1): Promise<QuotaResult> {
+  return consumeViaRpc(admin, "consume_daily_tts_quota", userId, cost);
+}
+
 /**
- * Checks if the request is BYOK, and if not, consumes 1 daily quota action.
- * Returns null if allowed, or an HTTP 429 response if the quota is exceeded.
+ * Skips the quota for genuine BYOK requests (decided server-side), otherwise consumes 1 action.
+ * Returns null if allowed, 429 if the quota is exceeded, 503 if the quota check is unavailable.
  */
 export async function enforceDailyQuota(
   admin: SupabaseClient,
@@ -44,70 +54,45 @@ export async function enforceDailyQuota(
   options: {
     isByok: boolean;
     errorMessage?: string;
-  }
+  },
 ): Promise<Response | null> {
   if (options.isByok) return null;
 
   const quota = await consumeDailyQuota(admin, userId, 1);
-  if (!quota.allowed) {
+  if (quota.allowed) return null;
+
+  if (quota.unavailable) {
     return new Response(
       JSON.stringify({
-        error:
-          options.errorMessage ||
-          "Daily free generation limit reached (25/25 actions). Upgrade to Scholar Pass ($9/mo) or provide personal API keys in Settings.",
-        quotaExceeded: true,
-        code: "QUOTA_EXCEEDED",
+        error: "Usage limits are temporarily unavailable. Please retry in a minute.",
+        code: "QUOTA_UNAVAILABLE",
+        retryable: true,
       }),
-      {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
-  return null;
+
+  return new Response(
+    JSON.stringify({
+      error:
+        options.errorMessage ||
+        "Daily free generation limit reached. Upgrade to Scholar Pass or add your own Groq API key in Settings.",
+      quotaExceeded: true,
+      code: "QUOTA_EXCEEDED",
+    }),
+    { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
 }
 
 /**
- * Atomically consumes daily TTS audio synthesis quota via PostgreSQL row-level locked RPC.
- *
- * @param admin - Supabase service role client
- * @param userId - User ID to deduct quota for
- * @param cost - Number of audio generations to consume (default 1)
- */
-export async function consumeDailyTtsQuota(
-  admin: SupabaseClient,
-  userId: string,
-  cost: number = 1
-): Promise<{ allowed: boolean }> {
-  try {
-    const { data: allowed, error } = await admin.rpc("consume_daily_tts_quota", {
-      p_user_id: userId,
-      p_cost: cost,
-    });
-
-    if (error) {
-      console.warn("consumeDailyTtsQuota fallback check:", error.message);
-      const check = await checkDailyQuota(admin, userId, "podcast", 2);
-      return { allowed: check.allowed };
-    }
-
-    return { allowed: !!allowed };
-  } catch (err) {
-    console.error("consumeDailyTtsQuota exception:", err);
-    return { allowed: true };
-  }
-}
-
-/**
- * Checks if a user has exceeded their daily limit for a given AI feature.
- * Uses midnight UTC as the standard daily reset boundary.
- * Fails open if an unexpected database error occurs so paying/free users aren't bricked by logging.
+ * Read-only check of how many logged actions a user has made today for a feature.
+ * Fails closed (allowed: false) if the usage log cannot be read.
  */
 export async function checkDailyQuota(
   admin: SupabaseClient,
   userId: string,
   feature: string = "chat",
-  maxDaily: number = 25
+  maxDaily: number = 25,
 ): Promise<{ allowed: boolean; used: number; remaining: number }> {
   try {
     const todayUtc = new Date();
@@ -122,16 +107,14 @@ export async function checkDailyQuota(
       .neq("status", "failed");
 
     if (error) {
-      console.error("Quota check error:", error);
-      // Fail open on DB error so users are not blocked by a telemetry issue
-      return { allowed: true, used: 0, remaining: maxDaily };
+      console.error("Quota check error; denying (fail closed):", error);
+      return { allowed: false, used: 0, remaining: 0 };
     }
 
     const used = count ?? 0;
-    const allowed = used < maxDaily;
-    return { allowed, used, remaining: Math.max(0, maxDaily - used) };
+    return { allowed: used < maxDaily, used, remaining: Math.max(0, maxDaily - used) };
   } catch (err) {
-    console.error("checkDailyQuota unhandled exception:", err);
-    return { allowed: true, used: 0, remaining: maxDaily };
+    console.error("checkDailyQuota threw; denying (fail closed):", err);
+    return { allowed: false, used: 0, remaining: 0 };
   }
 }

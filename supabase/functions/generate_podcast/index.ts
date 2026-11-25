@@ -2,17 +2,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { synthesize } from "./tts.ts";
 import { parseScript } from "./script.ts";
 import { consumeDailyQuota, consumeDailyTtsQuota } from "../_shared/quotas.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-// Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
-// Defaults to "*" so existing deployments keep working.
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") ?? "*";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version, x-byok-groq, x-byok-gemini",
-};
 
 const HOST_1_VOICE = "en-US-ChristopherNeural";
 const HOST_2_VOICE = "en-US-AriaNeural";
@@ -72,7 +63,7 @@ Host 2: ...
 
 const SYSTEM_PROMPT = PODCAST_SYSTEM_PROMPT;
 
-function json(data: unknown, status = 200) {
+function jsonResponse(data: unknown, status: number, corsHeaders: Record<string, string>) {
   return new Response(JSON.stringify(data), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -95,6 +86,8 @@ function concatAudioChunks(chunks: Uint8Array[]): Uint8Array {
 }
 
 export async function handler(req: Request): Promise<Response> {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (data: unknown, status = 200) => jsonResponse(data, status, corsHeaders);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const authHeader = req.headers.get("Authorization");
@@ -119,7 +112,13 @@ export async function handler(req: Request): Promise<Response> {
   if (claimsErr || !claimsData?.claims) return json({ error: "Unauthorized" }, 401);
   const userId = claimsData.claims.sub as string;
 
-  let body: { document_id?: string; voice_duo?: string; mode?: "full" | "script_only" };
+  let body: {
+    document_id?: string;
+    voice_duo?: string;
+    mode?: "full" | "script_only";
+    user_role?: string;
+    podcast_style?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -129,38 +128,32 @@ export async function handler(req: Request): Promise<Response> {
   const documentId = body.document_id?.trim();
   if (!documentId) return json({ error: "document_id required" }, 400);
 
-  // Check user tier & BYOK
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("tier")
-    .or(`id.eq.${userId},user_id.eq.${userId}`)
+  // Ownership check BEFORE charging any quota.
+  const { data: doc } = await admin
+    .from("documents")
+    .select("id,user_id,title,raw_text")
+    .eq("id", documentId)
     .maybeSingle();
+  if (!doc || doc.user_id !== userId) return json({ error: "Document not found" }, 404);
 
-  const isPro = profile?.tier === "pro";
-  const isByok = !!(req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
-
-  // Check daily general AI quota for free-tier users
-  if (!isPro && !isByok) {
-    const quota = await consumeDailyQuota(admin, userId, 1);
-    if (!quota.allowed) {
-      return json({
-        error: "Daily free generation limit reached (25/25 actions). Upgrade to Scholar Pass ($9/mo) or provide BYOK keys.",
-        code: "QUOTA_EXCEEDED",
-      }, 429);
+  // Per-tier limits live in profiles (set server-side only); the RPC enforces them for every tier.
+  const quota = await consumeDailyQuota(admin, userId, 1);
+  if (!quota.allowed) {
+    if (quota.unavailable) {
+      return json({ error: "Usage limits are temporarily unavailable. Please retry in a minute.", code: "QUOTA_UNAVAILABLE", retryable: true }, 503);
     }
+    return json({
+      error: "Daily generation limit reached. Upgrade to Scholar Pass or try again tomorrow.",
+      code: "QUOTA_EXCEEDED",
+    }, 429);
   }
 
-  // Check TTS Audio quota
+  // TTS renders have their own daily quota.
   const requestAudio = body.mode !== "script_only";
   let canSynthesizeAudio = false;
-
   if (requestAudio) {
-    if (isPro || isByok) {
-      canSynthesizeAudio = true;
-    } else {
-      const ttsQuota = await consumeDailyTtsQuota(admin, userId, 1);
-      canSynthesizeAudio = ttsQuota.allowed;
-    }
+    const ttsQuota = await consumeDailyTtsQuota(admin, userId, 1);
+    canSynthesizeAudio = ttsQuota.allowed;
   }
 
   // Configure synthetic voice duo profiles
@@ -174,12 +167,6 @@ export async function handler(req: Request): Promise<Response> {
     host2Voice = "en-GB-RyanNeural";
   }
 
-  const { data: doc } = await admin
-    .from("documents")
-    .select("id,user_id,title,raw_text")
-    .eq("id", documentId)
-    .maybeSingle();
-  if (!doc || doc.user_id !== userId) return json({ error: "Document not found" }, 404);
 
   const { data: noteRow } = await admin
     .from("notes")
@@ -297,9 +284,9 @@ export async function handler(req: Request): Promise<Response> {
         status: "ready",
         script,
         audio_url: null,
-        tts_quota_exceeded: requestAudio && !isPro && !isByok,
+        tts_quota_exceeded: requestAudio,
         message: requestAudio
-          ? "Daily studio audio synthesis limit reached (2/2 renders). Script saved successfully. Upgrade to Scholar Pass ($9/mo) or BYOK for unlimited studio renders."
+          ? "Daily audio render limit reached. Script saved successfully. Upgrade to Scholar Pass for more renders."
           : "Script generated successfully.",
       });
     }

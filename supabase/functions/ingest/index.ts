@@ -4,16 +4,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
 import { authenticateRequest } from "../_shared/auth.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-// Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
-// Defaults to "*" so existing deployments keep working.
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") ?? "*";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 const MAX_BYTES = 25 * 1024 * 1024; // Groq Whisper free tier limit: 25MB
 
@@ -89,6 +81,8 @@ async function transcribeWithGroq(file: Blob, filename: string, apiKey: string):
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const auth = await authenticateRequest(req, corsHeaders);

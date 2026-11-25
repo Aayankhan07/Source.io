@@ -11,3 +11,7 @@ verify_jwt = false
 
 [functions.chat]
 verify_jwt = false
+
+# Authenticated by HMAC signature (LEMONSQUEEZY_WEBHOOK_SECRET), not by a user JWT.
+[functions.billing-webhook]
+verify_jwt = false

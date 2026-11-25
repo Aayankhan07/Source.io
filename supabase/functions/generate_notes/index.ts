@@ -4,23 +4,12 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { acquireJobLock, completeJob } from "../_shared/jobLock.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
-import { consumeDailyQuota, enforceDailyQuota } from "../_shared/quotas.ts";
+import { enforceDailyQuota } from "../_shared/quotas.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
+import { resolveGroqKey } from "../_shared/byok.ts";
 import { authenticateRequest } from "../_shared/auth.ts";
 import { buildNotesSystemPrompt, UserRole, WorkspacePreferences } from "../_shared/promptCompiler.ts";
 
-// Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
-// Defaults to "*" so existing deployments keep working.
-function getCorsHeaders(req: Request) {
-  const origin = req.headers.get("Origin") ?? "*";
-  const allowed = Deno.env.get("ALLOWED_ORIGIN");
-  const allowOrigin = allowed ? (allowed === "*" || allowed === origin ? origin : allowed) : "*";
-  return {
-    "Access-Control-Allow-Origin": allowOrigin,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers":
-      "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-  };
-}
 
 const SYSTEM_PROMPT = `You are the note-taking engine of "Source.io", a learning platform. You turn any learning material (lecture transcripts, YouTube transcripts, slides, PDFs, textbook pages, or a student's rough notes) into clear, well-organized study notes that a student can learn from, revise from, and use to pass an exam.
 
@@ -145,7 +134,7 @@ Use emoji only in the section headings and callout labels defined above. Never e
 - Start directly with the "#" title line.`;
 
 Deno.serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -181,7 +170,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const groqApiKey = body.api_key?.trim() || Deno.env.get("GROQ_API_KEY");
+    const { apiKey: groqApiKey, isByok } = resolveGroqKey(body.api_key, Deno.env.get("GROQ_API_KEY"));
     if (!groqApiKey) {
       return new Response(JSON.stringify({ error: "GROQ_API_KEY not configured. Please add your API key in Settings." }), {
         status: 500,
@@ -252,7 +241,6 @@ Deno.serve(async (req) => {
   }
 
   // Atomic Quota Concurrency Guardrail (TOCTOU protection)
-  const isByok = !!(body.api_key?.trim() || req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
   const quotaResponse = await enforceDailyQuota(admin, userId, corsHeaders, { isByok });
   if (quotaResponse) return quotaResponse;
 
@@ -481,6 +469,7 @@ Deno.serve(async (req) => {
 
     await completeJob(admin, lock.jobId, false, errorDetail);
 
+    const isRateLimit = status === 429 || errorDetail.includes("TPM") || errorDetail.includes("rate limit");
     await logAiUsage(admin, {
       userId,
       documentId,
@@ -494,7 +483,6 @@ Deno.serve(async (req) => {
       errorMessage: errorDetail,
     });
 
-    const isRateLimit = status === 429 || errorDetail.includes("TPM") || errorDetail.includes("rate limit");
     return new Response(
       JSON.stringify({
         error: isRateLimit

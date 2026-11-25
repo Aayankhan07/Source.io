@@ -1,5 +1,5 @@
 // Supabase Edge Functions shared request & authentication helpers.
-import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
+import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 export interface RequestAuth {
   userId: string;

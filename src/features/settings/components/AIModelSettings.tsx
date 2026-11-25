@@ -40,7 +40,7 @@ export default function AIModelSettings() {
       const { data } = await supabase
         .from("profiles")
         .select("tier, daily_quota_limit, daily_tts_quota_limit")
-        .or(`id.eq.${user!.id},user_id.eq.${user!.id}`)
+        .eq("user_id", user!.id)
         .maybeSingle();
       return data;
     },

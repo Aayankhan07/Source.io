@@ -1,21 +1,12 @@
 // RAG streaming chat for a document. Embeds the question, retrieves top-k chunks,
 // streams Gemini response, persists messages, and returns citations as a leading SSE event.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { checkDailyQuota, consumeDailyQuota, enforceDailyQuota } from "../_shared/quotas.ts";
+import { enforceDailyQuota } from "../_shared/quotas.ts";
 import { logAiUsage, captureProviderUsage } from "../_shared/telemetry.ts";
 import { checkCircuitBreaker } from "../_shared/circuitBreakers.ts";
 import { authenticateRequest } from "../_shared/auth.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-// Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
-// Defaults to "*" so existing deployments keep working.
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") ?? "*";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 const CHAT_MODEL = "openai/gpt-oss-20b";
 const TOP_K = 6;
@@ -108,6 +99,7 @@ ${passages}`;
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const auth = await authenticateRequest(req, corsHeaders, {
@@ -117,7 +109,7 @@ Deno.serve(async (req) => {
     },
   });
   if (auth.errorResponse) return auth.errorResponse;
-  const { admin, userClient, userId } = auth;
+  const { admin, userClient, userId, apiKey: GROQ_API_KEY } = auth;
 
   // Emergency circuit breaker check
   const breaker = await checkCircuitBreaker(admin, "ai_requests_enabled");
@@ -152,7 +144,7 @@ Deno.serve(async (req) => {
   }
 
   // Cost guardrail: atomic daily quota check (25/day, UTC midnight reset)
-  const isByok = !!(req.headers.get("x-byok-groq") || req.headers.get("x-byok-gemini"));
+  const isByok = false; // always the platform key; client headers are never trusted
   const quotaResponse = await enforceDailyQuota(admin, userId, corsHeaders, {
     isByok,
     errorMessage: "Daily free Copilot question limit reached (25/day). Your quota will reset at midnight UTC.",
