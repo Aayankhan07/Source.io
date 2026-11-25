@@ -22,6 +22,9 @@ SELECT throws_like(
 );
 
 RESET ROLE;
+-- Clear the user's JWT claims too, otherwise auth.role() still reports 'authenticated' and the
+-- billing-column trigger (correctly) blocks the tier change.
+SELECT set_config('request.jwt.claims', '{}', true);
 UPDATE public.profiles SET tier = 'pro' WHERE user_id = '00000000-0000-0000-0000-0000000000c1';
 DELETE FROM public.documents WHERE user_id = '00000000-0000-0000-0000-0000000000c1';
 SET LOCAL ROLE authenticated;
