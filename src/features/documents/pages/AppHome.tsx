@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Folder, Home, Plus, Settings } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import UploadDialog from "@/features/documents/components/UploadDialog";
 import { useTheme } from "@/hooks/use-theme";
@@ -8,7 +9,19 @@ import { cn } from "@/lib/utils";
 import { AppShellProvider } from "@/features/documents/context/AppShellContext";
 import { TactileLeftDock } from "@/features/dashboard/components/TactileLeftDock";
 import { GlobalCommandPalette } from "@/features/dashboard/components/GlobalCommandPalette";
-import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+
+const MOBILE_NAV_ITEMS = [
+  { id: "dashboard", label: "Dashboard", icon: Home },
+  { id: "library", label: "Library", icon: Folder },
+  { id: "settings", label: "Settings", icon: Settings },
+] as const;
 
 export default function AppHome({ children }: { children: React.ReactNode }) {
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -29,6 +42,15 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
     : isDocWorkspace
     ? "library"
     : activeView;
+
+  // Onboarding ends at the first upload: /app?upload=1 opens the upload dialog once, then cleans the URL.
+  useEffect(() => {
+    if (pathname !== "/app") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("upload") !== "1") return;
+    setUploadOpen(true);
+    router.replace("/app");
+  }, [pathname, router]);
 
   const handleDockSelectTab = (tab: string) => {
     if (tab === "settings") {
@@ -85,6 +107,51 @@ export default function AppHome({ children }: { children: React.ReactNode }) {
         </main>
 
         <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
+
+        {/* Mobile navigation drawer (opened from the workspace Menu button) */}
+        <Drawer open={mobileNavOpen} onOpenChange={setMobileNavOpen} shouldScaleBackground={false}>
+          <DrawerContent className={cn("luminous-app md:hidden", theme === "dark" && "dark")}>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Navigate</DrawerTitle>
+              <DrawerDescription className="sr-only">Go to another part of your workspace</DrawerDescription>
+            </DrawerHeader>
+            <nav aria-label="Workspace" className="flex flex-col gap-1 px-4 pb-6">
+              {MOBILE_NAV_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentDockTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setMobileNavOpen(false);
+                      handleDockSelectTab(item.id);
+                    }}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors cursor-pointer",
+                      isActive ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
+                    )}
+                  >
+                    <Icon className="size-5" aria-hidden="true" />
+                    {item.label}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileNavOpen(false);
+                  setUploadOpen(true);
+                }}
+                className="mt-2 flex items-center gap-3 rounded-2xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+              >
+                <Plus className="size-5" aria-hidden="true" />
+                Add a document
+              </button>
+            </nav>
+          </DrawerContent>
+        </Drawer>
         <GlobalCommandPalette />
       </div>
     </AppShellProvider>

@@ -1,13 +1,19 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Bell, Settings, LogOut, CheckCircle2, BookOpen, Clock, Sparkles } from "lucide-react";
+import { Search, Bell, Settings, LogOut, CheckCircle2, AlertTriangle, CalendarClock } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
 import { cn } from "@/lib/utils";
+import { useDocumentsList } from "../hooks/useDocumentsList";
+import { relativeTime, startOfLocalDay } from "../lib/activity";
+import { useDueCards } from "@/features/learning/useDueCards";
+import { dueReviewHref } from "@/features/learning/dueSummary";
+
+const NOTIF_SEEN_KEY = "source_io_notifications_seen_at_v1";
 
 interface TactileTopBarProps {
   activePill?: string;
@@ -56,32 +62,70 @@ export function TactileTopBar({
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Scholar";
   const userEmail = user?.email || "scholar@source.io";
 
-  const notifications = [
-    {
-      id: "n-1",
-      title: "15 Flashcards Due",
-      desc: "Quantum Computing • Leitner Box 2 decay threshold",
-      time: "10m ago",
-      icon: BookOpen,
-      unread: true,
-    },
-    {
-      id: "n-2",
-      title: "Acoustic Diarization Complete",
-      desc: "Distributed Systems (MIT 6.824) processed with 98% certainty",
-      time: "1h ago",
-      icon: CheckCircle2,
-      unread: true,
-    },
-    {
-      id: "n-3",
-      title: "Study Streak Milestone",
-      desc: "You've studied 5 days in a row! Rank #1 among friends.",
-      time: "3h ago",
-      icon: Clock,
-      unread: false,
-    },
-  ];
+  // Real notifications: documents that finished processing or failed in the last 7 days.
+  const { data: documents = [] } = useDocumentsList();
+  const [lastSeenAt, setLastSeenAt] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    try {
+      return Number(localStorage.getItem(NOTIF_SEEN_KEY) ?? 0) || 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  // Items newer than this stay highlighted while the panel is open.
+  const [highlightSince, setHighlightSince] = useState<number>(0);
+
+  const notifications = useMemo(() => {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return documents
+      .filter((d) => (d.status === "ready" || d.status === "failed") && new Date(d.updated_at).getTime() >= cutoff)
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .slice(0, 5)
+      .map((d) => ({
+        id: d.id,
+        title: d.status === "ready" ? "Source ready" : "Processing failed",
+        desc: d.title,
+        time: relativeTime(d.updated_at),
+        icon: d.status === "ready" ? CheckCircle2 : AlertTriangle,
+        failed: d.status === "failed",
+        updatedAt: new Date(d.updated_at).getTime(),
+      }));
+  }, [documents]);
+
+  // Due-review reminder: one entry while any card is due today. Unread until the panel is opened today.
+  const { summary: due } = useDueCards(!!user);
+  const dueTop = due.documents[0];
+  const dueEntry =
+    due.totalDue > 0 && dueTop
+      ? {
+          title: `${due.totalDue} card${due.totalDue === 1 ? "" : "s"} due today`,
+          desc:
+            due.documents.length === 1
+              ? (documents.find((d) => d.id === dueTop.documentId)?.title ?? "Review your flashcards")
+              : `Across ${due.documents.length} sources. Start with the one with the most due.`,
+          href: dueReviewHref(dueTop.documentId),
+        }
+      : null;
+  const startOfToday = startOfLocalDay(new Date()).getTime();
+  const dueUnread = dueEntry !== null && lastSeenAt < startOfToday;
+
+  const unreadCount = notifications.filter((n) => n.updatedAt > lastSeenAt).length + (dueUnread ? 1 : 0);
+
+  const toggleNotifications = () => {
+    if (!notificationsOpen) {
+      // Opening marks everything as seen; keep the previous mark for in-panel highlighting.
+      const now = Date.now();
+      setHighlightSince(lastSeenAt);
+      setLastSeenAt(now);
+      try {
+        localStorage.setItem(NOTIF_SEEN_KEY, String(now));
+      } catch {
+        // storage unavailable; unread state just resets next visit
+      }
+    }
+    setNotificationsOpen(!notificationsOpen);
+  };
 
   const handleSignOut = async () => {
     try {
@@ -152,15 +196,18 @@ export function TactileTopBar({
         {/* Notifications Button with Popover */}
         <div className="relative" ref={notifRef}>
           <button
-            onClick={() => setNotificationsOpen((prev) => !prev)}
-            title="Notifications & Study Reminders"
+            onClick={toggleNotifications}
+            title="Notifications"
+            aria-label={unreadCount > 0 ? `Notifications (${unreadCount} new)` : "Notifications"}
             className={cn(
               "size-10 rounded-[18px] bg-card/90 backdrop-blur-md border border-border flex items-center justify-center shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer relative",
               notificationsOpen ? "text-foreground border-border" : "text-muted-foreground"
             )}
           >
             <Bell className="size-4.5 stroke-[2]" />
-            <span className="absolute top-2 right-2 size-2 rounded-full bg-cyan-500 border border-card" />
+            {unreadCount > 0 && (
+              <span className="absolute top-2 right-2 size-2 rounded-full bg-cyan-500 border border-card" />
+            )}
           </button>
 
           {/* Interactive Notifications Popover */}
@@ -175,44 +222,76 @@ export function TactileTopBar({
               >
                 <div className="flex items-center justify-between pb-3 mb-2 border-b border-border">
                   <h4 className="text-sm font-bold font-display text-foreground">Notifications</h4>
-                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-semibold">
-                    2 new
-                  </span>
+                  {unreadCount > 0 && (
+                    <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-semibold">
+                      {unreadCount} new
+                    </span>
+                  )}
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  {notifications.map((n) => {
-                    const Icon = n.icon;
-                    return (
-                      <div
-                        key={n.id}
-                        className={cn(
-                          "p-2.5 rounded-[18px] flex items-start gap-2.5 transition-colors cursor-pointer",
-                          n.unread
-                            ? "bg-muted"
-                            : "hover:bg-accent"
-                        )}
-                      >
-                        <div className="size-8 rounded-[12px] bg-primary text-primary-foreground flex items-center justify-center shrink-0 mt-0.5">
-                          <Icon className="size-3.5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-xs font-bold text-foreground truncate">
-                              {n.title}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground font-mono shrink-0">
-                              {n.time}
-                            </span>
+                {dueEntry && (
+                  <Link
+                    href={dueEntry.href}
+                    onClick={() => setNotificationsOpen(false)}
+                    className={cn(
+                      "p-2.5 mb-2 rounded-[18px] flex items-start gap-2.5 transition-colors",
+                      highlightSince < startOfToday ? "bg-muted" : "hover:bg-accent"
+                    )}
+                  >
+                    <div className="size-8 rounded-[12px] flex items-center justify-center shrink-0 mt-0.5 bg-primary text-primary-foreground">
+                      <CalendarClock className="size-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-bold text-foreground truncate block">{dueEntry.title}</span>
+                      <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{dueEntry.desc}</p>
+                    </div>
+                  </Link>
+                )}
+
+                {notifications.length === 0 && dueEntry ? null : notifications.length === 0 ? (
+                  <div className="py-6 flex flex-col items-center text-center gap-1.5">
+                    <CheckCircle2 className="size-5 text-muted-foreground" />
+                    <span className="text-xs font-bold text-foreground">You&apos;re all caught up</span>
+                    <span className="text-xs text-muted-foreground">
+                      We&apos;ll let you know here when a source finishes processing.
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {notifications.map((n) => {
+                      const Icon = n.icon;
+                      return (
+                        <Link
+                          key={n.id}
+                          href={`/app/doc/${n.id}`}
+                          onClick={() => setNotificationsOpen(false)}
+                          className={cn(
+                            "p-2.5 rounded-[18px] flex items-start gap-2.5 transition-colors",
+                            n.updatedAt > highlightSince ? "bg-muted" : "hover:bg-accent"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "size-8 rounded-[12px] flex items-center justify-center shrink-0 mt-0.5",
+                              n.failed
+                                ? "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
+                                : "bg-primary text-primary-foreground"
+                            )}
+                          >
+                            <Icon className="size-3.5" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
-                            {n.desc}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-xs font-bold text-foreground truncate">{n.title}</span>
+                              <span className="text-xs text-muted-foreground font-mono shrink-0">{n.time}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{n.desc}</p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -255,7 +334,7 @@ export function TactileTopBar({
                     <span className="text-xs font-bold text-foreground block truncate">
                       {userDisplayName}
                     </span>
-                    <span className="text-[10px] text-muted-foreground block truncate font-mono">
+                    <span className="text-xs text-muted-foreground block truncate font-mono">
                       {userEmail}
                     </span>
                   </div>

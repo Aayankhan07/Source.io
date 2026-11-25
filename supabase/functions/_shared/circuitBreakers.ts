@@ -1,4 +1,4 @@
-import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 /**
  * Checks an emergency circuit breaker before executing costly operations.
@@ -19,7 +19,7 @@ export async function checkCircuitBreaker(
       if (key === "podcasts_enabled") {
         return {
           allowed: false,
-          message: "Podcast generation is temporarily limited on the free student plan. Your saved notes are safe.",
+          message: "Podcast generation is temporarily paused. Your saved notes are safe.",
         };
       }
       if (key === "uploads_enabled") {

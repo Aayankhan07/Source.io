@@ -1,35 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import { Check, ArrowRight, Key, Clock } from "lucide-react";
+import { Check, ArrowRight, Key } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
 export function PricingComparisonSection() {
   const shouldReduceMotion = useReducedMotion();
-  const [timeUntilReset, setTimeUntilReset] = useState<string>("");
-
-  useEffect(() => {
-    function updateCountdown() {
-      const now = new Date();
-      const nextUtcMidnight = new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate() + 1,
-        0, 0, 0, 0
-      ));
-      const diffMs = nextUtcMidnight.getTime() - now.getTime();
-      const hours = Math.floor(diffMs / (1000 * 60 * 60));
-      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-      setTimeUntilReset(
-        `${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`
-      );
-    }
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <motion.section
@@ -42,14 +19,14 @@ export function PricingComparisonSection() {
     >
       {/* Section Header */}
       <div className="text-center max-w-4xl mx-auto space-y-3 mb-10">
-        <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-[11px] font-mono uppercase tracking-wider text-slate-900 border border-slate-300 shadow-2xs mb-1">
+        <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-mono uppercase tracking-wider text-slate-900 border border-slate-300 shadow-2xs mb-1">
           Transparent Pricing
         </span>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-slate-950 text-balance">
           A real free tier. No deceptive trial traps.
         </h2>
         <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto text-balance">
-          Every account receives 25 daily AI actions that reset every night at 00:00 UTC. Bring your own API key anytime for unlimited local usage.
+          Every account receives 25 AI actions per day, reset at 00:00 UTC. Add your own API key any time and generations on your key have no daily cap.
         </p>
       </div>
 
@@ -75,10 +52,10 @@ export function PricingComparisonSection() {
 
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-500">
+              <span className="text-xs font-mono uppercase font-bold tracking-wider text-slate-500">
                 FREE FOREVER
               </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-900 group-hover:scale-105 transition-transform">
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-900 group-hover:scale-105 transition-transform">
                 Daily Refill
               </span>
             </div>
@@ -97,11 +74,11 @@ export function PricingComparisonSection() {
             <ul className="space-y-3 text-xs sm:text-[13px] text-slate-700 border-t border-slate-100 pt-6">
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span>25 AI study generations every single day</span>
+                <span>25 AI actions per day</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span>3 concurrent active document slots</span>
+                <span>3 documents, up to 25 pages each</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
@@ -113,7 +90,7 @@ export function PricingComparisonSection() {
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span>Zero data retention: documents never train models</span>
+                <span>Your documents are never sold or used to train our models</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
@@ -158,17 +135,17 @@ export function PricingComparisonSection() {
           />
 
           {/* Top Floating Badge */}
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-black text-white text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap z-30 group-hover:scale-105 transition-transform">
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-black text-white text-xs font-mono font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap z-30 group-hover:scale-105 transition-transform">
             BUILT FOR SCHOLARS, RESEARCHERS & EDUCATORS
           </div>
 
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4 mt-1">
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-900">
+              <span className="text-xs font-mono uppercase font-bold tracking-wider text-slate-900">
                 SCHOLAR PASS
               </span>
-              <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-900 bg-slate-900 text-white group-hover:scale-105 transition-transform">
-                Unlimited
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-900 bg-slate-900 text-white group-hover:scale-105 transition-transform">
+                8x the daily limit
               </span>
             </div>
 
@@ -189,15 +166,15 @@ export function PricingComparisonSection() {
             <ul className="space-y-3 text-xs sm:text-[13px] text-slate-700 border-t border-slate-100 pt-6">
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span className="font-semibold text-slate-900">Unlimited AI generations with priority queue</span>
+                <span className="font-semibold text-slate-900">200 AI actions per day</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span className="font-semibold text-slate-900">Unlimited Level-5 IMRaD critiques, printable teacher exam rubrics, and per-document rigor overrides</span>
+                <span className="font-semibold text-slate-900">All role presets, including research critique and teacher exam modes</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span>Unlimited active document storage slots</span>
+                <span>100 documents, up to 50 pages each</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
@@ -205,11 +182,11 @@ export function PricingComparisonSection() {
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span>Full-book ingestion (up to 300 pages per file)</span>
+                <span>50 audio recaps per day and 100 MB uploads</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
-                <span>Custom Leitner interval memory curves</span>
+                <span>Every page of each document used for notes, cards and quizzes</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="size-4 text-slate-900 shrink-0 mt-0.5" />
@@ -247,7 +224,7 @@ export function PricingComparisonSection() {
               <p className="text-xs sm:text-sm font-bold text-slate-900 font-display">
                 Developer &amp; Hacker Friendly: Bring Your Own API Key (BYOK)
               </p>
-              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
+              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
                 Have your own Groq or Gemini API key? Plug it in under Settings and bypass all daily rate limits for free forever.
               </p>
             </div>

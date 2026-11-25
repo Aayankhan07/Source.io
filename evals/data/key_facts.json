@@ -1,0 +1,142 @@
+{
+  "cardiovascular-physiology": [
+    "The heart has four chambers, and the left ventricle wall is about three times thicker than the right.",
+    "The sinoatrial (SA) node is the heart's natural pacemaker, firing 60 to 100 times per minute at rest.",
+    "Stroke volume equals end-diastolic volume minus end-systolic volume, about 70 mL per beat.",
+    "Cardiac output equals heart rate times stroke volume, about 5 liters per minute at rest.",
+    "Hypertension is called a silent killer because it usually causes no symptoms while damaging organs."
+  ],
+  "cell-respiration": [
+    "Glycolysis takes place in the cytoplasm and yields a net 2 ATP, 2 NADH, and 2 pyruvate per glucose without requiring oxygen.",
+    "The citric acid cycle turns twice per glucose, and each turn produces 3 NADH, 1 FADH2, 1 ATP (or GTP), and 2 CO2.",
+    "Most ATP is made by ATP synthase, driven by a proton gradient that the electron transport chain builds across the inner mitochondrial membrane.",
+    "Oxygen is the final electron acceptor of the electron transport chain and is reduced to water at Complex IV.",
+    "Fermentation makes no extra ATP beyond glycolysis; it only regenerates NAD+ so glycolysis can continue without oxygen."
+  ],
+  "chemical-equilibrium": [
+    "Chemical equilibrium is dynamic: the forward and reverse reaction rates are equal, so concentrations stay constant.",
+    "The equilibrium constant K depends only on temperature.",
+    "If Q is less than K the reaction proceeds forward, and if Q is greater than K it proceeds in reverse.",
+    "Le Chatelier's principle states that an equilibrium shifts in the direction that partially counteracts a change in conditions.",
+    "A catalyst speeds up reaching equilibrium but does not change the position of equilibrium or the value of K."
+  ],
+  "contract-formation": [
+    "A binding contract traditionally requires offer, acceptance, consideration, intention to create legal relations, capacity, and certainty of terms.",
+    "An invitation to treat, such as goods displayed in a shop, is not an offer but an invitation to receive offers.",
+    "Under the mirror image rule, an acceptance must match the offer exactly, and a response changing the terms is a counter-offer.",
+    "Consideration must be sufficient but need not be adequate, and past consideration is not good consideration.",
+    "A contract may be void or voidable because of misrepresentation, mistake, duress, undue influence, or illegality."
+  ],
+  "ecology-course-reader": [
+    "The carrying capacity, symbolized K, is the maximum population size that a particular environment can sustain over the long term.",
+    "Gause's competitive exclusion principle holds that two species competing for exactly the same limiting resources cannot coexist indefinitely in the same place.",
+    "Roughly 10 percent of the energy at one trophic level is passed to the next, according to the ten percent rule.",
+    "Energy flows through ecosystems in one direction, whereas chemical elements cycle repeatedly between organisms and the nonliving environment.",
+    "Habitat loss is considered the single greatest threat to biodiversity worldwide."
+  ],
+  "ethical-theories": [
+    "Consequentialism holds that the rightness of an action depends only on its consequences.",
+    "Classical utilitarianism, associated with Bentham and Mill, says the right action produces the greatest happiness for the greatest number.",
+    "Kant's categorical imperative includes the Formula of Universal Law and the Formula of Humanity, which forbids treating people merely as a means.",
+    "Aristotle's virtue ethics centres on eudaimonia and describes many virtues as a mean between two vices.",
+    "Contractualism grounds morality in agreement, as in Rawls's veil of ignorance and Scanlon's principles that no one could reasonably reject."
+  ],
+  "frankenstein-analysis": [
+    "Frankenstein was first published anonymously in London on 1 January 1818 in three volumes.",
+    "The novel originated in a ghost-story contest proposed by Lord Byron at the Villa Diodati in 1816.",
+    "The novel uses a nested frame narrative of Robert Walton, Victor Frankenstein, and the creature.",
+    "The subtitle The Modern Prometheus refers to the Titan who stole fire from the gods and was punished.",
+    "The creature is never given a name in the novel."
+  ],
+  "hash-tables": [
+    "A hash table uses a hash function to map keys to bucket indices, giving average O(1) insertion, lookup, and deletion.",
+    "Collisions occur when different keys map to the same bucket and are resolved by separate chaining or open addressing.",
+    "The load factor is the ratio of stored entries to buckets, and Java's HashMap uses a default maximum load factor of 0.75.",
+    "Doubling the table size on each resize makes insertion take amortized O(1) time.",
+    "In the worst case, when many keys collide, hash table operations degrade to O(n)."
+  ],
+  "human-nutrition": [
+    "Carbohydrate and protein provide about 4 kcal per gram, while fat provides about 9 kcal per gram.",
+    "The RDA for protein for healthy adults is 0.8 grams per kilogram of body weight per day.",
+    "The fat-soluble vitamins are A, D, E and K, while vitamin C and the B vitamins are water-soluble.",
+    "Most digestion and absorption occur in the small intestine, whose villi and microvilli greatly increase its absorptive surface area.",
+    "Dietary fibre is plant carbohydrate that human enzymes cannot digest, and adults are commonly advised to eat about 25 to 30 grams per day."
+  ],
+  "hypothesis-testing": [
+    "The null hypothesis is the default claim of no effect and always contains an equality.",
+    "The p-value is the probability, assuming the null hypothesis is true, of obtaining a test statistic at least as extreme as the one observed.",
+    "If the p-value is less than or equal to the significance level alpha, the null hypothesis is rejected.",
+    "The probability of a Type I error equals alpha, and power equals 1 minus beta, the probability of a Type II error.",
+    "The t-distribution was published in 1908 by William Sealy Gosset under the pen name Student."
+  ],
+  "industrial-revolution": [
+    "The Industrial Revolution began in Great Britain in roughly the 1760s and shifted production from hand work to machines and factories.",
+    "Cotton textiles were the leading sector, transformed by inventions such as the spinning jenny, water frame, spinning mule, and power loom.",
+    "James Watt patented the separate condenser in 1769, making steam engines far more fuel-efficient than Newcomen's design.",
+    "The Liverpool and Manchester Railway, opened in 1830, was the first intercity line operated entirely by steam locomotives.",
+    "Rapid urbanization brought poor housing, epidemics, and harsh factory labor, prompting reforms such as the Factory Act of 1833."
+  ],
+  "linear-algebra-basics": [
+    "The product AB is defined only when the number of columns of A equals the number of rows of B.",
+    "Matrix multiplication is not commutative, so in general AB does not equal BA.",
+    "The determinant of a 2 x 2 matrix with rows (a, b) and (c, d) is ad - bc.",
+    "A square matrix is invertible if and only if its determinant is nonzero.",
+    "An eigenvector v of A satisfies Av = λv, and eigenvalues are found by solving det(A - λI) = 0."
+  ],
+  "memory-and-learning": [
+    "Memory involves three processes: encoding, storage, and retrieval.",
+    "Short-term memory has limited capacity, about seven plus or minus two items per Miller or about four per Cowan.",
+    "Patient H.M. lost the ability to form new declarative memories after removal of most of his hippocampus but could still learn motor skills.",
+    "Ebbinghaus's forgetting curve shows rapid forgetting at first that then levels off.",
+    "Retrieval practice and spaced practice were rated as high-utility study techniques."
+  ],
+  "music-theory-fundamentals": [
+    "Two notes an octave apart differ in frequency by a factor of two, and twelve half steps make up one octave.",
+    "The major scale follows the pattern of whole and half steps W-W-H-W-W-W-H.",
+    "A triad is built by stacking two thirds above a root and comes in major, minor, diminished, and augmented qualities.",
+    "In a time signature, the top number gives the beats per measure and the bottom number gives the note value that receives one beat.",
+    "The authentic cadence, moving from V to I, is the strongest and most conclusive ending in tonal music."
+  ],
+  "newtonian-mechanics": [
+    "Newton's first law states that an object keeps its state of rest or uniform straight-line motion unless a net external force acts on it.",
+    "Newton's second law states that net force equals mass times acceleration (F = ma), with force measured in newtons.",
+    "Newton's third law says forces come in equal and opposite pairs that act on different objects.",
+    "The coefficient of kinetic friction is usually smaller than the coefficient of static friction.",
+    "Impulse equals change in momentum, and total momentum is conserved when no net external force acts on a system."
+  ],
+  "plate-tectonics": [
+    "Tectonic plates are pieces of rigid lithosphere that move over the weak asthenosphere at about 2 to 10 cm per year.",
+    "Plate boundaries are divergent, convergent, or transform.",
+    "Seafloor spreading, proposed by Harry Hess, creates new oceanic crust at mid-ocean ridges and is recorded by symmetric magnetic stripes.",
+    "Slab pull is generally considered the strongest force driving plate motion.",
+    "Alfred Wegener proposed continental drift and the supercontinent Pangaea in 1912, but it was rejected for lack of a mechanism."
+  ],
+  "separation-of-powers": [
+    "Montesquieu argued in The Spirit of the Laws (1748) that liberty disappears when lawmaking, executing, and judging powers are united in the same body.",
+    "The legislature makes laws, the executive carries them out, and the judiciary interprets and applies them to cases.",
+    "Checks and balances give each branch some ability to limit the others, through tools such as vetoes, impeachment, budget control, and confirmation of appointments.",
+    "Judicial review is the power of courts to declare laws and government actions invalid if they conflict with the constitution.",
+    "Federalism divides power vertically between a national government and regional governments, both of which derive authority from the constitution."
+  ],
+  "stellar-evolution": [
+    "Stars form inside cold, dense giant molecular clouds composed mostly of molecular hydrogen.",
+    "Objects below about 0.08 solar masses never fuse hydrogen and become brown dwarfs.",
+    "More massive stars fuse hydrogen faster and therefore live much shorter lives; the Sun's main-sequence lifetime is about 10 billion years.",
+    "Stars from about 0.08 to 8 solar masses end as white dwarfs, which are supported by electron degeneracy pressure up to the Chandrasekhar limit of about 1.4 solar masses.",
+    "Stars above about 8 solar masses explode as core-collapse supernovae and leave behind neutron stars or black holes."
+  ],
+  "supply-demand-elasticity": [
+    "The law of demand states that as the price of a good rises, the quantity demanded falls, other things equal.",
+    "Equilibrium occurs at the price where quantity demanded equals quantity supplied.",
+    "A change in a good's own price causes a movement along the curve, while changes in other determinants shift the curve.",
+    "When demand is inelastic, raising the price increases total revenue; when demand is elastic, it reduces total revenue.",
+    "A binding price ceiling below equilibrium causes a shortage, and a binding price floor above equilibrium causes a surplus."
+  ],
+  "tcp-ip-networking": [
+    "The TCP/IP model has four layers: link, internet, transport and application.",
+    "An IPv4 address is 32 bits long while an IPv6 address is 128 bits long.",
+    "TCP establishes a connection with a three-way handshake of SYN, SYN-ACK and ACK.",
+    "TCP flow control uses the receiver's advertised window, while congestion control uses a congestion window with slow start and AIMD.",
+    "DNS translates domain names into IP addresses through a hierarchy of root, top-level domain and authoritative name servers, with caching governed by TTL values."
+  ]
+}

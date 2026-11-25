@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Bot,
   Headphones,
@@ -11,7 +12,6 @@ import {
   Settings as SettingsIcon,
   CreditCard,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import AIModelSettings from "../components/AIModelSettings";
 import AudioSettings from "../components/AudioSettings";
 import AppearanceSettings from "../components/AppearanceSettings";
@@ -21,9 +21,40 @@ import PlanBillingSettings from "../components/PlanBillingSettings";
 
 type SettingsTab = "customization" | "billing" | "models" | "audio" | "appearance" | "data";
 
+const SETTINGS_TABS: readonly SettingsTab[] = ["customization", "billing", "models", "audio", "appearance", "data"];
+
+function isSettingsTab(value: string | null | undefined): value is SettingsTab {
+  return !!value && (SETTINGS_TABS as readonly string[]).includes(value);
+}
+
+const PANEL_CLASS = "mt-0 focus-visible:ring-offset-4 rounded-3xl";
+
+/** Settings, one tab per area. The active tab is in the URL (?tab=billing) so it can be deep-linked. */
 export default function SettingsPage() {
+  // useSearchParams needs a Suspense boundary for the route to prerender.
+  return (
+    <Suspense fallback={null}>
+      <SettingsPageContent />
+    </Suspense>
+  );
+}
+
+function SettingsPageContent() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<SettingsTab>("customization");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const requested = searchParams?.get("tab");
+  const activeTab: SettingsTab = isSettingsTab(requested) ? requested : "customization";
+
+  const setActiveTab = useCallback(
+    (value: string) => {
+      if (!isSettingsTab(value)) return;
+      const next = new URLSearchParams(searchParams?.toString());
+      next.set("tab", value);
+      window.history.replaceState(null, "", `${pathname}?${next.toString()}`);
+    },
+    [pathname, searchParams],
+  );
 
   const tabs: { id: SettingsTab; label: string; icon: typeof Bot; desc: string }[] = [
     { id: "customization", label: "Customization", icon: SettingsIcon, desc: "Academic roles & visible tabs" },
@@ -41,7 +72,7 @@ export default function SettingsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="p-1 rounded-lg bg-muted text-muted-foreground">
-              <SettingsIcon className="size-4" />
+              <SettingsIcon className="size-4" aria-hidden="true" />
             </span>
             <span className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
               Preferences
@@ -56,49 +87,46 @@ export default function SettingsPage() {
         </div>
 
         <button
+          type="button"
           onClick={() => router.push("/app")}
           className="self-start sm:self-auto h-9 px-4 rounded-full bg-muted hover:bg-accent text-xs font-semibold text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
         >
-          <ArrowLeft className="size-3.5" />
+          <ArrowLeft className="size-3.5" aria-hidden="true" />
           <span>Back to Dashboard</span>
         </button>
       </div>
 
-      {/* Floating Capsule Tab Pill Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 sm:mb-8 scrollbar-none select-none">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList
+          aria-label="Settings sections"
+          className="h-auto w-full justify-start bg-transparent p-0 pb-2 mb-6 sm:mb-8 gap-2 overflow-x-auto scrollbar-none select-none"
+        >
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <TabsTrigger
+                key={tab.id}
+                value={tab.id}
+                className="h-10 px-4 sm:px-5 rounded-full text-xs font-semibold transition-all gap-2 cursor-pointer whitespace-nowrap shadow-2xs bg-card text-muted-foreground border border-border hover:bg-muted hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-tactile-pill data-[state=active]:hover:bg-primary"
+              >
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
+                <span>{tab.label}</span>
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
 
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "h-10 px-4 sm:px-5 rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap shadow-2xs",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-tactile-pill scale-[1.02]"
-                  : "bg-card text-muted-foreground border border-border hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Icon className="size-4 shrink-0" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Active Tab Settings Panels */}
-      <div className="w-full pb-16">
-        {activeTab === "customization" && <CustomizationSettings />}
-        {activeTab === "billing" && (
-          <PlanBillingSettings onSwitchToModelsTab={() => setActiveTab("models")} />
-        )}
-        {activeTab === "models" && <AIModelSettings />}
-        {activeTab === "audio" && <AudioSettings />}
-        {activeTab === "appearance" && <AppearanceSettings />}
-        {activeTab === "data" && <DataStorageSettings />}
-      </div>
+        <div className="w-full pb-16">
+          <TabsContent value="customization" className={PANEL_CLASS}><CustomizationSettings /></TabsContent>
+          <TabsContent value="billing" className={PANEL_CLASS}>
+            <PlanBillingSettings onSwitchToModelsTab={() => setActiveTab("models")} />
+          </TabsContent>
+          <TabsContent value="models" className={PANEL_CLASS}><AIModelSettings /></TabsContent>
+          <TabsContent value="audio" className={PANEL_CLASS}><AudioSettings /></TabsContent>
+          <TabsContent value="appearance" className={PANEL_CLASS}><AppearanceSettings /></TabsContent>
+          <TabsContent value="data" className={PANEL_CLASS}><DataStorageSettings /></TabsContent>
+        </div>
+      </Tabs>
     </div>
   );
 }

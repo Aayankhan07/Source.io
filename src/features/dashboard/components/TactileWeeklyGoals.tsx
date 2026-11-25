@@ -1,221 +1,125 @@
 "use client";
 
-import React, { useState } from "react";
-import { ChevronDown, CheckCircle2, Clock, BookOpen, Layers, Check, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
-import { useToast } from "@/hooks/use-toast";
+import React, { useMemo, useState } from "react";
+import { BookOpen, FileText, Layers, CheckCircle2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { accountKeys } from "@/lib/queryKeys";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { startOfLocalDay, startOfWeek } from "../lib/activity";
 
-interface GoalTarget {
-  id: string;
-  title: string;
-  metric: string;
-  current: number;
-  target: number;
-  unit: string;
-  color: string;
-  icon: React.ElementType;
+type Period = "Week" | "Month";
+
+interface ProgressCounts {
+  sources: number;
+  notes: number;
+  flashcards: number;
+  quizzes: number;
 }
 
-interface GoalTask {
-  id: string;
-  title: string;
-  category: "Flashcards" | "Quiz" | "Notes" | "Podcast";
-  completed: boolean;
+function periodStart(period: Period, now: Date): Date {
+  if (period === "Week") return startOfWeek(now);
+  const d = startOfLocalDay(now);
+  d.setDate(1);
+  return d;
 }
 
+/**
+ * Real activity for the current week/month, counted from the user's own rows.
+ * No targets or percentages are shown until users can set their own goals.
+ */
 export function TactileWeeklyGoals() {
-  const { toast } = useToast();
-  const [filter, setFilter] = useState<"Day" | "Week" | "Month">("Week");
-  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const [period, setPeriod] = useState<Period>("Week");
+  const sinceIso = useMemo(() => periodStart(period, new Date()).toISOString(), [period]);
 
-  // Targets by timeframe
-  const targetsByFilter: Record<string, GoalTarget[]> = {
-    Day: [
-      { id: "t-1", title: "Daily Focus", metric: "Study Time", current: 2.5, target: 3.0, unit: "h", color: "bg-cyan-500", icon: Clock },
-      { id: "t-2", title: "Card Reviews", metric: "Flashcards", current: 18, target: 20, unit: " cards", color: "bg-indigo-500", icon: Layers },
-      { id: "t-3", title: "Day Retention", metric: "Recall", current: 85, target: 90, unit: "%", color: "bg-emerald-500", icon: Sparkles },
-    ],
-    Week: [
-      { id: "t-1", title: "Target Hours", metric: "Hours Studied", current: 9.5, target: 12.0, unit: "h", color: "bg-cyan-500", icon: Clock },
-      { id: "t-2", title: "Sources Covered", metric: "Synthesized", current: 4, target: 5, unit: " docs", color: "bg-indigo-500", icon: BookOpen },
-      { id: "t-3", title: "Target Retention", metric: "Comprehension", current: 88, target: 90, unit: "%", color: "bg-emerald-500", icon: Sparkles },
-    ],
-    Month: [
-      { id: "t-1", title: "Monthly Hours", metric: "Total Hours", current: 38, target: 45, unit: "h", color: "bg-cyan-500", icon: Clock },
-      { id: "t-2", title: "Curriculum Sets", metric: "Mastered", current: 14, target: 18, unit: " docs", color: "bg-indigo-500", icon: BookOpen },
-      { id: "t-3", title: "Overall Retention", metric: "Long-term Recall", current: 89, target: 92, unit: "%", color: "bg-emerald-500", icon: Sparkles },
-    ],
-  };
+  const { data, isLoading, isError } = useQuery({
+    queryKey: accountKeys.weeklyProgress(user?.id, sinceIso),
+    enabled: !!user?.id,
+    staleTime: 30_000,
+    queryFn: async (): Promise<ProgressCounts> => {
+      const head = { count: "exact", head: true } as const;
+      const [docs, notes, cards, attempts] = await Promise.all([
+        supabase.from("documents").select("id", head).gte("created_at", sinceIso),
+        supabase.from("notes").select("id", head).gte("created_at", sinceIso),
+        supabase.from("flashcards").select("id", head).gte("created_at", sinceIso),
+        supabase.from("quiz_attempts").select("id", head).gte("created_at", sinceIso),
+      ]);
+      const firstError = docs.error ?? notes.error ?? cards.error ?? attempts.error;
+      if (firstError) throw firstError;
+      return {
+        sources: docs.count ?? 0,
+        notes: notes.count ?? 0,
+        flashcards: cards.count ?? 0,
+        quizzes: attempts.count ?? 0,
+      };
+    },
+  });
 
-  const [tasks, setTasks] = useState<GoalTask[]>([
-    { id: "g-1", title: "Review 15 Spaced Repetition cards", category: "Flashcards", completed: false },
-    { id: "g-2", title: "Complete Chapter 2 Distributed quiz", category: "Quiz", completed: false },
-    { id: "g-3", title: "Listen to Socratic audio walkthrough", category: "Podcast", completed: true },
-  ]);
+  const rows: { id: keyof ProgressCounts; label: string; icon: React.ElementType }[] = [
+    { id: "sources", label: "Sources added", icon: BookOpen },
+    { id: "notes", label: "Notes generated", icon: FileText },
+    { id: "flashcards", label: "Flashcards generated", icon: Layers },
+    { id: "quizzes", label: "Quizzes taken", icon: CheckCircle2 },
+  ];
 
-  const activeTargets = targetsByFilter[filter] || targetsByFilter.Week;
-
-  const handleToggleTask = (taskId: string) => {
-    setTasks((prev) =>
-      prev.map((t) => {
-        if (t.id === taskId) {
-          const nextCompleted = !t.completed;
-          if (nextCompleted) {
-            toast({
-              title: "Goal Milestone Met! 🎉",
-              description: `Completed "${t.title}". Great active study work!`,
-            });
-          }
-          return { ...t, completed: nextCompleted };
-        }
-        return t;
-      })
-    );
-  };
+  const total = data ? data.sources + data.notes + data.flashcards + data.quizzes : 0;
+  const periodLabel = period === "Week" ? "this week" : "this month";
 
   return (
-    <div className="bg-card rounded-[32px] p-5 sm:p-6 border border-border shadow-tactile-card flex flex-col justify-between select-none relative h-full">
-      {/* Top Header & Dropdown */}
+    <div className="bg-card rounded-[32px] p-5 sm:p-6 border border-border shadow-tactile-card flex flex-col select-none relative h-full">
       <div className="flex items-center justify-between gap-3 mb-4">
         <div>
           <h2 className="text-base sm:text-lg font-bold font-display text-foreground tracking-tight">
-            Weekly Goals Progress
+            {period === "Week" ? "This Week" : "This Month"}
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Track study hours, document coverage, and retention
-          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">What you created and studied {periodLabel}.</p>
         </div>
 
-        {/* Filter Dropdown */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setFilterMenuOpen((prev) => !prev)}
-            className="h-8 px-3 rounded-full bg-muted hover:bg-accent text-xs font-semibold text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <span>{filter}</span>
-            <ChevronDown className="size-3 text-muted-foreground" />
-          </button>
-
-          <AnimatePresence>
-            {filterMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                className="absolute right-0 top-10 w-28 bg-popover rounded-xl shadow-lg border border-border p-1 z-30 flex flex-col gap-0.5"
-              >
-                {(["Day", "Week", "Month"] as const).map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => {
-                      setFilter(opt);
-                      setFilterMenuOpen(false);
-                    }}
-                    className={cn(
-                      "w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
-                      filter === opt
-                        ? "bg-primary text-primary-foreground font-semibold"
-                        : "text-foreground hover:bg-muted"
-                    )}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+        <div className="flex items-center p-0.5 rounded-full bg-muted" role="tablist" aria-label="Period">
+          {(["Week", "Month"] as const).map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              role="tab"
+              aria-selected={period === opt}
+              onClick={() => setPeriod(opt)}
+              className={cn(
+                "h-7 px-3 rounded-full text-xs font-semibold transition-colors cursor-pointer",
+                period === opt ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {opt}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Target Progress Rows */}
-      <div className="space-y-3.5 mb-4">
-        {activeTargets.map((target) => {
-          const Icon = target.icon;
-          const percent = Math.min(100, Math.round((target.current / target.target) * 100));
-
+      <ul className="divide-y divide-border rounded-[20px] border border-border overflow-hidden bg-muted/20">
+        {rows.map((row) => {
+          const Icon = row.icon;
           return (
-            <div key={target.id} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1.5 font-medium text-foreground">
-                  <Icon className="size-3.5 text-muted-foreground" />
-                  <span>{target.title}</span>
-                </span>
-                <span className="font-mono text-muted-foreground font-semibold">
-                  {target.current} / {target.target}{target.unit} ({percent}%)
-                </span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${percent}%` }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className={cn("h-full rounded-full", target.color)}
-                />
-              </div>
-            </div>
+            <li key={row.id} className="flex items-center justify-between p-3 text-xs">
+              <span className="flex items-center gap-2 font-medium text-foreground">
+                <Icon className="size-3.5 text-muted-foreground" />
+                {row.label}
+              </span>
+              <span className="font-mono font-bold text-foreground">
+                {isLoading ? "–" : isError ? "?" : (data?.[row.id] ?? 0)}
+              </span>
+            </li>
           );
         })}
-      </div>
+      </ul>
 
-      {/* Actionable Goals Checklist */}
-      <div className="pt-3 border-t border-border space-y-2">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-bold block mb-1">
-          Active Study Targets
-        </span>
-        {tasks.map((task) => (
-          <button
-            key={task.id}
-            type="button"
-            onClick={() => handleToggleTask(task.id)}
-            className={cn(
-              "w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between text-xs cursor-pointer",
-              task.completed
-                ? "bg-surface-sunken border-emerald-500/30 text-muted-foreground line-through"
-                : "bg-surface-elevated border-border text-foreground hover:border-border/80"
-            )}
-          >
-            <div className="flex items-center gap-2.5 min-w-0 pr-2">
-              <div
-                className={cn(
-                  "size-4 rounded-md border flex items-center justify-center transition-colors shrink-0",
-                  task.completed
-                    ? "bg-emerald-600 border-emerald-600 text-white"
-                    : "border-input bg-card"
-                )}
-              >
-                {task.completed && <Check className="size-3 stroke-[3]" />}
-              </div>
-              <span className="truncate font-medium">{task.title}</span>
-            </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
-              {task.category}
-            </span>
-          </button>
-        ))}
-
-        {tasks.every((t) => t.completed) && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-3 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 flex items-center gap-3 mt-2 shadow-2xs"
-          >
-            <div className="size-9 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-base shrink-0 border border-emerald-500/30">
-              🏆
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-bold text-emerald-800 dark:text-emerald-200">
-                Targets Mastered!
-              </div>
-              <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80 leading-tight mt-0.5">
-                All study milestones reached. Memory retention probability peaked at 92%.
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </div>
+      <p className="text-xs text-muted-foreground mt-3">
+        {isError
+          ? "Could not load your activity. Try refreshing."
+          : !isLoading && total === 0
+            ? `Nothing yet ${periodLabel}. Open a source and generate notes, cards, or a quiz to get started.`
+            : "Counts update as you study."}
+      </p>
     </div>
   );
 }

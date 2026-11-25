@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -25,14 +25,19 @@ import {
 import { useDropzone } from "react-dropzone";
 import { triggerIngest, embedChunks } from "@/lib/services/pipeline";
 import { extractFileText } from "@/lib/services/extract";
+import { track } from "@/lib/analytics/track";
 import { errorMessage } from "@/lib/utils";
-import { queryKeys } from "@/lib/queryKeys";
+import { accountKeys, queryKeys } from "@/lib/queryKeys";
+import { CHARS_PER_PAGE, PLANS, maxCharsFor, planForTier } from "@/lib/plans";
+import { useStoredApiKeys } from "@/features/settings/hooks/useStoredApiKeys";
 
-const MAX_FILE_BYTES = 50 * 1024 * 1024; // 50MB
+export type UploadTab = "file" | "youtube" | "text";
 const AUDIO_EXTS = ["mp3", "wav", "m4a", "ogg", "flac", "webm"];
 const VIDEO_EXTS = ["mp4", "mov", "mkv"];
 
 async function computeSha256(text: string): Promise<string> {
+  // Intentional: strip NUL bytes left over from PDF/DOCX text extraction so the hash is stable.
+  // eslint-disable-next-line no-control-regex
   const buf = new TextEncoder().encode(text.replace(/\u0000/g, "").trim());
   const hash = await crypto.subtle.digest("SHA-256", buf);
   return Array.from(new Uint8Array(hash))
@@ -40,30 +45,75 @@ async function computeSha256(text: string): Promise<string> {
     .join("");
 }
 
-export default function UploadDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+/** Returns an error message when the extracted text is longer than the plan allows, otherwise null. */
+function pageLimitError(text: string, maxChars: number): string | null {
+  if (text.length <= maxChars) return null;
+  const pages = Math.ceil(text.length / CHARS_PER_PAGE);
+  const allowed = Math.floor(maxChars / CHARS_PER_PAGE);
+  return `This document is about ${pages} pages; your plan allows up to ${allowed} pages per document.`;
+}
+
+export default function UploadDialog({
+  open,
+  onOpenChange,
+  initialTab = "file",
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  /** Tab shown when the dialog opens (onboarding opens it on the drop/paste step). */
+  initialTab?: UploadTab;
+}) {
   const { user } = useAuth();
+  const storedKeys = useStoredApiKeys();
   const { toast } = useToast();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
 
-  // Active documents slot query (3-document limit)
+  const [tab, setTab] = useState<UploadTab>(initialTab);
+  useEffect(() => {
+    if (open) setTab(initialTab);
+  }, [open, initialTab]);
+
+  // Plan comes from profiles.tier (same cache key as the dashboard's useUserPlan).
+  const { data: tier } = useQuery({
+    queryKey: accountKeys.profileTier(user?.id),
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("tier")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data?.tier ?? null;
+    },
+    staleTime: 60_000,
+  });
+  const plan = planForTier(tier);
+  const hasOwnGroqKey = storedKeys.hasKey("groq");
+  // A user's own Groq key lifts the per-document page cap to the BYOK plan's (never lowers it).
+  const maxChars = Math.max(maxCharsFor(plan.id), hasOwnGroqKey ? maxCharsFor(PLANS.byok.id) : 0);
+  const maxFileBytes = plan.uploadMb * 1024 * 1024;
+  const docLimit = plan.documents;
+
+  // Every document the user owns counts toward the plan's document limit.
   const { data: activeDocCount = 0 } = useQuery({
-    queryKey: ["active_saved_documents_count", user?.id],
+    queryKey: accountKeys.documentCount(user?.id),
     enabled: !!user?.id && open,
     queryFn: async () => {
       const { count, error } = await supabase
         .from("documents")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", user!.id)
-        .in("status", ["ready", "processing", "pending"]);
+        .eq("user_id", user!.id);
       if (error) return 0;
       return count ?? 0;
     },
   });
 
-  const isSlotLimitReached = activeDocCount >= 3;
-  const slotsAvailable = Math.max(0, 3 - activeDocCount);
+  const isSlotLimitReached = activeDocCount >= docLimit;
+  const slotsAvailable = Math.max(0, docLimit - activeDocCount);
+  const slotLimitMessage = `You have reached your plan's limit of ${docLimit} documents. Delete a document to add another one.`;
 
   // Text mode
   const [textTitle, setTextTitle] = useState("");
@@ -83,11 +133,12 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
     setTextTitle(""); setTextContent(""); setYtUrl(""); setFile(null);
   };
 
-  const handleDocumentCreated = (docId: string, toastTitle: string, toastDescription: string) => {
+  const handleDocumentCreated = (docId: string, sourceType: string, toastTitle: string, toastDescription: string) => {
+    track("document_uploaded", { source_type: sourceType });
     toast({ title: toastTitle, description: toastDescription });
     queryClient.invalidateQueries({ queryKey: queryKeys.documents });
     if (user?.id) {
-      queryClient.invalidateQueries({ queryKey: ["active_saved_documents_count", user.id] });
+      queryClient.invalidateQueries({ queryKey: accountKeys.documentCount(user.id) });
     }
     reset();
     onOpenChange(false);
@@ -96,10 +147,15 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
 
   const createTextDoc = async () => {
     if (!user || !textContent.trim()) return;
+    const tooLong = pageLimitError(textContent, maxChars);
+    if (tooLong) {
+      toast({ title: "Document too long", description: tooLong, variant: "destructive" });
+      return;
+    }
     if (isSlotLimitReached) {
       toast({
         title: "Slot limit reached",
-        description: "You have reached the free limit of 3 saved documents. Delete a document to add another one.",
+        description: slotLimitMessage,
         variant: "destructive",
       });
       return;
@@ -140,7 +196,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         .select("id")
         .single();
       if (error) throw error;
-      handleDocumentCreated(data!.id, "Document created", "Saved to your study library.");
+      handleDocumentCreated(data!.id, "text", "Document created", "Saved to your study library.");
     } catch (e: unknown) {
       toast({ title: "Failed", description: errorMessage(e), variant: "destructive" });
     } finally {
@@ -153,7 +209,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
     if (isSlotLimitReached) {
       toast({
         title: "Slot limit reached",
-        description: "You have reached the free limit of 3 saved documents. Delete a document to add another one.",
+        description: slotLimitMessage,
         variant: "destructive",
       });
       return;
@@ -173,7 +229,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         .select("id")
         .single();
       if (error) throw error;
-      handleDocumentCreated(data!.id, "YouTube link queued", "Fetching transcript…");
+      handleDocumentCreated(data!.id, "youtube", "YouTube link queued", "Fetching transcript…");
       triggerIngest(data!.id).catch((e) =>
         toast({ title: "Transcript failed", description: errorMessage(e), variant: "destructive" }),
       );
@@ -189,14 +245,18 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
     if (isSlotLimitReached) {
       toast({
         title: "Slot limit reached",
-        description: "You have reached the free limit of 3 saved documents. Delete a document to add another one.",
+        description: slotLimitMessage,
         variant: "destructive",
       });
       return;
     }
 
-    if (file.size > MAX_FILE_BYTES) {
-      toast({ title: "File too large", description: "This document is too large for the current free limit (50MB max).", variant: "destructive" });
+    if (file.size > maxFileBytes) {
+      toast({
+        title: "File too large",
+        description: `This file is ${(file.size / 1024 / 1024).toFixed(1)} MB; your plan allows uploads up to ${plan.uploadMb} MB.`,
+        variant: "destructive",
+      });
       return;
     }
     setSubmitting(true);
@@ -213,6 +273,11 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         const { text, sourceType } = await extractFileText(file);
         if (!text || text.trim().length < 20) {
           throw new Error("Could not extract readable text from this file.");
+        }
+        const tooLong = pageLimitError(text, maxChars);
+        if (tooLong) {
+          toast({ title: "Document too long", description: tooLong, variant: "destructive" });
+          return;
         }
 
         // Client-side duplicate check
@@ -248,7 +313,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
           .select("id")
           .single();
         if (error) throw error;
-        handleDocumentCreated(data!.id, "Document added", "Generating study notes…");
+        handleDocumentCreated(data!.id, sourceType, "Document added", "Generating study notes…");
         // Background embed chunks for RAG chat without blocking notes
         embedChunks(data!.id).catch((e) =>
           console.warn("Background embed sync:", errorMessage(e)),
@@ -277,7 +342,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         .select("id")
         .single();
       if (error) throw error;
-      handleDocumentCreated(data!.id, "File uploaded", "Transcribing…");
+      handleDocumentCreated(data!.id, sourceType, "File uploaded", "Transcribing…");
       triggerIngest(data!.id).catch((e) =>
         toast({ title: "Ingest failed", description: errorMessage(e), variant: "destructive" }),
       );
@@ -299,9 +364,9 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
               </div>
               <span>Add Study Material</span>
             </div>
-            <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold flex items-center gap-1">
+            <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold flex items-center gap-1">
               <Layers className="size-3" />
-              <span>{activeDocCount} / 3 slots</span>
+              <span>{activeDocCount} / {docLimit} slots</span>
             </span>
           </DialogTitle>
         </DialogHeader>
@@ -311,8 +376,8 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
           <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5">
             <AlertTriangle className="size-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
             <div className="space-y-1">
-              <p className="font-bold">You have reached the free limit of 3 saved documents.</p>
-              <p className="text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+              <p className="font-bold">You have reached your plan&apos;s limit of {docLimit} documents.</p>
+              <p className="text-xs leading-relaxed text-amber-800 dark:text-amber-300">
                 Delete a document to add another one. Deletion and replacement are completely free!
               </p>
             </div>
@@ -320,21 +385,21 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
         ) : (
           <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-100/70 dark:bg-white/[0.04] text-xs">
             <span className="text-slate-600 dark:text-slate-400">
-              Saved documents: <strong className="text-slate-900 dark:text-white">{activeDocCount} of 3 used</strong>
+              Saved documents: <strong className="text-slate-900 dark:text-white">{activeDocCount} of {docLimit} used</strong>
             </span>
-            <span className="font-mono text-sky-700 dark:text-sky-300 font-semibold text-[11px]">
+            <span className="font-mono text-sky-700 dark:text-sky-300 font-semibold text-xs">
               {slotsAvailable} slot{slotsAvailable === 1 ? "" : "s"} available
             </span>
           </div>
         )}
 
-        <Tabs defaultValue="file" className="w-full">
+        <Tabs value={tab} onValueChange={(v) => setTab(v as UploadTab)} className="w-full">
           <TabsList className="grid grid-cols-3 w-full glass-pill p-1 rounded-full border border-border/80">
             <TabsTrigger value="file" className="rounded-full text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground hover:text-foreground">
               <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0 text-foreground" /> <span className="hidden sm:inline">File</span>
             </TabsTrigger>
             <TabsTrigger value="youtube" className="rounded-full text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground hover:text-foreground">
-              <Youtube className="h-3.5 w-3.5 sm:mr-1.5 shrink-0 text-rose-500" /> <span className="hidden sm:inline">YouTube</span>
+              <Youtube className="h-3.5 w-3.5 sm:mr-1.5 shrink-0 text-rose-500" /> <span className="hidden sm:inline">YouTube <span className="font-normal opacity-70">(beta)</span></span>
             </TabsTrigger>
             <TabsTrigger value="text" className="rounded-full text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground hover:text-foreground">
               <FileText className="h-3.5 w-3.5 sm:mr-1.5 shrink-0 text-violet-500" /> <span className="hidden sm:inline">Text</span>
@@ -375,8 +440,8 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
                       ? "Drop the file here"
                       : "Drag files or click to browse"}
                   </p>
-                  <p className="text-[11px] text-muted-foreground max-w-xs mx-auto">
-                    Supports PDF, DOCX, mp3, wav, mp4 or mov (Client extracted, max 50MB)
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+                    Supports PDF, DOCX, mp3, wav, mp4 or mov (up to {plan.uploadMb} MB, {Math.floor(maxChars / CHARS_PER_PAGE)} pages)
                   </p>
                 </div>
               )}
@@ -392,7 +457,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
                   <Loader2 className="h-4 w-4 animate-spin text-white dark:text-zinc-950" /> Ingesting file...
                 </span>
               ) : isSlotLimitReached ? (
-                <span>Limit reached (3 / 3 used)</span>
+                <span>Limit reached ({activeDocCount} / {docLimit} used)</span>
               ) : (
                 <span>Upload Document</span>
               )}
@@ -411,7 +476,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
                 placeholder="https://youtube.com/watch?v=..." 
                 className="bg-muted/40 border-border focus:border-foreground text-foreground placeholder:text-muted-foreground rounded-xl text-xs"
               />
-              <p className="text-[11px] text-muted-foreground leading-normal">
+              <p className="text-xs text-muted-foreground leading-normal">
                 We will automatically fetch the video transcription or dialogue recap to build notes.
               </p>
             </div>
@@ -425,7 +490,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
                   <Loader2 className="h-4 w-4 animate-spin text-white dark:text-zinc-950" /> Queuing link...
                 </span>
               ) : isSlotLimitReached ? (
-                <span>Limit reached (3 / 3 used)</span>
+                <span>Limit reached ({activeDocCount} / {docLimit} used)</span>
               ) : (
                 <span>Add Video</span>
               )}
@@ -469,7 +534,7 @@ export default function UploadDialog({ open, onOpenChange }: { open: boolean; on
                   <Loader2 className="h-4 w-4 animate-spin text-white dark:text-zinc-950" /> Saving notes...
                 </span>
               ) : isSlotLimitReached ? (
-                <span>Limit reached (3 / 3 used)</span>
+                <span>Limit reached ({activeDocCount} / {docLimit} used)</span>
               ) : (
                 <span>Add Text</span>
               )}

@@ -1,5 +1,7 @@
 # Source.io Cost-Optimization & AI Architecture Analysis
 
+> **Status: Historical snapshot (dated 2026-10-05); superseded by [`docs/superpowers/plans/2026-11-26-company-audit-and-roadmap.md`](./superpowers/plans/2026-11-26-company-audit-and-roadmap.md).** Retrieval now uses Supabase's built-in gte-small (384-d halfvec), long documents are generated section by section with Gemini routing, and podcast audio is rendered in the browser (Kokoro), so cost figures here are out of date. For the current system see [architecture.md](./architecture.md).
+
 > **Document Version**: 2.0 (Post-Architectural Audit & Corrections)  
 > **Status**: Verified Production Blueprint  
 > **Target Stack**: Next.js, Supabase, Deno Edge Functions, pgvector, Groq / Google Gemini / OpenAI

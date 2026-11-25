@@ -1,255 +1,144 @@
-// Chunk a document's raw_text and embed via deterministic local hashed n-gram embeddings.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+/// <reference types="https://esm.sh/@supabase/functions-js@2.4.1/src/edge-runtime.d.ts" />
+// Chunk a document's raw_text and embed it with Supabase's built-in gte-small model (384 dims).
+// Rows are upserted by (document_id, order_index), so concurrent or repeated runs are safe.
 import { authenticateRequest } from "../_shared/auth.ts";
+import { acquireJobLock, completeJob, startJobHeartbeat } from "../_shared/jobLock.ts";
+import { logAiUsage } from "../_shared/telemetry.ts";
+import { createLogger } from "../_shared/log.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
+import { chunkText, missingOrderIndexes } from "../_shared/chunking.ts";
+import {
+  EMBED_MODEL,
+  embeddedOrderIndexes,
+  indexDocument,
+  pruneExtraChunks,
+  upsertChunkEmbeddings,
+} from "../_shared/embeddings.ts";
+import { ABSOLUTE_MAX_CHARS, documentTooLongMessage, BYOK_PAGES_PER_DOCUMENT } from "../_shared/planLimits.ts";
 
-// Set the ALLOWED_ORIGIN secret to your site URL to restrict browser access.
-// Defaults to "*" so existing deployments keep working.
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") ?? "*";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
-const EMBED_DIMS = 768;
-const TARGET_CHARS = 1400; // ~350 tokens
-const OVERLAP = 200;
-const BATCH_SIZE = 32;
-
-// FNV-1a 32-bit
-function fnv1a(str: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
-  }
-  return h >>> 0;
-}
-
-function tokenize(text: string): string[] {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter((t) => t.length >= 2 && t.length <= 40);
-}
-
-// Deterministic local embedding: hashed unigrams + bigrams, L2-normalized, 1536d.
-// No external API needed — stable across embed_chunks and chat query embedding.
-export function embedLocal(text: string): number[] {
-  const v = new Float64Array(EMBED_DIMS);
-  const toks = tokenize(text);
-  if (toks.length === 0) return Array.from(v);
-
-  const add = (term: string) => {
-    const h = fnv1a(term);
-    const idx = h % EMBED_DIMS;
-    const sign = (h >>> 31) & 1 ? -1 : 1;
-    v[idx] += sign;
-  };
-
-  for (let i = 0; i < toks.length; i++) {
-    add(toks[i]);
-    if (i + 1 < toks.length) add(toks[i] + "_" + toks[i + 1]);
-  }
-
-  let norm = 0;
-  for (let i = 0; i < EMBED_DIMS; i++) norm += v[i] * v[i];
-  norm = Math.sqrt(norm) || 1;
-  const out = new Array<number>(EMBED_DIMS);
-  for (let i = 0; i < EMBED_DIMS; i++) out[i] = v[i] / norm;
-  return out;
-}
-
-function chunkText(raw: string | null | undefined): string[] {
-  const text = (raw ?? "").replace(/\s+/g, " ").trim();
-  if (!text) return [];
-  const out: string[] = [];
-  let i = 0;
-  while (i < text.length) {
-    const end = Math.min(text.length, i + TARGET_CHARS);
-    out.push(text.slice(i, end).trim());
-    if (end >= text.length) break;
-    i = end - OVERLAP;
-    if (i < 0) i = 0;
-  }
-  return out.filter((c) => c.length > 0);
-}
+// gte-small runs inside the Supabase edge runtime (no external provider call).
+const EMBED_PROVIDER = "local" as const;
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const json = (data: unknown, status = 200) =>
+    new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
+  const log = createLogger("embed_chunks");
+  const startTime = Date.now();
   const auth = await authenticateRequest(req, corsHeaders);
   if (auth.errorResponse) return auth.errorResponse;
   const { admin, userId } = auth;
+  log.userId = userId;
 
   let body: { document_id?: string; batch_index?: number; batch_size?: number };
   try { body = await req.json(); } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Invalid JSON", code: "INVALID_JSON" }, 400);
   }
   const documentId = body.document_id;
-  if (!documentId) {
-    return new Response(JSON.stringify({ error: "document_id required" }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
+  if (!documentId) return json({ error: "document_id required", code: "BAD_REQUEST" }, 400);
 
   const { data: doc } = await admin
     .from("documents")
     .select("id,user_id,raw_text,status")
     .eq("id", documentId)
     .maybeSingle();
-  if (!doc || doc.user_id !== userId) {
-    return new Response(JSON.stringify({ error: "Document not found" }), {
-      status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
+  if (!doc || doc.user_id !== userId) return json({ error: "Document not found", code: "NOT_FOUND" }, 404);
   if (!doc.raw_text || doc.raw_text.trim().length < 40) {
-    return new Response(JSON.stringify({ error: "Document has no text yet" }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Document has no text yet", code: "NO_TEXT" }, 400);
+  }
+  // Hard ceiling for any plan (per-plan caps are enforced by ingest).
+  if (doc.raw_text.length > ABSOLUTE_MAX_CHARS) {
+    return json({
+      error: documentTooLongMessage(doc.raw_text.length, BYOK_PAGES_PER_DOCUMENT),
+      code: "DOCUMENT_TOO_LONG",
+    }, 413);
   }
 
   const allChunks = chunkText(doc.raw_text);
   const totalChunks = allChunks.length;
-  if (totalChunks === 0) {
-    return new Response(JSON.stringify({ ok: true, chunks: 0, completed: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
+  if (totalChunks === 0) return json({ ok: true, chunks: 0, completed: true });
 
-  // --- Progressive Batched Ingestion Branch ---
+  const logUsage = (status: "succeeded" | "failed", errorMessage?: string) =>
+    logAiUsage(admin, {
+      userId, documentId, requestId: log.requestId, feature: "embed", provider: EMBED_PROVIDER,
+      model: EMBED_MODEL, status, durationMs: Date.now() - startTime,
+      inputTokens: status === "succeeded" ? allChunks.reduce((n, c) => n + Math.round(c.length / 4), 0) : 0,
+      errorMessage: errorMessage ?? null,
+    });
+
+  // --- Progressive batched branch (client calls batch 0, 1, 2, ...) ---
   if (body.batch_index !== undefined) {
     const batchIndex = Math.max(0, Math.floor(body.batch_index));
     const batchSize = Math.max(10, Math.min(100, body.batch_size ?? 50));
     const start = batchIndex * batchSize;
     const end = Math.min(totalChunks, start + batchSize);
 
-    // If batch 0, check if already completed
-    if (batchIndex === 0) {
-      const { count: existing } = await admin
-        .from("document_chunks")
-        .select("id", { count: "exact", head: true })
-        .eq("document_id", documentId);
-
-      if ((existing ?? 0) >= totalChunks) {
-        return new Response(JSON.stringify({
-          ok: true,
-          chunks: existing,
-          total_chunks: totalChunks,
-          cached: true,
-          completed: true,
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+    try {
+      const embedded = await embeddedOrderIndexes(admin, documentId);
+      if (batchIndex === 0 && missingOrderIndexes(totalChunks, embedded).length === 0) {
+        await pruneExtraChunks(admin, documentId, totalChunks);
+        return json({ ok: true, chunks: totalChunks, total_chunks: totalChunks, cached: true, completed: true });
+      }
+      if (start >= totalChunks) {
+        await pruneExtraChunks(admin, documentId, totalChunks);
+        return json({ ok: true, batch_index: batchIndex, completed: true, total_chunks: totalChunks });
       }
 
-      // If re-embedding or interrupted partial, clear old chunks
-      if ((existing ?? 0) > 0) {
-        await admin.from("document_chunks").delete().eq("document_id", documentId);
+      // Only the chunks of this range that still lack an embedding (resumable, idempotent).
+      const have = new Set(embedded);
+      const todo = [];
+      for (let i = start; i < end; i++) if (!have.has(i)) todo.push({ order_index: i, chunk_text: allChunks[i] });
+      const inserted = await upsertChunkEmbeddings(admin, { userId, documentId, chunks: todo });
+
+      const completed = end >= totalChunks;
+      if (completed) {
+        await pruneExtraChunks(admin, documentId, totalChunks);
+        await logUsage("succeeded"); // one usage row per fully embedded document
       }
+      return json({ ok: true, batch_index: batchIndex, inserted, total_chunks: totalChunks, completed });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      log.error("batch embed failed", { err: e, documentId, batchIndex });
+      await logUsage("failed", msg);
+      return json({ error: "Failed to index document chunks", code: "EMBED_FAILED", retryable: true }, 500);
     }
-
-    if (start >= totalChunks) {
-      return new Response(JSON.stringify({
-        ok: true,
-        batch_index: batchIndex,
-        completed: true,
-        total_chunks: totalChunks,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const batch = allChunks.slice(start, end);
-    const vectors = batch.map((c: string) => embedLocal(c));
-    const rows = batch.map((chunk_text: string, j: number) => ({
-      user_id: userId,
-      document_id: documentId,
-      chunk_text,
-      order_index: start + j,
-      embedding: `[${vectors[j].join(",")}]`,
-    }));
-
-    const { error: insErr } = await admin.from("document_chunks").insert(rows);
-    if (insErr) throw new Error("insert_failed:" + insErr.message);
-
-    const completed = end >= totalChunks;
-
-    return new Response(JSON.stringify({
-      ok: true,
-      batch_index: batchIndex,
-      inserted: batch.length,
-      total_chunks: totalChunks,
-      completed,
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   }
 
-  // --- Monolithic Ingestion Branch (Backwards Compatibility) ---
-  const { count: existing } = await admin
-    .from("document_chunks")
-    .select("id", { count: "exact", head: true })
-    .eq("document_id", documentId);
-  if ((existing ?? 0) > 0) {
-    return new Response(JSON.stringify({ ok: true, chunks: existing, cached: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  // --- Monolithic branch: whole document under the job lock ---
+  const lock = await acquireJobLock(admin, { userId, documentId, kind: "embed_chunks" });
+  if (!lock.acquired) {
+    return json({
+      error: lock.message,
+      code: lock.unavailable ? "JOB_LOCK_UNAVAILABLE" : "ACTIVE_JOB_RUNNING",
+      retryable: true,
+    }, lock.unavailable ? 503 : 409);
   }
-
-  const { data: job } = await admin
-    .from("jobs")
-    .insert({ user_id: userId, document_id: documentId, kind: "embed_chunks", status: "running", progress: 5 })
-    .select("id")
-    .single();
-  const jobId = job?.id;
+  const jobId = lock.jobId;
+  const stopHeartbeat = startJobHeartbeat(admin, jobId);
 
   try {
-    let inserted = 0;
-    for (let i = 0; i < allChunks.length; i += BATCH_SIZE) {
-      const batch = allChunks.slice(i, i + BATCH_SIZE);
-      const vectors = batch.map((c: string) => embedLocal(c));
-      const rows = batch.map((chunk_text: string, j: number) => ({
-        user_id: userId,
-        document_id: documentId,
-        chunk_text,
-        order_index: i + j,
-        embedding: `[${vectors[j].join(",")}]`,
-      }));
-      const { error: insErr } = await admin.from("document_chunks").insert(rows);
-      if (insErr) throw new Error("insert_failed:" + insErr.message);
-      inserted += rows.length;
-      if (jobId) {
-        await admin.from("jobs").update({
-          progress: Math.min(95, Math.round((inserted / allChunks.length) * 95)),
-        }).eq("id", jobId);
-      }
-    }
-
-    if (jobId) await admin.from("jobs").update({ status: "succeeded", progress: 100 }).eq("id", jobId);
-    return new Response(JSON.stringify({ ok: true, chunks: inserted }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const result = await indexDocument(admin, {
+      userId,
+      documentId,
+      rawText: doc.raw_text,
+      onProgress: async (done, total) => {
+        if (jobId) {
+          await admin.from("jobs").update({ progress: Math.min(95, Math.round((done / total) * 95)) }).eq("id", jobId);
+        }
+      },
     });
+    await completeJob(admin, jobId, true);
+    if (result.written > 0) await logUsage("succeeded");
+    return json({ ok: true, chunks: result.total, cached: result.written === 0 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error("embed_chunks error", msg);
-    if (jobId) await admin.from("jobs").update({ status: "failed", error: msg.slice(0, 200), progress: 100 }).eq("id", jobId);
-    if (msg.includes("429")) {
-      return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (msg.includes("402")) {
-      return new Response(JSON.stringify({ error: "Out of credits" }), {
-        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    log.error("embed_chunks failed", { err: e, documentId });
+    await completeJob(admin, jobId, false, msg.slice(0, 200));
+    await logUsage("failed", msg);
+    return json({ error: "Failed to index document chunks", code: "EMBED_FAILED", retryable: true }, 500);
+  } finally {
+    stopHeartbeat();
   }
 });

@@ -85,7 +85,7 @@ export default function AppearanceSettings() {
                   <span className={cn("text-xs font-bold block pt-1", isSelected ? "text-primary-foreground" : "text-foreground")}>
                     {t.label}
                   </span>
-                  <p className={cn("text-[11px] leading-relaxed", isSelected ? "text-primary-foreground/80" : "text-muted-foreground")}>
+                  <p className={cn("text-xs leading-relaxed", isSelected ? "text-primary-foreground/80" : "text-muted-foreground")}>
                     {t.desc}
                   </p>
                 </div>
@@ -132,7 +132,7 @@ export default function AppearanceSettings() {
                     </span>
                     {isSelected && <Check className="size-3.5 text-primary-foreground stroke-[2.5]" />}
                   </div>
-                  <p className={cn("text-[11px] leading-relaxed", isSelected ? "text-primary-foreground/80" : "text-muted-foreground")}>
+                  <p className={cn("text-xs leading-relaxed", isSelected ? "text-primary-foreground/80" : "text-muted-foreground")}>
                     {preset.desc}
                   </p>
                 </div>

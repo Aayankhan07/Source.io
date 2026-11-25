@@ -1,4 +1,7 @@
 # Source.io — Master Technical Architecture & System Design Document
+
+> **Status: Historical snapshot (dated October 2026, v3.1.0); superseded by [`docs/superpowers/plans/2026-11-26-company-audit-and-roadmap.md`](./superpowers/plans/2026-11-26-company-audit-and-roadmap.md).** It is stale: it describes Zustand, localStorage BYOK keys, 768-d hashed embeddings and server-side Edge TTS, none of which exist any more. For the current system see [architecture.md](./architecture.md).
+
 *Version: 3.1.0 • Academic Production Standard • Last Updated: October 2026*
 
 ---

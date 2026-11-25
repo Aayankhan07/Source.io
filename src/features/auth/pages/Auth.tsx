@@ -9,19 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Loader2, Mail, ArrowLeft, ArrowUpRight, Upload, Headphones, ListChecks, ArrowRight, ShieldCheck } from "lucide-react";
-import { useTheme } from "@/hooks/use-theme";
-import { cn } from "@/lib/utils";
+import { Sparkles, Loader2, Mail, ArrowLeft, ArrowUpRight, Upload, Headphones, ListChecks, ArrowRight } from "lucide-react";
+import { track } from "@/lib/analytics/track";
+import { safeNextPath } from "@/features/auth/lib/safeNextPath";
 
 export default function Auth() {
-  const { user, loading, signInAsGuest } = useAuth();
+  const { user, loading, legacySessionExpired } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryMode = searchParams.get("mode");
-  const redirectTarget = searchParams.get("redirect") || "/app";
+  // proxy.ts sends signed-out visitors here with ?next=<path>; ?redirect= is the legacy name.
+  const redirectTarget = safeNextPath(searchParams.get("next") ?? searchParams.get("redirect"));
+  const callbackFailed = searchParams.get("error") === "callback";
+  // OAuth and email-confirmation links land on the PKCE callback, which sets the session cookie.
+  const callbackUrl = () =>
+    `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTarget)}`;
 
   const { toast } = useToast();
-  const { setTheme } = useTheme();
   const [mode, setMode] = useState<"signin" | "signup">(queryMode === "signup" ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,12 +40,6 @@ export default function Auth() {
   }, [queryMode]);
 
   useEffect(() => {
-    // Default login page to white/light mode
-    setTheme("light");
-    document.documentElement.classList.remove("dark");
-  }, [setTheme]);
-
-  useEffect(() => {
     if (!loading && user) router.replace(redirectTarget);
   }, [user, loading, router, redirectTarget]);
 
@@ -54,12 +52,14 @@ export default function Auth() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/app`,
+            emailRedirectTo: callbackUrl(),
             data: { display_name: displayName || email.split("@")[0] },
           },
         });
         if (error) throw error;
-        
+        // An empty identities array means the email is already registered (Supabase obfuscates it).
+        if (data?.user && (data.user.identities?.length ?? 1) > 0) track("signup_completed", { method: "email" });
+
         if (data?.session) {
           toast({ title: "Account created", description: "You're signed in." });
         } else {
@@ -84,17 +84,9 @@ export default function Auth() {
     }
   };
 
-  const handleGuestDemo = () => {
-    signInAsGuest();
-    toast({
-      title: "Guest Session Active",
-      description: "Welcome to Source.io! Exploring sample documents.",
-    });
-    router.push(redirectTarget);
-  };
 
   return (
-    <main className="luminous-app min-h-screen flex bg-white text-slate-900 relative font-sans antialiased">
+    <main data-theme="light" className="light luminous-app min-h-screen flex bg-white text-slate-900 relative font-sans antialiased">
       {/* Left split pane: Branding / Features (Hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-muted/40 border-r border-border p-12 flex-col justify-between relative z-10">
         {/* Top brand header */}
@@ -103,7 +95,7 @@ export default function Auth() {
             <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
           </div>
           <span className="font-semibold tracking-tight text-base font-display text-foreground">Source.io</span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-card border border-border text-muted-foreground">
+          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-card border border-border text-muted-foreground">
             STUDIO
           </span>
         </Link>
@@ -203,6 +195,13 @@ export default function Auth() {
               </div>
             ) : (
               <>
+                {(legacySessionExpired || callbackFailed) && (
+                  <p role="status" className="mb-4 rounded-xl border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground leading-relaxed">
+                    {callbackFailed
+                      ? "That sign-in link is invalid or has expired. Please sign in again."
+                      : "We updated how sign-in works. Please sign in once more to continue."}
+                  </p>
+                )}
                 <div className="mb-6">
                   <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground font-display">
                     {mode === "signin" ? "Welcome back" : "Create your account"}
@@ -215,20 +214,21 @@ export default function Auth() {
                 {/* Instant Demo Launcher Pill */}
                 <div className="mb-5">
                   <Button
-                    type="button"
-                    onClick={handleGuestDemo}
+                    asChild
                     className="w-full bg-muted/60 hover:bg-muted dark:bg-zinc-800/80 dark:hover:bg-zinc-800 text-foreground border border-border/80 font-semibold py-2.5 rounded-full flex items-center justify-center gap-2 text-xs shadow-2xs transition-all"
                   >
-                    <Sparkles className="h-3.5 w-3.5 text-foreground shrink-0" />
-                    <span>Instant Demo Mode (No sign-up needed)</span>
-                    <ArrowRight className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+                    <Link href="/demo">
+                      <Sparkles className="h-3.5 w-3.5 text-foreground shrink-0" />
+                      <span>See a sample document (no sign-up needed)</span>
+                      <ArrowRight className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+                    </Link>
                   </Button>
                 </div>
 
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2.5 text-[10px] text-muted-foreground font-mono">or email account</span>
+                    <span className="bg-card px-2.5 text-xs text-muted-foreground font-mono">or email account</span>
                   </div>
                 </div>
 
@@ -284,12 +284,19 @@ export default function Auth() {
                       <span>{mode === "signin" ? "Sign in to Workspace" : "Create Account"}</span>
                     )}
                   </Button>
+                  {mode === "signup" && (
+                    <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                      By creating an account you agree to the{" "}
+                      <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">Terms</Link> and{" "}
+                      <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">Privacy Policy</Link>.
+                    </p>
+                  )}
                 </form>
 
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2.5 text-[10px] text-muted-foreground font-mono">or continue with</span>
+                    <span className="bg-card px-2.5 text-xs text-muted-foreground font-mono">or continue with</span>
                   </div>
                 </div>
 
@@ -304,7 +311,7 @@ export default function Auth() {
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: "google",
                         options: {
-                          redirectTo: `${window.location.origin}/app`,
+                          redirectTo: callbackUrl(),
                         },
                       });
                       if (error) throw error;
@@ -328,12 +335,12 @@ export default function Auth() {
                   {mode === "signin" ? (
                     <>
                       Don't have an account?{" "}
-                      <button className="text-sky-600 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signup")}>Sign up free</button>
+                      <button className="text-sky-700 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signup")}>Sign up free</button>
                     </>
                   ) : (
                     <>
                       Already have an account?{" "}
-                      <button className="text-sky-600 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signin")}>Sign in here</button>
+                      <button className="text-sky-700 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signin")}>Sign in here</button>
                     </>
                   )}
                 </div>

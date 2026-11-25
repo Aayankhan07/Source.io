@@ -7,7 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 /** Narrow an unknown thrown value to a displayable message. */
 export function errorMessage(e: unknown): string {
-  return e instanceof Error ? e.message : String(e);
+  const raw =
+    e instanceof Error
+      ? e.message
+      : e && typeof e === "object" && "message" in e && typeof (e as { message: unknown }).message === "string"
+        ? (e as { message: string }).message
+        : String(e);
+  // Database triggers raise "CODE: human message" (e.g. DOCUMENT_TOO_LONG); show only the human part.
+  return raw.replace(/^[A-Z][A-Z0-9_]{3,}:\s+/, "");
 }
 
 /** Calculate unified reading time and word count for study documents. */

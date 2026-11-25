@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { 
   Home, 
   Folder, 
@@ -25,14 +25,13 @@ interface TactileLeftDockProps {
 }
 
 export function TactileLeftDock({ 
-  onNewSource, 
+  onNewSource: _onNewSource,
   activeTab = "dashboard", 
   onSelectTab,
   isExpanded: controlledExpanded,
   onToggleExpand: controlledToggleExpand
 }: TactileLeftDockProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
   // Internal state fallback if not controlled from parent
@@ -149,7 +148,7 @@ export function TactileLeftDock({
             >
               {theme === "dark" ? <Sun className="size-4 shrink-0" /> : <Moon className="size-4 shrink-0" />}
               {isExpanded && (
-                <span className="text-[11px] font-medium text-foreground">
+                <span className="text-xs font-medium text-foreground">
                   {theme === "dark" ? "Light Mode" : "Dark Mode"}
                 </span>
               )}
@@ -167,7 +166,7 @@ export function TactileLeftDock({
               {isExpanded ? (
                 <>
                   <ChevronLeft className="size-4 shrink-0 stroke-[2.2]" />
-                  <span className="text-[11px] font-medium text-foreground">Collapse</span>
+                  <span className="text-xs font-medium text-foreground">Collapse</span>
                 </>
               ) : (
                 <ChevronRight className="size-4 shrink-0 stroke-[2.2]" />

@@ -50,16 +50,16 @@ test.describe("Source.io End-to-End User Journeys", () => {
     const table = page.locator("table");
     await expect(table).toBeVisible();
     await expect(table).toContainText("Learning Capability");
-    await expect(table).toContainText("Page & Line-Level Citations");
+    await expect(table).toContainText("Citations in chat");
 
     // Verify AEO FAQ section exists and renders direct answers
     const faqSection = page.locator("#faq");
     await expect(faqSection).toBeVisible();
     await expect(faqSection.getByRole("heading", { name: /Frequently Asked Questions/i })).toBeVisible();
     await expect(faqSection.getByText(/What is the difference between Source.io and Google NotebookLM\?/i)).toBeVisible();
-    await expect(faqSection.getByText(/coordinate-accurate, line-level citations/i)).toBeVisible();
-    await expect(faqSection.getByText(/Does Source.io render LaTeX and complex math formulas\?/i)).toBeVisible();
-    await expect(faqSection.getByText(/Can I generate Leitner flashcards and quizzes from PDF textbooks\?/i)).toBeVisible();
+    await expect(faqSection.getByText(/one document at a time/i)).toBeVisible();
+    await expect(faqSection.getByText(/Does Source.io render LaTeX and maths formulas\?/i)).toBeVisible();
+    await expect(faqSection.getByText(/Can I make flashcards and quizzes from a PDF textbook chapter\?/i)).toBeVisible();
   });
 
   test("Pricing page (/pricing) displays plans and features", async ({ page }) => {

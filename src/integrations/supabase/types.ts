@@ -194,6 +194,7 @@ export type Database = {
       }
       chat_messages: {
         Row: {
+          citations: Json | null
           content: string
           created_at: string
           document_id: string
@@ -202,6 +203,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          citations?: Json | null
           content: string
           created_at?: string
           document_id: string
@@ -210,6 +212,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          citations?: Json | null
           content?: string
           created_at?: string
           document_id?: string
@@ -345,6 +348,60 @@ export type Database = {
           },
         ]
       }
+      flashcard_reviews: {
+        Row: {
+          box: number
+          created_at: string
+          document_id: string
+          due_at: string
+          flashcard_id: string
+          id: string
+          last_result: string | null
+          review_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          box?: number
+          created_at?: string
+          document_id: string
+          due_at?: string
+          flashcard_id: string
+          id?: string
+          last_result?: string | null
+          review_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          box?: number
+          created_at?: string
+          document_id?: string
+          due_at?: string
+          flashcard_id?: string
+          id?: string
+          last_result?: string | null
+          review_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flashcard_reviews_flashcard_id_fkey"
+            columns: ["flashcard_id"]
+            isOneToOne: false
+            referencedRelation: "flashcards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flashcard_reviews_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           created_at: string
@@ -432,6 +489,7 @@ export type Database = {
       }
       podcasts: {
         Row: {
+          audio_path: string | null
           audio_url: string | null
           created_at: string
           document_id: string
@@ -442,6 +500,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          audio_path?: string | null
           audio_url?: string | null
           created_at?: string
           document_id: string
@@ -452,6 +511,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          audio_path?: string | null
           audio_url?: string | null
           created_at?: string
           document_id?: string
@@ -642,6 +702,169 @@ export type Database = {
           },
         ]
       }
+      billing_events: {
+        Row: {
+          event_id: string
+          event_name: string
+          id: string
+          outcome: string | null
+          payload: Json
+          received_at: string
+          user_id: string | null
+          webhook_id: string | null
+        }
+        Insert: {
+          event_id: string
+          event_name: string
+          id?: string
+          outcome?: string | null
+          payload: Json
+          received_at?: string
+          user_id?: string | null
+          webhook_id?: string | null
+        }
+        Update: {
+          event_id?: string
+          event_name?: string
+          id?: string
+          outcome?: string | null
+          payload?: Json
+          received_at?: string
+          user_id?: string | null
+          webhook_id?: string | null
+        }
+        Relationships: []
+      }
+      note_sections: {
+        Row: {
+          created_at: string
+          document_id: string
+          error: string | null
+          id: string
+          idx: number
+          markdown: string
+          model: string | null
+          status: "pending" | "running" | "done" | "failed"
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          error?: string | null
+          id?: string
+          idx: number
+          markdown?: string
+          model?: string | null
+          status?: "pending" | "running" | "done" | "failed"
+          total: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          error?: string | null
+          id?: string
+          idx?: number
+          markdown?: string
+          model?: string | null
+          status?: "pending" | "running" | "done" | "failed"
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_sections_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          ends_at: string | null
+          id: string
+          plan: string | null
+          provider: string
+          provider_customer_id: string | null
+          provider_subscription_id: string
+          renews_at: string | null
+          status: string
+          synced_at: string
+          trial_ends_at: string | null
+          updated_at: string
+          user_id: string
+          variant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          plan?: string | null
+          provider?: string
+          provider_customer_id?: string | null
+          provider_subscription_id: string
+          renews_at?: string | null
+          status: string
+          synced_at?: string
+          trial_ends_at?: string | null
+          updated_at: string
+          user_id: string
+          variant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          plan?: string | null
+          provider?: string
+          provider_customer_id?: string | null
+          provider_subscription_id?: string
+          renews_at?: string | null
+          status?: string
+          synced_at?: string
+          trial_ends_at?: string | null
+          updated_at?: string
+          user_id?: string
+          variant_id?: string | null
+        }
+        Relationships: []
+      }
+      // Service-role only: clients have no grants on this table (use the
+      // list_my_api_keys RPC). Ciphertext/IV columns are deliberately omitted.
+      user_api_keys: {
+        Row: {
+          created_at: string
+          id: string
+          last4: string
+          provider: "groq" | "gemini" | "openai"
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last4: string
+          provider: "groq" | "gemini" | "openai"
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last4?: string
+          provider?: "groq" | "gemini" | "openai"
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -689,6 +912,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_my_api_keys: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          last4: string
+          provider: string
+          updated_at: string
+        }[]
+      }
       match_document_chunks: {
         Args: {
           _document_id: string
@@ -701,6 +932,30 @@ export type Database = {
           order_index: number
           similarity: number
         }[]
+      }
+      refund_daily_quota: {
+        Args: {
+          p_user_id: string
+          p_cost?: number
+        }
+        Returns: boolean
+      }
+      refund_daily_tts_quota: {
+        Args: {
+          p_user_id: string
+          p_cost?: number
+        }
+        Returns: boolean
+      }
+      replace_document_derivatives: {
+        Args: {
+          p_document_id: string
+          p_user_id: string
+          p_flashcards: Json
+          p_quiz: Json
+          p_questions: Json
+        }
+        Returns: Json
       }
     }
     Enums: {

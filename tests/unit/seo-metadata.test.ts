@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import sitemap from "../../app/sitemap";
+import robots from "../../app/robots";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -28,20 +29,23 @@ describe("SEO & Crawl Assets", () => {
     });
   });
 
-  describe("robots.txt", () => {
+  describe("robots (app/robots.ts)", () => {
     it("configures search bot permissions and sitemap URL correctly", () => {
-      const robotsPath = path.resolve(__dirname, "../../public/robots.txt");
-      const content = fs.readFileSync(robotsPath, "utf-8");
+      const r = robots();
+      const rules = Array.isArray(r.rules) ? r.rules : [r.rules];
+      const byAgent = (ua: string) => rules.find((rule) => rule.userAgent === ua);
+      const asList = (v: string | string[] | undefined) => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
 
-      expect(content).toContain("Sitemap: https://sourceio.app/sitemap.xml");
-      expect(content).toContain("Disallow: /auth");
-      expect(content).toContain("Disallow: /app/settings");
-      expect(content).toContain("User-agent: Googlebot");
-      expect(content).toContain("User-agent: OAI-SearchBot");
-      expect(content).toContain("User-agent: PerplexityBot");
+      expect(r.sitemap).toBe("https://sourceio.app/sitemap.xml");
+      for (const ua of ["Googlebot", "OAI-SearchBot", "PerplexityBot"]) {
+        expect(byAgent(ua), ua).toBeDefined();
+        expect(asList(byAgent(ua)!.disallow)).toContain("/auth");
+      }
+      expect(asList(byAgent("*")!.disallow)).toEqual(expect.arrayContaining(["/auth", "/app/settings", "/api/", "/app"]));
+      expect(asList(byAgent("GPTBot")!.disallow)).toEqual(["/"]);
+      expect(fs.existsSync(path.resolve(__dirname, "../../public/robots.txt"))).toBe(false);
     });
   });
-
   describe("app/layout.tsx AI discovery link", () => {
     it("declares alternate markdown link for /llms.txt in head", () => {
       const layoutPath = path.resolve(__dirname, "../../app/layout.tsx");
@@ -59,8 +63,8 @@ describe("SEO & Crawl Assets", () => {
       // Verify FAQPage Schema presence
       expect(content).toContain('"@type": "FAQPage"');
       expect(content).toContain("What is the difference between Source.io and Google NotebookLM?");
-      expect(content).toContain("Does Source.io render LaTeX and complex math formulas?");
-      expect(content).toContain("Can I generate Leitner flashcards and quizzes from PDF textbooks?");
+      expect(content).toContain("Does Source.io render LaTeX and maths formulas?");
+      expect(content).toContain("Can I make flashcards and quizzes from a PDF textbook chapter?");
 
       // Verify visual FAQ section exists
       expect(content).toContain('id="faq"');

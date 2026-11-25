@@ -1,4 +1,4 @@
-import { UserRole, WorkspacePreferences, ROLE_PRESETS } from "@/types/customization";
+import { UserRole, WorkspacePreferences } from "@/types/customization";
 
 export type NotesDepth = "comprehensive" | "concise" | "feynman";
 export type QuizDifficulty = "easy" | "moderate" | "challenging";
@@ -13,11 +13,6 @@ export interface GeneralSettings {
   flashcardBatchSize: number;
   quizDifficulty: QuizDifficulty;
   preferredModel: PreferredModel;
-  apiKeys: {
-    groq?: string;
-    gemini?: string;
-    openai?: string;
-  };
   podcastVoiceDuo: PodcastVoiceDuo;
   playbackSpeed: number;
   autoGeneratePodcast: boolean;
@@ -49,7 +44,6 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   flashcardBatchSize: 15,
   quizDifficulty: "moderate",
   preferredModel: "llama-3.3-70b",
-  apiKeys: {},
   podcastVoiceDuo: "chen-marcus",
   playbackSpeed: 1.0,
   autoGeneratePodcast: false,
@@ -79,7 +73,12 @@ export interface SettingsContextType {
   // Role & Adaptive Workspace Customization
   userRole: UserRole;
   preferences: WorkspacePreferences;
-  onboardingCompleted: boolean;
+  /** undefined while the auth user or their profile is still loading. */
+  onboardingCompleted: boolean | undefined;
+  /** User id the settings were loaded for: undefined = auth not known yet, null = signed out. */
+  settingsUserId: string | null | undefined;
+  /** Drops in-memory settings (and any legacy locally stored API keys); called on sign-out. */
+  clearForSignOut: () => void;
   setUserRole: (role: UserRole) => Promise<void>;
   updatePreferences: (partial: Partial<WorkspacePreferences>) => Promise<void>;
   completeOnboarding: (role: UserRole, prefs?: Partial<WorkspacePreferences>) => Promise<void>;

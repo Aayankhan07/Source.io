@@ -1,5 +1,7 @@
 # SEO Audit Report: Source.io
 
+> **Status: Historical snapshot (dated 2026-10-15); superseded by [`docs/superpowers/plans/2026-11-26-company-audit-and-roadmap.md`](./superpowers/plans/2026-11-26-company-audit-and-roadmap.md).** Several findings have since shipped (canonicals, noindex, breadcrumbs, sitemap) and the site now has /demo, /use-cases, /alternatives and /changelog pages. For the current system see [architecture.md](./architecture.md).
+
 Comprehensive SEO audit executed using the `seo-audit` framework (`marketingskills/seo-audit`). Audited against technical indexing, on-page factors, title tags, heading hierarchies, content depth, structured data, internal linking, and competitor positioning.
 
 ---

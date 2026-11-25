@@ -31,20 +31,20 @@ export default function PricingPage() {
         "price": "0",
         "priceCurrency": "USD",
         "name": "Free Forever Plan",
-        "description": "25 daily AI actions, all 7 academic role presets, KaTeX math rendering, and unlimited BYOK keys."
+        "description": "25 AI actions per day, 3 documents of up to 25 pages, all study modes and role presets."
       },
       {
         "@type": "Offer",
         "price": "9",
         "priceCurrency": "USD",
         "name": "Scholar Pass",
-        "description": "200 daily AI actions, 50 studio audio podcast renders, priority GPU queuing, and deep monograph synthesis."
+        "description": "200 AI actions per day, 50 audio recaps per day, 100 documents of up to 50 pages."
       }
     ]
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAF9F6] text-slate-950 antialiased selection:bg-slate-900 selection:text-white font-sans relative overflow-x-clip transition-colors duration-200">
+    <div data-theme="light" className="light min-h-[100dvh] bg-[#FAF9F6] text-slate-950 antialiased selection:bg-slate-900 selection:text-white font-sans relative overflow-x-clip transition-colors duration-200">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingSchema) }}

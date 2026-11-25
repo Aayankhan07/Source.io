@@ -3,19 +3,16 @@
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { 
-  Bot, 
-  Key, 
-  Eye, 
-  EyeOff, 
-  Check, 
-  BookOpen, 
-  Layers, 
-  AlertTriangle, 
-  ShieldCheck, 
-  ExternalLink, 
-  HelpCircle, 
-  Loader2, 
+import {
+  Bot,
+  Key,
+  Check,
+  BookOpen,
+  Layers,
+  ShieldCheck,
+  ExternalLink,
+  HelpCircle,
+  Loader2,
   Trash2,
   Sparkles
 } from "lucide-react";
@@ -23,10 +20,32 @@ import { cn } from "@/lib/utils";
 import { useSettings } from "../context/SettingsContext";
 import { NotesDepth, PreferredModel, QuizDifficulty } from "../types";
 import { useToast } from "@/hooks/use-toast";
-import { testProviderApiKey, ByokTestResult } from "@/lib/services/byokTest";
+import {
+  deleteApiKey,
+  saveApiKey,
+  testApiKey,
+  type ApiKeyProvider,
+} from "@/lib/services/apiKeys";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { accountKeys } from "@/lib/queryKeys";
+import { useStoredApiKeys } from "../hooks/useStoredApiKeys";
+import { SCHOLAR_CHECKOUT_BASE, openScholarCheckout } from "../checkout";
+
+const PROVIDER_LABELS: Record<ApiKeyProvider, string> = { groq: "Groq", gemini: "Gemini", openai: "OpenAI" };
+
+const BYOK_PROVIDERS: {
+  id: ApiKeyProvider;
+  label: string;
+  badge: string;
+  placeholder: string;
+  consoleUrl: string;
+}[] = [
+  { id: "gemini", label: "Google Gemini API key", badge: "Free tier", placeholder: "AIza...", consoleUrl: "https://aistudio.google.com/apikey" },
+  { id: "groq", label: "Groq API key", badge: "Free tier", placeholder: "gsk_...", consoleUrl: "https://console.groq.com/keys" },
+  { id: "openai", label: "OpenAI API key", badge: "Paid credit", placeholder: "sk-...", consoleUrl: "https://platform.openai.com/api-keys" },
+];
 
 export default function AIModelSettings() {
   const { user } = useAuth();
@@ -34,13 +53,13 @@ export default function AIModelSettings() {
   const { toast } = useToast();
 
   const { data: userProfile } = useQuery({
-    queryKey: ["user_tier_settings", user?.id],
+    queryKey: accountKeys.profileQuotas(user?.id),
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
         .select("tier, daily_quota_limit, daily_tts_quota_limit")
-        .or(`id.eq.${user!.id},user_id.eq.${user!.id}`)
+        .eq("user_id", user!.id)
         .maybeSingle();
       return data;
     },
@@ -48,72 +67,70 @@ export default function AIModelSettings() {
 
   const isScholarPass = userProfile?.tier === "pro";
 
-  const [showGroq, setShowGroq] = useState(false);
-  const [showGemini, setShowGemini] = useState(false);
-  const [showOpenAI, setShowOpenAI] = useState(false);
+  // Saved keys: provider + last 4 characters only (the server never returns a key).
+  const queryClient = useQueryClient();
+  const savedKeysQuery = useStoredApiKeys();
+  const savedFor = savedKeysQuery.keyFor;
 
-  const [groqKey, setGroqKey] = useState(settings.apiKeys.groq || "");
-  const [geminiKey, setGeminiKey] = useState(settings.apiKeys.gemini || "");
-  const [openaiKey, setOpenaiKey] = useState(settings.apiKeys.openai || "");
-
-  const [testingProvider, setTestingProvider] = useState<string | null>(null);
-  const [testResults, setTestResults] = useState<Record<string, ByokTestResult | null>>({});
+  const [busy, setBusy] = useState<{ provider: ApiKeyProvider; action: "save" | "test" | "delete" } | null>(null);
+  const [testResults, setTestResults] = useState<Partial<Record<ApiKeyProvider, { ok: boolean; message: string }>>>({});
   const [showGuide, setShowGuide] = useState(false);
 
-  const handleTestKey = async (provider: "groq" | "gemini" | "openai", key: string) => {
-    if (!key.trim()) {
-      toast({
-        title: "Key missing",
-        description: "Please enter an API key first before testing connection.",
-        variant: "destructive",
-      });
+  const refreshSavedKeys = () => queryClient.invalidateQueries({ queryKey: accountKeys.apiKeys(user?.id) });
+
+  /** Reads the key straight from the submitted form, so it never lives in component state. */
+  const handleSaveKey = async (provider: ApiKeyProvider, form: HTMLFormElement) => {
+    const input = form.elements.namedItem("apiKey") as HTMLInputElement | null;
+    const key = input?.value.trim() ?? "";
+    if (!key) {
+      toast({ title: "Key missing", description: "Paste an API key first.", variant: "destructive" });
       return;
     }
-
-    setTestingProvider(provider);
+    setBusy({ provider, action: "save" });
     try {
-      const result = await testProviderApiKey(provider, key);
-      setTestResults((prev) => ({ ...prev, [provider]: result }));
+      const saved = await saveApiKey(provider, key);
+      if (input) input.value = "";
+      setTestResults((prev) => ({ ...prev, [provider]: { ok: true, message: `Key ending in ${saved.last4} works and is saved.` } }));
+      toast({ title: "Key saved", description: `Your ${PROVIDER_LABELS[provider]} key was checked and stored encrypted.` });
+      await refreshSavedKeys();
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Could not save the key.";
+      setTestResults((prev) => ({ ...prev, [provider]: { ok: false, message } }));
+      toast({ title: "Key not saved", description: message, variant: "destructive" });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleTestKey = async (provider: ApiKeyProvider) => {
+    setBusy({ provider, action: "test" });
+    try {
+      const res = await testApiKey(provider);
+      setTestResults((prev) => ({ ...prev, [provider]: { ok: true, message: `Key ending in ${res.last4} works.` } }));
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "The key test failed.";
+      setTestResults((prev) => ({ ...prev, [provider]: { ok: false, message } }));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleDeleteKey = async (provider: ApiKeyProvider) => {
+    setBusy({ provider, action: "delete" });
+    try {
+      await deleteApiKey(provider);
+      setTestResults((prev) => ({ ...prev, [provider]: undefined }));
+      toast({ title: "Key deleted", description: `Your ${PROVIDER_LABELS[provider]} key was removed from Source.io.` });
+      await refreshSavedKeys();
+    } catch (e: unknown) {
       toast({
-        title: result.ok ? "Connection Successful" : "Provider Test Failed",
-        description: result.message,
-        variant: result.ok ? "default" : "destructive",
+        title: "Could not delete key",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
       });
     } finally {
-      setTestingProvider(null);
+      setBusy(null);
     }
-  };
-
-  const handleRemoveKey = (provider: "groq" | "gemini" | "openai") => {
-    if (provider === "groq") {
-      setGroqKey("");
-      updateSettings({ apiKeys: { ...settings.apiKeys, groq: undefined } });
-    } else if (provider === "gemini") {
-      setGeminiKey("");
-      updateSettings({ apiKeys: { ...settings.apiKeys, gemini: undefined } });
-    } else if (provider === "openai") {
-      setOpenaiKey("");
-      updateSettings({ apiKeys: { ...settings.apiKeys, openai: undefined } });
-    }
-    setTestResults((prev) => ({ ...prev, [provider]: null }));
-    toast({
-      title: "Key Removed",
-      description: `Your ${provider.toUpperCase()} key was cleared from browser memory.`,
-    });
-  };
-
-  const handleSaveKeys = () => {
-    updateSettings({
-      apiKeys: {
-        groq: groqKey.trim() || undefined,
-        gemini: geminiKey.trim() || undefined,
-        openai: openaiKey.trim() || undefined,
-      },
-    });
-    toast({
-      title: "API Keys Saved",
-      description: "Custom provider keys updated securely in your local browser session.",
-    });
   };
 
   const depthOptions: { value: NotesDepth; label: string; desc: string }[] = [
@@ -173,12 +190,12 @@ export default function AIModelSettings() {
                   <span className={cn("text-xs font-bold block", isSelected ? "text-white dark:text-slate-950" : "text-slate-900 dark:text-white")}>
                     {opt.label}
                   </span>
-                  <p className={cn("text-[11px] leading-relaxed", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
+                  <p className={cn("text-xs leading-relaxed", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
                     {opt.desc}
                   </p>
                 </div>
                 {isSelected && (
-                  <div className="mt-3 flex items-center gap-1 text-[10.5px] font-mono font-bold text-white dark:text-slate-950">
+                  <div className="mt-3 flex items-center gap-1 text-xs font-mono font-bold text-white dark:text-slate-950">
                     <Check className="size-3 stroke-[2.5]" /> Active Default
                   </div>
                 )}
@@ -224,7 +241,7 @@ export default function AIModelSettings() {
                       {m.label}
                     </span>
                     <span className={cn(
-                      "text-[10px] font-mono px-2 py-0.5 rounded-md border shrink-0",
+                      "text-xs font-mono px-2 py-0.5 rounded-md border shrink-0",
                       isSelected
                         ? "bg-white/20 dark:bg-slate-950/10 border-white/20 text-white dark:text-slate-950"
                         : "bg-slate-100 dark:bg-white/10 border-slate-200 dark:border-white/10 text-slate-500"
@@ -232,7 +249,7 @@ export default function AIModelSettings() {
                       {m.provider}
                     </span>
                   </div>
-                  <p className={cn("text-[11px]", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
+                  <p className={cn("text-xs", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
                     {m.desc}
                   </p>
                 </div>
@@ -316,11 +333,11 @@ export default function AIModelSettings() {
                 Scholar Pass ($9/mo)
               </h3>
               {isScholarPass ? (
-                <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
                   Active Pro
                 </span>
               ) : (
-                <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">
                   Free Tier (25 actions/day)
                 </span>
               )}
@@ -338,7 +355,8 @@ export default function AIModelSettings() {
               </span>
             ) : (
               <a
-                href={`https://sourceio.lemonsqueezy.com/buy/scholar-pass?checkout[custom][user_id]=${user?.id || ""}&checkout[email]=${user?.email || ""}`}
+                href={SCHOLAR_CHECKOUT_BASE}
+                onClick={(e) => openScholarCheckout(user, "ai_model_settings", e)}
                 target="_blank"
                 rel="noreferrer"
                 className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 shadow-tactile-pill transition-all cursor-pointer whitespace-nowrap"
@@ -351,7 +369,7 @@ export default function AIModelSettings() {
         </div>
       </div>
 
-      {/* 4. BYOK API Keys & Non-Technical Setup Guide */}
+      {/* 4. Your own API keys: stored encrypted on the server; only the last 4 characters are shown */}
       <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-black/[0.04] dark:border-white/10 shadow-tactile-card p-6 sm:p-7 space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
@@ -360,331 +378,167 @@ export default function AIModelSettings() {
                 <Key className="size-4" />
               </span>
               <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">
-                Use Your Own AI Provider (Optional BYOK)
+                Use Your Own AI Key (Optional)
               </h3>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Supply your own provider keys to bypass daily question limits. Held strictly in your current browser session.
+              With your own key there is no daily action cap and documents can be up to 300 pages. Source.io works fully without one.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowGuide(!showGuide)}
-              className="text-xs font-semibold text-foreground hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <HelpCircle className="size-3.5" />
-              <span>{showGuide ? "Hide Setup Guide" : "View Setup Guide"}</span>
-            </button>
-            <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 font-semibold">
-              Advanced Mode (Self-Managed)
-            </span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowGuide(!showGuide)}
+            className="text-xs font-semibold text-foreground hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <HelpCircle className="size-3.5" />
+            <span>{showGuide ? "Hide details" : "How keys are stored"}</span>
+          </button>
         </div>
 
-        {/* BYOK Warning & Security Notice Banner */}
+        {/* Short guide: free Gemini key */}
         <div className="p-4 rounded-2xl bg-muted/40 border border-border text-xs text-foreground space-y-2 leading-relaxed">
           <div className="flex items-center gap-2 font-bold">
-            <AlertTriangle className="size-4 text-foreground shrink-0" />
-            <span>Important BYOK Billing & Security Precautions</span>
+            <Sparkles className="size-4 shrink-0" />
+            <span>Get a free Gemini key in Google AI Studio (about 2 minutes)</span>
           </div>
-          <p className="text-[11px] text-muted-foreground">
-            • <strong>No Billing Control:</strong> Source.io does not control provider billing, pricing, quotas, or rate limits. Adding billing or paid models to your provider account may incur charges from that provider.
-          </p>
-          <p className="text-[11px] text-muted-foreground">
-            • <strong>Browser Environment Disclosure:</strong> Keys are kept only in your local browser memory for this session and disappear on refresh or logout. However, browser extensions, compromised devices, or scripts can inspect browser memory. Never paste a production or unrestricted key.
-          </p>
-          <p className="text-[11px] text-muted-foreground">
-            • <strong>Revoking Leaked Keys:</strong> If you ever suspect a key was exposed, open your provider dashboard immediately and revoke/delete it.
+          <ol className="list-decimal pl-5 space-y-0.5 text-[12px] text-muted-foreground">
+            <li>
+              Open{" "}
+              <a
+                href="https://aistudio.google.com/apikey"
+                target="_blank"
+                rel="noreferrer"
+                className="text-foreground font-semibold underline inline-flex items-center gap-0.5"
+              >
+                aistudio.google.com/apikey
+                <ExternalLink className="size-3" />
+              </a>{" "}
+              and sign in with your Google account.
+            </li>
+            <li>Click <strong>Create API key</strong> and copy it (it starts with &quot;AIza&quot;).</li>
+            <li>Paste it into the Gemini box below and press <strong>Save</strong>. We check it before saving.</li>
+          </ol>
+          <p className="text-[12px] text-muted-foreground">
+            Google&apos;s free-tier terms apply to your own account, and Google may use free-tier data to improve its products.
           </p>
         </div>
 
-        {/* Non-Technical Setup Guide */}
         {showGuide && (
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-white/5 space-y-3.5 text-xs text-slate-700 dark:text-slate-300">
-            <div className="flex items-center gap-2 font-bold font-display text-slate-900 dark:text-white">
-              <Sparkles className="size-4 text-foreground" />
-              <span>How API Keys Work (Student Plain-Language Guide)</span>
-            </div>
-            
-            <p className="leading-relaxed">
-              An <strong>API key</strong> is a digital access pass for an AI company. When you provide your own key, Source.io sends requests directly using your personal allowance instead of Source.io's shared daily quota.
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-white/5 space-y-2 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+            <p>
+              An <strong>API key</strong> is an access pass for an AI company. When you save one, Source.io sends your requests to that company with your key instead of using Source.io&apos;s shared daily allowance.
             </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1.5 flex flex-col justify-between">
-                <div>
-                  <span className="font-bold text-slate-900 dark:text-white block">1. Groq Cloud</span>
-                  <p className="text-[11px] text-slate-500 leading-normal">
-                    Groq may provide free, rate-limited API access for eligible accounts. Check current terms before use.
-                  </p>
-                </div>
-                <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
-                  <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-foreground font-semibold flex items-center gap-1 hover:underline">
-                    <span>Create key: console.groq.com</span>
-                    <ExternalLink className="size-2.5" />
-                  </a>
-                  <a href="https://groq.com/pricing" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
-                    <span>Groq Pricing</span>
-                    <ExternalLink className="size-2.5" />
-                  </a>
-                  <a href="https://console.groq.com/docs/rate-limits" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
-                    <span>Groq Rate Limits & Quotas</span>
-                    <ExternalLink className="size-2.5" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1.5 flex flex-col justify-between">
-                <div>
-                  <span className="font-bold text-slate-900 dark:text-white block">2. Google AI Studio</span>
-                  <p className="text-[11px] text-slate-500 leading-normal">
-                    Google may offer free rate-limited developer access for Gemini models. Check eligibility.
-                  </p>
-                </div>
-                <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
-                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-foreground font-semibold flex items-center gap-1 hover:underline">
-                    <span>Create key: aistudio.google.com</span>
-                    <ExternalLink className="size-2.5" />
-                  </a>
-                  <a href="https://ai.google.dev/pricing" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
-                    <span>Gemini Pricing & Limits</span>
-                    <ExternalLink className="size-2.5" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1.5 flex flex-col justify-between">
-                <div>
-                  <span className="font-bold text-slate-900 dark:text-white block">3. OpenAI</span>
-                  <p className="text-[11px] text-slate-500 leading-normal">
-                    Requires a paid account with credit. Powers GPT-4o Mini and other OpenAI models.
-                  </p>
-                </div>
-                <div className="space-y-1 pt-1 border-t border-border/50 text-[10.5px]">
-                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-foreground font-semibold flex items-center gap-1 hover:underline">
-                    <span>Create key: platform.openai.com</span>
-                    <ExternalLink className="size-2.5" />
-                  </a>
-                  <a href="https://openai.com/pricing" target="_blank" rel="noreferrer" className="text-slate-500 dark:text-slate-400 flex items-center gap-1 hover:underline">
-                    <span>OpenAI Pricing & Usage</span>
-                    <ExternalLink className="size-2.5" />
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-muted/40 border border-border text-[11px] space-y-1 text-foreground">
-              <span className="font-bold block">Quick 4-Step Instructions:</span>
-              <p>1. Open the provider's official console link above and sign in.</p>
-              <p>2. Create a restricted API key and copy it.</p>
-              <p>3. Paste the key into the matching box below.</p>
-              <p>4. Press <strong>"Test Key"</strong> to verify connectivity with a minimal 5-token check (no document cost).</p>
-            </div>
+            <p>
+              • <strong>How it&apos;s stored:</strong> we check the key with the provider, then encrypt it on our server. It is never kept in your browser, and we only ever show its last 4 characters.
+            </p>
+            <p>
+              • <strong>Billing:</strong> the provider&apos;s own limits and prices apply. Groq and Gemini offer free, rate-limited access; OpenAI needs paid credit.
+            </p>
+            <p>
+              • <strong>Leaked key?</strong> Delete it here and revoke it in the provider&apos;s dashboard.
+            </p>
           </div>
         )}
 
         <div className="space-y-4 pt-1">
-          {/* Groq Key */}
-          <div className="space-y-1.5 p-3.5 rounded-2xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                <span>Groq API Key (gsk_...)</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
-                  Open Models
-                </span>
-              </Label>
-              {groqKey && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveKey("groq")}
-                  className="text-[11px] text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer"
-                >
-                  <Trash2 className="size-3" />
-                  <span>Remove key</span>
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1 flex items-center">
-                <Input
-                  type={showGroq ? "text" : "password"}
-                  placeholder="gsk_..."
-                  value={groqKey}
-                  onChange={(e) => setGroqKey(e.target.value)}
-                  className="pr-10 text-xs font-mono rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 h-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowGroq(!showGroq)}
-                  className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
-                >
-                  {showGroq ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleTestKey("groq", groqKey)}
-                disabled={testingProvider === "groq" || !groqKey.trim()}
-                className="h-10 px-3.5 rounded-[16px] text-xs font-semibold bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          {BYOK_PROVIDERS.map((p) => {
+            const saved = savedFor(p.id);
+            const result = testResults[p.id];
+            const isBusy = busy?.provider === p.id;
+            return (
+              <div
+                key={p.id}
+                className="space-y-1.5 p-3.5 rounded-2xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10"
               >
-                {testingProvider === "groq" ? (
-                  <Loader2 className="size-3.5 animate-spin" />
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor={`byok-${p.id}`} className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <span>{p.label}</span>
+                    <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
+                      {p.badge}
+                    </span>
+                  </Label>
+                  <a
+                    href={p.consoleUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[12px] text-slate-500 dark:text-slate-400 hover:underline flex items-center gap-1"
+                  >
+                    <span>Create key</span>
+                    <ExternalLink className="size-3" />
+                  </a>
+                </div>
+
+                {saved ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="h-10 px-3.5 flex-1 min-w-[10rem] rounded-[16px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs font-mono flex items-center">
+                      Saved key ending in •••• {saved.last4}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleTestKey(p.id)}
+                      disabled={isBusy}
+                      className="h-10 px-3.5 rounded-[16px] text-xs font-semibold bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isBusy && busy?.action === "test" ? <Loader2 className="size-3.5 animate-spin" /> : <ShieldCheck className="size-3.5" />}
+                      <span>Test</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteKey(p.id)}
+                      disabled={isBusy}
+                      className="h-10 px-3.5 rounded-[16px] text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isBusy && busy?.action === "delete" ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+                      <span>Delete</span>
+                    </button>
+                  </div>
                 ) : (
-                  <ShieldCheck className="size-3.5" />
+                  <form
+                    className="flex items-center gap-2"
+                    autoComplete="off"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void handleSaveKey(p.id, e.currentTarget);
+                    }}
+                  >
+                    <Input
+                      id={`byok-${p.id}`}
+                      name="apiKey"
+                      type="password"
+                      autoComplete="off"
+                      spellCheck={false}
+                      placeholder={p.placeholder}
+                      disabled={isBusy}
+                      className="flex-1 text-xs font-mono rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 h-10"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isBusy}
+                      className="h-10 px-4 rounded-[16px] text-xs font-bold bg-slate-950 text-white dark:bg-white dark:text-slate-950 flex items-center gap-1.5 cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isBusy && busy?.action === "save" ? <Loader2 className="size-3.5 animate-spin" /> : <ShieldCheck className="size-3.5" />}
+                      <span>Save</span>
+                    </button>
+                  </form>
                 )}
-                <span>Test Key</span>
-              </button>
-            </div>
 
-            {testResults["groq"] && (
-              <p className={cn(
-                "text-[11px] font-medium pt-1",
-                testResults["groq"].ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
-              )}>
-                {testResults["groq"].message}
-              </p>
-            )}
-          </div>
-
-          {/* Gemini Key */}
-          <div className="space-y-1.5 p-3.5 rounded-2xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                <span>Google Gemini API Key (AIzaSy...)</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border font-semibold">
-                  Free Tier
-                </span>
-              </Label>
-              {geminiKey && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveKey("gemini")}
-                  className="text-[11px] text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer"
-                >
-                  <Trash2 className="size-3" />
-                  <span>Remove key</span>
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1 flex items-center">
-                <Input
-                  type={showGemini ? "text" : "password"}
-                  placeholder="AIzaSy..."
-                  value={geminiKey}
-                  onChange={(e) => setGeminiKey(e.target.value)}
-                  className="pr-10 text-xs font-mono rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 h-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowGemini(!showGemini)}
-                  className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
-                >
-                  {showGemini ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
+                {result && (
+                  <p
+                    role="status"
+                    className={cn(
+                      "text-[12px] font-medium pt-1",
+                      result.ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                    )}
+                  >
+                    {result.message}
+                  </p>
+                )}
               </div>
-
-              <button
-                type="button"
-                onClick={() => handleTestKey("gemini", geminiKey)}
-                disabled={testingProvider === "gemini" || !geminiKey.trim()}
-                className="h-10 px-3.5 rounded-[16px] text-xs font-semibold bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {testingProvider === "gemini" ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                ) : (
-                  <ShieldCheck className="size-3.5" />
-                )}
-                <span>Test Key</span>
-              </button>
-            </div>
-
-            {testResults["gemini"] && (
-              <p className={cn(
-                "text-[11px] font-medium pt-1",
-                testResults["gemini"].ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
-              )}>
-                {testResults["gemini"].message}
-              </p>
-            )}
-          </div>
-
-          {/* OpenAI Key */}
-          <div className="space-y-1.5 p-3.5 rounded-2xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                <span>OpenAI API Key (sk-...)</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold">
-                  Paid Credit
-                </span>
-              </Label>
-              {openaiKey && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveKey("openai")}
-                  className="text-[11px] text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer"
-                >
-                  <Trash2 className="size-3" />
-                  <span>Remove key</span>
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1 flex items-center">
-                <Input
-                  type={showOpenAI ? "text" : "password"}
-                  placeholder="sk-..."
-                  value={openaiKey}
-                  onChange={(e) => setOpenaiKey(e.target.value)}
-                  className="pr-10 text-xs font-mono rounded-[16px] bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 h-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowOpenAI(!showOpenAI)}
-                  className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
-                >
-                  {showOpenAI ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleTestKey("openai", openaiKey)}
-                disabled={testingProvider === "openai" || !openaiKey.trim()}
-                className="h-10 px-3.5 rounded-[16px] text-xs font-semibold bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {testingProvider === "openai" ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                ) : (
-                  <ShieldCheck className="size-3.5" />
-                )}
-                <span>Test Key</span>
-              </button>
-            </div>
-
-            {testResults["openai"] && (
-              <p className={cn(
-                "text-[11px] font-medium pt-1",
-                testResults["openai"].ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
-              )}>
-                {testResults["openai"].message}
-              </p>
-            )}
-          </div>
-
-          <div className="pt-2 flex justify-end">
-            <button
-              onClick={handleSaveKeys}
-              className="h-10 px-5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 font-bold text-xs shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
-            >
-              Save Credentials to Session
-            </button>
-          </div>
+            );
+          })}
+          {savedKeysQuery.isError && (
+            <p className="text-[12px] text-rose-600 dark:text-rose-400">Could not load your saved keys. Refresh to try again.</p>
+          )}
         </div>
       </div>
     </div>

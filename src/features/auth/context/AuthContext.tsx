@@ -1,21 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, migrateLegacyLocalStorageSession } from "@/integrations/supabase/client";
+import { identifyUser, resetAnalytics } from "@/lib/analytics/track";
 import { errorMessage } from "@/lib/utils";
+import { clearLegacySettingsStorage, useOptionalSettings } from "@/features/settings/context/SettingsContext";
 
 /** Upper bound on the initial session lookup before we surface an error. */
 const SESSION_LOOKUP_TIMEOUT_MS = 6000;
-
-const GUEST_USER: User = {
-  id: "guest-user-01",
-  app_metadata: {},
-  user_metadata: { display_name: "Scholar Guest" },
-  aud: "authenticated",
-  created_at: new Date().toISOString(),
-  email: "guest@source.io",
-} as User;
 
 type AuthContextType = {
   user: User | null;
@@ -23,17 +16,22 @@ type AuthContextType = {
   loading: boolean;
   /** Set when the initial session lookup failed. Auth state is unknown, not "signed out". */
   error: string | null;
+  /**
+   * True when a pre-cookie (localStorage) session from an older app version
+   * existed but could not be restored, so the user has to sign in once more.
+   */
+  legacySessionExpired: boolean;
   signOut: () => Promise<void>;
-  signInAsGuest: () => void;
 };
+
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   loading: true,
   error: null,
+  legacySessionExpired: false,
   signOut: async () => {},
-  signInAsGuest: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -41,43 +39,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const signInAsGuest = () => {
-    try {
-      localStorage.setItem("source_io_guest_session", "true");
-    } catch {
-      // ignore
-    }
-    setUser(GUEST_USER);
-    setLoading(false);
-    setError(null);
-  };
+  const [legacySessionExpired, setLegacySessionExpired] = useState(false);
+  const settingsCtx = useOptionalSettings();
+  const clearSettings = settingsCtx?.clearForSignOut;
 
   useEffect(() => {
-    try {
-      if (localStorage.getItem("source_io_guest_session") === "true") {
-        setUser(GUEST_USER);
-        setLoading(false);
-      }
-    } catch {
-      // ignore
-    }
-
     // Set up listener FIRST
     const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
-      if (sess?.user) {
-        setSession(sess);
-        setUser(sess.user);
-        setError(null);
-      } else {
-        const isGuest = localStorage.getItem("source_io_guest_session") === "true";
-        if (isGuest) {
-          setUser(GUEST_USER);
-        } else {
-          setSession(null);
-          setUser(null);
-        }
-      }
+      setSession(sess ?? null);
+      setUser(sess?.user ?? null);
+      if (sess?.user) setError(null);
     });
 
     let settled = false;
@@ -89,39 +60,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const timeout = setTimeout(() => {
-      const isGuest = localStorage.getItem("source_io_guest_session") === "true";
-      if (isGuest) {
-        setUser(GUEST_USER);
-        finish(null);
-      } else {
-        finish("Timed out reaching the authentication service.");
-      }
+      finish("Timed out reaching the authentication service.");
     }, SESSION_LOOKUP_TIMEOUT_MS);
 
-    supabase.auth
-      .getSession()
+    // Sessions from before the cookie-based client lived in localStorage; move
+    // them into cookies first so existing users are not silently signed out.
+    migrateLegacyLocalStorageSession()
+      .then((migration) => {
+        if (migration === "expired") setLegacySessionExpired(true);
+        return supabase.auth.getSession();
+      })
       .then(({ data: { session: sess }, error: sessErr }) => {
         if (sessErr) throw sessErr;
         if (settled) return;
-        if (sess) {
-          setSession(sess);
-          setUser(sess.user);
-        } else {
-          const isGuest = localStorage.getItem("source_io_guest_session") === "true";
-          if (isGuest) {
-            setUser(GUEST_USER);
-          }
-        }
+        setSession(sess);
+        setUser(sess?.user ?? null);
         finish(null);
       })
       .catch((e: unknown) => {
-        const isGuest = localStorage.getItem("source_io_guest_session") === "true";
-        if (isGuest) {
-          setUser(GUEST_USER);
-          finish(null);
-        } else {
-          finish(errorMessage(e));
-        }
+        finish(errorMessage(e));
       });
 
     return () => {
@@ -130,19 +87,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const signOut = async () => {
-    try {
-      localStorage.removeItem("source_io_guest_session");
-    } catch {
-      // ignore
-    }
+  const userId = user?.id;
+  useEffect(() => {
+    if (userId) identifyUser(userId);
+  }, [userId]);
+
+  const signOut = useCallback(async () => {
+    // Per-user settings and session API keys must not survive into the next account on this browser.
+    if (clearSettings) clearSettings();
+    else clearLegacySettingsStorage();
     setUser(null);
     setSession(null);
+    resetAnalytics();
     await supabase.auth.signOut().catch(() => {});
-  };
+  }, [clearSettings]);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, error, signOut, signInAsGuest }}>
+    <AuthContext.Provider value={{ user, session, loading, error, legacySessionExpired, signOut }}>
       {children}
     </AuthContext.Provider>
   );

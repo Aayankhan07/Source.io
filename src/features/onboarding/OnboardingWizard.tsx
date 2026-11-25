@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -20,7 +20,6 @@ import {
   ListChecks,
   Headphones,
   MessageSquare,
-  SlidersHorizontal,
   Brain,
   ClipboardCheck,
   Zap,
@@ -28,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { track } from "@/lib/analytics/track";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/features/settings/context/SettingsContext";
 import {
@@ -139,6 +139,9 @@ const STUDY_TOOLS_CONFIG: {
   },
 ];
 
+/** Onboarding ends at the first upload: /app opens the upload dialog (drop a PDF or paste text). */
+const FIRST_UPLOAD_ROUTE = "/app?upload=1";
+
 export default function OnboardingWizard() {
   const router = useRouter();
   const { toast } = useToast();
@@ -188,29 +191,30 @@ export default function OnboardingWizard() {
     setPrefs((prev) => ({ ...prev, enabledModes: next }));
   };
 
-  const handleFinish = async () => {
+  const handleFinish = useCallback(async () => {
     setSubmitting(true);
     try {
       await completeOnboarding(selectedRole, prefs);
+      track("onboarding_completed");
       toast({
         title: "Workspace customized",
         description: `Your workstation has been tailored to the ${ROLE_METADATA[selectedRole].label} preset.`,
       });
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } catch {
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [completeOnboarding, selectedRole, prefs, toast, router]);
 
   const handleSkip = async () => {
     setSubmitting(true);
     try {
       await completeOnboarding("undergrad", ROLE_PRESETS.undergrad);
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } catch {
-      router.replace("/app");
+      router.replace(FIRST_UPLOAD_ROUTE);
     } finally {
       setSubmitting(false);
     }
@@ -238,6 +242,11 @@ export default function OnboardingWizard() {
       }
 
       if (e.key === "Enter" && !e.shiftKey) {
+        // Let focused controls (buttons, switches, inputs, links) handle Enter themselves.
+        const target = e.target as HTMLElement | null;
+        if (target?.closest("button, a, input, textarea, select, [role='switch'], [role='slider'], [contenteditable='true']")) {
+          return;
+        }
         e.preventDefault();
         if (step < 5) {
           setStep((s) => s + 1);
@@ -248,7 +257,7 @@ export default function OnboardingWizard() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [step, selectedGoal, selectedRole, prefs]);
+  }, [step, handleFinish]);
 
   const rolesList: UserRole[] = [
     "undergrad",
@@ -310,7 +319,7 @@ export default function OnboardingWizard() {
                   What do you want to achieve?
                 </h1>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl">
-                  Choose your primary objective to help us calibrate your initial tools, note architecture, and explanation depth. Press <kbd className="px-1.5 py-0.5 rounded border border-border bg-muted font-mono text-[10px] text-foreground">1</kbd>–<kbd className="px-1.5 py-0.5 rounded border border-border bg-muted font-mono text-[10px] text-foreground">4</kbd> on your keyboard or tap below.
+                  Choose your primary objective to help us calibrate your initial tools, note architecture, and explanation depth. Press <kbd className="px-1.5 py-0.5 rounded border border-border bg-muted font-mono text-xs text-foreground">1</kbd>–<kbd className="px-1.5 py-0.5 rounded border border-border bg-muted font-mono text-xs text-foreground">4</kbd> on your keyboard or tap below.
                 </p>
               </div>
 
@@ -445,7 +454,7 @@ export default function OnboardingWizard() {
                         </div>
                         <span
                           className={cn(
-                            "text-[10px] font-mono px-2 py-0.5 rounded-md border",
+                            "text-xs font-mono px-2 py-0.5 rounded-md border",
                             isSelected
                               ? "bg-white/20 border-white/30 text-white"
                               : "bg-muted border-border text-muted-foreground"
@@ -471,7 +480,7 @@ export default function OnboardingWizard() {
                         </div>
                         <p
                           className={cn(
-                            "text-[11px] leading-relaxed",
+                            "text-xs leading-relaxed",
                             isSelected ? "text-primary-foreground/80" : "text-muted-foreground"
                           )}
                         >
@@ -513,9 +522,10 @@ export default function OnboardingWizard() {
                   const isEnabled = prefs.enabledModes.includes(tool.id);
 
                   return (
-                    <div
+                    // A <label> wrapping the Switch (a <button role="switch">) makes the whole
+                    // row clickable and gives the switch its accessible name.
+                    <label
                       key={tool.id}
-                      onClick={() => handleToggleMode(tool.id)}
                       className={cn(
                         "p-4 rounded-[20px] border flex items-center justify-between gap-4 transition-all cursor-pointer select-none shadow-2xs",
                         isEnabled
@@ -538,7 +548,7 @@ export default function OnboardingWizard() {
                           <span className="text-xs font-bold text-foreground font-display block">
                             {tool.label}
                           </span>
-                          <p className="text-[11px] text-muted-foreground truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {tool.desc}
                           </p>
                         </div>
@@ -547,10 +557,9 @@ export default function OnboardingWizard() {
                       <Switch
                         checked={isEnabled}
                         onCheckedChange={() => handleToggleMode(tool.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="cursor-pointer"
+                        className="cursor-pointer shrink-0"
                       />
-                    </div>
+                    </label>
                   );
                 })}
               </div>
@@ -597,17 +606,8 @@ export default function OnboardingWizard() {
                     const isChecked = prefs.noteSections[block.key as keyof typeof prefs.noteSections];
 
                     return (
-                      <div
+                      <label
                         key={block.key}
-                        onClick={() =>
-                          setPrefs((prev) => ({
-                            ...prev,
-                            noteSections: {
-                              ...prev.noteSections,
-                              [block.key]: !isChecked,
-                            },
-                          }))
-                        }
                         className={cn(
                           "p-3.5 rounded-[18px] border flex items-start justify-between gap-3 cursor-pointer select-none transition-all",
                           isChecked
@@ -615,11 +615,11 @@ export default function OnboardingWizard() {
                             : "bg-surface-sunken/40 border-border/50 opacity-60 hover:opacity-100"
                         )}
                       >
-                        <div className="space-y-0.5">
+                        <div className="space-y-0.5 min-w-0">
                           <span className="text-xs font-bold text-foreground block">
                             {block.label}
                           </span>
-                          <span className="text-[11px] text-muted-foreground leading-tight block">
+                          <span className="text-xs text-muted-foreground leading-tight block">
                             {block.desc}
                           </span>
                         </div>
@@ -631,10 +631,9 @@ export default function OnboardingWizard() {
                               noteSections: { ...prev.noteSections, [block.key]: checked },
                             }))
                           }
-                          onClick={(e) => e.stopPropagation()}
-                          className="cursor-pointer"
+                          className="cursor-pointer shrink-0"
                         />
-                      </div>
+                      </label>
                     );
                   })}
                 </div>
@@ -672,7 +671,7 @@ export default function OnboardingWizard() {
                       <span className="text-xs font-bold text-foreground block font-display">
                         Explanation Rigor Level: {prefs.rigorLevel} / 5
                       </span>
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         {prefs.rigorLevel === 1 && "Simple, approachable everyday language (ELI12)"}
                         {prefs.rigorLevel === 2 && "Exam-focused clarity with syllabus definitions"}
                         {prefs.rigorLevel === 3 && "Standard collegiate depth with formal derivations"}
@@ -683,6 +682,7 @@ export default function OnboardingWizard() {
                   </div>
 
                   <Slider
+                    aria-label="Explanation rigor level"
                     value={[prefs.rigorLevel]}
                     min={1}
                     max={5}
@@ -696,10 +696,10 @@ export default function OnboardingWizard() {
                     className="w-full cursor-pointer"
                   />
 
-                  <div className="flex justify-between text-[10px] font-mono text-muted-foreground px-1">
-                    <span>1: Intuitive</span>
-                    <span>3: Collegiate</span>
-                    <span>5: Peer Review</span>
+                  <div className="flex justify-between gap-2 text-xs font-mono text-muted-foreground px-1">
+                    <span className="text-left">1: Intuitive</span>
+                    <span className="text-center">3: Collegiate</span>
+                    <span className="text-right">5: Peer Review</span>
                   </div>
                 </div>
 
@@ -711,7 +711,7 @@ export default function OnboardingWizard() {
                     <span className="text-xs font-bold text-foreground block font-display">
                       Citation Badge Format
                     </span>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       How verified source references appear within generated notes.
                     </span>
                   </div>
@@ -741,7 +741,7 @@ export default function OnboardingWizard() {
                           </span>
                           <span
                             className={cn(
-                              "text-[10px] font-mono px-2 py-0.5 rounded-md border max-w-max",
+                              "text-xs font-mono px-2 py-0.5 rounded-md border max-w-max",
                               isSelected
                                 ? "bg-white/20 border-white/30 text-white"
                                 : "bg-muted border-border text-muted-foreground"
@@ -792,7 +792,7 @@ export default function OnboardingWizard() {
             className="rounded-full text-xs font-semibold h-9 px-6 bg-primary text-primary-foreground shadow-tactile-pill hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
             <Sparkles className="size-3.5 mr-1.5 text-primary-foreground" />
-            <span>Launch Workstation</span>
+            <span>Next: add your first document</span>
           </Button>
         )}
       </footer>

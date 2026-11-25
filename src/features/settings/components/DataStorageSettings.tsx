@@ -1,55 +1,75 @@
 "use client";
 
-import { Download, RotateCcw, HardDrive, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Download, RotateCcw, HardDrive, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
 import { useToast } from "@/hooks/use-toast";
-import { DEMO_DOCUMENTS } from "@/features/documents/data/mockDocuments";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import { createSupabaseExportSource, exportLibrary } from "@/lib/export/exportLibrary";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function DataStorageSettings() {
-  const { settings, notesSettings, resetSettings } = useSettings();
+  const { resetSettings } = useSettings();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
   const { toast } = useToast();
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const isGuest = !user;
 
-  const handleExportLibrary = () => {
+  const handleExportLibrary = async () => {
+    if (exporting) return;
+    setExporting(true);
     try {
-      const exportData = {
-        exportedAt: new Date().toISOString(),
-        version: "1.0",
-        userPreferences: {
-          general: settings,
-          notes: notesSettings,
-        },
-        documents: Object.values(DEMO_DOCUMENTS).map((d) => ({
-          id: d.document.id,
-          title: d.document.title,
-          source_type: d.document.source_type,
-          markdown: d.note.markdown,
-          flashcards: d.cards,
-          quiz: d.quiz,
-        })),
-      };
-
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `source-io-export-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
+      const result = await exportLibrary(createSupabaseExportSource(supabase));
+      const n = result.counts.documents;
       toast({
-        title: "Library Exported",
-        description: "Your study documents, notes, cards, and quizzes have been downloaded.",
+        title: "Library exported",
+        description: `${n} document${n === 1 ? "" : "s"} with notes, cards, quizzes, podcasts, and chat history downloaded.`,
       });
-    } catch {
+    } catch (err) {
       toast({
-        title: "Export Failed",
-        description: "Could not compile library export data.",
+        title: "Export failed",
+        description: err instanceof Error ? err.message : "Could not export your library.",
         variant: "destructive",
       });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleting) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.functions.invoke("delete_account");
+      if (error) throw error;
+      toast({ title: "Account deleted", description: "Your account and all study data have been removed." });
+      try {
+        await signOut();
+      } catch {
+        // the session is already invalid once the account is gone
+      }
+      router.push("/");
+    } catch (err) {
+      toast({
+        title: "Could not delete account",
+        description: err instanceof Error ? err.message : "Please try again or contact support.",
+        variant: "destructive",
+      });
+      setDeleting(false);
     }
   };
 
@@ -99,23 +119,27 @@ export default function DataStorageSettings() {
             </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Download an offline backup package of all study notes, generated flashcards, and quizzes.
+            Download everything in your account as a single JSON file.
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-[20px] bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10">
           <div className="space-y-0.5">
             <span className="text-xs font-bold text-slate-900 dark:text-white">Portable JSON Archive</span>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Contains complete Markdown notes, LaTeX equations, flashcard decks, and quiz questions.
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Sources and their extracted text, notes, flashcards, quizzes, podcast scripts and audio links, and chat
+              history.
             </p>
           </div>
           <button
+            type="button"
             onClick={handleExportLibrary}
-            className="h-9 px-4 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+            disabled={exporting || isGuest}
+            title={isGuest ? "Sign in to export your library" : undefined}
+            className="h-9 px-4 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0 disabled:opacity-50 disabled:pointer-events-none"
           >
-            <Download className="size-3.5" />
-            <span>Download Archive</span>
+            {exporting ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
+            <span>{exporting ? "Preparing…" : "Download Archive"}</span>
           </button>
         </div>
       </div>
@@ -141,7 +165,7 @@ export default function DataStorageSettings() {
           <div className="flex items-center justify-between gap-4 p-4 rounded-[20px] bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10">
             <div className="space-y-0.5">
               <span className="text-xs font-bold text-slate-900 dark:text-white">Clear Temporary KaTeX & Draft Caches</span>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Frees up browser memory without deleting your saved documents.
               </p>
             </div>
@@ -159,7 +183,7 @@ export default function DataStorageSettings() {
               <span className="text-xs font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
                 <AlertTriangle className="size-3.5 text-rose-600 dark:text-rose-400" /> Reset All Preferences
               </span>
-              <p className="text-[11px] text-rose-700/80 dark:text-rose-300/70">
+              <p className="text-xs text-rose-700/80 dark:text-rose-300/70">
                 Restores AI models, audio voices, typography, and layout settings to initial defaults.
               </p>
             </div>
@@ -173,6 +197,59 @@ export default function DataStorageSettings() {
           </div>
         </div>
       </div>
+
+      {/* 3. Danger Zone */}
+      {!isGuest && (
+        <div className="rounded-[28px] bg-white dark:bg-slate-900/90 border border-rose-200 dark:border-rose-900/40 shadow-tactile-card p-6 sm:p-7 space-y-4">
+          <div>
+            <div className="flex items-center gap-2.5 mb-1">
+              <span className="p-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
+                <AlertTriangle className="size-4" />
+              </span>
+              <h3 className="text-base sm:text-lg font-bold font-display text-slate-900 dark:text-white">Danger Zone</h3>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Export your library first. Deleting your account cannot be undone.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-[20px] border border-rose-200 dark:border-rose-900/40 bg-rose-50/50 dark:bg-rose-950/20">
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold text-rose-900 dark:text-rose-200">Delete account</span>
+              <p className="text-xs text-rose-700/80 dark:text-rose-300/70">
+                Permanently removes your account, documents, notes, flashcards, quizzes, podcasts, and chat history.
+              </p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  disabled={deleting}
+                  className="h-9 px-4 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                >
+                  {deleting ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+                  <span>{deleting ? "Deleting…" : "Delete account"}</span>
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This permanently deletes your account and every document, note, flashcard, quiz, podcast, and chat
+                    message in it. This cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-rose-600 text-white hover:bg-rose-700">
+                    Delete permanently
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

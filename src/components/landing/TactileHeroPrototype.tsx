@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -231,7 +232,7 @@ export function TactileHeroPrototype() {
           transition={{ type: "spring", stiffness: 450, damping: 25 }}
         >
           <Link
-            href={`/app/doc/demo-quantum?${activeMode.demoQuery}`}
+            href={`/demo/quantum?${activeMode.demoQuery}`}
             className="px-5 sm:px-7 py-3 sm:py-3.5 rounded-full bg-white/90 hover:bg-white text-slate-800 font-semibold text-xs sm:text-sm border border-slate-200/90 hover:border-slate-300 shadow-2xs hover:shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition-[background-color,border-color,box-shadow] duration-200 whitespace-nowrap"
           >
             <span>Test live demo</span>
@@ -252,7 +253,7 @@ export function TactileHeroPrototype() {
               <Play className="size-2 sm:size-2.5 fill-current translate-x-px" />
             </span>
             <span>Watch tour</span>
-            <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200/60">
+            <span className="text-xs font-mono font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
               20s
             </span>
           </button>
@@ -264,7 +265,7 @@ export function TactileHeroPrototype() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.32 }}
-        className="mt-3.5 sm:mt-4 flex items-center justify-center gap-x-2.5 sm:gap-x-5 text-[11px] sm:text-xs text-slate-500 font-medium overflow-x-auto scrollbar-none max-w-full whitespace-nowrap"
+        className="mt-3.5 sm:mt-4 flex items-center justify-center gap-x-2.5 sm:gap-x-5 text-xs text-slate-500 font-medium overflow-x-auto scrollbar-none max-w-full whitespace-nowrap"
       >
         <div className="flex items-center gap-1 shrink-0">
           <CheckCircle2 className="size-3.5 text-slate-900 shrink-0" />
@@ -446,28 +447,28 @@ export function TactileHeroPrototype() {
               >
                 {/* Card Top Window Chrome */}
                 <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 sm:py-2 bg-slate-50/90 border border-slate-100 rounded-lg sm:rounded-xl mb-1.5 sm:mb-2 text-xs">
-                  <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     <span className="size-2 sm:size-2.5 rounded-full bg-rose-400/80" />
                     <span className="size-2 sm:size-2.5 rounded-full bg-amber-400/80" />
                     <span className="size-2 sm:size-2.5 rounded-full bg-emerald-400/80" />
-                    <span className="font-mono text-[10px] sm:text-[11px] text-slate-500 ml-1 truncate max-w-[120px] sm:max-w-xs">
+                    <span className="hidden xs:inline font-mono text-xs text-slate-500 ml-1 truncate max-w-[120px] sm:max-w-xs">
                       quantum_intro.pdf
                     </span>
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 font-mono text-[10px] sm:text-[11px] text-slate-900 bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-md border border-slate-200 font-medium">
-                      <span className="size-1.5 rounded-full bg-slate-900" />
-                      <span>{mode.badge}</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-1 min-w-0 font-mono text-xs text-slate-900 bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-md border border-slate-200 font-medium">
+                      <span className="size-1.5 rounded-full bg-slate-900 shrink-0" />
+                      <span className="truncate">{mode.badge}</span>
                     </div>
                     {isCenter && (
                       <Link
-                        href={`/app/doc/demo-quantum?${mode.demoQuery}`}
-                        className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 transition-colors"
+                        href={`/demo/quantum?${mode.demoQuery}`}
+                        className="hidden sm:inline-flex items-center gap-1 font-mono text-xs text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 transition-colors"
                         title="Open live workspace demo"
                       >
                         <span>Test Live</span>
-                        <ExternalLink className="size-2.5" />
+                        <ExternalLink className="size-3" />
                       </Link>
                     )}
                   </div>
@@ -475,15 +476,14 @@ export function TactileHeroPrototype() {
 
                 {/* Real High-Resolution Workspace Screenshot */}
                 <div className="relative overflow-hidden rounded-lg sm:rounded-xl border border-slate-100 bg-slate-50 aspect-[16/10] sm:aspect-[16/9] max-h-[340px] xs:max-h-[380px] sm:max-h-[460px] md:max-h-[500px]">
-                  <img
+                  <Image
                     src={mode.image}
                     alt={`Source.io workspace preview - ${mode.label}`}
-                    loading="eager"
-                    decoding="async"
-                    className={cn(
-                      "w-full h-full object-cover pointer-events-none select-none",
-                      mode.objectPosition
-                    )}
+                    fill
+                    sizes="(min-width: 1280px) 1000px, (min-width: 1024px) 940px, (min-width: 768px) 840px, (min-width: 640px) 740px, 88vw"
+                    preload={idx === 0}
+                    draggable={false}
+                    className={cn("object-cover", mode.objectPosition)}
                   />
 
                   {/* Floating Citation Coordinate Proof Badge (Featured when active) */}
@@ -498,17 +498,17 @@ export function TactileHeroPrototype() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-1.5">
-                        <span className="text-[9px] sm:text-[10.5px] font-mono text-slate-300 font-semibold uppercase tracking-wider">
+                        <span className="min-w-0 truncate text-xs font-mono text-slate-300 font-semibold uppercase tracking-wide">
                           {mode.coordTitle}
                         </span>
-                        <span className="text-[8.5px] sm:text-[9.5px] font-mono bg-white/10 text-white border border-white/20 px-1 py-0.2 rounded">
+                        <span className="text-xs font-mono bg-white/10 text-white border border-white/20 px-1 rounded shrink-0">
                           {mode.coordTag}
                         </span>
                       </div>
-                      <p className="text-[10px] sm:text-xs text-slate-200 mt-1 font-medium leading-tight truncate sm:line-clamp-2">
+                      <p className="text-xs text-slate-200 mt-1 font-medium leading-tight truncate sm:line-clamp-2">
                         &ldquo;{mode.coordText}&rdquo;
                       </p>
-                      <div className="mt-1 text-[8.5px] sm:text-[9.5px] text-slate-400 font-mono">
+                      <div className="mt-1 text-xs text-slate-400 font-mono">
                         <span className="text-white font-medium">{mode.coordLocation}</span>
                       </div>
                     </div>
@@ -529,8 +529,8 @@ export function TactileHeroPrototype() {
               <DialogTitle className="text-xs sm:text-sm font-semibold tracking-tight text-slate-100">
                 Source.io in 20 Seconds
               </DialogTitle>
-              <span className="hidden xs:inline-block text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
-                HD • Audio On
+              <span className="hidden xs:inline-block text-xs font-mono font-medium px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                HD • Starts muted
               </span>
             </div>
             <DialogDescription className="sr-only">
@@ -545,6 +545,7 @@ export function TactileHeroPrototype() {
               poster="/videos/brag.jpg"
               controls
               autoPlay
+              muted
               playsInline
               className="w-full h-full object-contain"
             />

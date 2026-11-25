@@ -32,6 +32,7 @@ export function LandingHeader() {
     { href: "/#comparison", label: "Comparison" },
     { href: "/#pricing", label: "Pricing" },
     { href: "/#faq", label: "FAQ" },
+    { href: "/demo", label: "Demo" },
   ];
 
   return (

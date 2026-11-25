@@ -11,3 +11,24 @@ verify_jwt = false
 
 [functions.chat]
 verify_jwt = false
+
+# Authenticated by HMAC signature (LEMONSQUEEZY_WEBHOOK_SECRET), not by a user JWT.
+[functions.billing-webhook]
+verify_jwt = false
+
+# Meters browser-rendered podcast audio and issues signed upload/read URLs (user JWT checked in code).
+[functions.podcast_audio]
+verify_jwt = false
+
+# Authenticated in-function via _shared/auth.ts authenticateRequest (getClaims).
+[functions.delete_account]
+verify_jwt = false
+
+# Saves / tests / deletes encrypted BYOK keys (user JWT checked in code via authenticateRequest).
+[functions.api_keys]
+verify_jwt = false
+
+# Daily cost report / margin alert. Called by pg_cron; authenticated by the x-cron-secret header
+# (CRON_SECRET), checked in code and failing closed when unset.
+[functions.cost_report]
+verify_jwt = false

@@ -53,7 +53,8 @@ export async function embedChunks(documentId: string): Promise<{ ok: boolean; ch
   return await embedChunksProgressive(documentId);
 }
 
-export type Citation = { chunk_id: string; similarity: number; content: string };
+/** A source passage used for a chat answer. `n` matches the [n] markers in the answer text. */
+export type Citation = { n: number; order_index: number; similarity: number; text: string };
 
 type SseHandlers = {
   /** Called for each `data:` payload, with the name of the preceding `event:` line if any. */
@@ -198,10 +199,21 @@ export async function generateDerivatives(
   return await resp.json();
 }
 
+/** Section progress for long documents ("Section 3 of 8"). `cached` = reused from an earlier run. */
+export type NotesProgress = { section: number; total: number; cached: boolean };
+
+/** How many times streamNotes resumes a long document that paused at the server time limit. */
+const MAX_NOTES_CONTINUATIONS = 12;
+
 /**
  * Stream notes for a document. Calls onDelta for each token chunk.
  * Retries while the function reports a 429 or 409 (concurrency lock in-flight).
- * Returns the full markdown when done.
+ *
+ * Long documents are generated section by section: `onProgress` receives
+ * `event: progress` updates, and when the server pauses (`event: incomplete`) this call
+ * resumes automatically without re-sending tokens already delivered. Returns the saved
+ * markdown from `event: final` (overview + contents + every section) when present,
+ * otherwise the streamed text.
  */
 export async function streamNotes({
   documentId,
@@ -211,6 +223,7 @@ export async function streamNotes({
   apiKey,
   idempotencyKey,
   onDelta,
+  onProgress,
   onResponse,
   signal,
   force,
@@ -221,10 +234,12 @@ export async function streamNotes({
   tone?: string;
   notesDepth?: string;
   model?: string;
+  /** @deprecated Keys are stored server-side (Settings → API keys). Kept for old clients. */
   apiKey?: string;
   idempotencyKey?: string;
   force?: boolean;
   onDelta: (chunk: string) => void;
+  onProgress?: (progress: NotesProgress) => void;
   onResponse?: (resp: Response) => void;
   signal?: AbortSignal;
   userRole?: string;
@@ -233,51 +248,112 @@ export async function streamNotes({
   const reqIdempotencyKey =
     idempotencyKey ||
     `${documentId}:notes:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
-  let resp: Response | null = null;
-  for (let attempt = 0; attempt < 5; attempt++) {
-    resp = await callFunction(
-      "generate_notes",
-      {
-        document_id: documentId,
-        tone,
-        notes_depth: notesDepth,
-        model,
-        api_key: apiKey,
-        idempotency_key: reqIdempotencyKey,
-        force_regenerate: force,
-        user_role: userRole,
-        workspace_preferences: workspacePreferences,
-      },
-      { signal }
-    );
-    if (resp.status !== 429 && resp.status !== 409) break;
-    const waitMs = 1500 * Math.pow(1.5, attempt);
-    await new Promise((r) => setTimeout(r, waitMs));
-  }
 
-  if (!resp || !resp.ok || !resp.body) {
-    if (resp?.status === 429) {
-      throw new Error("Groq free-tier rate limit reached. Please wait ~30 seconds and try again.");
+  const request = async (forceRun: boolean): Promise<Response> => {
+    let resp: Response | null = null;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      resp = await callFunction(
+        "generate_notes",
+        {
+          document_id: documentId,
+          tone,
+          notes_depth: notesDepth,
+          model,
+          api_key: apiKey,
+          idempotency_key: reqIdempotencyKey,
+          force_regenerate: forceRun,
+          user_role: userRole,
+          workspace_preferences: workspacePreferences,
+        },
+        { signal }
+      );
+      if (resp.status !== 429 && resp.status !== 409) break;
+      const waitMs = 1500 * Math.pow(1.5, attempt);
+      await new Promise((r) => setTimeout(r, waitMs));
     }
-    if (resp?.status === 409) {
-      throw new Error("Note generation is already in progress for this document. Please wait a moment.");
-    }
-    if (!resp) throw new Error("Notes generation failed (no response)");
-    throw await functionError(resp, "Notes generation failed");
-  }
 
-  try {
-    onResponse?.(resp);
-  } catch {
-    // Ignore header inspection errors
-  }
+    if (!resp || !resp.ok || !resp.body) {
+      if (resp?.status === 429) {
+        throw await functionError(resp, "The AI rate limit was reached. Please wait ~30 seconds and try again.");
+      }
+      if (resp?.status === 409) {
+        throw new Error("Note generation is already in progress for this document. Please wait a moment.");
+      }
+      if (!resp) throw new Error("Notes generation failed (no response)");
+      throw await functionError(resp, "Notes generation failed");
+    }
+    return resp;
+  };
 
   let full = "";
-  await consumeSse(resp.body, {
-    onData: (parsed) => {
-      const content = deltaContent(parsed);
-      if (content) { full += content; onDelta(content); }
-    },
-  });
-  return full;
+  let finalMarkdown: string | null = null;
+  // Sections whose tokens the caller has already received (from an earlier, paused run).
+  const delivered = new Set<number>();
+
+  for (let run = 0; run <= MAX_NOTES_CONTINUATIONS; run++) {
+    const resp = await request(run === 0 ? !!force : false);
+    try {
+      onResponse?.(resp);
+    } catch {
+      // Ignore header inspection errors
+    }
+    const cacheHit = resp.headers.get("X-Cache") === "HIT";
+
+    let currentSection = 0;
+    const seenThisRun = new Set<number>();
+    let incomplete: { error?: string } | null = null;
+    let streamError: { error?: string; code?: string } | null = null;
+
+    await consumeSse(resp.body!, {
+      onData: (parsed, event) => {
+        switch (event) {
+          case "progress": {
+            currentSection = Number(parsed.section) || 0;
+            onProgress?.({
+              section: currentSection,
+              total: Number(parsed.total) || 0,
+              cached: parsed.cached === true,
+            });
+            return;
+          }
+          case "final":
+            if (typeof parsed.markdown === "string") finalMarkdown = parsed.markdown;
+            return;
+          case "incomplete":
+            incomplete = parsed as { error?: string };
+            return;
+          case "error":
+            streamError = parsed as { error?: string; code?: string };
+            return;
+          case null:
+            break;
+          default:
+            return; // unknown named event: ignore
+        }
+        const content = deltaContent(parsed);
+        if (!content) return;
+        if (run > 0 && cacheHit) {
+          // Another run finished meanwhile: this is the complete saved note, not a delta.
+          finalMarkdown = (finalMarkdown ?? "") + content;
+          return;
+        }
+        if (currentSection && delivered.has(currentSection)) return;
+        if (currentSection) seenThisRun.add(currentSection);
+        full += content;
+        onDelta(content);
+      },
+    });
+
+    seenThisRun.forEach((s) => delivered.add(s));
+    const failure = streamError as { error?: string; code?: string } | null;
+    if (failure) throw new Error(failure.error || "Notes generation failed");
+    const paused = incomplete as { error?: string } | null;
+    if (!paused) break;
+    if (run === MAX_NOTES_CONTINUATIONS) {
+      throw new Error(paused.error || "Notes generation paused. Press Generate again to continue.");
+    }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+
+  return finalMarkdown ?? full;
 }

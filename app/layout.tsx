@@ -1,7 +1,22 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import SWUnregister from "./SWUnregister";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AnalyticsProvider } from "@/lib/analytics/AnalyticsProvider";
+
+// DESIGN.md type system, self-hosted by next/font (no render-blocking Google
+// Fonts request). Exposed as CSS variables consumed by tailwind.config.ts.
+const geist = Geist({ subsets: ["latin"], display: "swap", variable: "--font-geist" });
+const geistMono = Geist_Mono({ subsets: ["latin"], display: "swap", variable: "--font-geist-mono" });
+const outfit = Outfit({ subsets: ["latin"], display: "swap", variable: "--font-outfit" });
+
+// Applies the saved theme (or prefers-color-scheme) before first paint so the
+// page never flashes the wrong theme. Keep the storage key and resolution
+// rules in sync with src/hooks/use-theme.tsx.
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("source_io_theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.classList.toggle("dark",t==="dark")}catch(e){document.documentElement.classList.add("dark")}})()`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sourceio.app"),
@@ -38,14 +53,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geist.variable} ${geistMono.variable} ${outfit.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <link
           rel="alternate"
           type="text/markdown"
@@ -56,6 +70,9 @@ export default function RootLayout({
       <body>
         <Providers>{children}</Providers>
         <SWUnregister />
+        <Analytics />
+        <SpeedInsights />
+        <AnalyticsProvider />
       </body>
     </html>
   );

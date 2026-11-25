@@ -1,10 +1,14 @@
-import { useTheme } from "next-themes";
+"use client";
+
+// Not mounted in app/providers.tsx (no call sites use sonner; the app uses the
+// shadcn toaster via @/hooks/use-toast). Mount <Toaster /> before using toast().
+import { useTheme } from "@/hooks/use-theme";
 import { Toaster as Sonner, toast } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+  const { theme } = useTheme();
 
   return (
     <Sonner

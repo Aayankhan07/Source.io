@@ -16,7 +16,6 @@ import {
   Hash,
   Minus,
   List,
-  Sparkles,
 } from "lucide-react";
 import { cn, calculateReadTime } from "@/lib/utils";
 import {
@@ -312,7 +311,7 @@ export default function WorkspaceOutline({
               {h.emoji ? (
                 <span className="text-xs">{h.emoji}</span>
               ) : h.number ? (
-                <span className="font-mono text-[11px] opacity-70">{h.number}</span>
+                <span className="font-mono text-xs opacity-70">{h.number}</span>
               ) : (
                 <Hash className={cn("h-2.5 w-2.5", isActive ? "text-current" : "opacity-60")} />
               )}
@@ -385,7 +384,7 @@ export default function WorkspaceOutline({
                       >
                         {isActive ? (
                           <div className="w-5 h-5 rounded-full bg-primary text-primary-foreground shadow-xs flex items-center justify-center ring-2 ring-primary/20">
-                            <span className="font-mono text-[11px] font-bold leading-none">
+                            <span className="font-mono text-xs font-bold leading-none">
                               {h.number ? h.number : idx + 1}
                             </span>
                           </div>
@@ -407,7 +406,7 @@ export default function WorkspaceOutline({
                       <div className="flex items-center gap-1.5 text-xs">
                         {h.emoji && <span>{h.emoji}</span>}
                         {h.number && (
-                          <span className="font-mono text-[11px] text-muted-foreground font-semibold">
+                          <span className="font-mono text-xs text-muted-foreground font-semibold">
                             {h.number}.
                           </span>
                         )}
@@ -429,7 +428,7 @@ export default function WorkspaceOutline({
           {/* Bottom Progress Marker */}
           <div className="pt-2 border-t border-border/40 w-full flex flex-col items-center">
             <span
-              className="text-[9.5px] font-mono text-muted-foreground tracking-tighter"
+              className="text-xs font-mono text-muted-foreground tracking-tighter"
               title={`${readingProgress}% read`}
             >
               {readingProgress}%
@@ -459,7 +458,7 @@ export default function WorkspaceOutline({
           <span className="text-xs font-bold tracking-tight text-foreground font-display truncate">
             Outline
           </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-foreground font-bold border border-border shrink-0">
+          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-muted text-foreground font-bold border border-border shrink-0">
             {parsedHeadings.length}
           </span>
         </div>
@@ -535,20 +534,21 @@ export default function WorkspaceOutline({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter sections..."
+              aria-label="Filter sections"
               className="w-full bg-background border border-border/80 rounded-lg pl-7 pr-7 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 font-sans"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
                 className="absolute right-2 text-muted-foreground hover:text-foreground cursor-pointer"
-                title="Clear search"
+                title="Clear search" aria-label="Clear search"
               >
                 <X className="h-3 w-3" />
               </button>
             )}
           </div>
           {searchQuery && (
-            <div className="px-1 pt-1.5 flex items-center justify-between text-[10.5px] text-muted-foreground font-mono">
+            <div className="px-1 pt-1.5 flex items-center justify-between text-xs text-muted-foreground font-mono">
               <span>Matches:</span>
               <span>{filteredHeadings.length} found</span>
             </div>
@@ -558,7 +558,7 @@ export default function WorkspaceOutline({
 
       {/* 3.3 Reading Metadata & Progress Track */}
       <div className="border-b border-border/50 shrink-0">
-        <div className="px-3.5 py-2 flex items-center justify-between text-[11px] text-muted-foreground font-mono bg-muted/15">
+        <div className="px-3.5 py-2 flex items-center justify-between text-xs text-muted-foreground font-mono bg-muted/15">
           <div className="flex items-center gap-1.5">
             <Clock className="h-3 w-3 text-muted-foreground/70" />
             <span>{stats.readMinutes} min read</span>
@@ -591,7 +591,7 @@ export default function WorkspaceOutline({
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="text-[11px] text-primary hover:underline cursor-pointer"
+                className="text-xs text-primary hover:underline cursor-pointer"
               >
                 Clear filter
               </button>
@@ -622,8 +622,9 @@ export default function WorkspaceOutline({
                     "w-full text-left rounded-md py-1.5 pr-2 flex items-center gap-2 transition-all relative cursor-pointer group",
                     // Indentation with guide rail lines
                     h.level === 1 && "pl-2 font-semibold text-foreground text-xs",
-                    h.level === 2 && "pl-5 text-muted-foreground hover:text-foreground text-[11.5px]",
-                    h.level === 3 && "pl-8 text-muted-foreground/80 hover:text-foreground text-[11px]",
+                    h.level === 2 && "pl-5 text-muted-foreground hover:text-foreground text-xs",
+                    h.level === 3 && "pl-8 text-muted-foreground/80 hover:text-foreground text-xs",
+                    hasSubsections && "pr-7",
                     // Active Pill Styling
                     isActive
                       ? "bg-primary/10 text-primary font-medium dark:bg-primary/15"
@@ -642,7 +643,7 @@ export default function WorkspaceOutline({
                   ) : h.number ? (
                     <span
                       className={cn(
-                        "font-mono text-[9.5px] px-1 py-0.2 rounded border font-medium shrink-0 tracking-tight",
+                        "font-mono text-xs px-1 py-0.2 rounded border font-medium shrink-0 tracking-tight",
                         isActive
                           ? "bg-primary/20 text-primary border-primary/30"
                           : "bg-muted text-muted-foreground border-border/60 group-hover:border-border"
@@ -672,21 +673,26 @@ export default function WorkspaceOutline({
                   {/* Clean Title */}
                   <span className="truncate flex-1 font-sans">{h.cleanTitle}</span>
 
-                  {/* Collapsible toggle for chapters with children */}
-                  {hasSubsections && (
-                    <span
-                      onClick={(e) => toggleSectionCollapse(h.id, e)}
-                      className="p-0.5 rounded text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 transition-colors ml-auto shrink-0"
-                      title={isCollapsed ? "Expand chapter" : "Collapse chapter"}
-                    >
-                      {isCollapsed ? (
-                        <ChevronRight className="h-3 w-3" />
-                      ) : (
-                        <ChevronDown className="h-3 w-3" />
-                      )}
-                    </span>
-                  )}
                 </button>
+
+                {/* Collapsible toggle for chapters with children. A sibling of the row
+                    button (not nested in it) so it is a real, focusable control. */}
+                {hasSubsections && (
+                  <button
+                    type="button"
+                    onClick={(e) => toggleSectionCollapse(h.id, e)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
+                    title={isCollapsed ? "Expand chapter" : "Collapse chapter"}
+                    aria-label={`${isCollapsed ? "Expand" : "Collapse"} ${h.cleanTitle}`}
+                    aria-expanded={!isCollapsed}
+                  >
+                    {isCollapsed ? (
+                      <ChevronRight className="h-3 w-3" />
+                    ) : (
+                      <ChevronDown className="h-3 w-3" />
+                    )}
+                  </button>
+                )}
               </div>
             );
           })
@@ -694,7 +700,7 @@ export default function WorkspaceOutline({
       </div>
 
       {/* 3.5 Bottom Quick Status Footer */}
-      <div className="p-2.5 border-t border-border/60 bg-muted/20 flex items-center justify-between text-[10.5px] text-muted-foreground font-mono shrink-0">
+      <div className="p-2.5 border-t border-border/60 bg-muted/20 flex items-center justify-between text-xs text-muted-foreground font-mono shrink-0">
         <span className="truncate">
           {activeId ? (
             <span className="text-foreground/90 font-medium">

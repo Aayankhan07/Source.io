@@ -1,5 +1,7 @@
 # Source.io AI-SEO & Agent-Readiness Audit Report
 
+> **Status: Historical snapshot (dated October 2026); superseded by [`docs/superpowers/plans/2026-11-26-company-audit-and-roadmap.md`](./superpowers/plans/2026-11-26-company-audit-and-roadmap.md).** For the current system see [architecture.md](./architecture.md).
+
 **Date**: October 2026  
 **Product**: Source.io (https://sourceio.app)  
 **Standard**: `marketingskills:ai-seo` (Princeton GEO study, ZipTie content-answer fit, Vercel/Ora Is-Agentic, Frase triad)  

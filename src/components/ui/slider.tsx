@@ -3,7 +3,11 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface SliderProps {
+export interface SliderProps
+  extends Pick<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "id" | "name" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-valuetext"
+  > {
   value?: number[];
   defaultValue?: number[];
   min?: number;

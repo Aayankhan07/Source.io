@@ -1,0 +1,113 @@
+name: Supabase deploy
+
+# Staging: deployed automatically on every push to main that touches supabase/**.
+# Production: deployed only by a manual "Run workflow" with target=production,
+# gated by the GitHub `production` environment (required reviewers).
+#
+# Order per environment: link -> db push (migrations) -> functions deploy.
+# Migrations always go first so functions never run against a missing schema.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Environment to deploy"
+        type: choice
+        required: true
+        default: staging
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+# Never run two deploys to the same environment at once, and never cancel one mid-flight.
+concurrency:
+  group: supabase-deploy-${{ github.event_name == 'workflow_dispatch' && inputs.target || 'staging' }}
+  cancel-in-progress: false
+
+jobs:
+  staging:
+    name: Deploy to staging
+    if: github.event_name == 'push' || inputs.target == 'staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD_STAGING }}
+      PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF_STAGING }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Verify secrets are configured
+        shell: bash
+        run: |
+          missing=0
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD PROJECT_REF; do
+            if [ -z "${!name}" ]; then echo "::error::$name is not set"; missing=1; fi
+          done
+          exit $missing
+
+      - name: Link project
+        run: supabase link --project-ref "$PROJECT_REF"
+
+      - name: Apply migrations
+        run: supabase db push
+
+      - name: Deploy edge functions
+        run: supabase functions deploy --project-ref "$PROJECT_REF"
+
+  production:
+    name: Deploy to production
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Configure required reviewers on this environment in GitHub settings;
+    # the job pauses here until someone approves it.
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD_PRODUCTION }}
+      PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF_PRODUCTION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse to deploy from anything other than main
+        if: github.ref != 'refs/heads/main'
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          echo "::error::Production deploys must run from main (got $REF)."
+          exit 1
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Verify secrets are configured
+        shell: bash
+        run: |
+          missing=0
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD PROJECT_REF; do
+            if [ -z "${!name}" ]; then echo "::error::$name is not set"; missing=1; fi
+          done
+          exit $missing
+
+      - name: Link project
+        run: supabase link --project-ref "$PROJECT_REF"
+
+      - name: Apply migrations
+        run: supabase db push
+
+      - name: Deploy edge functions
+        run: supabase functions deploy --project-ref "$PROJECT_REF"
