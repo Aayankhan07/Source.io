@@ -258,9 +258,9 @@ export default function CustomizationSettings() {
             const isEnabled = preferences.enabledModes.includes(tool.id);
 
             return (
-              <div
+              // <label> wrapping the Switch makes the whole row clickable and names the switch.
+              <label
                 key={tool.id}
-                onClick={() => handleToggleMode(tool.id)}
                 className={cn(
                   "p-4 rounded-[20px] border flex items-center justify-between gap-4 transition-all cursor-pointer select-none shadow-2xs",
                   isEnabled
@@ -292,9 +292,9 @@ export default function CustomizationSettings() {
                 <Switch
                   checked={isEnabled}
                   onCheckedChange={() => handleToggleMode(tool.id)}
-                  onClick={(e) => e.stopPropagation()}
+                  className="shrink-0"
                 />
-              </div>
+              </label>
             );
           })}
         </div>
@@ -329,9 +329,8 @@ export default function CustomizationSettings() {
             const isChecked = preferences.noteSections[block.key];
 
             return (
-              <div
+              <label
                 key={block.key}
-                onClick={() => handleToggleSection(block.key, !isChecked)}
                 className={cn(
                   "p-3.5 rounded-[18px] border flex items-start justify-between gap-3 cursor-pointer select-none transition-all",
                   isChecked
@@ -339,7 +338,7 @@ export default function CustomizationSettings() {
                     : "bg-surface-sunken/40 border-border/50 opacity-60 hover:opacity-100"
                 )}
               >
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 min-w-0">
                   <span className="text-xs font-bold text-foreground block">
                     {block.label}
                   </span>
@@ -350,9 +349,9 @@ export default function CustomizationSettings() {
                 <Switch
                   checked={isChecked}
                   onCheckedChange={(checked) => handleToggleSection(block.key, checked)}
-                  onClick={(e) => e.stopPropagation()}
+                  className="shrink-0"
                 />
-              </div>
+              </label>
             );
           })}
         </div>
@@ -377,6 +376,7 @@ export default function CustomizationSettings() {
           </div>
 
           <Slider
+            aria-label="Explanation rigor depth"
             value={[preferences.rigorLevel]}
             min={1}
             max={5}
@@ -389,10 +389,10 @@ export default function CustomizationSettings() {
             className="w-full cursor-pointer"
           />
 
-          <div className="flex justify-between text-xs font-mono text-muted-foreground px-1">
-            <span>1: Intuitive</span>
-            <span>3: Collegiate</span>
-            <span>5: Peer Review</span>
+          <div className="flex justify-between gap-2 text-xs font-mono text-muted-foreground px-1">
+            <span className="text-left">1: Intuitive</span>
+            <span className="text-center">3: Collegiate</span>
+            <span className="text-right">5: Peer Review</span>
           </div>
         </div>
 
@@ -453,15 +453,16 @@ export default function CustomizationSettings() {
         {/* Custom AI Directive */}
         <div className="space-y-2">
           <div>
-            <span className="text-xs font-bold text-foreground block font-display">
+            <label htmlFor="custom-ai-directive" className="text-xs font-bold text-foreground block font-display">
               Custom AI Directive (Optional)
-            </span>
+            </label>
             <span className="text-xs text-muted-foreground">
               Always append a custom rule to AI generation (e.g. &quot;Include Python snippets where relevant&quot;).
             </span>
           </div>
 
           <input
+            id="custom-ai-directive"
             type="text"
             value={preferences.customSystemInstruction || ""}
             onChange={(e) => updatePreferences({ customSystemInstruction: e.target.value })}

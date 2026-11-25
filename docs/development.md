@@ -126,3 +126,11 @@ A new document-derived asset (say, a mind map) touches these places, in order:
 - Kokoro (`kokoro-js`) loads its model in the browser (in a Web Worker) when audio is rendered; devices that cannot run it fall back to `speechSynthesis` playback without saving a file.
 - `src/integrations/supabase/client.ts` is marked generated but has been hand-edited to add the credential warning and the `SUPABASE_URL` export that `functions.ts` depends on. Regenerating it will drop both.
 - 8 `react-refresh/only-export-components` lint warnings remain, all in stock shadcn files. They affect HMR granularity only.
+
+## Running evals
+
+Evals live in `evals/` (details, thresholds and baseline numbers in `evals/README.md`).
+
+- Retrieval (Recall@K, roadmap 2.6): `npx -y deno@2 run -A evals/retrieval/run.ts --embedder hash` runs offline. Score the production gte-small model with `--embedder edge` (needs `supabase functions serve` and the temporary `eval-embed` runner, see the README). Exits 1 when Recall@6 < `MIN_RECALL6` (default 0.8). Run it before merging any change to chunking, embeddings, `match_document_chunks` or chat `TOP_K`.
+- Notes and flashcards (LLM judge): `GROQ_API_KEY=... npx -y deno@2 run -A evals/generation/run.ts` (or `GEMINI_API_KEY`). Without a key it skips. Exits 1 below the `MIN_*` score thresholds.
+- Type-check: `npx -y deno@2 check "evals/**/*.ts"`.

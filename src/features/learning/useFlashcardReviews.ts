@@ -84,6 +84,8 @@ export function useFlashcardReviews(documentId: string) {
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: learningKeys.leitnerBoxes(userId) });
+      void queryClient.invalidateQueries({ queryKey: learningKeys.dueSummary(userId) });
+      void queryClient.invalidateQueries({ queryKey: learningKeys.studyStreak(userId) });
     },
   });
 

@@ -177,7 +177,7 @@ export function KnowledgePipelineClient({ math }: { math: PipelineMath }) {
                         <span className="font-mono text-xs font-bold tracking-wider text-slate-900 uppercase">
                           {stage.eyebrow}
                         </span>
-                        <span className="text-xs font-mono text-slate-400">
+                        <span className="text-xs font-mono text-slate-500">
                           / {stage.metric}
                         </span>
                       </div>
@@ -201,7 +201,7 @@ export function KnowledgePipelineClient({ math }: { math: PipelineMath }) {
                     <span 
                       aria-hidden="true" 
                       className={`font-mono text-3xl font-extrabold select-none tracking-tighter transition-colors shrink-0 ${
-                        isActive ? "text-slate-900/30" : "text-slate-200/80 group-hover:text-slate-300"
+                        isActive ? "text-slate-700" : "text-slate-500 group-hover:text-slate-600"
                       }`}
                     >
                       {stage.step}
@@ -220,7 +220,7 @@ export function KnowledgePipelineClient({ math }: { math: PipelineMath }) {
               <div className="relative rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(15,23,42,0.04)] overflow-hidden h-full min-h-[440px] sm:min-h-[520px] p-4 sm:p-8 flex flex-col justify-between">
                 
                 {/* Real Document Running Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100 text-xs font-mono text-slate-400">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100 text-xs font-mono text-slate-500">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-slate-700">GRIFFITHS</span>
                     <span>•</span>
@@ -387,7 +387,7 @@ export function KnowledgePipelineClient({ math }: { math: PipelineMath }) {
                         exit={{ opacity: 0, y: -6 }}
                         className="space-y-1.5 font-mono text-xs"
                       >
-                        <div className="text-xs uppercase tracking-wider text-slate-400 font-bold">
+                        <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">
                           Derived Hierarchical Chunk Map
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -416,7 +416,7 @@ export function KnowledgePipelineClient({ math }: { math: PipelineMath }) {
                         exit={{ opacity: 0, y: -6 }}
                         className="space-y-2"
                       >
-                        <div className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold flex items-center justify-between">
+                        <div className="text-xs font-mono uppercase tracking-wider text-slate-500 font-bold flex items-center justify-between">
                           <span>Synthesized Stubs (Lifted from ¶3)</span>
                           <span className="text-slate-900">4 Synchronized Modalities</span>
                         </div>
@@ -505,7 +505,7 @@ export function KnowledgePipelineClient({ math }: { math: PipelineMath }) {
                             <span>Lines 18–22</span>
                           </div>
 
-                          <span className="text-xs font-mono text-slate-400">
+                          <span className="text-xs font-mono text-slate-500">
                             Cosine similarity: 98.4%
                           </span>
                         </div>

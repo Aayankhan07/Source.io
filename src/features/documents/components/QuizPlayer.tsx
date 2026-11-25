@@ -771,6 +771,7 @@ export function QuizPlayer({
                     value={shortAnswerInput}
                     onChange={(e) => setShortAnswerInput(e.target.value)}
                     placeholder="Type your exact answer here..."
+                    aria-label="Your answer"
                     autoFocus
                     className="w-full px-4 py-3.5 pr-28 rounded-2xl border border-border bg-background text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white transition-all shadow-xs"
                   />

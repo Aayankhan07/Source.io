@@ -1,0 +1,1779 @@
+{
+  "embedder": "hash",
+  "describe": "legacy FNV-1a hashed unigram+bigram, 768 dims (offline)",
+  "date": "2026-11-25T22:46:51.295Z",
+  "documents": 20,
+  "chunks": 257,
+  "questions": 63,
+  "embedMs": 27,
+  "gate": {
+    "scope": "corpus",
+    "metric": "recall@6",
+    "min": 0.8,
+    "value": 0.47619047619047616,
+    "passed": false
+  },
+  "metrics": {
+    "doc": {
+      "all": {
+        "n": 63,
+        "recall": {
+          "@1": 0.4126984126984127,
+          "@3": 0.6349206349206349,
+          "@6": 0.7936507936507936
+        },
+        "mrr": 0.5589606381273047
+      },
+      "literal": {
+        "n": 37,
+        "recall": {
+          "@1": 0.6216216216216216,
+          "@3": 0.8378378378378378,
+          "@6": 0.918918918918919
+        },
+        "mrr": 0.7343790218790217
+      },
+      "paraphrase": {
+        "n": 26,
+        "recall": {
+          "@1": 0.11538461538461539,
+          "@3": 0.34615384615384615,
+          "@6": 0.6153846153846154
+        },
+        "mrr": 0.30932678432678434
+      }
+    },
+    "corpus": {
+      "all": {
+        "n": 63,
+        "recall": {
+          "@1": 0.31746031746031744,
+          "@3": 0.3968253968253968,
+          "@6": 0.47619047619047616
+        },
+        "mrr": 0.3818544452754825
+      },
+      "literal": {
+        "n": 37,
+        "recall": {
+          "@1": 0.5135135135135135,
+          "@3": 0.6486486486486487,
+          "@6": 0.7027027027027027
+        },
+        "mrr": 0.592476166947998
+      },
+      "paraphrase": {
+        "n": 26,
+        "recall": {
+          "@1": 0.038461538461538464,
+          "@3": 0.038461538461538464,
+          "@6": 0.15384615384615385
+        },
+        "mrr": 0.08212353366459513
+      }
+    }
+  },
+  "results": [
+    {
+      "doc": "cell-respiration",
+      "question": "What is the net yield of glycolysis per molecule of glucose?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "cell-respiration#3 (0.375)",
+          "cell-respiration#2 (0.375)",
+          "cell-respiration#8 (0.311)",
+          "cell-respiration#0 (0.278)",
+          "cell-respiration#1 (0.266)",
+          "cell-respiration#5 (0.226)"
+        ],
+        "corpus": [
+          "cell-respiration#3 (0.375)",
+          "cell-respiration#2 (0.375)",
+          "linear-algebra-basics#3 (0.360)",
+          "linear-algebra-basics#7 (0.359)",
+          "chemical-equilibrium#3 (0.354)",
+          "plate-tectonics#0 (0.344)"
+        ]
+      }
+    },
+    {
+      "doc": "cell-respiration",
+      "question": "Which researcher's hypothesis explained how a hydrogen-ion imbalance across a membrane drives energy capture, and when was it put forward?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 10,
+        "corpus": 174
+      },
+      "topChunks": {
+        "doc": [
+          "cell-respiration#11 (0.097)",
+          "cell-respiration#3 (0.096)",
+          "cell-respiration#2 (0.088)",
+          "cell-respiration#0 (0.079)",
+          "cell-respiration#6 (0.062)",
+          "cell-respiration#9 (0.042)"
+        ],
+        "corpus": [
+          "human-nutrition#0 (0.169)",
+          "human-nutrition#3 (0.138)",
+          "frankenstein-analysis#0 (0.126)",
+          "hash-tables#5 (0.126)",
+          "ecology-course-reader#9 (0.125)",
+          "ecology-course-reader#28 (0.122)"
+        ]
+      }
+    },
+    {
+      "doc": "cell-respiration",
+      "question": "How does a gas found in car exhaust stop a cell from producing usable energy?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 12,
+        "corpus": 213
+      },
+      "topChunks": {
+        "doc": [
+          "cell-respiration#0 (0.100)",
+          "cell-respiration#2 (0.078)",
+          "cell-respiration#10 (0.074)",
+          "cell-respiration#8 (0.069)",
+          "cell-respiration#9 (0.066)",
+          "cell-respiration#1 (0.051)"
+        ],
+        "corpus": [
+          "newtonian-mechanics#6 (0.157)",
+          "human-nutrition#10 (0.128)",
+          "ecology-course-reader#25 (0.127)",
+          "human-nutrition#7 (0.123)",
+          "human-nutrition#6 (0.118)",
+          "newtonian-mechanics#7 (0.116)"
+        ]
+      }
+    },
+    {
+      "doc": "industrial-revolution",
+      "question": "When did the Bridgewater Canal open and what was it built to carry?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 2,
+        "corpus": 2
+      },
+      "topChunks": {
+        "doc": [
+          "industrial-revolution#1 (0.302)",
+          "industrial-revolution#2 (0.280)",
+          "industrial-revolution#0 (0.271)",
+          "industrial-revolution#3 (0.239)",
+          "industrial-revolution#7 (0.227)",
+          "industrial-revolution#11 (0.213)"
+        ],
+        "corpus": [
+          "industrial-revolution#1 (0.302)",
+          "industrial-revolution#2 (0.280)",
+          "cardiovascular-physiology#0 (0.271)",
+          "industrial-revolution#0 (0.271)",
+          "cell-respiration#10 (0.262)",
+          "human-nutrition#7 (0.261)"
+        ]
+      }
+    },
+    {
+      "doc": "industrial-revolution",
+      "question": "How much more fuel-efficient was the Glasgow instrument maker's improved design than the earlier atmospheric pumping machine?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 4,
+        "corpus": 43
+      },
+      "topChunks": {
+        "doc": [
+          "industrial-revolution#11 (0.262)",
+          "industrial-revolution#5 (0.235)",
+          "industrial-revolution#0 (0.208)",
+          "industrial-revolution#6 (0.205)",
+          "industrial-revolution#3 (0.202)",
+          "industrial-revolution#4 (0.176)"
+        ],
+        "corpus": [
+          "cardiovascular-physiology#3 (0.275)",
+          "cardiovascular-physiology#1 (0.264)",
+          "industrial-revolution#11 (0.262)",
+          "frankenstein-analysis#5 (0.254)",
+          "frankenstein-analysis#3 (0.253)",
+          "hash-tables#4 (0.252)"
+        ]
+      }
+    },
+    {
+      "doc": "industrial-revolution",
+      "question": "What did the Factory Act of 1833 ban?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 3
+      },
+      "topChunks": {
+        "doc": [
+          "industrial-revolution#9 (0.287)",
+          "industrial-revolution#1 (0.254)",
+          "industrial-revolution#11 (0.250)",
+          "industrial-revolution#4 (0.235)",
+          "industrial-revolution#3 (0.217)",
+          "industrial-revolution#7 (0.214)"
+        ],
+        "corpus": [
+          "chemical-equilibrium#3 (0.309)",
+          "frankenstein-analysis#1 (0.294)",
+          "industrial-revolution#9 (0.287)",
+          "hypothesis-testing#9 (0.272)",
+          "linear-algebra-basics#1 (0.271)",
+          "chemical-equilibrium#7 (0.266)"
+        ]
+      }
+    },
+    {
+      "doc": "contract-formation",
+      "question": "Is a display of goods in a shop with a price tag an offer or an invitation to treat?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "contract-formation#2 (0.500)",
+          "contract-formation#1 (0.417)",
+          "contract-formation#3 (0.295)",
+          "contract-formation#11 (0.259)",
+          "contract-formation#7 (0.226)",
+          "contract-formation#5 (0.211)"
+        ],
+        "corpus": [
+          "contract-formation#2 (0.500)",
+          "contract-formation#1 (0.417)",
+          "contract-formation#3 (0.295)",
+          "newtonian-mechanics#0 (0.263)",
+          "contract-formation#11 (0.259)",
+          "cell-respiration#10 (0.255)"
+        ]
+      }
+    },
+    {
+      "doc": "contract-formation",
+      "question": "If someone agrees to a deal by mailing a reply, at what moment does the agreement become binding?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 3,
+        "corpus": 20
+      },
+      "topChunks": {
+        "doc": [
+          "contract-formation#1 (0.243)",
+          "contract-formation#2 (0.219)",
+          "contract-formation#5 (0.183)",
+          "contract-formation#4 (0.183)",
+          "contract-formation#3 (0.178)",
+          "contract-formation#8 (0.173)"
+        ],
+        "corpus": [
+          "contract-formation#1 (0.243)",
+          "contract-formation#2 (0.219)",
+          "separation-of-powers#1 (0.216)",
+          "chemical-equilibrium#1 (0.208)",
+          "chemical-equilibrium#7 (0.207)",
+          "music-theory-fundamentals#3 (0.206)"
+        ]
+      }
+    },
+    {
+      "doc": "contract-formation",
+      "question": "When does the doctrine of undue influence apply?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 4,
+        "corpus": 71
+      },
+      "topChunks": {
+        "doc": [
+          "contract-formation#7 (0.237)",
+          "contract-formation#5 (0.217)",
+          "contract-formation#3 (0.211)",
+          "contract-formation#11 (0.207)",
+          "contract-formation#4 (0.197)",
+          "contract-formation#9 (0.196)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#1 (0.283)",
+          "linear-algebra-basics#7 (0.274)",
+          "ecology-course-reader#7 (0.271)",
+          "cardiovascular-physiology#1 (0.269)",
+          "separation-of-powers#2 (0.267)",
+          "cardiovascular-physiology#3 (0.260)"
+        ]
+      }
+    },
+    {
+      "doc": "hash-tables",
+      "question": "Who is credited with the original idea of hashing?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 3,
+        "corpus": 66
+      },
+      "topChunks": {
+        "doc": [
+          "hash-tables#6 (0.276)",
+          "hash-tables#2 (0.270)",
+          "hash-tables#0 (0.224)",
+          "hash-tables#4 (0.223)",
+          "hash-tables#7 (0.214)",
+          "hash-tables#3 (0.209)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#7 (0.355)",
+          "chemical-equilibrium#3 (0.304)",
+          "stellar-evolution#0 (0.302)",
+          "linear-algebra-basics#3 (0.298)",
+          "linear-algebra-basics#5 (0.292)",
+          "plate-tectonics#5 (0.290)"
+        ]
+      }
+    },
+    {
+      "doc": "hash-tables",
+      "question": "When does Java's HashMap convert a bucket's linked list into a red-black tree?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "hash-tables#5 (0.212)",
+          "hash-tables#11 (0.083)",
+          "hash-tables#0 (0.056)",
+          "hash-tables#4 (0.053)",
+          "hash-tables#9 (0.007)",
+          "hash-tables#8 (0.007)"
+        ],
+        "corpus": [
+          "hash-tables#5 (0.212)",
+          "hash-tables#11 (0.083)",
+          "stellar-evolution#10 (0.072)",
+          "contract-formation#4 (0.066)",
+          "stellar-evolution#11 (0.066)",
+          "chemical-equilibrium#11 (0.064)"
+        ]
+      }
+    },
+    {
+      "doc": "hash-tables",
+      "question": "Which well-known in-memory key-value store migrates entries gradually while growing so that it avoids long pauses?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 10,
+        "corpus": 113
+      },
+      "topChunks": {
+        "doc": [
+          "hash-tables#0 (0.186)",
+          "hash-tables#1 (0.124)",
+          "hash-tables#8 (0.113)",
+          "hash-tables#11 (0.103)",
+          "hash-tables#3 (0.086)",
+          "hash-tables#7 (0.084)"
+        ],
+        "corpus": [
+          "memory-and-learning#1 (0.204)",
+          "hash-tables#0 (0.186)",
+          "memory-and-learning#3 (0.154)",
+          "human-nutrition#5 (0.153)",
+          "memory-and-learning#0 (0.153)",
+          "memory-and-learning#4 (0.145)"
+        ]
+      }
+    },
+    {
+      "doc": "hypothesis-testing",
+      "question": "Which statistician made the widely used measure of how surprising data are popular, and in which decade?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 9,
+        "corpus": 206
+      },
+      "topChunks": {
+        "doc": [
+          "hypothesis-testing#10 (0.279)",
+          "hypothesis-testing#6 (0.206)",
+          "hypothesis-testing#11 (0.200)",
+          "hypothesis-testing#9 (0.199)",
+          "hypothesis-testing#7 (0.198)",
+          "hypothesis-testing#8 (0.181)"
+        ],
+        "corpus": [
+          "music-theory-fundamentals#6 (0.298)",
+          "industrial-revolution#0 (0.281)",
+          "chemical-equilibrium#5 (0.280)",
+          "ecology-course-reader#18 (0.280)",
+          "music-theory-fundamentals#3 (0.280)",
+          "hypothesis-testing#10 (0.279)"
+        ]
+      }
+    },
+    {
+      "doc": "hypothesis-testing",
+      "question": "How many participants per group does a two-sample t-test need to reach 80% power for a medium effect?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "hypothesis-testing#6 (0.245)",
+          "hypothesis-testing#9 (0.139)",
+          "hypothesis-testing#7 (0.116)",
+          "hypothesis-testing#4 (0.101)",
+          "hypothesis-testing#5 (0.090)",
+          "hypothesis-testing#8 (0.084)"
+        ],
+        "corpus": [
+          "hypothesis-testing#6 (0.245)",
+          "hypothesis-testing#9 (0.139)",
+          "memory-and-learning#5 (0.116)",
+          "hypothesis-testing#7 (0.116)",
+          "separation-of-powers#2 (0.109)",
+          "chemical-equilibrium#11 (0.107)"
+        ]
+      }
+    },
+    {
+      "doc": "hypothesis-testing",
+      "question": "Under the Bonferroni correction with 20 tests, what p-value does each test need?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 3,
+        "corpus": 3
+      },
+      "topChunks": {
+        "doc": [
+          "hypothesis-testing#9 (0.249)",
+          "hypothesis-testing#11 (0.237)",
+          "hypothesis-testing#10 (0.236)",
+          "hypothesis-testing#8 (0.194)",
+          "hypothesis-testing#2 (0.183)",
+          "hypothesis-testing#3 (0.173)"
+        ],
+        "corpus": [
+          "hypothesis-testing#9 (0.249)",
+          "hypothesis-testing#11 (0.237)",
+          "hypothesis-testing#10 (0.236)",
+          "music-theory-fundamentals#5 (0.226)",
+          "tcp-ip-networking#5 (0.200)",
+          "frankenstein-analysis#2 (0.194)"
+        ]
+      }
+    },
+    {
+      "doc": "supply-demand-elasticity",
+      "question": "Which nineteenth-century thinker likened the two market forces to the halves of a cutting tool?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 1,
+        "corpus": 4
+      },
+      "topChunks": {
+        "doc": [
+          "supply-demand-elasticity#0 (0.348)",
+          "supply-demand-elasticity#5 (0.274)",
+          "supply-demand-elasticity#1 (0.249)",
+          "supply-demand-elasticity#7 (0.226)",
+          "supply-demand-elasticity#2 (0.216)",
+          "supply-demand-elasticity#9 (0.214)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#1 (0.369)",
+          "cardiovascular-physiology#1 (0.363)",
+          "music-theory-fundamentals#3 (0.353)",
+          "supply-demand-elasticity#0 (0.348)",
+          "industrial-revolution#3 (0.336)",
+          "linear-algebra-basics#7 (0.333)"
+        ]
+      }
+    },
+    {
+      "doc": "supply-demand-elasticity",
+      "question": "What is the price elasticity in the museum ticket example?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "supply-demand-elasticity#5 (0.474)",
+          "supply-demand-elasticity#8 (0.441)",
+          "supply-demand-elasticity#7 (0.432)",
+          "supply-demand-elasticity#9 (0.369)",
+          "supply-demand-elasticity#3 (0.364)",
+          "supply-demand-elasticity#4 (0.343)"
+        ],
+        "corpus": [
+          "supply-demand-elasticity#5 (0.474)",
+          "supply-demand-elasticity#8 (0.441)",
+          "supply-demand-elasticity#7 (0.432)",
+          "music-theory-fundamentals#3 (0.426)",
+          "chemical-equilibrium#3 (0.425)",
+          "cardiovascular-physiology#4 (0.421)"
+        ]
+      }
+    },
+    {
+      "doc": "supply-demand-elasticity",
+      "question": "What does a binding price ceiling create, and why?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "supply-demand-elasticity#8 (0.203)",
+          "supply-demand-elasticity#9 (0.157)",
+          "supply-demand-elasticity#5 (0.137)",
+          "supply-demand-elasticity#1 (0.118)",
+          "supply-demand-elasticity#0 (0.118)",
+          "supply-demand-elasticity#6 (0.096)"
+        ],
+        "corpus": [
+          "supply-demand-elasticity#8 (0.203)",
+          "human-nutrition#12 (0.159)",
+          "supply-demand-elasticity#9 (0.157)",
+          "plate-tectonics#0 (0.154)",
+          "ethical-theories#8 (0.154)",
+          "ecology-course-reader#20 (0.151)"
+        ]
+      }
+    },
+    {
+      "doc": "chemical-equilibrium",
+      "question": "Which two Scandinavian scientists first formulated the rule about concentration ratios at balance, and in what year?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 1,
+        "corpus": 9
+      },
+      "topChunks": {
+        "doc": [
+          "chemical-equilibrium#2 (0.309)",
+          "chemical-equilibrium#5 (0.305)",
+          "chemical-equilibrium#3 (0.301)",
+          "chemical-equilibrium#6 (0.297)",
+          "chemical-equilibrium#7 (0.283)",
+          "chemical-equilibrium#9 (0.281)"
+        ],
+        "corpus": [
+          "music-theory-fundamentals#3 (0.372)",
+          "industrial-revolution#0 (0.338)",
+          "human-nutrition#9 (0.328)",
+          "plate-tectonics#0 (0.327)",
+          "frankenstein-analysis#9 (0.324)",
+          "separation-of-powers#2 (0.318)"
+        ]
+      }
+    },
+    {
+      "doc": "chemical-equilibrium",
+      "question": "Why does a sealed tube of the N2O4 and NO2 gas mixture turn darker brown in hot water?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "chemical-equilibrium#7 (0.317)",
+          "chemical-equilibrium#2 (0.260)",
+          "chemical-equilibrium#6 (0.235)",
+          "chemical-equilibrium#5 (0.226)",
+          "chemical-equilibrium#8 (0.225)",
+          "chemical-equilibrium#11 (0.221)"
+        ],
+        "corpus": [
+          "chemical-equilibrium#7 (0.317)",
+          "separation-of-powers#5 (0.289)",
+          "frankenstein-analysis#1 (0.284)",
+          "ecology-course-reader#17 (0.281)",
+          "plate-tectonics#8 (0.276)",
+          "plate-tectonics#0 (0.276)"
+        ]
+      }
+    },
+    {
+      "doc": "chemical-equilibrium",
+      "question": "What fraction of the starting gases becomes fertilizer feedstock each time they flow once through the vessel?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 5,
+        "corpus": 72
+      },
+      "topChunks": {
+        "doc": [
+          "chemical-equilibrium#6 (0.266)",
+          "chemical-equilibrium#3 (0.263)",
+          "chemical-equilibrium#5 (0.251)",
+          "chemical-equilibrium#2 (0.235)",
+          "chemical-equilibrium#9 (0.226)",
+          "chemical-equilibrium#8 (0.195)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#1 (0.340)",
+          "frankenstein-analysis#3 (0.325)",
+          "cardiovascular-physiology#1 (0.318)",
+          "cardiovascular-physiology#3 (0.314)",
+          "cardiovascular-physiology#2 (0.298)",
+          "separation-of-powers#7 (0.296)"
+        ]
+      }
+    },
+    {
+      "doc": "frankenstein-analysis",
+      "question": "How many copies of the first edition of Frankenstein were printed?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "frankenstein-analysis#0 (0.352)",
+          "frankenstein-analysis#1 (0.290)",
+          "frankenstein-analysis#2 (0.265)",
+          "frankenstein-analysis#3 (0.262)",
+          "frankenstein-analysis#5 (0.246)",
+          "frankenstein-analysis#10 (0.218)"
+        ],
+        "corpus": [
+          "frankenstein-analysis#0 (0.352)",
+          "linear-algebra-basics#1 (0.331)",
+          "linear-algebra-basics#7 (0.324)",
+          "supply-demand-elasticity#0 (0.324)",
+          "linear-algebra-basics#3 (0.317)",
+          "cardiovascular-physiology#1 (0.307)"
+        ]
+      }
+    },
+    {
+      "doc": "frankenstein-analysis",
+      "question": "In what icy mountain setting does the artificial man recount his life to his maker?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 5,
+        "corpus": 6
+      },
+      "topChunks": {
+        "doc": [
+          "frankenstein-analysis#2 (0.283)",
+          "frankenstein-analysis#5 (0.227)",
+          "frankenstein-analysis#8 (0.226)",
+          "frankenstein-analysis#9 (0.220)",
+          "frankenstein-analysis#3 (0.206)",
+          "frankenstein-analysis#7 (0.197)"
+        ],
+        "corpus": [
+          "frankenstein-analysis#2 (0.283)",
+          "frankenstein-analysis#5 (0.227)",
+          "frankenstein-analysis#8 (0.226)",
+          "frankenstein-analysis#9 (0.220)",
+          "separation-of-powers#8 (0.207)",
+          "frankenstein-analysis#3 (0.206)"
+        ]
+      }
+    },
+    {
+      "doc": "frankenstein-analysis",
+      "question": "Who directed the 1931 Universal film and who played the creature?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 4,
+        "corpus": 6
+      },
+      "topChunks": {
+        "doc": [
+          "frankenstein-analysis#5 (0.403)",
+          "frankenstein-analysis#3 (0.385)",
+          "frankenstein-analysis#4 (0.346)",
+          "frankenstein-analysis#10 (0.344)",
+          "frankenstein-analysis#9 (0.344)",
+          "frankenstein-analysis#7 (0.322)"
+        ],
+        "corpus": [
+          "frankenstein-analysis#5 (0.403)",
+          "frankenstein-analysis#3 (0.385)",
+          "music-theory-fundamentals#3 (0.375)",
+          "separation-of-powers#7 (0.356)",
+          "frankenstein-analysis#4 (0.346)",
+          "frankenstein-analysis#10 (0.344)"
+        ]
+      }
+    },
+    {
+      "doc": "newtonian-mechanics",
+      "question": "According to Galileo's rolling-ball argument, what would happen to a ball on a perfectly smooth horizontal surface?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 10
+      },
+      "topChunks": {
+        "doc": [
+          "newtonian-mechanics#1 (0.126)",
+          "newtonian-mechanics#4 (0.109)",
+          "newtonian-mechanics#3 (0.050)",
+          "newtonian-mechanics#2 (0.049)",
+          "newtonian-mechanics#5 (0.047)",
+          "newtonian-mechanics#10 (0.030)"
+        ],
+        "corpus": [
+          "ecology-course-reader#26 (0.167)",
+          "ethical-theories#11 (0.167)",
+          "ecology-course-reader#30 (0.164)",
+          "separation-of-powers#10 (0.140)",
+          "music-theory-fundamentals#2 (0.138)",
+          "tcp-ip-networking#1 (0.136)"
+        ]
+      }
+    },
+    {
+      "doc": "newtonian-mechanics",
+      "question": "Why does extending the duration of a crash reduce the harm done to the occupants?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 7,
+        "corpus": 210
+      },
+      "topChunks": {
+        "doc": [
+          "newtonian-mechanics#2 (0.335)",
+          "newtonian-mechanics#1 (0.302)",
+          "newtonian-mechanics#3 (0.293)",
+          "newtonian-mechanics#9 (0.281)",
+          "newtonian-mechanics#4 (0.255)",
+          "newtonian-mechanics#7 (0.221)"
+        ],
+        "corpus": [
+          "cardiovascular-physiology#1 (0.475)",
+          "linear-algebra-basics#1 (0.450)",
+          "cardiovascular-physiology#3 (0.428)",
+          "chemical-equilibrium#6 (0.412)",
+          "frankenstein-analysis#3 (0.411)",
+          "linear-algebra-basics#6 (0.401)"
+        ]
+      }
+    },
+    {
+      "doc": "newtonian-mechanics",
+      "question": "In the perfectly inelastic rear-end collision example, how much of the original kinetic energy was lost?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 10
+      },
+      "topChunks": {
+        "doc": [
+          "newtonian-mechanics#9 (0.319)",
+          "newtonian-mechanics#6 (0.312)",
+          "newtonian-mechanics#7 (0.263)",
+          "newtonian-mechanics#1 (0.254)",
+          "newtonian-mechanics#3 (0.246)",
+          "newtonian-mechanics#8 (0.237)"
+        ],
+        "corpus": [
+          "frankenstein-analysis#3 (0.386)",
+          "frankenstein-analysis#5 (0.379)",
+          "cardiovascular-physiology#1 (0.373)",
+          "cardiovascular-physiology#3 (0.342)",
+          "industrial-revolution#6 (0.339)",
+          "linear-algebra-basics#1 (0.337)"
+        ]
+      }
+    },
+    {
+      "doc": "cardiovascular-physiology",
+      "question": "How much thicker is the wall of the left ventricle than that of the right ventricle?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "cardiovascular-physiology#2 (0.585)",
+          "cardiovascular-physiology#3 (0.557)",
+          "cardiovascular-physiology#1 (0.552)",
+          "cardiovascular-physiology#4 (0.461)",
+          "cardiovascular-physiology#7 (0.435)",
+          "cardiovascular-physiology#0 (0.398)"
+        ],
+        "corpus": [
+          "cardiovascular-physiology#2 (0.585)",
+          "cardiovascular-physiology#3 (0.557)",
+          "cardiovascular-physiology#1 (0.552)",
+          "linear-algebra-basics#1 (0.500)",
+          "chemical-equilibrium#3 (0.473)",
+          "cardiovascular-physiology#4 (0.461)"
+        ]
+      }
+    },
+    {
+      "doc": "cardiovascular-physiology",
+      "question": "Which cluster of cells sets the tempo of each beat, and how often does it fire while a person is relaxing?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 6,
+        "corpus": 81
+      },
+      "topChunks": {
+        "doc": [
+          "cardiovascular-physiology#0 (0.313)",
+          "cardiovascular-physiology#6 (0.254)",
+          "cardiovascular-physiology#7 (0.253)",
+          "cardiovascular-physiology#1 (0.227)",
+          "cardiovascular-physiology#9 (0.220)",
+          "cardiovascular-physiology#4 (0.217)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#7 (0.350)",
+          "linear-algebra-basics#3 (0.327)",
+          "cardiovascular-physiology#0 (0.313)",
+          "music-theory-fundamentals#8 (0.306)",
+          "ecology-course-reader#0 (0.299)",
+          "plate-tectonics#0 (0.298)"
+        ]
+      }
+    },
+    {
+      "doc": "cardiovascular-physiology",
+      "question": "What blood pressure range defines stage 1 hypertension under the 2017 ACC/AHA guidelines?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "cardiovascular-physiology#9 (0.214)",
+          "cardiovascular-physiology#8 (0.161)",
+          "cardiovascular-physiology#2 (0.158)",
+          "cardiovascular-physiology#1 (0.153)",
+          "cardiovascular-physiology#10 (0.151)",
+          "cardiovascular-physiology#0 (0.136)"
+        ],
+        "corpus": [
+          "cardiovascular-physiology#9 (0.214)",
+          "chemical-equilibrium#11 (0.185)",
+          "separation-of-powers#7 (0.167)",
+          "chemical-equilibrium#6 (0.162)",
+          "cardiovascular-physiology#8 (0.161)",
+          "cardiovascular-physiology#2 (0.158)"
+        ]
+      }
+    },
+    {
+      "doc": "plate-tectonics",
+      "question": "How thick is oceanic crust and what rocks is it made of?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "plate-tectonics#0 (0.296)",
+          "plate-tectonics#6 (0.227)",
+          "plate-tectonics#1 (0.201)",
+          "plate-tectonics#11 (0.198)",
+          "plate-tectonics#8 (0.188)",
+          "plate-tectonics#5 (0.187)"
+        ],
+        "corpus": [
+          "plate-tectonics#0 (0.296)",
+          "separation-of-powers#0 (0.289)",
+          "newtonian-mechanics#8 (0.286)",
+          "cell-respiration#2 (0.268)",
+          "chemical-equilibrium#3 (0.256)",
+          "cell-respiration#3 (0.246)"
+        ]
+      }
+    },
+    {
+      "doc": "plate-tectonics",
+      "question": "Who proposed seafloor spreading and when?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "plate-tectonics#5 (0.302)",
+          "plate-tectonics#10 (0.226)",
+          "plate-tectonics#4 (0.185)",
+          "plate-tectonics#8 (0.170)",
+          "plate-tectonics#0 (0.163)",
+          "plate-tectonics#11 (0.159)"
+        ],
+        "corpus": [
+          "plate-tectonics#5 (0.302)",
+          "industrial-revolution#9 (0.251)",
+          "newtonian-mechanics#5 (0.242)",
+          "linear-algebra-basics#3 (0.237)",
+          "human-nutrition#11 (0.232)",
+          "plate-tectonics#10 (0.226)"
+        ]
+      }
+    },
+    {
+      "doc": "plate-tectonics",
+      "question": "Why was the early twentieth-century notion of wandering landmasses ignored by most scientists for many years?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 4,
+        "corpus": 36
+      },
+      "topChunks": {
+        "doc": [
+          "plate-tectonics#5 (0.240)",
+          "plate-tectonics#4 (0.229)",
+          "plate-tectonics#10 (0.216)",
+          "plate-tectonics#9 (0.208)",
+          "plate-tectonics#0 (0.202)",
+          "plate-tectonics#8 (0.202)"
+        ],
+        "corpus": [
+          "contract-formation#9 (0.274)",
+          "ecology-course-reader#25 (0.271)",
+          "chemical-equilibrium#2 (0.250)",
+          "separation-of-powers#4 (0.247)",
+          "plate-tectonics#5 (0.240)",
+          "contract-formation#0 (0.238)"
+        ]
+      }
+    },
+    {
+      "doc": "memory-and-learning",
+      "question": "Which method revealed that a flashed display is momentarily held almost in full by the visual system?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 10,
+        "corpus": 231
+      },
+      "topChunks": {
+        "doc": [
+          "memory-and-learning#7 (0.257)",
+          "memory-and-learning#2 (0.225)",
+          "memory-and-learning#6 (0.215)",
+          "memory-and-learning#8 (0.206)",
+          "memory-and-learning#10 (0.199)",
+          "memory-and-learning#4 (0.177)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#8 (0.298)",
+          "linear-algebra-basics#7 (0.287)",
+          "ecology-course-reader#6 (0.285)",
+          "chemical-equilibrium#0 (0.280)",
+          "hash-tables#7 (0.272)",
+          "cardiovascular-physiology#7 (0.272)"
+        ]
+      }
+    },
+    {
+      "doc": "memory-and-learning",
+      "question": "In the scuba diver study, how much better was recall when divers were tested in the same environment where they learned?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 3
+      },
+      "topChunks": {
+        "doc": [
+          "memory-and-learning#6 (0.349)",
+          "memory-and-learning#10 (0.274)",
+          "memory-and-learning#4 (0.267)",
+          "memory-and-learning#2 (0.254)",
+          "memory-and-learning#8 (0.232)",
+          "memory-and-learning#9 (0.225)"
+        ],
+        "corpus": [
+          "ecology-course-reader#7 (0.403)",
+          "industrial-revolution#0 (0.390)",
+          "memory-and-learning#6 (0.349)",
+          "industrial-revolution#6 (0.330)",
+          "industrial-revolution#11 (0.325)",
+          "chemical-equilibrium#5 (0.321)"
+        ]
+      }
+    },
+    {
+      "doc": "memory-and-learning",
+      "question": "After seven days, how did pupils who quizzed themselves compare with those who simply reread the passages?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 11,
+        "corpus": 210
+      },
+      "topChunks": {
+        "doc": [
+          "memory-and-learning#7 (0.185)",
+          "memory-and-learning#6 (0.166)",
+          "memory-and-learning#2 (0.165)",
+          "memory-and-learning#1 (0.119)",
+          "memory-and-learning#0 (0.118)",
+          "memory-and-learning#3 (0.097)"
+        ],
+        "corpus": [
+          "newtonian-mechanics#9 (0.201)",
+          "hypothesis-testing#11 (0.200)",
+          "memory-and-learning#7 (0.185)",
+          "frankenstein-analysis#7 (0.185)",
+          "hypothesis-testing#9 (0.183)",
+          "newtonian-mechanics#5 (0.182)"
+        ]
+      }
+    },
+    {
+      "doc": "tcp-ip-networking",
+      "question": "How many addresses are usable for hosts in a /24 IPv4 block, and which addresses are reserved?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 3,
+        "corpus": 14
+      },
+      "topChunks": {
+        "doc": [
+          "tcp-ip-networking#2 (0.168)",
+          "tcp-ip-networking#1 (0.167)",
+          "tcp-ip-networking#3 (0.165)",
+          "tcp-ip-networking#11 (0.134)",
+          "tcp-ip-networking#5 (0.080)",
+          "tcp-ip-networking#4 (0.076)"
+        ],
+        "corpus": [
+          "human-nutrition#2 (0.219)",
+          "music-theory-fundamentals#6 (0.210)",
+          "human-nutrition#3 (0.209)",
+          "ecology-course-reader#22 (0.197)",
+          "stellar-evolution#5 (0.186)",
+          "ecology-course-reader#29 (0.175)"
+        ]
+      }
+    },
+    {
+      "doc": "tcp-ip-networking",
+      "question": "What signal makes the sender resend missing data right away rather than waiting for its timer to run out?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "tcp-ip-networking#6 (0.230)",
+          "tcp-ip-networking#7 (0.166)",
+          "tcp-ip-networking#4 (0.146)",
+          "tcp-ip-networking#3 (0.140)",
+          "tcp-ip-networking#5 (0.139)",
+          "tcp-ip-networking#0 (0.133)"
+        ],
+        "corpus": [
+          "tcp-ip-networking#6 (0.230)",
+          "hypothesis-testing#10 (0.205)",
+          "hypothesis-testing#5 (0.204)",
+          "contract-formation#1 (0.191)",
+          "ecology-course-reader#27 (0.191)",
+          "stellar-evolution#6 (0.186)"
+        ]
+      }
+    },
+    {
+      "doc": "tcp-ip-networking",
+      "question": "Which DNS record type lists the mail servers for a domain and how is its preference number used?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "tcp-ip-networking#11 (0.320)",
+          "tcp-ip-networking#9 (0.232)",
+          "tcp-ip-networking#2 (0.213)",
+          "tcp-ip-networking#1 (0.207)",
+          "tcp-ip-networking#10 (0.204)",
+          "tcp-ip-networking#5 (0.196)"
+        ],
+        "corpus": [
+          "tcp-ip-networking#11 (0.320)",
+          "hash-tables#8 (0.267)",
+          "linear-algebra-basics#7 (0.263)",
+          "linear-algebra-basics#8 (0.262)",
+          "music-theory-fundamentals#3 (0.258)",
+          "music-theory-fundamentals#5 (0.254)"
+        ]
+      }
+    },
+    {
+      "doc": "linear-algebra-basics",
+      "question": "What is the result of multiplying the matrix with rows (1, 2) and (3, 4) by the matrix with rows (5, 6) and (7, 8)?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 5,
+        "corpus": 5
+      },
+      "topChunks": {
+        "doc": [
+          "linear-algebra-basics#5 (0.660)",
+          "linear-algebra-basics#2 (0.612)",
+          "linear-algebra-basics#4 (0.585)",
+          "linear-algebra-basics#6 (0.500)",
+          "linear-algebra-basics#3 (0.494)",
+          "linear-algebra-basics#1 (0.441)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#5 (0.660)",
+          "linear-algebra-basics#2 (0.612)",
+          "linear-algebra-basics#4 (0.585)",
+          "linear-algebra-basics#6 (0.500)",
+          "linear-algebra-basics#3 (0.494)",
+          "separation-of-powers#7 (0.458)"
+        ]
+      }
+    },
+    {
+      "doc": "linear-algebra-basics",
+      "question": "How can you tell from a single number whether a square array of numbers can be undone or reversed?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 2,
+        "corpus": 22
+      },
+      "topChunks": {
+        "doc": [
+          "linear-algebra-basics#3 (0.133)",
+          "linear-algebra-basics#6 (0.115)",
+          "linear-algebra-basics#7 (0.100)",
+          "linear-algebra-basics#9 (0.088)",
+          "linear-algebra-basics#10 (0.085)",
+          "linear-algebra-basics#4 (0.069)"
+        ],
+        "corpus": [
+          "separation-of-powers#0 (0.198)",
+          "separation-of-powers#9 (0.154)",
+          "contract-formation#9 (0.151)",
+          "newtonian-mechanics#5 (0.146)",
+          "contract-formation#4 (0.140)",
+          "supply-demand-elasticity#2 (0.133)"
+        ]
+      }
+    },
+    {
+      "doc": "linear-algebra-basics",
+      "question": "What are the eigenvalues of the matrix with rows (4, 1) and (2, 3)?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 10,
+        "corpus": 21
+      },
+      "topChunks": {
+        "doc": [
+          "linear-algebra-basics#5 (0.590)",
+          "linear-algebra-basics#2 (0.575)",
+          "linear-algebra-basics#1 (0.510)",
+          "linear-algebra-basics#4 (0.501)",
+          "linear-algebra-basics#9 (0.500)",
+          "linear-algebra-basics#6 (0.500)"
+        ],
+        "corpus": [
+          "linear-algebra-basics#5 (0.590)",
+          "linear-algebra-basics#2 (0.575)",
+          "linear-algebra-basics#1 (0.510)",
+          "linear-algebra-basics#4 (0.501)",
+          "linear-algebra-basics#9 (0.500)",
+          "linear-algebra-basics#6 (0.500)"
+        ]
+      }
+    },
+    {
+      "doc": "ethical-theories",
+      "question": "Which thought experiment asks whether you would plug into a device that simulates a pleasant life?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 3,
+        "corpus": 9
+      },
+      "topChunks": {
+        "doc": [
+          "ethical-theories#10 (0.107)",
+          "ethical-theories#0 (0.098)",
+          "ethical-theories#3 (0.093)",
+          "ethical-theories#5 (0.078)",
+          "ethical-theories#4 (0.077)",
+          "ethical-theories#2 (0.062)"
+        ],
+        "corpus": [
+          "stellar-evolution#9 (0.133)",
+          "contract-formation#4 (0.129)",
+          "ethical-theories#10 (0.107)",
+          "human-nutrition#9 (0.100)",
+          "ethical-theories#0 (0.098)",
+          "industrial-revolution#10 (0.097)"
+        ]
+      }
+    },
+    {
+      "doc": "ethical-theories",
+      "question": "Why would Kant say it is wrong to borrow money while secretly planning never to pay it back?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 3,
+        "corpus": 11
+      },
+      "topChunks": {
+        "doc": [
+          "ethical-theories#2 (0.222)",
+          "ethical-theories#1 (0.163)",
+          "ethical-theories#5 (0.163)",
+          "ethical-theories#10 (0.162)",
+          "ethical-theories#8 (0.150)",
+          "ethical-theories#9 (0.142)"
+        ],
+        "corpus": [
+          "ethical-theories#2 (0.222)",
+          "contract-formation#5 (0.213)",
+          "music-theory-fundamentals#2 (0.212)",
+          "cell-respiration#10 (0.199)",
+          "plate-tectonics#6 (0.186)",
+          "separation-of-powers#11 (0.186)"
+        ]
+      }
+    },
+    {
+      "doc": "ethical-theories",
+      "question": "According to Rawls, when are social and economic inequalities permitted?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 7,
+        "corpus": 135
+      },
+      "topChunks": {
+        "doc": [
+          "ethical-theories#11 (0.157)",
+          "ethical-theories#8 (0.129)",
+          "ethical-theories#9 (0.112)",
+          "ethical-theories#6 (0.103)",
+          "ethical-theories#2 (0.098)",
+          "ethical-theories#7 (0.087)"
+        ],
+        "corpus": [
+          "human-nutrition#4 (0.183)",
+          "human-nutrition#3 (0.179)",
+          "frankenstein-analysis#4 (0.166)",
+          "separation-of-powers#2 (0.165)",
+          "industrial-revolution#7 (0.162)",
+          "cell-respiration#5 (0.161)"
+        ]
+      }
+    },
+    {
+      "doc": "human-nutrition",
+      "question": "Which of the main food components packs the most calories into each unit of weight?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 5,
+        "corpus": 185
+      },
+      "topChunks": {
+        "doc": [
+          "human-nutrition#9 (0.326)",
+          "human-nutrition#8 (0.285)",
+          "human-nutrition#7 (0.269)",
+          "human-nutrition#10 (0.255)",
+          "human-nutrition#1 (0.232)",
+          "human-nutrition#6 (0.199)"
+        ],
+        "corpus": [
+          "cardiovascular-physiology#1 (0.434)",
+          "linear-algebra-basics#1 (0.431)",
+          "stellar-evolution#8 (0.410)",
+          "linear-algebra-basics#7 (0.402)",
+          "cardiovascular-physiology#3 (0.396)",
+          "frankenstein-analysis#1 (0.386)"
+        ]
+      }
+    },
+    {
+      "doc": "human-nutrition",
+      "question": "Which nutritional deficiency is the most common worldwide and what does it cause?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "human-nutrition#6 (0.314)",
+          "human-nutrition#9 (0.278)",
+          "human-nutrition#8 (0.219)",
+          "human-nutrition#4 (0.201)",
+          "human-nutrition#5 (0.194)",
+          "human-nutrition#10 (0.193)"
+        ],
+        "corpus": [
+          "human-nutrition#6 (0.314)",
+          "music-theory-fundamentals#3 (0.296)",
+          "tcp-ip-networking#10 (0.286)",
+          "ecology-course-reader#6 (0.284)",
+          "music-theory-fundamentals#6 (0.282)",
+          "human-nutrition#9 (0.278)"
+        ]
+      }
+    },
+    {
+      "doc": "human-nutrition",
+      "question": "What do microbes in the lower bowel make when they break down roughage, and what does it feed?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 3,
+        "corpus": 26
+      },
+      "topChunks": {
+        "doc": [
+          "human-nutrition#9 (0.264)",
+          "human-nutrition#8 (0.213)",
+          "human-nutrition#10 (0.211)",
+          "human-nutrition#6 (0.188)",
+          "human-nutrition#4 (0.187)",
+          "human-nutrition#5 (0.182)"
+        ],
+        "corpus": [
+          "ecology-course-reader#7 (0.284)",
+          "ethical-theories#8 (0.272)",
+          "separation-of-powers#2 (0.267)",
+          "human-nutrition#9 (0.264)",
+          "stellar-evolution#9 (0.263)",
+          "separation-of-powers#8 (0.255)"
+        ]
+      }
+    },
+    {
+      "doc": "ecology-course-reader",
+      "question": "In the mark-recapture worked example, what population is estimated when 50 fish are tagged and 10 of a later catch of 40 are tagged?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "ecology-course-reader#2 (0.398)",
+          "ecology-course-reader#17 (0.278)",
+          "ecology-course-reader#0 (0.272)",
+          "ecology-course-reader#1 (0.254)",
+          "ecology-course-reader#13 (0.245)",
+          "ecology-course-reader#9 (0.243)"
+        ],
+        "corpus": [
+          "ecology-course-reader#2 (0.398)",
+          "linear-algebra-basics#7 (0.283)",
+          "cardiovascular-physiology#3 (0.282)",
+          "human-nutrition#4 (0.281)",
+          "plate-tectonics#8 (0.279)",
+          "linear-algebra-basics#3 (0.279)"
+        ]
+      }
+    },
+    {
+      "doc": "ecology-course-reader",
+      "question": "What happened on a rocky Pacific shoreline after a researcher took the top invertebrate hunter out of test areas?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 2,
+        "corpus": 6
+      },
+      "topChunks": {
+        "doc": [
+          "ecology-course-reader#12 (0.208)",
+          "ecology-course-reader#9 (0.205)",
+          "ecology-course-reader#18 (0.198)",
+          "ecology-course-reader#10 (0.188)",
+          "ecology-course-reader#8 (0.184)",
+          "ecology-course-reader#13 (0.179)"
+        ],
+        "corpus": [
+          "newtonian-mechanics#7 (0.235)",
+          "hypothesis-testing#9 (0.218)",
+          "separation-of-powers#1 (0.209)",
+          "human-nutrition#7 (0.209)",
+          "ecology-course-reader#12 (0.208)",
+          "ecology-course-reader#9 (0.205)"
+        ]
+      }
+    },
+    {
+      "doc": "ecology-course-reader",
+      "question": "What was the atmospheric carbon dioxide concentration before the Industrial Revolution and what level did it pass in the early 2020s?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "ecology-course-reader#15 (0.429)",
+          "ecology-course-reader#14 (0.357)",
+          "ecology-course-reader#11 (0.351)",
+          "ecology-course-reader#7 (0.351)",
+          "ecology-course-reader#25 (0.342)",
+          "ecology-course-reader#20 (0.332)"
+        ],
+        "corpus": [
+          "ecology-course-reader#15 (0.429)",
+          "industrial-revolution#0 (0.422)",
+          "human-nutrition#9 (0.387)",
+          "separation-of-powers#8 (0.385)",
+          "plate-tectonics#8 (0.385)",
+          "music-theory-fundamentals#3 (0.382)"
+        ]
+      }
+    },
+    {
+      "doc": "ecology-course-reader",
+      "question": "What ground condition in the treeless far-northern landscape keeps plant roots shallow?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 21,
+        "corpus": 177
+      },
+      "topChunks": {
+        "doc": [
+          "ecology-course-reader#7 (0.202)",
+          "ecology-course-reader#27 (0.185)",
+          "ecology-course-reader#25 (0.179)",
+          "ecology-course-reader#11 (0.163)",
+          "ecology-course-reader#20 (0.163)",
+          "ecology-course-reader#0 (0.160)"
+        ],
+        "corpus": [
+          "industrial-revolution#0 (0.250)",
+          "hash-tables#1 (0.243)",
+          "frankenstein-analysis#5 (0.235)",
+          "cardiovascular-physiology#4 (0.231)",
+          "stellar-evolution#8 (0.225)",
+          "plate-tectonics#7 (0.216)"
+        ]
+      }
+    },
+    {
+      "doc": "ecology-course-reader",
+      "question": "In Connell and Slatyer's models of succession, what does the facilitation model say early species do?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "ecology-course-reader#25 (0.373)",
+          "ecology-course-reader#7 (0.262)",
+          "ecology-course-reader#22 (0.242)",
+          "ecology-course-reader#6 (0.237)",
+          "ecology-course-reader#19 (0.236)",
+          "ecology-course-reader#20 (0.230)"
+        ],
+        "corpus": [
+          "ecology-course-reader#25 (0.373)",
+          "plate-tectonics#0 (0.275)",
+          "supply-demand-elasticity#0 (0.274)",
+          "separation-of-powers#8 (0.272)",
+          "plate-tectonics#9 (0.266)",
+          "frankenstein-analysis#9 (0.264)"
+        ]
+      }
+    },
+    {
+      "doc": "ecology-course-reader",
+      "question": "How many birds were translocated to the Illinois greater prairie chicken population, and from which states?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 16,
+        "corpus": 88
+      },
+      "topChunks": {
+        "doc": [
+          "ecology-course-reader#28 (0.330)",
+          "ecology-course-reader#27 (0.264)",
+          "ecology-course-reader#26 (0.260)",
+          "ecology-course-reader#0 (0.250)",
+          "ecology-course-reader#15 (0.226)",
+          "ecology-course-reader#11 (0.222)"
+        ],
+        "corpus": [
+          "ecology-course-reader#28 (0.330)",
+          "ethical-theories#0 (0.295)",
+          "music-theory-fundamentals#10 (0.274)",
+          "human-nutrition#9 (0.267)",
+          "ethical-theories#11 (0.267)",
+          "supply-demand-elasticity#0 (0.265)"
+        ]
+      }
+    },
+    {
+      "doc": "stellar-evolution",
+      "question": "What is the threshold mass above which a region of a molecular cloud collapses called?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "stellar-evolution#0 (0.310)",
+          "stellar-evolution#7 (0.245)",
+          "stellar-evolution#3 (0.233)",
+          "stellar-evolution#10 (0.206)",
+          "stellar-evolution#4 (0.188)",
+          "stellar-evolution#1 (0.170)"
+        ],
+        "corpus": [
+          "stellar-evolution#0 (0.310)",
+          "music-theory-fundamentals#3 (0.291)",
+          "linear-algebra-basics#7 (0.288)",
+          "cardiovascular-physiology#7 (0.286)",
+          "linear-algebra-basics#1 (0.285)",
+          "chemical-equilibrium#3 (0.284)"
+        ]
+      }
+    },
+    {
+      "doc": "stellar-evolution",
+      "question": "What is the heaviest that a dense, Earth-sized stellar corpse can get before the quantum resistance of its particles gives way?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 4,
+        "corpus": 75
+      },
+      "topChunks": {
+        "doc": [
+          "stellar-evolution#0 (0.283)",
+          "stellar-evolution#10 (0.252)",
+          "stellar-evolution#4 (0.237)",
+          "stellar-evolution#7 (0.236)",
+          "stellar-evolution#8 (0.230)",
+          "stellar-evolution#6 (0.228)"
+        ],
+        "corpus": [
+          "chemical-equilibrium#3 (0.339)",
+          "linear-algebra-basics#6 (0.325)",
+          "linear-algebra-basics#1 (0.321)",
+          "music-theory-fundamentals#4 (0.317)",
+          "separation-of-powers#8 (0.315)",
+          "chemical-equilibrium#2 (0.314)"
+        ]
+      }
+    },
+    {
+      "doc": "stellar-evolution",
+      "question": "Who discovered the first pulsar and in what year?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 2,
+        "corpus": 70
+      },
+      "topChunks": {
+        "doc": [
+          "stellar-evolution#9 (0.385)",
+          "stellar-evolution#10 (0.331)",
+          "stellar-evolution#0 (0.328)",
+          "stellar-evolution#6 (0.315)",
+          "stellar-evolution#5 (0.311)",
+          "stellar-evolution#4 (0.283)"
+        ],
+        "corpus": [
+          "industrial-revolution#0 (0.473)",
+          "separation-of-powers#7 (0.433)",
+          "music-theory-fundamentals#3 (0.431)",
+          "frankenstein-analysis#3 (0.429)",
+          "cardiovascular-physiology#3 (0.427)",
+          "plate-tectonics#7 (0.417)"
+        ]
+      }
+    },
+    {
+      "doc": "music-theory-fundamentals",
+      "question": "At what frequency does the modern tuning standard set the A above middle C?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 1,
+        "corpus": 1
+      },
+      "topChunks": {
+        "doc": [
+          "music-theory-fundamentals#0 (0.349)",
+          "music-theory-fundamentals#3 (0.346)",
+          "music-theory-fundamentals#4 (0.317)",
+          "music-theory-fundamentals#5 (0.263)",
+          "music-theory-fundamentals#10 (0.261)",
+          "music-theory-fundamentals#1 (0.261)"
+        ],
+        "corpus": [
+          "music-theory-fundamentals#0 (0.349)",
+          "music-theory-fundamentals#3 (0.346)",
+          "frankenstein-analysis#3 (0.337)",
+          "chemical-equilibrium#5 (0.320)",
+          "linear-algebra-basics#1 (0.318)",
+          "music-theory-fundamentals#4 (0.317)"
+        ]
+      }
+    },
+    {
+      "doc": "music-theory-fundamentals",
+      "question": "How do you locate the darker-sounding companion that uses exactly the same sharps-and-flats pattern as a given bright-sounding tonality?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 8,
+        "corpus": 161
+      },
+      "topChunks": {
+        "doc": [
+          "music-theory-fundamentals#5 (0.299)",
+          "music-theory-fundamentals#4 (0.242)",
+          "music-theory-fundamentals#3 (0.241)",
+          "music-theory-fundamentals#1 (0.227)",
+          "music-theory-fundamentals#0 (0.227)",
+          "music-theory-fundamentals#8 (0.219)"
+        ],
+        "corpus": [
+          "frankenstein-analysis#9 (0.304)",
+          "ecology-course-reader#7 (0.303)",
+          "music-theory-fundamentals#5 (0.299)",
+          "ecology-course-reader#0 (0.294)",
+          "linear-algebra-basics#0 (0.278)",
+          "separation-of-powers#7 (0.275)"
+        ]
+      }
+    },
+    {
+      "doc": "music-theory-fundamentals",
+      "question": "Which phrase ending, linked to the closing word of church hymns, moves from the fourth-degree harmony to home?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 8,
+        "corpus": 132
+      },
+      "topChunks": {
+        "doc": [
+          "music-theory-fundamentals#2 (0.363)",
+          "music-theory-fundamentals#10 (0.361)",
+          "music-theory-fundamentals#3 (0.301)",
+          "music-theory-fundamentals#4 (0.284)",
+          "music-theory-fundamentals#5 (0.272)",
+          "music-theory-fundamentals#6 (0.246)"
+        ],
+        "corpus": [
+          "music-theory-fundamentals#2 (0.363)",
+          "music-theory-fundamentals#10 (0.361)",
+          "ecology-course-reader#27 (0.353)",
+          "cardiovascular-physiology#3 (0.323)",
+          "frankenstein-analysis#5 (0.315)",
+          "cardiovascular-physiology#1 (0.311)"
+        ]
+      }
+    },
+    {
+      "doc": "separation-of-powers",
+      "question": "According to the 1748 French thinker, what happens to freedom when a single authority combines several governmental functions?",
+      "paraphrase": true,
+      "rank": {
+        "doc": 2,
+        "corpus": 16
+      },
+      "topChunks": {
+        "doc": [
+          "separation-of-powers#10 (0.245)",
+          "separation-of-powers#2 (0.191)",
+          "separation-of-powers#4 (0.186)",
+          "separation-of-powers#6 (0.185)",
+          "separation-of-powers#3 (0.170)",
+          "separation-of-powers#11 (0.158)"
+        ],
+        "corpus": [
+          "separation-of-powers#10 (0.245)",
+          "cell-respiration#10 (0.216)",
+          "contract-formation#2 (0.214)",
+          "ethical-theories#11 (0.213)",
+          "ecology-course-reader#27 (0.208)",
+          "frankenstein-analysis#9 (0.207)"
+        ]
+      }
+    },
+    {
+      "doc": "separation-of-powers",
+      "question": "In many presidential systems, what is needed for the legislature to override a veto?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 2,
+        "corpus": 2
+      },
+      "topChunks": {
+        "doc": [
+          "separation-of-powers#6 (0.325)",
+          "separation-of-powers#7 (0.307)",
+          "separation-of-powers#5 (0.292)",
+          "separation-of-powers#4 (0.266)",
+          "separation-of-powers#8 (0.230)",
+          "separation-of-powers#3 (0.230)"
+        ],
+        "corpus": [
+          "separation-of-powers#6 (0.325)",
+          "separation-of-powers#7 (0.307)",
+          "ethical-theories#8 (0.292)",
+          "separation-of-powers#5 (0.292)",
+          "contract-formation#2 (0.276)",
+          "separation-of-powers#4 (0.266)"
+        ]
+      }
+    },
+    {
+      "doc": "separation-of-powers",
+      "question": "How does a unitary system differ from a federal system in where ultimate authority lies?",
+      "paraphrase": false,
+      "rank": {
+        "doc": 3,
+        "corpus": 16
+      },
+      "topChunks": {
+        "doc": [
+          "separation-of-powers#5 (0.135)",
+          "separation-of-powers#9 (0.114)",
+          "separation-of-powers#10 (0.093)",
+          "separation-of-powers#0 (0.083)",
+          "separation-of-powers#8 (0.060)",
+          "separation-of-powers#2 (0.060)"
+        ],
+        "corpus": [
+          "separation-of-powers#5 (0.135)",
+          "industrial-revolution#11 (0.130)",
+          "separation-of-powers#9 (0.114)",
+          "stellar-evolution#0 (0.111)",
+          "chemical-equilibrium#5 (0.110)",
+          "plate-tectonics#1 (0.108)"
+        ]
+      }
+    }
+  ]
+}

@@ -162,3 +162,57 @@ Irreversible steps in the current chain: `20261126100000` deleted duplicate note
 3. Delete the user in Authentication → Users (or `auth.admin.deleteUser`). Documents, notes, chunks, chat, reviews, jobs, profiles, `user_api_keys` and `subscriptions` cascade.
 4. What remains by design: `billing_events` (financial ledger, `user_id` set to null), and `ai_usage_logs` / `ai_feedback` rows not tied to a document (`user_id` set to null). Lemon Squeezy holds its own customer record; delete it there if requested.
 5. Export first if the request is for access (GDPR Art. 15): the user can use Settings → Data & Storage → export, which downloads their documents, notes, flashcards, quizzes, podcast scripts and chat history.
+
+## Cost monitoring
+
+Migration `20261126170000_phase4_cost_monitoring.sql` adds a price table and service-role-only cost views. The `cost_report` edge function posts a daily margin alert.
+
+**Price table:** `ai_model_prices(provider, model, input_usd_per_mtok, output_usd_per_mtok, usd_per_audio_hour, platform_paid, effective_from, verified, …)`. Seeded prices for the Groq, Gemini and OpenAI models are **unverified** (`verified = false`) and must be checked against the provider pricing pages before anyone trusts the numbers. When a price is correct, set `verified = true`. When a price changes, insert a new row with a later `effective_from` instead of editing the old one, so history keeps its old price. Models logged without a price row show up as `unpriced_requests`. The local models (`gte-small`, `kokoro-82m-browser`) are 0, and OpenAI (BYOK only) has `platform_paid = false`.
+
+**Views** (service_role only; query them in the SQL editor):
+
+- `admin_daily_cost`: day, provider, model, requests, tokens, `est_usd`, and `logged_cost_usd` (the old per-function estimate) for comparison.
+- `admin_user_daily_cost`: day, user, tier, actions, `est_usd`. This is what `cost_report` reads.
+- `admin_cost_per_user_30d`: user, tier, actions, `est_usd`, `plan_revenue_usd` (Scholar/`pro` = $9, everyone else $0), `margin_usd`.
+
+The estimates have known biases:
+
+- No BYOK flag is logged, so Groq and Gemini calls made with a user's own key are counted as platform cost. That makes the estimate an upper bound.
+- Several functions log tokens estimated as chars/4.
+- Whisper hours are estimated from file bytes at 128 kbit/s, with a minimum of 10 s per request.
+- If the platform Groq or Gemini key is on a free tier, the real cost is $0.
+
+**Edge function secrets** (`supabase secrets set …`):
+
+| Secret | Required | Default | Purpose |
+|---|---|---|---|
+| `CRON_SECRET` | yes | — | Shared secret expected in `x-cron-secret`. When unset, the function returns 500 and fails closed. |
+| `ALERT_WEBHOOK_URL` | no | — | Slack-compatible incoming webhook (`{"text": …}`). When unset, the function returns 200 `skipped`. |
+| `COST_ALERT_USER_USD` | no | `0.50` | Alert threshold for one user's cost per day. |
+| `COST_ALERT_DAILY_USD` | no | `5` | Alert threshold for the total cost per day. |
+| `COST_DIGEST` | no | — | Set to `1` to post every day, not only when a threshold is exceeded. |
+| `POSTHOG_PROJECT_KEY` | no | — | PostHog project API key for server events (`upgrade_completed`, `subscription_ended` from `billing-webhook`). When unset, no events are sent. |
+| `POSTHOG_HOST` | no | `https://us.i.posthog.com` | PostHog ingestion host (use `https://eu.i.posthog.com` for EU). |
+
+**Schedule:** the migration schedules `cost_report_daily` (06:00 UTC) only when `pg_cron` and `pg_net` are enabled **and** both vault secrets exist. Otherwise it logs a NOTICE and skips. To set it up afterwards:
+
+1. Enable `pg_cron` and `pg_net` (Dashboard → Database → Extensions).
+2. Create the vault secrets. `cron_secret` must equal the `CRON_SECRET` function secret.
+   ```sql
+   select vault.create_secret('https://<project-ref>.supabase.co', 'project_url');
+   select vault.create_secret('<same value as CRON_SECRET>', 'cron_secret');
+   ```
+3. Schedule the job:
+   ```sql
+   select cron.schedule('cost_report_daily', '0 6 * * *', $$
+     select net.http_post(
+       url := (select decrypted_secret from vault.decrypted_secrets where name = 'project_url') || '/functions/v1/cost_report',
+       headers := jsonb_build_object('Content-Type', 'application/json',
+         'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')),
+       body := '{}'::jsonb, timeout_milliseconds := 30000);
+   $$);
+   ```
+
+The job reads the secrets each time it runs. To rotate, update the function secret and then `vault.update_secret`; no reschedule is needed. To check runs: `select * from cron.job_run_details order by start_time desc limit 5;` and `select * from net._http_response order by created desc limit 5;`.
+
+**Manual run** (for example, to re-run a past day): `curl -X POST "https://<ref>.supabase.co/functions/v1/cost_report?day=2026-11-25" -H "x-cron-secret: $CRON_SECRET"`.

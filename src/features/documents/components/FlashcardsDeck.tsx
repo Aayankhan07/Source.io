@@ -22,6 +22,7 @@ import MarkdownView from "@/components/common/MarkdownView";
 import type { FlashcardRow } from "@/features/documents/types";
 import { countDue, intervalDaysForBox, nextBox, orderByDue, type ReviewResult } from "@/features/learning/leitner";
 import { useFlashcardReviews } from "@/features/learning/useFlashcardReviews";
+import { useDueReviewDeepLink } from "@/features/learning/useDueReviewDeepLink";
 
 interface FlashcardsDeckProps {
   documentId: string;
@@ -74,7 +75,7 @@ export function FlashcardsDeck({
   const [isCompleted, setIsCompleted] = useState(false);
   const [reviewDueMode, setReviewDueMode] = useState(false);
 
-  const { enabled: persistReviews, reviews, recordReview } = useFlashcardReviews(documentId);
+  const { enabled: persistReviews, reviews, recordReview, isLoading: reviewsLoading } = useFlashcardReviews(documentId);
   const stageRef = useRef<HTMLDivElement>(null);
 
   /**
@@ -167,14 +168,17 @@ export function FlashcardsDeck({
     setIsCompleted(false);
   };
 
-  const startDueReview = () => {
+  const startDueReview = useCallback(() => {
     setDeck(orderByDue(cards, reviews, new Date()));
     setReviewDueMode(true);
     setShowGridView(false);
     setCurrentIndex(0);
     setIsFlipped(false);
     setIsCompleted(false);
-  };
+  }, [cards, reviews]);
+
+  // Dashboard "cards due today" links open ?tab=cards&review=due: start due-first review once data is ready.
+  useDueReviewDeepLink(persistReviews && !reviewsLoading && cards.length > 0 && dueCount > 0, startDueReview);
 
   const handleExportAnki = useCallback(() => {
     if (!deck.length) return;
@@ -505,7 +509,7 @@ export function FlashcardsDeck({
                   <span className="uppercase font-bold tracking-wider text-xs px-2 py-0.5 rounded bg-muted border border-border">
                     Prompt / Term
                   </span>
-                  <span className="text-xs flex items-center gap-1 text-muted-foreground">
+                  <span className="text-xs flex items-center gap-1 text-foreground/80">
                     <RotateCw className="size-3" aria-hidden="true" /> Click or <kbd className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">Space</kbd> to flip
                   </span>
                 </div>
@@ -536,7 +540,7 @@ export function FlashcardsDeck({
                   <span className="uppercase font-bold tracking-wider text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
                     Answer / Definition
                   </span>
-                  <span className="text-xs flex items-center gap-1 text-muted-foreground">
+                  <span className="text-xs flex items-center gap-1 text-foreground/80">
                     <RotateCw className="size-3" aria-hidden="true" /> Flip back
                   </span>
                 </div>

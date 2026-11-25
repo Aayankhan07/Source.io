@@ -95,7 +95,7 @@ export default function Auth() {
             <img src="/favicon.png" className="h-full w-full object-contain" alt="Logo" />
           </div>
           <span className="font-semibold tracking-tight text-base font-display text-foreground">Source.io</span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-card border border-border text-muted-foreground">
+          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-card border border-border text-muted-foreground">
             STUDIO
           </span>
         </Link>
@@ -228,7 +228,7 @@ export default function Auth() {
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2.5 text-[10px] text-muted-foreground font-mono">or email account</span>
+                    <span className="bg-card px-2.5 text-xs text-muted-foreground font-mono">or email account</span>
                   </div>
                 </div>
 
@@ -296,7 +296,7 @@ export default function Auth() {
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2.5 text-[10px] text-muted-foreground font-mono">or continue with</span>
+                    <span className="bg-card px-2.5 text-xs text-muted-foreground font-mono">or continue with</span>
                   </div>
                 </div>
 
@@ -335,12 +335,12 @@ export default function Auth() {
                   {mode === "signin" ? (
                     <>
                       Don't have an account?{" "}
-                      <button className="text-sky-600 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signup")}>Sign up free</button>
+                      <button className="text-sky-700 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signup")}>Sign up free</button>
                     </>
                   ) : (
                     <>
                       Already have an account?{" "}
-                      <button className="text-sky-600 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signin")}>Sign in here</button>
+                      <button className="text-sky-700 dark:text-sky-400 font-semibold hover:underline transition-all rounded focus-ring ml-1" onClick={() => setMode("signin")}>Sign in here</button>
                     </>
                   )}
                 </div>

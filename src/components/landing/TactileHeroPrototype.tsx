@@ -253,7 +253,7 @@ export function TactileHeroPrototype() {
               <Play className="size-2 sm:size-2.5 fill-current translate-x-px" />
             </span>
             <span>Watch tour</span>
-            <span className="text-xs font-mono font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200/60">
+            <span className="text-xs font-mono font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
               20s
             </span>
           </button>

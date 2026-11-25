@@ -379,6 +379,7 @@ export function AskPanel({ documentId, onClose, className }: AskPanelProps) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask a question about this lecture…"
+            aria-label="Ask a question about this document"
             className="flex-1 min-h-[44px] max-h-32 resize-none text-xs rounded-[16px] bg-muted/40 border-border text-foreground placeholder:text-muted-foreground pr-2 py-2.5 focus-visible:ring-1 focus-visible:ring-ring"
             rows={1}
             disabled={sending}

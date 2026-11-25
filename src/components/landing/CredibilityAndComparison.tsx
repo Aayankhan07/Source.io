@@ -337,7 +337,7 @@ export function AcademicPersonasSection() {
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-medium shadow-2xs">
               <SignatureIcon className="size-3.5 text-slate-700 shrink-0" />
               <span>Signature Output: <strong className="font-semibold text-slate-900">{persona.signatureAction.label}</strong></span>
-              <span className="text-xs text-slate-500 font-mono hidden sm:inline">({persona.signatureAction.badge})</span>
+              <span className="text-xs text-slate-600 font-mono hidden sm:inline">({persona.signatureAction.badge})</span>
             </div>
             <Link
               href="/demo/quantum"
@@ -506,7 +506,7 @@ export function ComparisonTableSection() {
                 </td>
                 <td className="px-5 py-3.5 text-slate-500 text-xs font-mono">
                   {row.chatgpt === false ? (
-                    <span className="inline-flex items-center gap-1 text-slate-400 font-mono text-xs">
+                    <span className="inline-flex items-center gap-1 text-slate-500 font-mono text-xs">
                       <X className="size-4 text-slate-400" /> None
                     </span>
                   ) : (
@@ -515,7 +515,7 @@ export function ComparisonTableSection() {
                 </td>
                 <td className="px-6 py-3.5 text-slate-500 text-xs font-mono">
                   {row.notebooklm === false ? (
-                    <span className="inline-flex items-center gap-1 text-slate-400 font-mono text-xs">
+                    <span className="inline-flex items-center gap-1 text-slate-500 font-mono text-xs">
                       <X className="size-4 text-slate-400" /> None
                     </span>
                   ) : row.notebooklm === true ? (

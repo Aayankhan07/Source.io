@@ -12,6 +12,8 @@ import { TactileTopBar } from "./TactileTopBar";
 import { TactileSourceCards } from "./TactileSourceCards";
 import { TactilePerformanceChart } from "./TactilePerformanceChart";
 import { TactileWeeklyGoals } from "./TactileWeeklyGoals";
+import { TactileStudyStreak } from "./TactileStudyStreak";
+import { TactileDueReviews } from "./TactileDueReviews";
 
 export function TactileDashboard() {
   const router = useRouter();
@@ -140,6 +142,18 @@ export function TactileDashboard() {
               </div>
             )}
           </div>
+
+          {/* Retention: study streak + cards due today (signed-in only; both read real activity) */}
+          {user && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+              <div className="lg:col-span-4 w-full">
+                <TactileStudyStreak />
+              </div>
+              <div className="lg:col-span-8 w-full">
+                <TactileDueReviews />
+              </div>
+            </div>
+          )}
 
           {/* Analytics Section: Performance Analytics + Weekly Goals (12-column split) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">

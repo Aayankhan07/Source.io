@@ -426,6 +426,8 @@ export default function NotesSettingsPopover({
                   min={1}
                   max={5}
                   step={1}
+                  aria-label="Rigor level"
+                  aria-valuetext={`${currentRigor} of 5: ${RIGOR_LABELS[currentRigor]}`}
                   value={currentRigor}
                   onChange={(e) => updatePreferences({ rigorLevel: Number(e.target.value) as 1 | 2 | 3 | 4 | 5 })}
                   className="w-full accent-primary cursor-pointer h-2 bg-muted rounded-lg"

@@ -73,6 +73,7 @@ export function useQuizAttempts(quizId: string | null | undefined) {
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: key });
+      void queryClient.invalidateQueries({ queryKey: learningKeys.studyStreak(userId) });
     },
   });
 

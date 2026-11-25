@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -191,7 +191,7 @@ export default function OnboardingWizard() {
     setPrefs((prev) => ({ ...prev, enabledModes: next }));
   };
 
-  const handleFinish = async () => {
+  const handleFinish = useCallback(async () => {
     setSubmitting(true);
     try {
       await completeOnboarding(selectedRole, prefs);
@@ -206,7 +206,7 @@ export default function OnboardingWizard() {
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [completeOnboarding, selectedRole, prefs, toast, router]);
 
   const handleSkip = async () => {
     setSubmitting(true);
@@ -242,6 +242,11 @@ export default function OnboardingWizard() {
       }
 
       if (e.key === "Enter" && !e.shiftKey) {
+        // Let focused controls (buttons, switches, inputs, links) handle Enter themselves.
+        const target = e.target as HTMLElement | null;
+        if (target?.closest("button, a, input, textarea, select, [role='switch'], [role='slider'], [contenteditable='true']")) {
+          return;
+        }
         e.preventDefault();
         if (step < 5) {
           setStep((s) => s + 1);
@@ -252,7 +257,7 @@ export default function OnboardingWizard() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [step, selectedGoal, selectedRole, prefs]);
+  }, [step, handleFinish]);
 
   const rolesList: UserRole[] = [
     "undergrad",
@@ -677,6 +682,7 @@ export default function OnboardingWizard() {
                   </div>
 
                   <Slider
+                    aria-label="Explanation rigor level"
                     value={[prefs.rigorLevel]}
                     min={1}
                     max={5}
@@ -690,10 +696,10 @@ export default function OnboardingWizard() {
                     className="w-full cursor-pointer"
                   />
 
-                  <div className="flex justify-between text-xs font-mono text-muted-foreground px-1">
-                    <span>1: Intuitive</span>
-                    <span>3: Collegiate</span>
-                    <span>5: Peer Review</span>
+                  <div className="flex justify-between gap-2 text-xs font-mono text-muted-foreground px-1">
+                    <span className="text-left">1: Intuitive</span>
+                    <span className="text-center">3: Collegiate</span>
+                    <span className="text-right">5: Peer Review</span>
                   </div>
                 </div>
 

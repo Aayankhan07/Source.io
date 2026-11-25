@@ -43,8 +43,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Unit tests
-        run: npm test
+      - name: Unit tests with coverage (thresholds in vitest.config.mts)
+        run: npm run test:coverage
 
       - name: Build
         run: npm run build
@@ -70,6 +70,13 @@ jobs:
       - name: Type-check every edge function entrypoint
         run: deno check supabase/functions/*/index.ts
 
+      - name: Type-check evals and run the offline retrieval baseline
+        shell: bash
+        run: |
+          deno check evals/**/*.ts
+          # The hash baseline is expected to miss the Recall@6 gate; this step only proves the harness runs.
+          deno run -A evals/retrieval/run.ts --embedder hash || true
+
       - name: Run Deno tests (*_test.ts only)
         shell: bash
         run: |
@@ -80,7 +87,7 @@ jobs:
             echo "No Deno test files found; skipping."
             exit 0
           fi
-          deno test --allow-env --allow-net "${files[@]}"
+          deno test --allow-env --allow-net --allow-read "${files[@]}"
 
   database:
     name: Database (pgTAP)

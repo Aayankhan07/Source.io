@@ -27,3 +27,8 @@ verify_jwt = false
 # Saves / tests / deletes encrypted BYOK keys (user JWT checked in code via authenticateRequest).
 [functions.api_keys]
 verify_jwt = false
+
+# Daily cost report / margin alert. Called by pg_cron; authenticated by the x-cron-secret header
+# (CRON_SECRET), checked in code and failing closed when unset.
+[functions.cost_report]
+verify_jwt = false

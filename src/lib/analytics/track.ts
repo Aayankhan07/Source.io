@@ -17,7 +17,9 @@ export type AnalyticsEvent =
   | { name: "chat_question_asked"; props?: Record<string, never> }
   | { name: "podcast_audio_created"; props?: Record<string, never> }
   | { name: "upgrade_clicked"; props?: { location?: string } }
-  | { name: "upgrade_completed"; props?: { plan?: string } };
+  | { name: "upgrade_completed"; props?: { plan?: string } }
+  | { name: "due_review_opened"; props?: Record<string, never> }
+  | { name: "browser_reminder_enabled"; props?: Record<string, never> };
 
 export type AnalyticsEventName = AnalyticsEvent["name"];
 type PropsFor<N extends AnalyticsEventName> = Extract<AnalyticsEvent, { name: N }>["props"];

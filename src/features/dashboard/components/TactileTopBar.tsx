@@ -3,13 +3,15 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Bell, Settings, LogOut, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Search, Bell, Settings, LogOut, CheckCircle2, AlertTriangle, CalendarClock } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { DailyQuotaPill } from "@/components/common/DailyQuotaPill";
 import { cn } from "@/lib/utils";
 import { useDocumentsList } from "../hooks/useDocumentsList";
-import { relativeTime } from "../lib/activity";
+import { relativeTime, startOfLocalDay } from "../lib/activity";
+import { useDueCards } from "@/features/learning/useDueCards";
+import { dueReviewHref } from "@/features/learning/dueSummary";
 
 const NOTIF_SEEN_KEY = "source_io_notifications_seen_at_v1";
 
@@ -91,7 +93,24 @@ export function TactileTopBar({
       }));
   }, [documents]);
 
-  const unreadCount = notifications.filter((n) => n.updatedAt > lastSeenAt).length;
+  // Due-review reminder: one entry while any card is due today. Unread until the panel is opened today.
+  const { summary: due } = useDueCards(!!user);
+  const dueTop = due.documents[0];
+  const dueEntry =
+    due.totalDue > 0 && dueTop
+      ? {
+          title: `${due.totalDue} card${due.totalDue === 1 ? "" : "s"} due today`,
+          desc:
+            due.documents.length === 1
+              ? (documents.find((d) => d.id === dueTop.documentId)?.title ?? "Review your flashcards")
+              : `Across ${due.documents.length} sources. Start with the one with the most due.`,
+          href: dueReviewHref(dueTop.documentId),
+        }
+      : null;
+  const startOfToday = startOfLocalDay(new Date()).getTime();
+  const dueUnread = dueEntry !== null && lastSeenAt < startOfToday;
+
+  const unreadCount = notifications.filter((n) => n.updatedAt > lastSeenAt).length + (dueUnread ? 1 : 0);
 
   const toggleNotifications = () => {
     if (!notificationsOpen) {
@@ -210,7 +229,26 @@ export function TactileTopBar({
                   )}
                 </div>
 
-                {notifications.length === 0 ? (
+                {dueEntry && (
+                  <Link
+                    href={dueEntry.href}
+                    onClick={() => setNotificationsOpen(false)}
+                    className={cn(
+                      "p-2.5 mb-2 rounded-[18px] flex items-start gap-2.5 transition-colors",
+                      highlightSince < startOfToday ? "bg-muted" : "hover:bg-accent"
+                    )}
+                  >
+                    <div className="size-8 rounded-[12px] flex items-center justify-center shrink-0 mt-0.5 bg-primary text-primary-foreground">
+                      <CalendarClock className="size-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-bold text-foreground truncate block">{dueEntry.title}</span>
+                      <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{dueEntry.desc}</p>
+                    </div>
+                  </Link>
+                )}
+
+                {notifications.length === 0 && dueEntry ? null : notifications.length === 0 ? (
                   <div className="py-6 flex flex-col items-center text-center gap-1.5">
                     <CheckCircle2 className="size-5 text-muted-foreground" />
                     <span className="text-xs font-bold text-foreground">You&apos;re all caught up</span>

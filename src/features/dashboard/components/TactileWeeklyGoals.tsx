@@ -118,8 +118,7 @@ export function TactileWeeklyGoals() {
           ? "Could not load your activity. Try refreshing."
           : !isLoading && total === 0
             ? `Nothing yet ${periodLabel}. Open a source and generate notes, cards, or a quiz to get started.`
-            : "Counts update as you study."}{" "}
-        Quiz attempts are not recorded yet, so that count stays at 0 for now.
+            : "Counts update as you study."}
       </p>
     </div>
   );

@@ -148,7 +148,7 @@ export function TactileLeftDock({
             >
               {theme === "dark" ? <Sun className="size-4 shrink-0" /> : <Moon className="size-4 shrink-0" />}
               {isExpanded && (
-                <span className="text-[11px] font-medium text-foreground">
+                <span className="text-xs font-medium text-foreground">
                   {theme === "dark" ? "Light Mode" : "Dark Mode"}
                 </span>
               )}
@@ -166,7 +166,7 @@ export function TactileLeftDock({
               {isExpanded ? (
                 <>
                   <ChevronLeft className="size-4 shrink-0 stroke-[2.2]" />
-                  <span className="text-[11px] font-medium text-foreground">Collapse</span>
+                  <span className="text-xs font-medium text-foreground">Collapse</span>
                 </>
               ) : (
                 <ChevronRight className="size-4 shrink-0 stroke-[2.2]" />

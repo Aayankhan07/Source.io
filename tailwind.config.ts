@@ -73,7 +73,7 @@ export default {
         "fs-section": ["15px", { lineHeight: "22px" }],
         "fs-body": ["13px", { lineHeight: "20px" }],
         "fs-label": ["12px", { lineHeight: "18px" }],
-        "fs-meta": ["11px", { lineHeight: "16px" }],
+        "fs-meta": ["12px", { lineHeight: "16px" }],
         "display-xs": ["24px", { lineHeight: "32px" }],
         "display-sm": ["30px", { lineHeight: "38px" }],
         "display-md": ["36px", { lineHeight: "44px" }],

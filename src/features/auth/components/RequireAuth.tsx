@@ -32,7 +32,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
     if (!loading && user && onboardingKnown && !onboardingCompleted && !isOnboardingRoute) {
       router.replace("/app/onboarding");
     }
-  }, [loading, user, error, onboardingKnown, onboardingCompleted, isOnboardingRoute, router]);
+  }, [loading, user, error, onboardingKnown, onboardingCompleted, isOnboardingRoute, pathname, router]);
 
   const spinner = (
     <div className={cn("luminous-app min-h-screen flex items-center justify-center bg-background", theme === "dark" && "dark")}>

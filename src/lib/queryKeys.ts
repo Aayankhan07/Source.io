@@ -38,4 +38,8 @@ export const learningKeys = {
   leitnerBoxes: (userId: string | undefined) => ["flashcard-reviews", userId, "boxes"] as const,
   quizBest: (userId: string | undefined, quizId: string) => ["quiz-best", userId, quizId] as const,
   chatHistory: (userId: string | undefined, docId: string) => ["chat-history", userId, docId] as const,
+  /** Flashcards due today across all documents (dashboard reminders). Under reviewsRoot. */
+  dueSummary: (userId: string | undefined) => ["flashcard-reviews", userId, "due"] as const,
+  /** Study streak built from reviews, quiz attempts and chat activity. */
+  studyStreak: (userId: string | undefined) => ["study-streak", userId] as const,
 };

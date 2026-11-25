@@ -9,6 +9,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { verifyHmacSha256Hex } from "../_shared/webhookSignature.ts";
 import { billingEventId, parseLemonSqueezyEvent } from "../_shared/billing.ts";
 import { createLogger } from "../_shared/log.ts";
+import { captureServerEvent, tierTransitionEvent } from "../_shared/analytics.ts";
 
 const WEBHOOK_SECRET = Deno.env.get("LEMONSQUEEZY_WEBHOOK_SECRET") ?? "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -58,6 +59,20 @@ Deno.serve(async (req) => {
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_KEY);
+
+  // Tier before this event, for the upgrade/downgrade analytics event. Best effort: a failed
+  // read only skips analytics, never the billing update.
+  let previousTier: string | null = null;
+  if (event.action.kind === "subscription" && event.userId) {
+    const { data: profile, error: profileError } = await admin
+      .from("profiles")
+      .select("tier")
+      .eq("user_id", event.userId)
+      .maybeSingle();
+    if (profileError) log.warn("could not read previous tier for analytics", { err: profileError });
+    previousTier = (profile as { tier?: string } | null)?.tier ?? null;
+  }
+
   const { data: outcome, error } = await admin.rpc("apply_billing_event", {
     p_event_id: eventId,
     p_event_name: event.eventName,
@@ -81,5 +96,15 @@ Deno.serve(async (req) => {
     tier: event.action.kind === "subscription" ? event.action.entitlement.tier : null,
     note: event.action.kind === "record_only" ? event.action.reason : undefined,
   });
+
+  if (outcome === "applied" && event.action.kind === "subscription" && event.userId) {
+    const transition = tierTransitionEvent(previousTier, event.action.entitlement.tier);
+    if (transition) {
+      // Never throws and times out after 3 s; distinct id is the Supabase user id only.
+      const sent = await captureServerEvent(event.userId, transition.event, transition.props);
+      log.info("analytics event", { analyticsEvent: transition.event, sent });
+    }
+  }
+
   return json({ received: true, event: event.eventName, outcome }, 200);
 });

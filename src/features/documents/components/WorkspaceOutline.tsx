@@ -534,6 +534,7 @@ export default function WorkspaceOutline({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter sections..."
+              aria-label="Filter sections"
               className="w-full bg-background border border-border/80 rounded-lg pl-7 pr-7 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 font-sans"
             />
             {searchQuery && (
@@ -623,6 +624,7 @@ export default function WorkspaceOutline({
                     h.level === 1 && "pl-2 font-semibold text-foreground text-xs",
                     h.level === 2 && "pl-5 text-muted-foreground hover:text-foreground text-xs",
                     h.level === 3 && "pl-8 text-muted-foreground/80 hover:text-foreground text-xs",
+                    hasSubsections && "pr-7",
                     // Active Pill Styling
                     isActive
                       ? "bg-primary/10 text-primary font-medium dark:bg-primary/15"
@@ -671,21 +673,26 @@ export default function WorkspaceOutline({
                   {/* Clean Title */}
                   <span className="truncate flex-1 font-sans">{h.cleanTitle}</span>
 
-                  {/* Collapsible toggle for chapters with children */}
-                  {hasSubsections && (
-                    <span
-                      onClick={(e) => toggleSectionCollapse(h.id, e)}
-                      className="p-0.5 rounded text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 transition-colors ml-auto shrink-0"
-                      title={isCollapsed ? "Expand chapter" : "Collapse chapter"}
-                    >
-                      {isCollapsed ? (
-                        <ChevronRight className="h-3 w-3" />
-                      ) : (
-                        <ChevronDown className="h-3 w-3" />
-                      )}
-                    </span>
-                  )}
                 </button>
+
+                {/* Collapsible toggle for chapters with children. A sibling of the row
+                    button (not nested in it) so it is a real, focusable control. */}
+                {hasSubsections && (
+                  <button
+                    type="button"
+                    onClick={(e) => toggleSectionCollapse(h.id, e)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
+                    title={isCollapsed ? "Expand chapter" : "Collapse chapter"}
+                    aria-label={`${isCollapsed ? "Expand" : "Collapse"} ${h.cleanTitle}`}
+                    aria-expanded={!isCollapsed}
+                  >
+                    {isCollapsed ? (
+                      <ChevronRight className="h-3 w-3" />
+                    ) : (
+                      <ChevronDown className="h-3 w-3" />
+                    )}
+                  </button>
+                )}
               </div>
             );
           })
