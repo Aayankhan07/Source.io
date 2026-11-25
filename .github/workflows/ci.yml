@@ -110,7 +110,7 @@ jobs:
             echo "No pgTAP tests in supabase/tests; skipping database job."
           fi
 
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         if: steps.guard.outputs.has_tests == 'true'
         with:
           version: latest
