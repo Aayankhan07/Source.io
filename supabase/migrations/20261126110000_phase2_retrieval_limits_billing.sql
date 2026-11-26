@@ -12,6 +12,10 @@
 --   6. Storage bucket limits; avatars bucket private.
 
 -- ============================================================================
+-- 0. Schema drift guard: some projects applied an earlier version of 20261016092000 that did not add
+--    profiles.active_docs_limit, which the Phase 0 billing trigger and the document-limit trigger read.
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS active_docs_limit INTEGER DEFAULT 3;
+
 -- 1. Embeddings: gte-small (384 dims) stored as halfvec
 -- ============================================================================
 
